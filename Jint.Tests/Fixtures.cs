@@ -1336,6 +1336,15 @@ var fakeButton = new Test.FakeButton();");
 
                 ");
         }
+
+        [TestMethod]
+        public void UndefinedEqualsToNullShouldBeTrue() {
+            Test(@"
+                assert(true, undefined == null);
+                assert(false, undefined === null);
+
+                ");
+        }
     }
 
     public struct Size

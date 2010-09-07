@@ -1075,42 +1075,30 @@ namespace Jint
                     break;
 
                 case BinaryExpressionType.Equal:
-                    if (left == JsUndefined.Instance && right == JsUndefined.Instance || left == JsNull.Instance && right == JsNull.Instance)
+                    if ( ( left == JsUndefined.Instance || right == JsUndefined.Instance ) && ( left == JsNull.Instance || right == JsNull.Instance ) ) 
                     {
                         Result = JsBoolean.True;
                     }
                     else
                     {
-                        if (left == JsUndefined.Instance && right != JsUndefined.Instance || left == JsNull.Instance && right != JsNull.Instance)
+
+                        if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
+                            right.Class == JsNumber.TYPEOF || right.Class == JsBoolean.TYPEOF)
                         {
-                            Result = JsBoolean.False;
+                            Result = Global.BooleanClass.New(left.ToNumber() == right.ToNumber());
+                        }
+                        else if (left.Class == JsString.TYPEOF || right.Class == JsString.TYPEOF)
+                        {
+                            Result = Global.BooleanClass.New(left.ToString() == right.ToString());
+                        }
+                        else if (left.Value != null)
+                        {
+                            Result = Global.BooleanClass.New(left.Value.Equals(right.Value));
                         }
                         else
-                            if (left != JsUndefined.Instance && right == JsUndefined.Instance || left != JsNull.Instance && right == JsNull.Instance)
-                            {
-                                Result = JsBoolean.False;
-                            }
-                            else
-                            {
-                                if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
-                                    right.Class == JsNumber.TYPEOF || right.Class == JsBoolean.TYPEOF)
-                                {
-                                    Result = Global.BooleanClass.New(left.ToNumber() == right.ToNumber());
-                                }
-                                else if (left.Class == JsString.TYPEOF || right.Class == JsString.TYPEOF)
-                                {
-                                    Result = Global.BooleanClass.New(left.ToString() == right.ToString());
-                                }
-                                else if (left.Value != null)
-                                {
-                                    Result = Global.BooleanClass.New(left.Value.Equals(right.Value));
-                                }
-                                else
-                                {
-                                    Result = Global.BooleanClass.New(left == right);
-                                }
-                            }
-
+                        {
+                            Result = Global.BooleanClass.New(left == right);
+                        }
                     }
                     break;
 

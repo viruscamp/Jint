@@ -916,7 +916,7 @@ var fakeButton = new Test.FakeButton();");
         public void ShouldExecuteSingleScript()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var program = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.Scripts.PrototypeInheritance.js")).ReadToEnd();
+            var program = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.Scripts.Date.js")).ReadToEnd();
             Test(program);
         }
 

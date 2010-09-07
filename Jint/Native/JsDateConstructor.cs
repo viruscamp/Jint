@@ -190,10 +190,8 @@ namespace Jint.Native
             {
                 return visitor.Return(ToStringImpl(result, JsInstance.EMPTY));
             }
-            else
-            {
-                return result;
-            }
+
+            return result;
         }
 
         private bool ParseDate(string p, IFormatProvider culture, out double result)
@@ -432,7 +430,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Year);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Year);
         }
 
         /// <summary>
@@ -464,7 +462,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Month - 1);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Month - 1);
 
         }
 
@@ -497,7 +495,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Day);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Day);
         }
 
         /// <summary>
@@ -529,7 +527,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New((int)CreateDateTime(target.ToNumber()).DayOfWeek);
+            return Global.NumberClass.New((int)CreateDateTime(target.ToNumber()).ToUniversalTime().DayOfWeek);
         }
 
         /// <summary>
@@ -561,7 +559,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Hour);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Hour);
         }
 
         /// <summary>
@@ -593,7 +591,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Minute);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Minute);
         }
 
         /// <summary>
@@ -641,7 +639,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Second);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Second);
         }
 
         /// <summary>
@@ -673,7 +671,7 @@ namespace Jint.Native
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).Millisecond);
+            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).ToUniversalTime().Millisecond);
         }
 
         /// <summary>

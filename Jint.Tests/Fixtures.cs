@@ -1342,9 +1342,18 @@ var fakeButton = new Test.FakeButton();");
             Test(@"
                 assert(true, undefined == null);
                 assert(false, undefined === null);
-
                 ");
         }
+
+        [TestMethod]
+        public void NumbersShouldEqualTheirStrings() {
+            Test(@"
+                assert(true, 5 == '5');
+                assert(true, 5.1 == '5.1');
+                assert(false, 5 === '5');
+                ");
+        }
+
     }
 
     public struct Size

@@ -480,7 +480,7 @@ bar');
         [TestMethod]
         public void ShouldAllowSecuritySandBox()
         {
-            string userDirectory = "c:\\temp";
+            string userDirectory = Path.GetTempPath();
 
             string script = @"
                 var b = System.IO.Directory.GetFiles(userDir);

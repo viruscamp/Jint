@@ -49,7 +49,7 @@ namespace Jint.Native
 
             double result;
 
-            if (Double.TryParse(value, out result))
+            if (Double.TryParse(value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture, out result))
             {
                 return result;
             }

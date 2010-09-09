@@ -999,6 +999,11 @@ namespace Jint
             }
         }
 
+        private bool IsNullOrUndefined(JsInstance o)
+        {
+            return (o == JsUndefined.Instance) || (o == JsNull.Instance) || o.Value == null;
+        }
+
         public void Visit(BinaryExpression expression)
         {
             JsInstance old = Result;
@@ -1075,7 +1080,7 @@ namespace Jint
                     break;
 
                 case BinaryExpressionType.Equal:
-                    if ( ( left == JsUndefined.Instance || right == JsUndefined.Instance ) && ( left == JsNull.Instance || right == JsNull.Instance ) ) 
+                    if (IsNullOrUndefined(left) && IsNullOrUndefined(right) )
                     {
                         Result = JsBoolean.True;
                     }
@@ -1091,13 +1096,9 @@ namespace Jint
                         {
                             Result = Global.BooleanClass.New(left.ToString() == right.ToString());
                         }
-                        else if (left.Value != null)
-                        {
-                            Result = Global.BooleanClass.New(left.Value.Equals(right.Value));
-                        }
                         else
                         {
-                            Result = Global.BooleanClass.New(left == right);
+                            Result = Global.BooleanClass.New(left.Value.Equals(right.Value));
                         }
                     }
                     break;

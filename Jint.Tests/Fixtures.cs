@@ -183,16 +183,6 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldCompareWithNull()
-        {
-            var script = @"
-                assert(false, null == undef);
-            ";
-
-            Test(script);
-        }
-
-        [TestMethod]
         public void ShouldSupportUtf8VariableNames()
         {
             string script = @"
@@ -974,8 +964,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleNativeTypes()
-        {
+        public void ShouldHandleNativeTypes() {
 
             JintEngine jint = new JintEngine()
             .SetDebugMode(true)
@@ -985,6 +974,21 @@ var fakeButton = new Test.FakeButton();");
 
             jint.Run(@"
                 assert(7, foo.indexOf('string'));            
+            ");
+        }
+
+        [TestMethod]
+        public void ClrNullShouldBeConverted() {
+
+            JintEngine jint = new JintEngine()
+            .SetDebugMode(true)
+            .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
+            .SetFunction("print", new Action<string>(System.Console.WriteLine))
+            .SetParameter("foo", null);
+
+            jint.Run(@"
+                assert(true, foo == null);
+                assert(false, foo === null);
             ");
         }
 

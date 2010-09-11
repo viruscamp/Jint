@@ -1001,7 +1001,7 @@ namespace Jint
 
         private bool IsNullOrUndefined(JsInstance o)
         {
-            return (o == JsUndefined.Instance) || (o == JsNull.Instance) || o.Value == null;
+            return (o == JsUndefined.Instance) || (o == JsNull.Instance) || (o.IsClr && o.Value == null);
         }
 
         public void Visit(BinaryExpression expression)
@@ -1080,13 +1080,14 @@ namespace Jint
                     break;
 
                 case BinaryExpressionType.Equal:
-                    if (IsNullOrUndefined(left) && IsNullOrUndefined(right) )
+                    if (IsNullOrUndefined(left) || IsNullOrUndefined(right))
                     {
-                        Result = JsBoolean.True;
+                        Result = IsNullOrUndefined(left) && IsNullOrUndefined(right)
+                                     ? Result = JsBoolean.True
+                                     : Result = JsBoolean.False;
                     }
                     else
                     {
-
                         if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
                             right.Class == JsNumber.TYPEOF || right.Class == JsBoolean.TYPEOF)
                         {

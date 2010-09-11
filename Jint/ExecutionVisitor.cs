@@ -1464,6 +1464,7 @@ namespace Jint
                     if (type != null)
                     {
                         Result = Global.WrapClr(type);
+                        typeFullname = new StringBuilder();
                     }
                 }
             }
@@ -1861,6 +1862,7 @@ namespace Jint
 
                 if (type != null)
                 {
+                    typeFullname = new StringBuilder();
                     EnsureClrAllowed();
 
                     var propertyInfo = propertyGetter.GetValue(type, propertyName);

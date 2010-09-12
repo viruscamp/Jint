@@ -256,7 +256,7 @@ namespace Jint.Native
                 return StringClass.New();
             }
 
-            return this.StringClass.New(HttpUtility.UrlDecode(arguments[0].ToString()));
+            return this.StringClass.New(Uri.UnescapeDataString(arguments[0].ToString().Replace("+", " ")));
         }
 
         private static char[] reservedEncoded = new char[] { ';', ',', '/', '?', ':', '@', '&', '=', '+', '$', '#' };
@@ -269,16 +269,16 @@ namespace Jint.Native
                 return this.StringClass.New();
             }
 
-            string encoded = HttpUtility.UrlEncode(arguments[0].ToString());
+            string encoded = Uri.EscapeDataString(arguments[0].ToString());
 
             foreach (char c in reservedEncoded)
             {
-                encoded = encoded.Replace(HttpUtility.UrlEncode(c.ToString()), c.ToString());
+                encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
             }
 
             foreach (char c in reservedEncodedComponent)
             {
-                encoded = encoded.Replace(HttpUtility.UrlEncode(c.ToString()), c.ToString());
+                encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
             }
 
             return this.StringClass.New(encoded.ToUpper());
@@ -291,7 +291,7 @@ namespace Jint.Native
                 return this.StringClass.New();
             }
 
-            return this.StringClass.New(HttpUtility.UrlDecode(arguments[0].ToString()));
+            return this.StringClass.New(Uri.UnescapeDataString(arguments[0].ToString().Replace("+", " ")));
         }
 
         protected JsInstance EncodeURIComponent(JsInstance[] arguments)
@@ -301,11 +301,11 @@ namespace Jint.Native
                 return this.StringClass.New();
             }
 
-            string encoded = HttpUtility.UrlEncode(arguments[0].ToString());
+            string encoded = Uri.EscapeDataString(arguments[0].ToString());
 
             foreach (char c in reservedEncodedComponent)
             {
-                encoded = encoded.Replace(HttpUtility.UrlEncode(c.ToString()), c.ToString());
+                encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
             }
 
             return this.StringClass.New(encoded.ToUpper());

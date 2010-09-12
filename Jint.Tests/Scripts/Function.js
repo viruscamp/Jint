@@ -71,12 +71,13 @@ var f=Function.apply(null,["x", "y", "return x*y;"]);
 assert(2, f(1, 2));
 assert(4, f(2, 2));
 
-var obj = { a: function(arg1, isThis) {
-    if (arg1 == this)
-        istrue(isThis);
-    else
-        isfalse(isThis);
-} 
+var obj = { 
+    a: function(arg1, isThis) {
+        if (arg1 == this)
+            istrue(isThis);
+        else
+            isfalse(isThis);
+    } 
 }
 obj.a(obj, true);
 obj.a(this, false);

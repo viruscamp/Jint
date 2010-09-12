@@ -1092,7 +1092,11 @@ namespace Jint
                     }
                     else
                     {
-                        if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
+                        if(left == right)
+                        {
+                            Result = JsBoolean.True;
+                        }
+                        else if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
                             right.Class == JsNumber.TYPEOF || right.Class == JsBoolean.TYPEOF)
                         {
                             Result = Global.BooleanClass.New(left.ToNumber() == right.ToNumber());
@@ -1103,7 +1107,7 @@ namespace Jint
                         }
                         else
                         {
-                            Result = Global.BooleanClass.New(left.Value.Equals(right.Value));
+                            Result = JsBoolean.False;
                         }
                     }
                     break;

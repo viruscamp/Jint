@@ -1447,6 +1447,16 @@ var fakeButton = new Test.FakeButton();");
             ExecuteEmbededScript("With.js");
         }
 
+        [TestMethod]
+        public void RandomValuesShouldNotRepeat() {
+            Test(@"
+                assert(false, Math.random() == Math.random());
+                assert(false, Math.random() == Math.random());
+                assert(false, Math.random() == Math.random());
+                ");
+        }
+
+
     }
 
     public struct Size

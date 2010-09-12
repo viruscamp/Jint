@@ -3,26 +3,25 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using Jint.Native;
-using System.Reflection.Emit;
 
 namespace Jint
 {
     class CachedMethodInvoker : IMethodInvoker
     {
-        private ExecutionVisitor visitor;
+        private readonly ExecutionVisitor _visitor;
 
-        Dictionary<string, Dictionary<string, MethodInfo>> cache = new Dictionary<string, Dictionary<string, MethodInfo>>();
+        readonly Dictionary<string, Dictionary<string, MethodInfo>> _cache = new Dictionary<string, Dictionary<string, MethodInfo>>();
 
         public CachedMethodInvoker(ExecutionVisitor visitor)
         {
-            this.visitor = visitor;
+            _visitor = visitor;
         }
 
         public string GetCacheKey(string method, object[] parameters, Type[] generics)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(method).Append(';');
-            foreach (object o in parameters)
+            foreach (var o in parameters)
             {
                 if (o != null)
                 {
@@ -36,7 +35,7 @@ namespace Jint
             if (generics.Length > 0)
             {
                 sb.Append("<");
-                foreach (Type o in generics)
+                foreach (var o in generics)
                 {
                     sb.Append(o.FullName);
                 }
@@ -49,65 +48,54 @@ namespace Jint
         public MethodInfo Invoke(object subject, string method, object[] parameters, Type[] generics)
         {
             MethodInfo methodInfo = null;
-            string key = GetCacheKey(method, parameters, generics);
+            var key = GetCacheKey(method, parameters, generics);
 
             // Static evaluation
-            bool isStaticCall = subject is Type;
-            Type type = isStaticCall ? (Type)subject : subject.GetType();
+            var isStaticCall = subject is Type;
+            var type = isStaticCall ? (Type)subject : subject.GetType();
 
-            if (!cache.ContainsKey(type.FullName))
+            if (!_cache.ContainsKey(type.FullName))
             {
-                cache.Add(type.FullName, new Dictionary<string, MethodInfo>());
+                _cache.Add(type.FullName, new Dictionary<string, MethodInfo>());
             }
 
-            if (!cache[type.FullName].ContainsKey(key))
+            if (!_cache[type.FullName].ContainsKey(key))
             {
-                List<MethodInfo> ms = new List<MethodInfo>();
+                var ms = new List<MethodInfo>();
 
                 foreach (var m in isStaticCall ? type.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) : type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
                 {
                     // check name of method and parameters number
-                    if (m.Name == method && m.GetParameters().Length == parameters.Length)
-                    {
-
-                        // is the method is generic ? 
-                        if (m.GetGenericArguments().Length > 0)
-                        {
-                            // generics can be empty is the type can be inferred from the parameters
-                            ms.Add(m.MakeGenericMethod(generics));
-                        }
-                        else
-                        {
-                            ms.Add(m);
-                        }
-                        break;
-                    }
-
+                    if (m.Name != method || m.GetParameters().Length != parameters.Length) continue;
+                    
+                    // is the method is generic ? 
+                    ms.Add(m.GetGenericArguments().Length > 0 ? m.MakeGenericMethod(generics) : m);
                 }
 
                 #region Search exact parameter types
                 foreach (var m in ms)
                 {
-                    ParameterInfo[] pis = m.GetParameters();
+                    var pis = m.GetParameters();
 
-                    bool compatible = true;
+                    var compatible = true;
                     // check types compatibility
-                    for (int i = 0; i < pis.Length; i++)
+                    for (var i = 0; i < pis.Length; i++)
                     {
                         // polymorphic 
-                        if (parameters[i] != null && pis[i].ParameterType == parameters[i].GetType())
+                        if (parameters[i] != null)
+                        {
+                            if (pis[i].ParameterType == parameters[i].GetType())
+                            {
+                                continue;
+                            }
+                        }
+                        else if (!pis[i].ParameterType.IsValueType)
                         {
                             continue;
                         }
-                        else if (parameters[i] == null && !pis[i].ParameterType.IsValueType)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            compatible = false;
-                            break;
-                        }
+                        
+                        compatible = false;
+                        break;
                     }
 
                     if (!compatible)
@@ -116,7 +104,6 @@ namespace Jint
                     }
 
                     methodInfo = m;
-                    break;
                 }
                 #endregion
 
@@ -126,26 +113,27 @@ namespace Jint
                     #region Search compatible parameter types
                     foreach (var m in ms)
                     {
-                        ParameterInfo[] pis = m.GetParameters();
+                        var pis = m.GetParameters();
 
-                        bool compatible = true;
+                        var compatible = true;
                         // check types compatibility
-                        for (int i = 0; i < pis.Length; i++)
+                        for (var i = 0; i < pis.Length; i++)
                         {
                             // plymorphic 
-                            if (parameters[i] != null && pis[i].ParameterType.IsAssignableFrom(parameters[i].GetType()))
+                            if (parameters[i] != null)
+                            {
+                                if (pis[i].ParameterType.IsAssignableFrom(parameters[i].GetType()))
+                                {
+                                    continue;
+                                }
+                            }
+                            else if (pis[i].ParameterType.IsByRef)
                             {
                                 continue;
                             }
-                            else if (parameters[i] == null && pis[i].ParameterType.IsByRef)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                compatible = false;
-                                break;
-                            }
+
+                            compatible = false;
+                            break;
                         }
 
                         if (!compatible)
@@ -164,9 +152,9 @@ namespace Jint
                     #region Search matching parameter types
                     foreach (var m in ms)
                     {
-                        ParameterInfo[] pis = m.GetParameters();
+                        var pis = m.GetParameters();
 
-                        bool compatible = TryGetAppropriateParameters(parameters, pis, subject);
+                        var compatible = TryGetAppropriateParameters(parameters, pis, subject);
 
                         if (!compatible)
                         {
@@ -181,13 +169,13 @@ namespace Jint
 
                 if (methodInfo != null)
                 {
-                    cache[type.FullName].Add(key, methodInfo);
+                    _cache[type.FullName].Add(key, methodInfo);
                 }
             }
             else
             {
-                methodInfo = cache[type.FullName][key];
-                ParameterInfo[] pis = methodInfo.GetParameters();
+                methodInfo = _cache[type.FullName][key];
+                var pis = methodInfo.GetParameters();
 
                 GetAppropriateParameters(parameters, pis, subject);
 
@@ -211,7 +199,7 @@ namespace Jint
 
         public static Type[] ConvertParameterInfos(ParameterInfo[] pis)
         {
-            Type[] ps = new Type[pis.Length];
+            var ps = new Type[pis.Length];
             for (int i = 0; i < pis.Length; i++)
             {
                 ps[i] = pis[i].ParameterType;
@@ -222,22 +210,23 @@ namespace Jint
 
         public bool TryGetAppropriateParameters(object[] parameters, ParameterInfo[] pis, object subject)
         {
-            if (pis == null)
-                return true;
-            return TryGetAppropriateParameters(parameters, ConvertParameterInfos(pis), subject);
+            return pis == null || TryGetAppropriateParameters(parameters, ConvertParameterInfos(pis), subject);
         }
 
         public bool TryGetAppropriateParameters(object[] parameters, Type[] pis, object subject)
         {
-            bool compatible = true;
-            for (int i = 0; i < pis.Length; i++)
+            var compatible = true;
+            for (var i = 0; i < pis.Length; i++)
             {
                 // plymorphic 
-                if (parameters[i] != null && pis[i].IsInstanceOfType(parameters[i]))
+                if (parameters[i] != null)
                 {
-                    continue;
+                    if (pis[i].IsInstanceOfType(parameters[i]))
+                    {
+                        continue;
+                    }
                 }
-                else if (parameters[i] == null && !pis[i].IsValueType)
+                else if (!pis[i].IsValueType)
                 {
                     continue;
                 }
@@ -247,7 +236,7 @@ namespace Jint
                     if (pis[i].IsArray)
                     {
                         // try to convert every elements
-                        JsArray array = parameters[i] as JsArray;
+                        var array = parameters[i] as JsArray;
 
                         if (array == null)
                         {
@@ -255,34 +244,35 @@ namespace Jint
                             break;
                         }
 
-                        Array newArray = Array.CreateInstance(pis[i], array.Length);
+                        var newArray = Array.CreateInstance(pis[i], array.Length);
 
-                        for (int k = 0; k < array.Length; k++)
+                        for (var k = 0; k < array.Length; k++)
                         {
                             newArray.SetValue(array[k.ToString()], k);
                         }
                     }
                     else if (typeof(Delegate).IsAssignableFrom(pis[i])) // wrap the JsFunction to a Delegate
                     {
-                        DelegateWrapper dw = new DelegateWrapper();
-                        dw.Visitor = visitor;
-                        dw.Function = (JsFunction)parameters[i];
-                        dw.That = visitor.Global.WrapClr(subject);
+                        var dw = new DelegateWrapper
+                                     {
+                                         Visitor = _visitor,
+                                         Function = (JsFunction) parameters[i],
+                                         That = _visitor.Global.WrapClr(subject)
+                                     };
 
-                        DynamicMethod dm = DelegateWrapper.GenerateDynamicMethod(pis[i]); // void (int)
+                        var dm = DelegateWrapper.GenerateDynamicMethod(pis[i]); // void (int)
 
                         parameters[i] = dm.CreateDelegate(pis[i], dw);
                     }
                     else if (pis[i].IsEnum && parameters[i] is string)
                     {
-                        string[] enumNames = Enum.GetNames(pis[i]);
+                        var enumNames = Enum.GetNames(pis[i]);
                         foreach (string name in ((string)parameters[i]).Split(' '))
                         {
-                            if (Array.IndexOf(enumNames, name) < 0)
-                            {
-                                compatible = false;
-                                break;
-                            }
+                            if (Array.IndexOf(enumNames, name) >= 0) continue;
+
+                            compatible = false;
+                            break;
                         }
                         if (!compatible)
                             break;

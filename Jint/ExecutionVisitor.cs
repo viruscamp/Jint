@@ -798,7 +798,7 @@ namespace Jint
 
         public void Visit(NewExpression expression)
         {
-            int scopes = this.Scopes.Count;
+            int scopes = Scopes.Count;
             foreach (var property in expression.Identifiers)
             {
                 property.Accept(this);
@@ -808,7 +808,7 @@ namespace Jint
                 }
                 EnterScope((JsDictionaryObject)Result);
             }
-            while (scopes < this.Scopes.Count)
+            while (scopes < Scopes.Count)
             {
                 ExitScope();
             }
@@ -840,17 +840,20 @@ namespace Jint
             {
                 Type type = (Type)Result.Value;
 
-                object[] parameters = new object[expression.Arguments.Count];
+                var tempTypeFullname = typeFullname;
+
+                var parameters = new object[expression.Arguments.Count];
 
                 for (int i = 0; i < expression.Arguments.Count; i++)
                 {
+                    typeFullname = new StringBuilder();
                     expression.Arguments[i].Accept(this);
                     parameters[i] = JsClr.ConvertParameter(Result);
                 }
 
-                ConstructorInfo constructor = null;
+                typeFullname = tempTypeFullname;
 
-                constructor = constructorInvoker.Invoke(type, parameters);
+                var constructor = constructorInvoker.Invoke(type, parameters);
 
                 if (constructor == null)
                 {
@@ -896,6 +899,7 @@ namespace Jint
 
                 for (int i = 0; i < expression.Arguments.Count; i++)
                 {
+                    typeFullname = new StringBuilder();
                     expression.Arguments[i].Accept(this);
                     parameters[i] = JsClr.ConvertParameter(Result);
                 }
@@ -908,6 +912,7 @@ namespace Jint
 
                 typeBuilder.Remove(typeBuilder.Length - 1, 1);
 
+                typeFullname = new StringBuilder();
                 if (expression.Generics.Count > 0)
                 {
                     List<string> types = new List<string>();
@@ -928,17 +933,16 @@ namespace Jint
                     typeBuilder.Append("]");
                 }
 
-                string typeName = typeBuilder.ToString();
-                Type type = typeResolver.ResolveType(typeName);
+                var type = typeResolver.ResolveType(typeBuilder.ToString());
 
                 if (type == null)
                 {
-                    throw new JintException("Unknown type: " + typeName);
+                    throw new JintException("Unknown type: " + typeBuilder);
                 }
 
-                ConstructorInfo constructor = null;
-
-                constructor = constructorInvoker.Invoke(type, parameters);
+                typeFullname = new StringBuilder();
+                
+                var constructor = constructorInvoker.Invoke(type, parameters);
 
                 if (constructor == null)
                 {
@@ -958,7 +962,7 @@ namespace Jint
                     }
                     else
                     {
-                        throw new JintException("Matching constructor not found for: " + typeName);
+                        throw new JintException("Matching constructor not found for: " + typeBuilder);
                     }
                 }
                 else
@@ -983,7 +987,7 @@ namespace Jint
 
             // Evaluates the left expression and saves the value
             expression.LeftExpression.Accept(this);
-            JsInstance left = (JsInstance)Result;
+            var left = Result;
 
             Result = null;
 

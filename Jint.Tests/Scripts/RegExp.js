@@ -1,6 +1,14 @@
-﻿var r = /\w+@\w+\.com/;
-var r = new RegExp('\\w+@\\w+\\.com');
+﻿
+pattern = /(aa|aabaac|ba|b|c)*/;
+string = 'aabaac';
+actualmatch = string.match(pattern);
+expectedmatch = Array('aaba', 'ba');
+assert(expectedmatch.length, actualmatch.length);
+assert(expectedmatch.toString(), actualmatch.toString());
 
+
+var r = /\w+@\w+\.com/;
+var r = new RegExp('\\w+@\\w+\\.com');
 
 pattern = /a|ab/;
 string = 'abc';
@@ -30,13 +38,6 @@ expectedmatch = Array('abc');
 assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
 
-pattern = /(aa|aabaac|ba|b|c)*/;
-string = 'aabaac';
-actualmatch = string.match(pattern);
-expectedmatch = Array('aaba', 'ba');
-assert(expectedmatch.length, actualmatch.length);
-assert(expectedmatch.toString(), actualmatch.toString());
-
 pattern = /^(a+)\1*,\1+$/;
 string = 'aaaaaaaaaa,aaaaaaaaaaaaaaa';
 actualmatch = string.match(pattern);
@@ -47,7 +48,7 @@ assert(expectedmatch.toString(), actualmatch.toString());
 pattern = /(z)((a+)?(b+)?(c))*/;
 string = 'zaacbbbcac';
 actualmatch = string.match(pattern);
-expectedmatch = Array('zaacbbbcac', 'z', 'ac', 'a', undefined, 'c');
+expectedmatch = Array('zaacbbbcac', 'z', 'ac', 'a', 'bbb', 'c');
 assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
 

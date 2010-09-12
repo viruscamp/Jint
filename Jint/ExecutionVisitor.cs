@@ -999,7 +999,7 @@ namespace Jint
             }
         }
 
-        private bool IsNullOrUndefined(JsInstance o)
+        public static bool IsNullOrUndefined(JsInstance o)
         {
             return (o == JsUndefined.Instance) || (o == JsNull.Instance) || (o.IsClr && o.Value == null);
         }

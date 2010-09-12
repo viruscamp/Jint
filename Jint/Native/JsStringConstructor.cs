@@ -289,12 +289,10 @@ namespace Jint.Native
 
             JsArray result = Global.ArrayClass.New();
             int i = 0;
-            foreach (Match match in ((Regex)(parameters[0].Value)).Matches(target.ToString()))
+            var match = ((Regex) (parameters[0].Value)).Match(target.ToString());
+            foreach (Group group in match.Groups)
             {
-                foreach (Group group in match.Groups)
-                {
-                    result[i++.ToString()] = Global.StringClass.New(group.Value);
-                }
+                result[i++.ToString()] = Global.StringClass.New(group.Value);
             }
 
             return result;

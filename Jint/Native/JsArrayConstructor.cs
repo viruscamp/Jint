@@ -127,14 +127,21 @@ namespace Jint.Native
             for (int i = 0; i < target.Length; i++)
             {
                 var obj = (JsDictionaryObject)target[i.ToString()];
-                JsFunction function = obj["toString"] as JsFunction;
-                if (function != null)
-                {
-                    Global.Visitor.ExecuteFunction(function, obj, parameters);
-                    result[i.ToString()] = Global.Visitor.Returned;
+                if (ExecutionVisitor.IsNullOrUndefined(obj)) {
+                    result[i.ToString()] = Global.StringClass.New();
                 }
                 else
-                    result[i.ToString()] = null;
+                {
+                    var function = obj["toString"] as JsFunction;
+                    if (function != null) {
+                        Global.Visitor.ExecuteFunction(function, obj, parameters);
+                        result[i.ToString()] = Global.Visitor.Returned;
+                    }
+                    else
+                    {
+                        result[i.ToString()] = Global.StringClass.New();
+                    }
+                }
             }
 
             return Global.StringClass.New(result.ToString());

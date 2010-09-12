@@ -79,3 +79,5 @@ assert(5, "Blue Whale".indexOf("Whale", 5));
 assert(9, "Blue Whale".indexOf("", 9));
 assert(10, "Blue Whale".indexOf("", 10));
 assert(10, "Blue Whale".indexOf("", 11));
+
+assert('undefined', undefined + '');

@@ -55,7 +55,7 @@
     <EmbeddedResource Include="Scripts\Comments.js" />
     <EmbeddedResource Include="Scripts\Blocks.js" />
     <EmbeddedResource Include="Scripts\Boolean.js" />
-    <None Include="Scripts\RegExp.js" />
+    <EmbeddedResource Include="Scripts\RegExp.js" />
     <EmbeddedResource Include="Scripts\Math.js" />
     <EmbeddedResource Include="Scripts\Loops.js" />
     <EmbeddedResource Include="Scripts\Ternary.js" />

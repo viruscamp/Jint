@@ -154,45 +154,43 @@ namespace Jint.Native
             {
                 return parameter.Value;
             }
-            else if (parameter == JsNull.Instance)
+
+            if (parameter == JsNull.Instance)
             {
                 return null;
             }
-            else
+
+            if (parameter.IsClr)
+                return parameter.Value;
+
+            var constructor = ((JsDictionaryObject) parameter)["constructor"] as JsFunction;
+            if (constructor == null)
+                return parameter;
+            switch (constructor.Name)
             {
-                if (parameter.IsClr)
+                case "Date":
+                    return JsDateConstructor.CreateDateTime(parameter.ToNumber());
+                case "String":
+                case "RegExp":
+                case "Number":
                     return parameter.Value;
-
-                JsFunction constructor = ((JsDictionaryObject)parameter)["constructor"] as JsFunction;
-                if (constructor == null)
-                    return parameter;
-                switch (constructor.Name)
-                {
-                    case "Date":
-                        return JsDateConstructor.CreateDateTime(parameter.ToNumber());
-                    case "String":
-                    case "RegExp":
-                    case "Number":
-                        return parameter.Value;
-                    case "Array":
-                    case "Object":
-                        if (parameter.Class == JsFunction.TYPEOF)
-                            return parameter;
-                        object[] array = new object[((JsObject)parameter).Length];
-                        foreach (KeyValuePair<string, JsInstance> key in (JsObject)parameter)
-                        {
-                            int index;
-                            if (int.TryParse(key.Key, out index))
-                            {
-                                array[index] = ConvertParameters(key.Value)[0];
-                            }
-                        }
-                        return new System.Collections.ArrayList(array);
-                    default:
+                case "Array":
+                case "Object":
+                    if (parameter.Class == JsFunction.TYPEOF)
                         return parameter;
-                }
+                    var array = new object[((JsObject) parameter).Length];
+                    foreach (KeyValuePair<string, JsInstance> key in (JsObject) parameter)
+                    {
+                        int index;
+                        if (int.TryParse(key.Key, out index))
+                        {
+                            array[index] = ConvertParameters(key.Value)[0];
+                        }
+                    }
+                    return new System.Collections.ArrayList(array);
+                default:
+                    return parameter;
             }
-
         }
 
         /// <summary>

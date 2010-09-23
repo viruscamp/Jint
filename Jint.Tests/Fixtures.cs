@@ -16,16 +16,14 @@ namespace Jint.Tests
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class Fixtures
-    {
+    public class Fixtures {
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
         public TestContext TestContext { get; set; }
 
-        protected object Test(Options options, params string[] scripts)
-        {
+        protected object Test(Options options, params string[] scripts) {
             JintEngine jint = new JintEngine()
                 //.SetDebugMode(true)
                 .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
@@ -44,7 +42,7 @@ namespace Jint.Tests
             var sw = new Stopwatch();
             sw.Start();
 
-            foreach (string script in scripts)
+            foreach ( string script in scripts )
                 result = jint.Run(script);
 
             Console.WriteLine(sw.Elapsed);
@@ -61,14 +59,12 @@ namespace Jint.Tests
             Test(program);
         }
 
-        protected object Test(params string[] scripts)
-        {
+        protected object Test(params string[] scripts) {
             return Test(Options.Ecmascript3 | Options.Strict, scripts);
         }
 
         [TestMethod]
-        public void ShouldHandleDictionaryObjects()
-        {
+        public void ShouldHandleDictionaryObjects() {
             var dic = new JsObject();
             dic["prop1"] = new JsNumber(1);
             Assert.IsTrue(dic.HasProperty(new JsString("prop1")));
@@ -79,25 +75,31 @@ namespace Jint.Tests
         [TestMethod]
         public void ShouldRunInRun()
         {
+            var filename = Path.GetTempFileName();
+            File.WriteAllText(filename, "a='bar'");
+
             var engine = new JintEngine().AddPermission(new FileIOPermission(PermissionState.Unrestricted));
-            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using (var reader = File.OpenText(fileName)) { engine.Run(reader); } }));
+            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using ( var reader = File.OpenText(fileName) ) { engine.Run(reader); } }));
             engine.SetFunction("print", new Action<string>(Console.WriteLine));
-            engine.Run("var a='foo'; load('../../../Jint.Tests/include.js'); print(a);");
+            engine.Run("var a='foo'; load('" + JintEngine.EscapteStringLiteral(filename) + "'); print(a);");
+
+            File.Delete(filename);
         }
 
         [TestMethod]
         [ExpectedException(typeof(System.Security.SecurityException))]
-        public void ShouldNotRunInRun()
-        {
+        public void ShouldNotRunInRun() {
+            var filename = Path.GetTempFileName();
+            File.WriteAllText(filename, "a='bar'");
+            
             var engine = new JintEngine().AddPermission(new FileIOPermission(PermissionState.None));
-            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using (var reader = File.OpenText(fileName)) { engine.Run(reader); } }));
+            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using ( var reader = File.OpenText(fileName) ) { engine.Run(reader); } }));
             engine.SetFunction("print", new Action<string>(Console.WriteLine));
-            engine.Run("var a='foo'; load('../../../Jint.Tests/include.js'); print(a);");
+            engine.Run("var a='foo'; load('" + JintEngine.EscapteStringLiteral(filename) + "'); print(a);");
         }
 
         [TestMethod]
-        public void ShouldSupportCasting()
-        {
+        public void ShouldSupportCasting() {
             const string script = @";
                 var value = Number(3);
                 assert('number', typeof value);
@@ -111,8 +113,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldCompareNullValues()
-        {
+        public void ShouldCompareNullValues() {
             const string script = @";
                 if(null == 1) 
                     assert(true, false); 
@@ -128,8 +129,7 @@ namespace Jint.Tests
 
 
         [TestMethod]
-        public void ShouldModifyIteratedCollection()
-        {
+        public void ShouldModifyIteratedCollection() {
             const string script = @";
                 var values = [ 0, 1, 2 ];
 
@@ -147,14 +147,12 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldHandleTheMostSimple()
-        {
+        public void ShouldHandleTheMostSimple() {
             Test("var i = 1; assert(1, i);");
         }
 
         [TestMethod]
-        public void ShouldHandleAnonymousFunctions()
-        {
+        public void ShouldHandleAnonymousFunctions() {
             const string script = @"
                 function oksa(x, y) { return x + y; }
                 assert(3, oksa(1, 2));
@@ -164,8 +162,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldSupportUtf8VariableNames()
-        {
+        public void ShouldSupportUtf8VariableNames() {
             const string script = @"
                 var 経済協力開発機構 = 'a strange variable';
                 var Sébastien = 'a strange variable';
@@ -178,40 +175,34 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldHandleReturnAsSeparator()
-        {
+        public void ShouldHandleReturnAsSeparator() {
             Test(@" var i = 1; assert(1, i) ");
         }
 
         [TestMethod]
-        public void ShouldHandleAssignment()
-        {
+        public void ShouldHandleAssignment() {
             Test("var i; i = 1; assert(1, i);");
             Test("var i = 1; i = i + 1; assert(2, i);");
         }
 
         [TestMethod]
-        public void ShouldHandleEmptyStatement()
-        {
+        public void ShouldHandleEmptyStatement() {
             Assert.AreEqual(1d, new JintEngine().Run(";;;;var i = 1;;;;;;;; return i;;;;;"));
         }
 
         [TestMethod]
-        public void ShouldHandleFor()
-        {
+        public void ShouldHandleFor() {
             Assert.AreEqual(9d, new JintEngine().Run("var j = 0; for(i = 1; i < 10; i = i + 1) { j = j + 1; } return j;"));
         }
 
         [TestMethod]
-        public void ShouldHandleSwitch()
-        {
+        public void ShouldHandleSwitch() {
             Assert.AreEqual(1d, new JintEngine().Run("var j = 0; switch(j) { case 0 : j = 1; break; case 1 : j = 0; break; } return j;"));
             Assert.AreEqual(2d, new JintEngine().Run("var j = -1; switch(j) { case 0 : j = 1; break; case 1 : j = 0; break; default : j = 2; } return j;"));
         }
 
         [TestMethod]
-        public void ShouldHandleVariableDeclaration()
-        {
+        public void ShouldHandleVariableDeclaration() {
             Assert.AreEqual(null, new JintEngine().Run("var i; return i;"));
             Assert.AreEqual(1d, new JintEngine().Run("var i = 1; return i;"));
             Assert.AreEqual(2d, new JintEngine().Run("var i = 1 + 1; return i;"));
@@ -219,16 +210,14 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldHandleUndeclaredVariable()
-        {
+        public void ShouldHandleUndeclaredVariable() {
             Assert.AreEqual(1d, new JintEngine().Run("i = 1; return i;"));
             Assert.AreEqual(2d, new JintEngine().Run("i = 1 + 1; return i;"));
             Assert.AreEqual(3d, new JintEngine().Run("i = 1 + 1; j = i + 1; return j;"));
         }
 
         [TestMethod]
-        public void ShouldHandleStrings()
-        {
+        public void ShouldHandleStrings() {
             Assert.AreEqual("hello", new JintEngine().Run("return \"hello\";"));
             Assert.AreEqual("hello", new JintEngine().Run("return 'hello';"));
 
@@ -246,8 +235,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldHandleExternalObject()
-        {
+        public void ShouldHandleExternalObject() {
             Assert.AreEqual(3d,
                 new JintEngine()
                 .SetParameter("i", 1)
@@ -255,14 +243,12 @@ namespace Jint.Tests
                 .Run("return i + j;"));
         }
 
-        public bool ShouldBeCalledWithBoolean(TypeCode tc)
-        {
+        public bool ShouldBeCalledWithBoolean(TypeCode tc) {
             return tc == TypeCode.Boolean;
         }
 
         [TestMethod]
-        public void ShouldHandleEnums()
-        {
+        public void ShouldHandleEnums() {
             Assert.AreEqual(TypeCode.Boolean,
                 new JintEngine()
                 .Run("System.TypeCode.Boolean"));
@@ -275,8 +261,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldHandleNetObjects()
-        {
+        public void ShouldHandleNetObjects() {
             Assert.AreEqual("1",
                 new JintEngine() // call Int32.ToString() 
                 .SetParameter("i", 1)
@@ -284,8 +269,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldReturnDelegateForFunctions()
-        {
+        public void ShouldReturnDelegateForFunctions() {
             const string script = "ccat=function (arg1,arg2){ return arg1+' '+arg2; }";
             JintEngine engine = new JintEngine().SetFunction("print", new Action<string>(Console.WriteLine));
             engine.Run(script);
@@ -293,8 +277,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldHandleFunctions()
-        {
+        public void ShouldHandleFunctions() {
             const string square = @"function square(x) { return x * x; } return square(2);";
             const string fibonacci = @"function fibonacci(n) { if (n == 0) return 0; else return n + fibonacci(n - 1); } return fibonacci(10); ";
 
@@ -303,8 +286,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldCreateExternalTypes()
-        {
+        public void ShouldCreateExternalTypes() {
             const string script = @"
                 var sb = new System.Text.StringBuilder();
                 sb.Append('hi, mom');
@@ -318,8 +300,7 @@ namespace Jint.Tests
 
         [TestMethod]
         [ExpectedException(typeof(System.Security.SecurityException))]
-        public void ShouldNotAccessClr()
-        {
+        public void ShouldNotAccessClr() {
             const string script = @"
                 var sb = new System.Text.StringBuilder();
                 sb.Append('hi, mom');
@@ -327,13 +308,12 @@ namespace Jint.Tests
                 sb.Append(true);
                 return sb.ToString();
                 ";
-            var engine = new JintEngine {AllowClr = false};
+            var engine = new JintEngine { AllowClr = false };
             Assert.AreEqual("hi, mom3True", engine.Run(script));
         }
 
         [TestMethod]
-        public void ShouldHandleStaticMethods()
-        {
+        public void ShouldHandleStaticMethods() {
             const string script = @"
                 var a = System.Int32.Parse('1');
                 assert(1, ToDouble(a));
@@ -343,8 +323,7 @@ namespace Jint.Tests
         }
 
         [TestMethod]
-        public void ShouldParseMultilineStrings()
-        {
+        public void ShouldParseMultilineStrings() {
             const string script = @"
                 assert('foobar', 'foo\
 bar');
@@ -354,8 +333,7 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldEvaluateConsecutiveIfStatements()
-        {
+        public void ShouldEvaluateConsecutiveIfStatements() {
             const string script = @"
                 var a = 0;
                 
@@ -380,14 +358,12 @@ bar');
             Test(script);
         }
 
-        private static JsString GiveMeJavascript(JsNumber number, JsInstance instance)
-        {
+        private static JsString GiveMeJavascript(JsNumber number, JsInstance instance) {
             return new JsString(number + instance.ToString());
         }
 
         [TestMethod]
-        public void ShouldNotWrapJsInstancesIfExpected()
-        {
+        public void ShouldNotWrapJsInstancesIfExpected() {
             var engine = new JintEngine()
             .SetFunction("evaluate", new Func<JsNumber, JsInstance, JsString>(GiveMeJavascript));
 
@@ -403,8 +379,7 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldAssignBooleanValue()
-        {
+        public void ShouldAssignBooleanValue() {
             const string script = @"
                 function check(x) {
                     assert(false, x);    
@@ -418,8 +393,7 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldEvaluateFunctionDeclarationsFirst()
-        {
+        public void ShouldEvaluateFunctionDeclarationsFirst() {
             const string script = @"
                 var a = false;
                 assert(false, a);
@@ -436,8 +410,7 @@ bar');
 
         [TestMethod]
         [ExpectedException(typeof(System.Security.SecurityException))]
-        public void ShouldRunInLowTrustMode()
-        {
+        public void ShouldRunInLowTrustMode() {
             const string script = @"
                 var a = System.Convert.ToInt32(1);
                 var b = System.IO.Directory.GetFiles('c:');
@@ -448,8 +421,7 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldAllowSecuritySandBox()
-        {
+        public void ShouldAllowSecuritySandBox() {
             var userDirectory = Path.GetTempPath();
 
             const string script = @"
@@ -464,8 +436,7 @@ bar');
 
 
         [TestMethod]
-        public void ShouldSetClrProperties()
-        {
+        public void ShouldSetClrProperties() {
             // Ensure assembly is loaded
             var a = typeof(System.Windows.Forms.Form);
             var b = a.Assembly; // Force loading in Release mode, otherwise code is optimized
@@ -483,14 +454,13 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldHandleCustomMethods()
-        {
+        public void ShouldHandleCustomMethods() {
             Assert.AreEqual(9d, new JintEngine()
-                .SetFunction("square", new Func<double, double>(a => { return a * a; }))
+                .SetFunction("square", new Func<double, double>(a => a * a))
                 .Run("return square(3);"));
 
             new JintEngine()
-                .SetFunction("print", new Action<string>(s => { Console.Write(s); }))
+                .SetFunction("print", new Action<string>(Console.Write))
                 .Run("print('hello');");
 
             const string script = @"
@@ -503,23 +473,21 @@ bar');
 
             var result =
                 new JintEngine()
-                .SetFunction("multiply", new Func<double, double, double>((x, y) => { return x * y; }))
+                .SetFunction("multiply", new Func<double, double, double>((x, y) => x * y))
                 .Run(script);
 
             Assert.AreEqual(16d, result);
         }
 
         [TestMethod]
-        public void ShouldHandleDirectNewInvocation()
-        {
+        public void ShouldHandleDirectNewInvocation() {
             Assert.AreEqual("c", new JintEngine()
                 .Run("return new System.Text.StringBuilder('c').ToString();"));
         }
 
         [TestMethod]
-        public void ShouldHandleGlobalVariables()
-        {
-            string program = @"
+        public void ShouldHandleGlobalVariables() {
+            const string program = @"
                 var i = 3;
                 function calculate() {
                     return i*i;
@@ -532,9 +500,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldHandleObjectClass()
-        {
-            string program = @"
+        public void ShouldHandleObjectClass() {
+            const string program = @"
                 var userObject = new Object();
                 userObject.lastLoginTime = new Date();
                 return userObject.lastLoginTime;
@@ -547,9 +514,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldHandleIndexedProperties()
-        {
-            string program = @"
+        public void ShouldHandleIndexedProperties() {
+            const string program = @"
                 var userObject = { };
                 userObject['lastLoginTime'] = new Date();
                 return userObject.lastLoginTime;
@@ -562,9 +528,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldAssignProperties()
-        {
-            string script = @"
+        public void ShouldAssignProperties() {
+            const string script = @"
                 function sayHi(x) {
                     alert('Hi, ' + x + '!');
                 }
@@ -580,9 +545,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldStoreFunctionsInArray()
-        {
-            string script = @"
+        public void ShouldStoreFunctionsInArray() {
+            const string script = @"
 
                 // functions stored as array elements
                 var arr = [];
@@ -599,9 +563,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldNotConflictWithClrMethods()
-        {
-            string script = @"
+        public void ShouldNotConflictWithClrMethods() {
+            const string script = @"
                 assert(true, System.Math.Max(1, 2) == 2);
                 assert(true, System.Math.Min(1, 2) == 1);
             ";
@@ -610,9 +573,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldCreateObjectLiterals()
-        {
-            string script = @"
+        public void ShouldCreateObjectLiterals() {
+            const string script = @"
                 var myDog = {
                     'name' : 'Spot',
                     'bark' : function() { return 'Woof!'; },
@@ -631,9 +593,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldHandleFunctionsAsObjects()
-        {
-            string script = @"
+        public void ShouldHandleFunctionsAsObjects() {
+            const string script = @"
                 // assign an anonymous function to a variable
                 var greet = function(x) {
                     return 'Hello, ' + x;
@@ -669,9 +630,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldOverrideDefaultFunction()
-        {
-            string script = @"
+        public void ShouldOverrideDefaultFunction() {
+            const string script = @"
 
                 // functions as object properties
                 var obj = { 'toString' : function() { return 'This is an object.'; } };
@@ -683,9 +643,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleFunctionConstructor()
-        {
-            string script = @"
+        public void ShouldHandleFunctionConstructor() {
+            const string script = @"
                 var func = new Function('x', 'return x * x;');
                 var r = func(3);
                 assert(9, r);
@@ -695,9 +654,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldContinueAfterFunctionCall()
-        {
-            string script = @"
+        public void ShouldContinueAfterFunctionCall() {
+            const string script = @"
                 function fib(x) {
                     if (x==0) return 0;
                     if (x==1) return 1;
@@ -714,9 +672,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldRetainGlobalsThroughRuns()
-        {
-            JintEngine jint = new JintEngine();
+        public void ShouldRetainGlobalsThroughRuns() {
+            var jint = new JintEngine();
 
             jint.Run("i = 3; function square(x) { return x*x; }");
 
@@ -725,21 +682,16 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldDebugScripts()
-        {
-            JintEngine jint = new JintEngine()
+        public void ShouldDebugScripts() {
+            var jint = new JintEngine()
             .SetDebugMode(true);
             jint.BreakPoints.Add(new BreakPoint(4, 22)); // return x*x;
 
-            jint.Step += (sender, info) =>
-            {
-                Assert.IsNotNull(info.CurrentStatement);
-            };
+            jint.Step += (sender, info) => Assert.IsNotNull(info.CurrentStatement);
 
             bool brokeOnReturn = false;
 
-            jint.Break += (sender, info) =>
-            {
+            jint.Break += (sender, info) => {
                 Assert.IsNotNull(info.CurrentStatement);
                 Assert.IsTrue(info.CurrentStatement is ReturnStatement);
                 Assert.AreEqual(3, Convert.ToInt32(info.Locals["x"].Value));
@@ -759,21 +711,16 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldBreakOnCondition()
-        {
+        public void ShouldBreakOnCondition() {
             JintEngine jint = new JintEngine()
             .SetDebugMode(true);
             jint.BreakPoints.Add(new BreakPoint(4, 22, "x == 2;")); // return x*x;
 
-            jint.Step += (sender, info) =>
-            {
-                Assert.IsNotNull(info.CurrentStatement);
-            };
+            jint.Step += (sender, info) => Assert.IsNotNull(info.CurrentStatement);
 
             bool brokeOnReturn = false;
 
-            jint.Break += (sender, info) =>
-            {
+            jint.Break += (sender, info) => {
                 Assert.IsNotNull(info.CurrentStatement);
                 Assert.IsTrue(info.CurrentStatement is ReturnStatement);
                 Assert.AreEqual(2, Convert.ToInt32(info.Locals["x"].Value));
@@ -796,8 +743,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleInlineCLRMethodCalls()
-        {
+        public void ShouldHandleInlineCLRMethodCalls() {
             string script = @"
                 var box = new Jint.Tests.Box();
                 box.SetSize(ToInt32(100), ToInt32(100));
@@ -808,9 +754,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleStructs()
-        {
-            string script = @"
+        public void ShouldHandleStructs() {
+            const string script = @"
                 var size = new Jint.Tests.Size();
                 size.Width = 10;
                 assert(10, Number(size.Width));
@@ -820,9 +765,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleFunctionScopes()
-        {
-            string script = @"
+        public void ShouldHandleFunctionScopes() {
+            const string script = @"
                 var success = false;
                 $ = {};
 
@@ -846,8 +790,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleLoopScopes()
-        {
+        public void ShouldHandleLoopScopes() {
             const string script = @"
                 f = function() { var i = 10; }
                 for(var i=0; i<3; i++) { f(); }
@@ -870,34 +813,28 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldExecuteSingleScript()
-        {
+        public void ShouldExecuteSingleScript() {
             var assembly = Assembly.GetExecutingAssembly();
             var program = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.Scripts.Date.js")).ReadToEnd();
             Test(program);
         }
 
         [TestMethod]
-        public void ShouldCascadeEquals()
-        {
+        public void ShouldCascadeEquals() {
             Test("a=b=1; assert(1,a);assert(1,b);");
         }
 
         [TestMethod]
-        public void ShouldParseScripts()
-        {
+        public void ShouldParseScripts() {
             var assembly = Assembly.GetExecutingAssembly();
-            foreach (var resx in assembly.GetManifestResourceNames())
-            {
+            foreach ( var resx in assembly.GetManifestResourceNames() ) {
                 // Ignore scripts not in /Scripts
-                if (!resx.Contains(".Parse"))
-                {
+                if ( !resx.Contains(".Parse") ) {
                     continue;
                 }
 
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
-                if (program.Trim() == String.Empty)
-                {
+                if ( program.Trim() == String.Empty ) {
                     continue;
                 }
                 Trace.WriteLine(Path.GetFileNameWithoutExtension(resx));
@@ -935,18 +872,15 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldExecuteMozillaTestsScripts()
-        {
+        public void ShouldExecuteMozillaTestsScripts() {
             var assembly = Assembly.GetExecutingAssembly();
             var shell = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.shell.js")).ReadToEnd();
             var extensions = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.extensions.js")).ReadToEnd();
 
             var resources = new List<string>();
-            foreach (var resx in assembly.GetManifestResourceNames())
-            {
+            foreach ( var resx in assembly.GetManifestResourceNames() ) {
                 // Ignore scripts not in /Scripts
-                if (!resx.Contains(".ecma_3.") || !resx.Contains("Array"))
-                {
+                if ( !resx.Contains(".ecma_3.") || !resx.Contains("Array") ) {
                     continue;
                 }
 
@@ -957,15 +891,13 @@ var fakeButton = new Test.FakeButton();");
 
             //Run the shell first if defined
             string additionalShell = null;
-            if (resources[resources.Count - 1].EndsWith("shell.js"))
-            {
+            if ( resources[resources.Count - 1].EndsWith("shell.js") ) {
                 additionalShell = resources[resources.Count - 1];
                 resources.RemoveAt(resources.Count - 1);
                 additionalShell = new StreamReader(assembly.GetManifestResourceStream(additionalShell)).ReadToEnd();
             }
 
-            foreach (var resx in resources)
-            {
+            foreach ( var resx in resources ) {
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
                 Console.WriteLine(Path.GetFileNameWithoutExtension(resx));
 
@@ -976,17 +908,14 @@ var fakeButton = new Test.FakeButton();");
                 jint.Run(extensions);
                 jint.Run(shell);
                 jint.Run("test = _test;");
-                if (additionalShell != null)
-                {
+                if ( additionalShell != null ) {
                     jint.Run(additionalShell);
                 }
 
-                try
-                {
+                try {
                     jint.Run(program);
                 }
-                catch (Exception e)
-                {
+                catch ( Exception e ) {
                     jint.Run("print('Error in : ' + gTestfile)");
                     Console.WriteLine(e.Message);
                 }
@@ -995,17 +924,14 @@ var fakeButton = new Test.FakeButton();");
 
         [TestMethod]
         [Ignore]
-        public void ShouldExecuteEcmascript5TestsScripts()
-        {
+        public void ShouldExecuteEcmascript5TestsScripts() {
             var assembly = Assembly.GetExecutingAssembly();
             var extensions = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.extensions.js")).ReadToEnd();
 
             var resources = new List<string>();
-            foreach (var resx in assembly.GetManifestResourceNames())
-            {
+            foreach ( var resx in assembly.GetManifestResourceNames() ) {
                 // Ignore scripts not in /Scripts
-                if (!resx.Contains(".ecma_5.") || resx.Contains(".Scripts."))
-                {
+                if ( !resx.Contains(".ecma_5.") || resx.Contains(".Scripts.") ) {
                     continue;
                 }
 
@@ -1016,15 +942,13 @@ var fakeButton = new Test.FakeButton();");
 
             //Run the shell first if defined
             string additionalShell = null;
-            if (resources[resources.Count - 1].EndsWith("shell.js"))
-            {
+            if ( resources[resources.Count - 1].EndsWith("shell.js") ) {
                 additionalShell = resources[resources.Count - 1];
                 resources.RemoveAt(resources.Count - 1);
                 additionalShell = new StreamReader(assembly.GetManifestResourceStream(additionalShell)).ReadToEnd();
             }
 
-            foreach (var resx in resources)
-            {
+            foreach ( var resx in resources ) {
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
                 Console.WriteLine(Path.GetFileNameWithoutExtension(resx));
 
@@ -1035,33 +959,27 @@ var fakeButton = new Test.FakeButton();");
                 jint.Run(extensions);
                 //jint.Run(shell);
                 jint.Run("test = _test;");
-                if (additionalShell != null)
-                {
+                if ( additionalShell != null ) {
                     jint.Run(additionalShell);
                 }
 
-                try
-                {
+                try {
                     jint.Run(program);
                 }
-                catch (Exception e)
-                {
+                catch ( Exception e ) {
                     jint.Run("print('Error in : ' + gTestfile)");
                     Console.WriteLine(e.Message);
                 }
             }
         }
 
-        public List<int> FindAll(List<int> source, Predicate<int> predicate)
-        {
+        public List<int> FindAll(List<int> source, Predicate<int> predicate) {
             var result = new List<int>();
 
-            foreach (var i in source)
-            {
+            foreach ( var i in source ) {
                 var obj = predicate(i);
 
-                if (obj)
-                {
+                if ( obj ) {
                     result.Add(i);
                 }
             }
@@ -1070,8 +988,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleStrictMode()
-        {
+        public void ShouldHandleStrictMode() {
             //Strict mode enabled
             var engine = new JintEngine(Options.Strict)
             .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
@@ -1117,8 +1034,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleMultipleRunsInSameScope()
-        {
+        public void ShouldHandleMultipleRunsInSameScope() {
             var jint = new JintEngine()
                 .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
                 .SetFunction("print", new Action<string>(System.Console.WriteLine));
@@ -1128,8 +1044,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleClrArrays()
-        {
+        public void ShouldHandleClrArrays() {
             var values = new int[] { 2, 3, 4, 5, 6, 7 };
             var jint = new JintEngine()
             .SetDebugMode(true)
@@ -1143,9 +1058,8 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleClrDictionaries()
-        {
-            var dic = new Dictionary<string, int> {{"a", 1}, {"b", 2}, {"c", 3}};
+        public void ShouldHandleClrDictionaries() {
+            var dic = new Dictionary<string, int> { { "a", 1 }, { "b", 2 }, { "c", 3 } };
 
             var jint = new JintEngine()
             .SetDebugMode(true)
@@ -1158,8 +1072,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldEvaluateIndexersAsClrProperties()
-        {
+        public void ShouldEvaluateIndexersAsClrProperties() {
             var box = new Box { Width = 10, Height = 20 };
 
             var jint = new JintEngine()
@@ -1177,8 +1090,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldEvaluateIndexersAsClrFields()
-        {
+        public void ShouldEvaluateIndexersAsClrFields() {
             var box = new Box { width = 10, height = 20 };
 
             var jint = new JintEngine()
@@ -1198,8 +1110,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldFindOverloadWithNullParam()
-        {
+        public void ShouldFindOverloadWithNullParam() {
             var box = new Box { Width = 10, Height = 20 };
 
             var jint = new Jint.JintEngine()
@@ -1214,8 +1125,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandlePropertiesOnFunctions()
-        {
+        public void ShouldHandlePropertiesOnFunctions() {
             Test(@"
                 HelloWorld.webCallable = 'GET';
                 function HelloWorld()
@@ -1229,8 +1139,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void Dummy()
-        {
+        public void Dummy() {
             //Test(@"assert('[object Function]', Object.prototype.toString.apply(function f() { }));");
 
             //            Test(@"Type = Function;
@@ -1241,8 +1150,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldNotThrowOverflowExpcetion()
-        {
+        public void ShouldNotThrowOverflowExpcetion() {
             var jint = new JintEngine();
             jint.SetParameter("box", new Box());
             jint.Run("box.Write(new Date);");
@@ -1250,8 +1158,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldNotReproduceBug85418()
-        {
+        public void ShouldNotReproduceBug85418() {
             var engine = new JintEngine();
             engine.SetParameter("a", 4);
             Assert.AreEqual(4, engine.Run("a"));
@@ -1262,8 +1169,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldShortCircuitBooleanOperators()
-        {
+        public void ShouldShortCircuitBooleanOperators() {
             Test(@"
                 var called = false;
                 function dontcallme() {
@@ -1456,7 +1362,34 @@ var fakeButton = new Test.FakeButton();");
                 ");
         }
 
+        [TestMethod]
+        public void ObjectShouldBePassedToDelegates() {
+            var engine = new JintEngine();
+            engine.SetFunction("render", new Action<object>(s => Console.WriteLine(s)));
 
+            const string script =
+                @"
+                var contact = {
+                    'Name': 'John Doe',
+                    'PhoneNumbers': [ 
+                    {
+                       'Location': 'Home',
+                       'Number': '555-555-1234'
+                    },
+                    {
+                        'Location': 'Work',
+                        'Number': '555-555-9999 Ext. 123'
+                    }
+                    ]
+                };
+
+                render(contact.Name);
+                render(contact.toString());
+                render(contact);
+            ";
+
+            engine.Run(script);
+        }
     }
 
     public struct Size

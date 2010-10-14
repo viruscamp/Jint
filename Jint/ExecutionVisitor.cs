@@ -1274,13 +1274,13 @@ namespace Jint
                     break;
 
                 case BinaryExpressionType.In:
-                    if (right is JsDictionaryObject)
+                    if (right is ILiteral)
                     {
-                        ((JsDictionaryObject)right).HasProperty(left);
+                        throw new JsException(Global.ErrorClass.New("Cannot apply 'in' operator to the specified member."));
                     }
                     else
                     {
-                        throw new JintException("Cannot apply 'in' operator to the specified member.");
+                        ((JsDictionaryObject)right).HasProperty(left);
                     }
 
                     break;

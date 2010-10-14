@@ -1269,6 +1269,11 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void InOperatorScriptShouldPassTests() {
+            ExecuteEmbededScript("InOperator.js");
+        }
+
+        [TestMethod]
         public void JsonScriptShouldPassTests() {
             ExecuteEmbededScript("Json.js");
         }

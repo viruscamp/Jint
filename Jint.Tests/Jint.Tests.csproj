@@ -374,6 +374,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="include.js" />
+    <EmbeddedResource Include="Scripts\InOperator.js" />
     <EmbeddedResource Include="SunSpider\simple.js" />
     <EmbeddedResource Include="SunSpider\3d-morph.js" />
     <EmbeddedResource Include="SunSpider\string-base64.js" />

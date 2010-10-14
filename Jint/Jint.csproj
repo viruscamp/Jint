@@ -49,6 +49,7 @@
     <Compile Include="CachedTypeResolver.cs" />
     <Compile Include="CachedReflectionFieldGetter.cs" />
     <Compile Include="Native\ClrMethodDescriptor.cs" />
+    <Compile Include="Native\ILiteral.cs" />
     <Compile Include="PropertyBags\DictionaryPropertyBag.cs" />
     <Compile Include="PropertyBags\DoubleListPropertyBag.cs" />
     <Compile Include="IFieldGetter.cs" />

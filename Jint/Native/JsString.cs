@@ -7,7 +7,7 @@ using Jint.Delegates;
 namespace Jint.Native
 {
     [Serializable]
-    public sealed class JsString : JsObject
+    public sealed class JsString : JsObject, ILiteral
     {
         private string value;
 

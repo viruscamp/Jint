@@ -1280,7 +1280,7 @@ namespace Jint
                     }
                     else
                     {
-                        ((JsDictionaryObject)right).HasProperty(left);
+                        Result = Global.BooleanClass.New(((JsDictionaryObject)right).HasProperty(left));
                     }
 
                     break;

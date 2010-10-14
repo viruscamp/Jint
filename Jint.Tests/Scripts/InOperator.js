@@ -28,3 +28,22 @@ catch (e) {
 
 assert(false, error);
 
+// If you delete a property with the delete operator, the in operator returns false for that property.
+ 
+var mycar = { make: "Honda", model: "Accord", year: 1998 };
+delete mycar.make;
+assert(false, "make" in mycar); 
+
+var trees = new Array("redwood", "bay", "cedar", "oak", "maple");
+delete trees[3];
+assert(false, 3 in trees);
+
+// If you set a property to undefined but do not delete it, the in operator returns true for that property.
+
+var mycar = {make: "Honda", model: "Accord", year: 1998};
+mycar.make = undefined;
+assert(true, "make" in mycar);
+
+var trees = new Array("redwood", "bay", "cedar", "oak", "maple");
+trees[3] = undefined;
+assert(true, 3 in trees);

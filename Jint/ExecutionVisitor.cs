@@ -38,6 +38,7 @@ namespace Jint
         public Statement CurrentStatement { get; set; }
 
         public bool DebugMode { get; set; }
+        public int MaxRecursions { get; set; }
 
         public JsInstance Result { get; set; }
         public JsInstance Returned { get { return returnInstance; } }
@@ -1727,6 +1728,10 @@ namespace Jint
             if (function == null)
             {
                 return;
+            }
+
+            if (Scopes.Count > MaxRecursions) {
+                throw new JsException(Global.ErrorClass.New("Too many recursions in the script."));
             }
 
             JsScope functionScope = new JsScope();

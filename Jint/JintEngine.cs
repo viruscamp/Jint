@@ -45,6 +45,7 @@ namespace Jint
             visitor = new ExecutionVisitor(options);
             AllowClr = true;
             permissionSet = new PermissionSet(PermissionState.None);
+            MaxRecursions = 2000;
 
             visitor.GlobalScope.Prototype["ToBoolean"] = visitor.Global.FunctionClass.New(new Func<object, Boolean>(Convert.ToBoolean));
             visitor.GlobalScope.Prototype["ToByte"] = visitor.Global.FunctionClass.New(new Func<object, Byte>(Convert.ToByte));
@@ -213,6 +214,7 @@ namespace Jint
                     ArgumentException("Script can't be null", "script");
 
             visitor.DebugMode = this.DebugMode;
+            visitor.MaxRecursions = this.MaxRecursions;
             visitor.PermissionSet = permissionSet;
 
             if (DebugMode)
@@ -296,11 +298,19 @@ namespace Jint
         public event EventHandler<DebugInformation> Break;
         public List<BreakPoint> BreakPoints { get; private set; }
         public bool DebugMode { get; private set; }
+        public int MaxRecursions { get; private set; }
         public List<string> WatchList { get; set; }
 
-        public JintEngine SetDebugMode(bool debugMode)
-        {
+        public JintEngine SetDebugMode(bool debugMode) {
             DebugMode = debugMode;
+            return this;
+        }
+
+        /// <summary>
+        /// Defines the max allowed number of recursions in the script
+        /// </summary>
+        public JintEngine SetMaxRecursions(int maxRecursions) {
+            MaxRecursions = maxRecursions;
             return this;
         }
 

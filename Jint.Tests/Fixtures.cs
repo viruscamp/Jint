@@ -1010,14 +1010,14 @@ var fakeButton = new Test.FakeButton();");
             catch(e){
                 assert(true, true);
             }");
-            //Strict mode disnabled
+            
+            //Strict mode disabled
             engine = new JintEngine(Options.Ecmascript3)
             .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
             ;
             engine.Run(@"
             try{
                 var test1=function(eval){}
-                //should not execute the next statement
                 assert(true, true);
             }
             catch(e){
@@ -1025,7 +1025,6 @@ var fakeButton = new Test.FakeButton();");
             }
             try{
                 function test2(eval){}
-                //should not execute the next statement
                 assert(true, true);
             }
             catch(e){
@@ -1364,6 +1363,27 @@ var fakeButton = new Test.FakeButton();");
                 assert(false, Math.random() == Math.random());
                 assert(false, Math.random() == Math.random());
                 assert(false, Math.random() == Math.random());
+                ");
+        }
+
+        [TestMethod]
+        public void MaxRecursionsShouldBeDetected() {
+            Test(@"
+                function doSomething(){
+                    doSomethingElse();
+                }
+
+                function doSomethingElse(){
+                    doSomething();
+                }
+
+                try {
+                    doSomething();
+                    assert(true, false);
+                }
+                catch (e){
+                    return;                
+                }
                 ");
         }
 

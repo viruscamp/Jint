@@ -1493,68 +1493,58 @@ namespace Jint
 
             JsDictionaryObject currentScope = CurrentScope;
 
-            if (currentScope.IsClr)
-                ExitScope();
+            // if the indexer is a variable, it must be evaluated in the scope outside the indexed object
+            ExitScope();
+
             try
             {
                 indexer.Index.Accept(this);
             }
             finally
             {
-                if (currentScope.IsClr)
-                    EnterScope(currentScope);
+                EnterScope(currentScope);
             }
 
-            if (temp.IsClr) // && ((JsValue)Result).Type == JsValueType.CLRObject)
-            {
+            if (temp.IsClr) {
                 EnsureClrAllowed();
 
                 PermissionSet.PermitOnly();
 
-                try
-                {
-                    if (temp.Value.GetType().IsArray)
-                    {
+                try {
+                    if (temp.Value.GetType().IsArray) {
                         Result = Global.ObjectClass.New(((Array)temp.Value).GetValue((int)Result.ToNumber()));
                         return;
                     }
-                    else
-                    {
+                    else {
                         var parameters = JsClr.ConvertParameters(Result);
 
                         PropertyInfo pi = propertyGetter.GetValue(temp.Value, "Item", parameters);
 
-                        if (pi != null)
-                        {
+                        if (pi != null) {
                             Result = Global.WrapClr(pi.GetValue(temp.Value, parameters));
                             return;
                         }
-                        else
-                        {
+                        else {
                             pi = propertyGetter.GetValue(temp.Value, Result.ToString());
 
-                            if (pi != null)
-                            {
+                            if (pi != null) {
                                 Result = Global.WrapClr(pi.GetValue(temp.Value, null));
                                 return;
                             }
 
                             FieldInfo fi = fieldGetter.GetValue(temp.Value, Result.ToString());
 
-                            if (fi != null)
-                            {
+                            if (fi != null) {
                                 Result = Global.WrapClr(fi.GetValue(temp.Value));
                                 return;
                             }
-                            else
-                            {
+                            else {
                                 throw new JintException("Index not found: " + Result.ToString());
                             }
                         }
                     }
                 }
-                finally
-                {
+                finally {
                     CodeAccessPermission.RevertPermitOnly();
                 }
             }

@@ -1415,6 +1415,22 @@ var fakeButton = new Test.FakeButton();");
 
             engine.Run(script);
         }
+
+        [TestMethod]
+        public void IndexerShouldBeEvaluatedBeforeUsed() {
+            Test(@"
+                var cat = {
+                    name : 'mega cat',
+                    prop: 'name',
+                    hates: 'dog'
+                };
+
+                var prop = 'hates';
+                assert('dog', cat[prop]);
+
+                ");
+        }
+
     }
 
     public struct Size

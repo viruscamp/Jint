@@ -19,13 +19,13 @@ namespace Jint.Native
             this.DefineOwnProperty("NaN", New(Double.NaN));
             this.DefineOwnProperty("NEGATIVE_INFINITY", New(Double.PositiveInfinity));
             this.DefineOwnProperty("POSITIVE_INFINITY", New(Double.NegativeInfinity));
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontDelete);
         }
 
         public override void InitPrototype(IGlobal global)
         {
-            //Prototype = new JsPrototype(global.FunctionClass.Prototype);
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
-
+            var Prototype = PrototypeProperty;
+            
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsInstance>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
@@ -35,7 +35,7 @@ namespace Jint.Native
 
         public JsNumber New(double value)
         {
-            return new JsNumber(value) { Prototype = this };
+            return new JsNumber(value,PrototypeProperty);
         }
 
         public JsNumber New()
@@ -50,11 +50,11 @@ namespace Jint.Native
                 // 15.7.1 - When Number is called as a function rather than as a constructor, it performs a type conversion.
                 if (parameters.Length > 0)
                 {
-                    return visitor.Return(new JsNumber(parameters[0].ToNumber()));
+                    return visitor.Return(New(parameters[0].ToNumber()));
                 }
                 else
                 {
-                    return visitor.Return(new JsNumber(0));
+                    return visitor.Return(New(0));
                 }
             }
             else

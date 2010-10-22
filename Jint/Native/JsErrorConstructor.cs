@@ -15,12 +15,14 @@ namespace Jint.Native
         {
             this.errorType = errorType;
             Name = errorType;
+
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global)
         {
             //Prototype = global.FunctionClass;
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
+            var Prototype = PrototypeProperty;
 
             Prototype.DefineOwnProperty("name", global.StringClass.New(errorType), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
@@ -29,7 +31,7 @@ namespace Jint.Native
 
         public JsError New(string message)
         {
-            var error = new JsError(Global) { Prototype = this.Prototype };
+            var error = new JsError(Global);
             error["message"] = Global.StringClass.New(message);
             return error;
         }

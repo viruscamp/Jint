@@ -12,12 +12,9 @@ namespace Jint.Native
     [Serializable]
     public class JsCallFunction : JsFunction
     {
-        public JsCallFunction(JsFunctionConstructor constructor)
+        public JsCallFunction(JsFunctionConstructor constructor) : base (constructor.PrototypeProperty)
         {
-            if (constructor != null)
-                Prototype = new JsObject() { Prototype = constructor.Prototype };
-
-            Prototype.DefineOwnProperty("length", new ValueDescriptor(Prototype, "length", constructor.Global.NumberClass.New(1)) { Writable = false });
+            DefineOwnProperty("length", constructor.Global.NumberClass.New(1), PropertyAttributes.ReadOnly );
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)

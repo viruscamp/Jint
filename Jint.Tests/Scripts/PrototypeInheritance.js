@@ -28,7 +28,7 @@ function A() {
     this.M1 = function() { return 'passed' };
 }
 
-new A().prototype.M2 = function() { return this.M1(arguments); };
+A.prototype.M2 = function() { return this.M1(arguments); };
 
 function B() { }
 B.prototype = new A();

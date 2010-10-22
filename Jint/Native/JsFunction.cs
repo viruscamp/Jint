@@ -6,8 +6,13 @@ using Jint.Expressions;
 namespace Jint.Native
 {
     [Serializable]
-    public class JsFunction : JsDictionaryObject
-    {
+    public class JsFunction : JsObject
+    {        
+        public static string CALL = "call";
+        public static string APPLY = "apply";
+        public static string CONSTRUCTOR = "constructor";
+        public static string PROTOTYPE = "prototype";
+
         public string Name { get; set; }
         public Statement Statement { get; set; }
         public List<string> Arguments { get; set; }
@@ -15,7 +20,27 @@ namespace Jint.Native
 
         public List<JsDictionaryObject> DeclaringScopes { get; set; }
 
-        public JsFunction()
+        public JsFunction(IGlobal global, Statement statement)
+            : this(global)
+        {
+            Statement = statement;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="global"></param>
+        public JsFunction(IGlobal global)
+            : this(global.FunctionClass.PrototypeProperty)
+        {
+        }
+
+        /// <summary>
+        /// Init new function object with a specified prototype
+        /// </summary>
+        /// <param name="prototype">prototype for this object</param>
+        public JsFunction(JsObject prototype)
+            : base(prototype)
         {
             Arguments = new List<string>();
             Statement = new EmptyStatement();
@@ -23,24 +48,25 @@ namespace Jint.Native
             DeclaringScopes = new List<JsDictionaryObject>();
         }
 
-        public JsFunction(Statement statement)
-            : this()
+        public JsObject PrototypeProperty
         {
-            Statement = statement;
+            get {
+                return this[PROTOTYPE] as JsObject;
+            }
+            set {
+                this[PROTOTYPE] = value;
+            }
         }
 
-        public override bool HasProperty(string key)
+        /*public override bool HasProperty(string key)
         {
             return GetDescriptor(key) != null;
-        }
+        }*/
 
-        public override Descriptor GetDescriptor(string index)
+        /*public override Descriptor GetDescriptor(string index)
         {
-            if (index == PROTOTYPE)
-                return prototypeDescriptor;
-
-            Descriptor d;
-            if (properties.TryGet(index, out d))
+            Descriptor d = base.GetDescriptor(index);
+            if ( d != null)
                 return d;
 
             d = Scope.GetDescriptor(index);
@@ -54,7 +80,17 @@ namespace Jint.Native
                     return d;
             }
 
-            return base.GetDescriptor(index);
+            return null;
+        }*/
+
+        //15.3.5.3
+        public virtual bool HasInstance(JsObject inst)
+        {
+            if (inst != null && inst != JsNull.Instance && inst != JsNull.Instance)
+            {
+                return this.PrototypeProperty.IsPrototypeOf(inst);
+            }
+            return false;
         }
 
         public override object Value

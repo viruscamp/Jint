@@ -18,30 +18,30 @@ namespace Jint.Native
         private int length;
         bool hasParameters;
 
-        private ClrImplDefinition(bool hasParameters)
+        private ClrImplDefinition(bool hasParameters, JsObject prototype) :base(prototype)
         {
             this.hasParameters = hasParameters;
         }
 
-        public ClrImplDefinition(Func<T, JsInstance[], JsInstance> impl)
-            : this(impl, -1)
+        public ClrImplDefinition(Func<T, JsInstance[], JsInstance> impl, JsObject prototype)
+            : this(impl, -1, prototype)
         {
         }
 
-        public ClrImplDefinition(Func<T, JsInstance[], JsInstance> impl, int length)
-            : this(true)
+        public ClrImplDefinition(Func<T, JsInstance[], JsInstance> impl, int length, JsObject prototype)
+            : this(true, prototype)
         {
             this.impl = impl;
             this.length = length;
         }
 
-        public ClrImplDefinition(Func<T, JsInstance> impl)
-            : this(impl, -1)
+        public ClrImplDefinition(Func<T, JsInstance> impl, JsObject prototype)
+            : this(impl, -1, prototype)
         {
         }
 
-        public ClrImplDefinition(Func<T, JsInstance> impl, int length)
-            : this(false)
+        public ClrImplDefinition(Func<T, JsInstance> impl, int length, JsObject prototype)
+            : this(false, prototype)
         {
             this.impl = impl;
             this.length = length;
@@ -64,10 +64,10 @@ namespace Jint.Native
             {
                 throw e.InnerException;
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
-                var constructor = that.Prototype["constructor"] as JsFunction;
-                throw new JsException(visitor.Global.TypeErrorClass.New("incompatible type: " + constructor == null ? "" : constructor.Name));
+                var constructor = that["constructor"] as JsFunction;
+                throw new JsException(visitor.Global.TypeErrorClass.New("incompatible type: " + constructor == null ? "<unknown>" : constructor.Name));
             }
             catch (Exception e)
             {

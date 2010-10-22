@@ -36,5 +36,53 @@ namespace Jint.Native
         {
             return "null";
         }
+
+        public override Descriptor GetDescriptor(string index)
+        {
+            return null;
+        }
+
+        public override IEnumerable<string> GetKeys()
+        {
+            return new string[0];
+        }
+
+        public override object Value
+        {
+            get
+            {
+                return null;
+            }
+            set
+            {
+                ;
+            }
+        }
+
+        public override void DefineOwnProperty(string key, JsInstance value)
+        {
+            
+        }
+
+        public override bool HasProperty(string key)
+        {
+            return false;
+        }
+
+        public override bool HasOwnProperty(string key)
+        {
+            return false;
+        }
+
+        public override JsInstance this[string index]
+        {
+            get
+            {
+                return JsUndefined.Instance[index];
+            }
+            set
+            {
+            }
+        }
     }
 }

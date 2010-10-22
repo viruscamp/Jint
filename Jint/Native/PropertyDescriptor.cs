@@ -49,14 +49,14 @@ namespace Jint.Native
             : base(global, owner, name)
         {
             GetFunction = global.FunctionClass.New<T>(get);
-            GetFunction.Scope[JsInstance.THIS] = null;
+            GetFunction.Scope[JsScope.THIS] = null;
         }
 
         public PropertyDescriptor(IGlobal global, JsDictionaryObject owner, string name, Func<T, JsInstance> get, Func<T, JsInstance[], JsInstance> set)
             : this(global, owner, name, get)
         {
             SetFunction = global.FunctionClass.New<T>(set);
-            SetFunction.Scope[JsInstance.THIS] = null;
+            SetFunction.Scope[JsScope.THIS] = null;
         }
     }
 }

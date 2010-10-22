@@ -15,19 +15,25 @@ namespace Jint.Native
             : base(global)
         {
             Name = "Date";
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this) , PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+
+            DefineOwnProperty("now", new ClrFunction(new Func<JsDate>(() => { return Global.DateClass.New(DateTime.Now); }), global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
+            DefineOwnProperty("parse", new JsFunctionWrapper(ParseImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
+            DefineOwnProperty("parseLocale", new JsFunctionWrapper(ParseLocaleImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
+            DefineOwnProperty("UTC", new JsFunctionWrapper(UTCImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
         }
 
         public override void InitPrototype(IGlobal global)
         {
             //Prototype = global.FunctionClass;
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
+            var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("UTC", new JsFunctionWrapper(UTCImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("UTC", new JsFunctionWrapper(UTCImpl,global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
 
             #region Static Methods
-            Prototype.DefineOwnProperty("now", new ClrFunction(new Func<JsDate>(() => { return Global.DateClass.New(DateTime.Now); })), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("parse", new JsFunctionWrapper(ParseImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("parseLocale", new JsFunctionWrapper(ParseLocaleImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("now", new ClrFunction(new Func<JsDate>(() => { return Global.DateClass.New(DateTime.Now); }), global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("parse", new JsFunctionWrapper(ParseImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("parseLocale", new JsFunctionWrapper(ParseLocaleImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
             #endregion
 
             #region Methods
@@ -83,17 +89,17 @@ namespace Jint.Native
 
         public JsDate New()
         {
-            return new JsDate() { Prototype = this.Prototype };
+            return new JsDate(this.PrototypeProperty);
         }
 
         public JsDate New(double value)
         {
-            return new JsDate(value) { Prototype = this.Prototype };
+            return new JsDate(value, this.PrototypeProperty);
         }
 
         public JsDate New(DateTime value)
         {
-            return new JsDate(value) { Prototype = this.Prototype };
+            return new JsDate(value, this.PrototypeProperty) ;
         }
 
         public JsDate Construct(JsInstance[] parameters)

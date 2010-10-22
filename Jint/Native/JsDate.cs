@@ -26,16 +26,17 @@ namespace Jint.Native
             }
         }
 
-        public JsDate()
+        public JsDate(JsObject prototype) : base(prototype)
         {
             value = 0;
         }
 
-        public JsDate(DateTime date) : this((date.ToUniversalTime().Ticks - OFFSET_1970) / TICKSFACTOR)
+        public JsDate(DateTime date, JsObject prototype)
+            : this((date.ToUniversalTime().Ticks - OFFSET_1970) / TICKSFACTOR, prototype)
         {
         }
 
-        public JsDate(double value)
+        public JsDate(double value, JsObject prototype) : base(prototype)
         {
             this.value = value;
         }
@@ -49,6 +50,11 @@ namespace Jint.Native
         public static string FORMATUTC = "ddd, dd MMM yyyy HH':'mm':'ss 'UTC'";
         public static string DATEFORMAT = "ddd, dd MMM yyyy";
         public static string TIMEFORMAT = "HH':'mm':'ss 'GMT'zzz";
+
+        public static double DateToDouble(DateTime date)
+        {
+            return (date.ToUniversalTime().Ticks - OFFSET_1970) / TICKSFACTOR;
+        }
 
         public override string ToString()
         {

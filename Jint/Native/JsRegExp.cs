@@ -13,18 +13,18 @@ namespace Jint.Native
         public bool IsIgnoreCase { get { return (value.Options & RegexOptions.IgnoreCase) == RegexOptions.IgnoreCase; } }
         public bool IsMultiline { get { return (value.Options & RegexOptions.Multiline) == RegexOptions.Multiline; } }
 
-        public JsRegExp()
+        public JsRegExp(JsObject prototype) : base(prototype)
         {
         }
 
         private Regex value;
         private string pattern;
 
-        public JsRegExp(string pattern) : this(pattern, false, false, false)
+        public JsRegExp(string pattern, JsObject prototype) : this(pattern, false, false, false, prototype)
         {
         }
 
-        public JsRegExp(string pattern, bool g, bool i, bool m)
+        public JsRegExp(string pattern, bool g, bool i, bool m, JsObject prototype) : base(prototype)
         {
             if (pattern.Contains("$"))
             {

@@ -25,7 +25,7 @@ namespace Jint.Native
         {
         }
 
-        public JsError(IGlobal global, string message)
+        public JsError(IGlobal global, string message) : base(global.ErrorClass.PrototypeProperty)
         {
             this.global = global;
             this.message = message;

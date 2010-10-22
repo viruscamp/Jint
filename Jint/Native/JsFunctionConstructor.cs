@@ -6,19 +6,24 @@ using Jint.Delegates;
 
 namespace Jint.Native
 {
+    // TODO: what about function scopes
     [Serializable]
     public class JsFunctionConstructor : JsConstructor
     {
-        public JsFunctionConstructor(IGlobal global)
-            : base(global)
+
+        public JsFunctionConstructor(IGlobal global, JsObject prototype)
+            : base(global, prototype)
         {
-            Prototype = new JsFunctionWrapper(delegate(JsInstance[] arguments) { return JsUndefined.Instance; }) { Prototype = global.ObjectClass.Prototype, Name = "Function" };
             Name = "Function";
+            DefineOwnProperty(PROTOTYPE,prototype,PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly );
         }
 
         public override void InitPrototype(IGlobal global)
         {
-            ((JsFunction)Prototype).Scope = global.ObjectClass.Scope;
+            var Prototype = PrototypeProperty;
+            
+            // ((JsFunction)Prototype).Scope = global.ObjectClass.Scope;
+            
             Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
 
             Prototype.DefineOwnProperty(CALL.ToString(), new JsCallFunction(this), PropertyAttributes.DontEnum);
@@ -56,49 +61,49 @@ namespace Jint.Native
             return Global.NumberClass.New(target.Length);
         }
 
-        public JsFunction New()
+        public JsFunction New( )
         {
-            JsFunction function = new JsFunction();
-            function.Prototype = Global.ObjectClass.New(function);
-            function.Scope.Prototype = Prototype;
+            JsFunction function = new JsFunction(PrototypeProperty);
+            function.PrototypeProperty = Global.ObjectClass.New(function);
+            function.Scope = new JsScope( );
             return function;
         }
 
-        public JsFunction New<T>(Func<T, JsInstance> impl) where T : JsInstance
+        public JsFunction New<T>(Func<T, JsInstance> impl ) where T : JsInstance
         {
-            JsFunction function = new ClrImplDefinition<T>(impl);
-            function.Prototype = Global.ObjectClass.New(function);
-            function.Scope.Prototype = Prototype;
+            JsFunction function = new ClrImplDefinition<T>(impl,PrototypeProperty);
+            function.PrototypeProperty = Global.ObjectClass.New(function);
+            //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
         public JsFunction New<T>(Func<T, JsInstance> impl, int length) where T : JsInstance
         {
-            JsFunction function = new ClrImplDefinition<T>(impl, length);
-            function.Prototype = Global.ObjectClass.New(function);
-            function.Scope.Prototype = Prototype;
+            JsFunction function = new ClrImplDefinition<T>(impl, length, PrototypeProperty);
+            function.PrototypeProperty = Global.ObjectClass.New(function);
+            //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
 
         public JsFunction New<T>(Func<T, JsInstance[], JsInstance> impl) where T : JsInstance
         {
-            JsFunction function = new ClrImplDefinition<T>(impl);
-            function.Prototype = Global.ObjectClass.New(function);
-            function.Scope.Prototype = Prototype;
+            JsFunction function = new ClrImplDefinition<T>(impl,PrototypeProperty);
+            function.PrototypeProperty = Global.ObjectClass.New(function);
+            //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
         public JsFunction New<T>(Func<T, JsInstance[], JsInstance> impl, int length) where T : JsInstance
         {
-            JsFunction function = new ClrImplDefinition<T>(impl, length);
-            function.Prototype = Global.ObjectClass.New(function);
-            function.Scope.Prototype = Prototype;
+            JsFunction function = new ClrImplDefinition<T>(impl, length, PrototypeProperty);
+            function.PrototypeProperty = Global.ObjectClass.New(function);
+            //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
 
         public JsFunction New(Delegate d)
         {
-            JsFunction function = new ClrFunction(d);
-            function.Prototype = Global.ObjectClass.New(function);
-            function.Scope.Prototype = Prototype;
+            JsFunction function = new ClrFunction(d, PrototypeProperty);
+            function.PrototypeProperty = Global.ObjectClass.New(function);
+            //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
 

@@ -64,10 +64,11 @@ namespace Jint
             this.typeResolver = new CachedTypeResolver();
             this.fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
 
-            GlobalScope = new JsObject();
             Global = new JsGlobal(this, options);
-            GlobalScope.Prototype = Global as JsDictionaryObject;
+            GlobalScope = new JsScope(Global as JsObject);
+            
             EnterScope(GlobalScope);
+
             CallStack = new Stack<string>();
         }
 
@@ -84,7 +85,7 @@ namespace Jint
             DebugInformation info = new DebugInformation();
             info.CurrentStatement = statement;
             info.CallStack = CallStack;
-            info.Locals = new JsObject() { Prototype = JsUndefined.Instance };
+            info.Locals = new JsObject(JsNull.Instance);
             DebugMode = false;
             foreach (JsDictionaryObject scope in Scopes.ToArray())
             {
@@ -303,8 +304,8 @@ namespace Jint
                 d.Set(target, value);
             else
             {
-                if (target.Class == JsFunction.TYPEOF)
-                    target = ((JsFunction)target).Scope;
+                /* if (target.Class == JsFunction.TYPEOF)
+                    target = ((JsFunction)target).Scope; */
                 target.DefineOwnProperty(propertyName, value);
             }
 
@@ -609,19 +610,21 @@ namespace Jint
 
         public void Visit(FunctionDeclarationStatement statement)
         {
+            // todo: cleanup
             JsFunction f = CreateFunction(statement);
             // Closures ?
+            /*
             if (CurrentScope.Class == JsFunction.TYPEOF)
             {
                 ((JsFunction)CurrentScope).Scope[statement.Name] = f;
             }
             else
-            {
+            {*/
                 //if (Scopes.Count == 2)
-                GlobalScope[statement.Name] = f;
+                CurrentScope[statement.Name] = f;
                 //else
                 //    CurrentScope[statement.Name] = f;
-            }
+            //}
         }
 
         public void Visit(IfStatement statement)
@@ -827,8 +830,7 @@ namespace Jint
                 }
 
                 // Calls the constructor on a brand new object
-                JsObject instance = new JsObject();
-                instance.Prototype = function.Prototype;
+                JsObject instance = new JsObject(function.PrototypeProperty);
 
                 // Once 'new' is called, the result is the new instance, given by the Execute() method on the proper constructor
                 ExecuteFunction(function, instance, parameters);
@@ -1048,7 +1050,7 @@ namespace Jint
                     }
                     else
                     {
-                        Result = JsBoolean.False;
+                        Result = Global.BooleanClass.False;
                     }
 
                     break;
@@ -1071,7 +1073,7 @@ namespace Jint
 
                     if (right == Global.NumberClass["NEGATIVE_INFINITY"] || right == Global.NumberClass["POSITIVE_INFINITY"])
                     {
-                        Result = new JsNumber(0);
+                        Result = Global.NumberClass.New(0);
                     }
                     else if (rightNumber == 0)
                     {
@@ -1087,14 +1089,14 @@ namespace Jint
                     if (IsNullOrUndefined(left) || IsNullOrUndefined(right))
                     {
                         Result = IsNullOrUndefined(left) && IsNullOrUndefined(right)
-                                     ? Result = JsBoolean.True
-                                     : Result = JsBoolean.False;
+                                     ? Result = Global.BooleanClass.True
+                                     : Result = Global.BooleanClass.False;
                     }
                     else
                     {
                         if(left == right)
                         {
-                            Result = JsBoolean.True;
+                            Result = Global.BooleanClass.True;
                         }
                         else if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
                             right.Class == JsNumber.TYPEOF || right.Class == JsBoolean.TYPEOF)
@@ -1107,7 +1109,7 @@ namespace Jint
                         }
                         else
                         {
-                            Result = JsBoolean.False;
+                            Result = Global.BooleanClass.False;
                         }
                     }
                     break;
@@ -1155,18 +1157,18 @@ namespace Jint
 
                     if (left == JsUndefined.Instance && right == JsUndefined.Instance || left == JsNull.Instance && right == JsNull.Instance)
                     {
-                        Result = JsBoolean.False;
+                        Result = Global.BooleanClass.False;
                     }
                     else
                     {
                         if (left == JsUndefined.Instance && right != JsUndefined.Instance || left == JsNull.Instance && right != JsNull.Instance)
                         {
-                            Result = JsBoolean.True;
+                            Result = Global.BooleanClass.True;
                         }
                         else
                             if (left != JsUndefined.Instance && right == JsUndefined.Instance || left != JsNull.Instance && right == JsNull.Instance)
                             {
-                                Result = JsBoolean.True;
+                                Result = Global.BooleanClass.True;
                             }
                             else
                             {
@@ -1210,51 +1212,51 @@ namespace Jint
                     // 11.9.6 The Strict Equality Comparison Algorithm
                     if (left.Class != right.Class)
                     {
-                        Result = JsBoolean.False;
+                        Result = Global.BooleanClass.False;
                     }
                     else if (left.Class == JsUndefined.TYPEOF)
                     {
-                        Result = JsBoolean.True;
+                        Result = Global.BooleanClass.True;
                     }
                     else if (left.Class == JsNull.TYPEOF)
                     {
-                        Result = JsBoolean.True;
+                        Result = Global.BooleanClass.True;
                     }
                     else if (left.Class == JsNumber.TYPEOF)
                     {
                         if (left == Global.NumberClass["NaN"] || right == Global.NumberClass["NaN"])
                         {
-                            Result = JsBoolean.False;
+                            Result = Global.BooleanClass.False;
                         }
                         else if (left.ToNumber() == right.ToNumber())
                         {
-                            Result = JsBoolean.True;
+                            Result = Global.BooleanClass.True;
                         }
                         else
-                            Result = JsBoolean.False;
+                            Result = Global.BooleanClass.False;
                     }
                     else if (left.Class == JsString.TYPEOF)
                     {
-                        Result = new JsBoolean(left.ToString() == right.ToString());
+                        Result = Global.BooleanClass.New(left.ToString() == right.ToString());
                     }
                     else if (left.Class == JsBoolean.TYPEOF)
                     {
-                        Result = new JsBoolean(left.ToBoolean() == right.ToBoolean());
+                        Result = Global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
                     }
                     else if (left == right)
                     {
-                        Result = JsBoolean.True;
+                        Result = Global.BooleanClass.True;
                     }
                     else
                     {
-                        Result = JsBoolean.False;
+                        Result = Global.BooleanClass.False;
                     }
 
                     break;
 
                 case BinaryExpressionType.NotSame:
                     new BinaryExpression(BinaryExpressionType.Same, expression.LeftExpression, expression.RightExpression).Accept(this);
-                    Result = new JsBoolean(!Result.ToBoolean());
+                    Result = Global.BooleanClass.New(!Result.ToBoolean());
                     break;
 
                 case BinaryExpressionType.LeftShift:
@@ -1270,7 +1272,16 @@ namespace Jint
                     break;
 
                 case BinaryExpressionType.InstanceOf:
-                    Result = new JsBoolean(left.Class == right.ToString());
+                    {
+                        var func  = right as JsFunction;
+                        var obj = left as JsObject;
+                        if (func == null)
+                            throw new JsException( Global.TypeErrorClass.New("Right argument should be a function: " + expression.RightExpression.ToString()) );
+                        if (obj == null)
+                            throw new JsException( Global.TypeErrorClass.New("Left argument should be an object: " + expression.LeftExpression.ToString()) );
+
+                        Result = Global.BooleanClass.New(func.HasInstance( obj ) );
+                    }
                     break;
 
                 case BinaryExpressionType.In:
@@ -1492,16 +1503,14 @@ namespace Jint
 
             JsDictionaryObject currentScope = CurrentScope;
 
-            if (currentScope.IsClr)
-                ExitScope();
+            ExitScope();
             try
             {
                 indexer.Index.Accept(this);
             }
             finally
             {
-                if (currentScope.IsClr)
-                    EnterScope(currentScope);
+                EnterScope(currentScope);
             }
 
             if (temp.IsClr) // && ((JsValue)Result).Type == JsValueType.CLRObject)
@@ -1564,10 +1573,7 @@ namespace Jint
             }
             else
             {
-                if (temp.Class == JsFunction.TYPEOF)
-                    Result = ((JsFunction)temp).Scope[Result.ToString()];
-                else
-                    Result = temp[Result.ToString()];
+                Result = temp[Result.ToString()];
             }
         }
 
@@ -1729,24 +1735,38 @@ namespace Jint
                 return;
             }
 
-            JsScope functionScope = new JsScope();
+            // ecma chapter 10.
+
+            // create new argument object and instantinate arguments into it
             JsArguments args = new JsArguments(Global, function, parameters);
-            functionScope.Prototype = args;
+
+            // create new activation object and copy instantinated arguments to it
+            JsScope functionScope = new JsScope(args);
+
+            // define arguments variable
             if (HasOption(Options.Strict))
-                functionScope.DefineOwnProperty(JsInstance.ARGUMENTS, args);
+                functionScope.DefineOwnProperty(JsScope.ARGUMENTS, args);
             else
-                functionScope.Prototype.DefineOwnProperty(JsInstance.ARGUMENTS, args);
+                args.DefineOwnProperty(JsScope.ARGUMENTS, args);
 
+            // TODO: properties of the activation object should be linked to the properties of the arguments object
+            // But now activation object is derived from the arguments objects
+            /*foreach (var pair in args)
+                functionScope.DefineOwnProperty(pair.Key, args.GetDescriptor(pair.Key));*/
+
+            // set this variable
             if (that != null)
-                functionScope.DefineOwnProperty(JsInstance.THIS, that);
-            functionScope.Extensible = false;
+                functionScope.DefineOwnProperty(JsScope.THIS, that);
 
-            //for (int i = function.DeclaringScopes.Count - 1; i >= 0; i--)
-            //{
-            //    EnterScope(function.DeclaringScopes[i]);
-            //}
 
-            EnterScope(function);
+            // save old execution state
+            var oldScopeStack = Scopes;
+
+            // init new scopes if the function has DeclaringScopes
+            if(function.DeclaringScopes.Count > 0)
+                Scopes = new Stack<JsDictionaryObject>(function.DeclaringScopes);
+
+            // enter activation object
             EnterScope(functionScope);
 
             try
@@ -1763,8 +1783,8 @@ namespace Jint
             }
             finally
             {
-                ExitScope();
-                ExitScope();
+                // return to previous execution state
+                Scopes = oldScopeStack;
                 CodeAccessPermission.RevertPermitOnly();
             }
         }
@@ -1792,11 +1812,13 @@ namespace Jint
 
             string propertyName = lastIdentifier = expression.Text;
 
-            if (propertyName == JsDictionaryObject.PROTOTYPE)
+            // todo: boolshit here
+
+            /*if (propertyName == JsFunction.PROTOTYPE)
             {
                 Result = CurrentScope.Prototype;
                 return;
-            }
+            }*/
 
             JsInstance result = null;
 
@@ -1804,7 +1826,8 @@ namespace Jint
             callTarget = CurrentScope;
             try
             {// Closure ?
-                callTarget = CurrentScope;
+                // TODO: cleanup
+                /*callTarget = CurrentScope;
                 if (CurrentScope.Class == JsFunction.TYPEOF)
                 {
                     JsScope scope = ((JsFunction)CurrentScope).Scope;
@@ -1813,7 +1836,7 @@ namespace Jint
                         Result = result;
                         return;
                     }
-                }
+                }*/
 
                 callTarget = CurrentScope;
                 if (CurrentScope.TryGetProperty(propertyName, out result))
@@ -1837,7 +1860,7 @@ namespace Jint
                 var type = CurrentScope.Value as Type;
                 if (type != null && type.IsEnum)
                 {
-                    Result = new JsClr(this, Enum.Parse(type, propertyName));
+                    Result = Global.WrapClr(Enum.Parse(type, propertyName));
                     return;
                 }
 
@@ -2019,9 +2042,10 @@ namespace Jint
         {
             JsObject instance = Global.ObjectClass.New();
 
-            JsScope scope = new JsScope() { Prototype = CurrentScope };
-            scope.DefineOwnProperty(JsInstance.THIS, instance);
-            EnterScope(scope);
+            /*JsScope scope = new JsScope();
+            scope.DefineOwnProperty(JsScope.THIS, instance);
+            EnterScope(scope);*/
+            EnterScope(instance);
             try
             {
                 foreach (var item in json.Values)

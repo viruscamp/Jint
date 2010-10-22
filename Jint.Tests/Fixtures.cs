@@ -66,8 +66,8 @@ namespace Jint.Tests
         [TestMethod]
         public void ShouldHandleDictionaryObjects() {
             var dic = new JsObject();
-            dic["prop1"] = new JsNumber(1);
-            Assert.IsTrue(dic.HasProperty(new JsString("prop1")));
+            dic["prop1"] = new JsNumber(1,JsNull.Instance);
+            Assert.IsTrue(dic.HasProperty(new JsString("prop1",JsNull.Instance)));
             Assert.IsTrue(dic.HasProperty("prop1"));
             Assert.AreEqual(1, dic["prop1"].ToNumber());
         }
@@ -359,7 +359,7 @@ bar');
         }
 
         private static JsString GiveMeJavascript(JsNumber number, JsInstance instance) {
-            return new JsString(number + instance.ToString());
+            return new JsString(number + instance.ToString(), JsNull.Instance);
         }
 
         [TestMethod]
@@ -1356,6 +1356,12 @@ var fakeButton = new Test.FakeButton();");
         [TestMethod]
         public void WithScriptShouldPassTests() {
             ExecuteEmbededScript("With.js");
+        }
+
+        [TestMethod]
+        public void InstanceOfScriptShouldPassTests()
+        {
+            ExecuteEmbededScript("instanceOf.js");
         }
 
         [TestMethod]

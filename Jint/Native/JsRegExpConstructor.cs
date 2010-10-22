@@ -13,13 +13,14 @@ namespace Jint.Native
             : base(global)
         {
             Name = "RegExp";
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontDelete | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly );
         }
 
         public override void InitPrototype(IGlobal global)
         {
+            var Prototype = PrototypeProperty;
             //Prototype = global.ObjectClass.New(this);
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
-
+            
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("lastIndex", global.FunctionClass.New<JsRegExp>(GetLastIndex), PropertyAttributes.DontEnum);
@@ -39,7 +40,7 @@ namespace Jint.Native
 
         public JsRegExp New(string pattern, bool g, bool i, bool m)
         {
-            var ret = new JsRegExp(pattern, g, i, m) { Prototype = this.Prototype };
+            var ret = new JsRegExp(pattern, g, i, m, PrototypeProperty);
             ret["source"] = Global.StringClass.New(pattern);
             ret["lastIndex"] = Global.NumberClass.New(0);
             ret["global"] = Global.BooleanClass.New(g);
@@ -84,7 +85,7 @@ namespace Jint.Native
 
         public JsInstance TestImpl(JsRegExp regex, JsInstance[] parameters)
         {
-            return new JsBoolean(ExecImpl(regex, parameters) != JsNull.Instance);
+            return Global.BooleanClass.New(ExecImpl(regex, parameters) != JsNull.Instance);
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)

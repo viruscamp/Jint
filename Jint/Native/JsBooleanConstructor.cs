@@ -8,17 +8,23 @@ namespace Jint.Native
     [Serializable]
     public class JsBooleanConstructor : JsConstructor
     {
+        public JsBoolean False { get; private set; }
+        public JsBoolean True { get; private set; }
+
         public JsBooleanConstructor(IGlobal global)
             : base(global)
         {
             Name = "Boolean";
+            
+            DefineOwnProperty( PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly );
+
+            True = New(true);
+            False = New(false);
         }
 
         public override void InitPrototype(IGlobal global)
         {
-            Prototype = new JsObject() { Prototype = global.FunctionClass.Prototype };
-
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
+            var Prototype = PrototypeProperty;
 
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
@@ -31,7 +37,7 @@ namespace Jint.Native
 
         public JsBoolean New(bool value)
         {
-            return new JsBoolean(value) { Prototype = this.Prototype };
+            return new JsBoolean(value, PrototypeProperty);
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
@@ -39,7 +45,7 @@ namespace Jint.Native
             // e.g., var foo = Boolean(true);
             if (that == null)
             {
-                visitor.Return(parameters.Length > 0 ? new JsBoolean(parameters[0].ToBoolean()) : new JsBoolean());
+                visitor.Return(parameters.Length > 0 ? new JsBoolean(parameters[0].ToBoolean(),PrototypeProperty) : new JsBoolean(PrototypeProperty));
             }
             else // e.g., var foo = new Boolean(true);
             {

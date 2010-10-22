@@ -8,12 +8,6 @@ namespace Jint.Native
     [Serializable]
     public abstract class JsInstance
     {
-        public static string THIS = "this";
-        public static string CALL = "call";
-        public static string APPLY = "apply";
-        public static string CONSTRUCTOR = "constructor";
-        public static string ARGUMENTS = "arguments";
-        public static string PROTOTYPE = "prototype";
         public static JsInstance[] EMPTY = new JsInstance[0];
 
         public abstract bool IsClr { get; }

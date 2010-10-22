@@ -8,23 +8,24 @@ namespace Jint.Native
     [Serializable]
     public class JsArguments : JsObject
     {
+        public const string CALLEE = "callee";
+
         protected ValueDescriptor calleeDescriptor;
 
         protected JsFunction Callee
         {
-            get { return this["callee"] as JsFunction; }
-            set { this["callee"] = value; }
+            get { return this[CALLEE] as JsFunction; }
+            set { this[CALLEE] = value; }
         }
 
         public JsArguments(IGlobal global, JsFunction callee, JsInstance[] arguments)
-            : base()
+            : base( global.ObjectClass.New() )
         {
             this.global = global;
-            Prototype = global.ObjectClass.New();
             // Add the named parameters
             for (int i = 0; i < Math.Max(arguments.Length, callee.Arguments.Count); i++)
             {
-                ValueDescriptor d = new ValueDescriptor(this, i < callee.Arguments.Count ? callee.Arguments[i] : i.ToString());
+                ValueDescriptor d = new ValueDescriptor(this, i < callee.Arguments.Count ? callee.Arguments[i] : i.ToString()) { Attributes = PropertyAttributes.DontDelete };
 
                 d.Set(this, i < arguments.Length ? arguments[i] : JsUndefined.Instance);
 
@@ -34,13 +35,15 @@ namespace Jint.Native
             }
 
             length = arguments.Length;
-            calleeDescriptor = new ValueDescriptor(this, "callee");
-            DefineOwnProperty("callee", calleeDescriptor);
+            calleeDescriptor = new ValueDescriptor(this, CALLEE);
+            DefineOwnProperty(CALLEE, calleeDescriptor);
             calleeDescriptor.Set(this, callee);
             DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength));
         }
 
-        public override Descriptor GetDescriptor(string index)
+        // this is just an object without special stuff
+        // TODO: cleanup
+        /* public override Descriptor GetDescriptor(string index)
         {
 
             Descriptor result;
@@ -59,7 +62,7 @@ namespace Jint.Native
             }
 
             return null;
-        }
+        } */
 
         private int length;
         private IGlobal global;

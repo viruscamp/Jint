@@ -13,7 +13,7 @@ namespace Jint.Native
         public Delegate Delegate { get; set; }
         public ParameterInfo[] Parameters { get; set; }
 
-        public ClrFunction(Delegate d)
+        public ClrFunction(Delegate d, JsObject prototype) : base(prototype)
         {
             Delegate = d;
             Parameters = d.Method.GetParameters();

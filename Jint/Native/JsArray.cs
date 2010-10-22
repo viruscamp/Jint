@@ -7,8 +7,8 @@ namespace Jint.Native
     [Serializable]
     public sealed class JsArray : JsObject
     {
-        public JsArray()
-            : base()
+        public JsArray(JsObject prototype)
+            : base(prototype)
         {
         }
 

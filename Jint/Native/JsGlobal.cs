@@ -18,16 +18,28 @@ namespace Jint.Native
 
         public Options Options { get; set; }
 
-        public JsGlobal(ExecutionVisitor visitor, Options options)
+        public JsGlobal(ExecutionVisitor visitor, Options options) : base(JsNull.Instance)
         {
             this.Options = options;
             this.Visitor = visitor;
 
             this["null"] = JsNull.Instance;
+            JsObject objectProrotype = new JsObject(JsNull.Instance);
+            
+            JsFunction functionPrototype = new JsFunctionWrapper(
+                delegate(JsInstance[] arguments)
+                {
+                    return JsUndefined.Instance;
+                },
+                objectProrotype
+            );
 
             #region Global Classes
-            this["Object"] = ObjectClass = new JsObjectConstructor(this);
-            this["Function"] = FunctionClass = new JsFunctionConstructor(this);
+            this["Function"] = FunctionClass = new JsFunctionConstructor(this, functionPrototype);
+            this["Object"] = ObjectClass = new JsObjectConstructor(this,functionPrototype,objectProrotype);
+            ObjectClass.InitPrototype(this);
+
+            
             this["Array"] = ArrayClass = new JsArrayConstructor(this);
             this["Boolean"] = BooleanClass = new JsBooleanConstructor(this);
             this["Date"] = DateClass = new JsDateConstructor(this);
@@ -44,11 +56,11 @@ namespace Jint.Native
             this["RegExp"] = RegExpClass = new JsRegExpConstructor(this);
             this["String"] = StringClass = new JsStringConstructor(this);
             this["Math"] = MathClass = new JsMathConstructor(this);
-            this.Prototype = ObjectClass.Prototype;
+
+            // 15.1 prototype of the global object varies on the implementation
+            //this.Prototype = ObjectClass.PrototypeProperty;
             #endregion
 
-
-            MathClass.Prototype = ObjectClass.Prototype;
 
             foreach (JsInstance c in this.GetValues())
             {
@@ -62,19 +74,20 @@ namespace Jint.Native
             this["NaN"] = NumberClass["NaN"];  // 15.1.1.1
             this["Infinity"] = NumberClass["POSITIVE_INFINITY"]; // // 15.1.1.2
             this["undefined"] = JsUndefined.Instance; // 15.1.1.3
-            this[JsInstance.THIS] = this;
+            this[JsScope.THIS] = this;
             #endregion
 
             #region Global Functions
-            this["eval"] = new JsFunctionWrapper(Eval); // 15.1.2.1
-            this["parseInt"] = new JsFunctionWrapper(ParseInt); // 15.1.2.2
-            this["parseFloat"] = new JsFunctionWrapper(ParseFloat); // 15.1.2.3
-            this["isNaN"] = new JsFunctionWrapper(IsNaN);
-            this["isFinite"] = new JsFunctionWrapper(isFinite);
-            this["decodeURI"] = new JsFunctionWrapper(DecodeURI);
-            this["encodeURI"] = new JsFunctionWrapper(EncodeURI);
-            this["decodeURIComponent"] = new JsFunctionWrapper(DecodeURIComponent);
-            this["encodeURIComponent"] = new JsFunctionWrapper(EncodeURIComponent);
+            // every embed function should have a prototype FunctionClass.PrototypeProperty - 15.
+            this["eval"] = new JsFunctionWrapper(Eval, FunctionClass.PrototypeProperty); // 15.1.2.1
+            this["parseInt"] = new JsFunctionWrapper(ParseInt, FunctionClass.PrototypeProperty); // 15.1.2.2
+            this["parseFloat"] = new JsFunctionWrapper(ParseFloat, FunctionClass.PrototypeProperty); // 15.1.2.3
+            this["isNaN"] = new JsFunctionWrapper(IsNaN, FunctionClass.PrototypeProperty);
+            this["isFinite"] = new JsFunctionWrapper(isFinite, FunctionClass.PrototypeProperty);
+            this["decodeURI"] = new JsFunctionWrapper(DecodeURI, FunctionClass.PrototypeProperty);
+            this["encodeURI"] = new JsFunctionWrapper(EncodeURI, FunctionClass.PrototypeProperty);
+            this["decodeURIComponent"] = new JsFunctionWrapper(DecodeURIComponent, FunctionClass.PrototypeProperty);
+            this["encodeURIComponent"] = new JsFunctionWrapper(EncodeURIComponent, FunctionClass.PrototypeProperty);
             #endregion
 
         }
@@ -212,7 +225,7 @@ namespace Jint.Native
             float result;
             if (float.TryParse(number, NumberStyles.Float, new CultureInfo("en-US"), out result))
             {
-                return new JsNumber(result);
+                return NumberClass.New(result);
             }
             else
             {
@@ -227,10 +240,10 @@ namespace Jint.Native
         {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
             {
-                return JsBoolean.False;
+                return BooleanClass.New(false);
             }
 
-            return new JsBoolean(double.NaN.Equals(arguments[0].ToNumber()));
+            return BooleanClass.New(double.NaN.Equals(arguments[0].ToNumber()));
         }
 
         /// <summary>
@@ -240,13 +253,14 @@ namespace Jint.Native
         {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
             {
-                return JsBoolean.False;
+                return BooleanClass.False;
             }
 
             var value = arguments[0];
-            return new JsBoolean(value != NumberClass["NaN"]
+            return BooleanClass.New( (value != NumberClass["NaN"]
                 && value != NumberClass["POSITIVE_INFINITY"]
-                && value != NumberClass["NEGATIVE_INFINITY"]);
+                && value != NumberClass["NEGATIVE_INFINITY"])
+            );
         }
 
         protected JsInstance DecodeURI(JsInstance[] arguments)
@@ -345,26 +359,26 @@ namespace Jint.Native
             }
         }
 
-        public JsClr WrapClr(object value)
+        public JsObject WrapClr(object value)
         {
             if (value == null)
             {
-                return new JsClr(Visitor, null);
+                return new JsClr(Visitor,null,JsNull.Instance);
             }
 
-            JsClr clr = new JsClr(Visitor, value);
+            JsObject proto;
 
             switch (Convert.GetTypeCode(value))
             {
                 case TypeCode.Boolean:
-                    clr.Prototype = BooleanClass.Prototype;
+                    proto = BooleanClass.PrototypeProperty;
                     break;
                 case TypeCode.Char:
                 case TypeCode.String:
-                    clr.Prototype = StringClass.Prototype;
+                    proto = StringClass.PrototypeProperty;
                     break;
                 case TypeCode.DateTime:
-                    clr.Prototype = DateClass.Prototype;
+                    proto = DateClass.PrototypeProperty;
                     break;
                 case TypeCode.Byte:
                 case TypeCode.Int16:
@@ -377,20 +391,20 @@ namespace Jint.Native
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                 case TypeCode.Single:
-                    clr.Prototype = NumberClass.Prototype;
+                    proto = NumberClass.PrototypeProperty;
                     break;
                 case TypeCode.Object:
                 case TypeCode.DBNull:
                 case TypeCode.Empty:
                 default:
                     if (value is System.Collections.IEnumerable)
-                        clr.Prototype = ArrayClass.Prototype;
+                        proto = ArrayClass.PrototypeProperty;
                     else
-                        clr.Prototype = ObjectClass.Prototype;
+                        proto = ObjectClass.PrototypeProperty;
                     break;
             }
 
-            return clr;
+            return new JsClr(Visitor, value, proto);
         }
 
         public bool HasOption(Options options)

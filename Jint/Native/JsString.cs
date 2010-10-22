@@ -18,18 +18,17 @@ namespace Jint.Native
                 return value;
             }
         }
-        public JsString()
+        public JsString( JsObject prototype) : base(prototype)
         {
             value = String.Empty;
         }
 
-        public JsString(string str)
+        public JsString(string str, JsObject prototype) : base(prototype)
         {
             value = str;
         }
 
-        public override bool ToBoolean()
-        {
+        public static bool StringToBoolean(string value) {
             if (value == null)
                 return false;
             if (value == "true" || value.Length > 0)
@@ -40,7 +39,12 @@ namespace Jint.Native
             return false;
         }
 
-        public override double ToNumber()
+        public override bool ToBoolean()
+        {
+            return StringToBoolean(value);
+        }
+
+        public static double StringToNumber(string value)
         {
             if (value == null)
             {
@@ -57,6 +61,11 @@ namespace Jint.Native
             {
                 return double.NaN;
             }
+        }
+
+        public override double ToNumber()
+        {
+            return StringToNumber(value);
         }
 
         public override string ToSource()

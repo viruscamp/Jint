@@ -9,10 +9,20 @@ namespace Jint.Native
     {
         private Descriptor thisDescriptor;
         private Descriptor argumentsDescriptor;
+        private JsDictionaryObject outerScope;
 
-        public JsScope()
+        public static string THIS = "this";
+        public static string ARGUMENTS = "arguments";
+
+        public JsScope() : base(JsNull.Instance)
         {
-            Prototype = JsUndefined.Instance;
+            outerScope = JsNull.Instance;
+        }
+
+        public JsScope(JsDictionaryObject outer)
+            : base(outer)
+        {
+            outerScope = outer;
         }
 
         public const string TYPEOF = "scope";
@@ -31,9 +41,9 @@ namespace Jint.Native
         public override bool HasOwnProperty(string key)
         {
             bool hasOwnProperty = base.HasOwnProperty(key);
-            if (!hasOwnProperty && Extensible && Prototype.Class == JsScope.TYPEOF)
+            if (!hasOwnProperty && Extensible && outerScope.Class == JsScope.TYPEOF)
             {
-                return Prototype.HasOwnProperty(key);
+                return outerScope.HasOwnProperty(key);
             }
             else
             {
@@ -49,13 +59,13 @@ namespace Jint.Native
             }
             else
             {
-                Prototype.DefineOwnProperty(key, value);
+                outerScope.DefineOwnProperty(key, value);
             }
         }
 
         public override bool HasProperty(string key)
         {
-            if (Prototype.Class != JsScope.TYPEOF && Prototype.Class != JsArguments.TYPEOF)
+            if (outerScope.Class != JsScope.TYPEOF && outerScope.Class != JsArguments.TYPEOF)
             {
                 return HasOwnProperty(key);
             }
@@ -95,12 +105,11 @@ namespace Jint.Native
                             DefineOwnProperty(index, argumentsDescriptor = new ValueDescriptor(this, index, value));
                         }
                     }
-
                     base[index] = value;
                 }
                 else
                 {
-                    Prototype[index] = value;
+                    outerScope[index] = value;
                 }
             }
         }

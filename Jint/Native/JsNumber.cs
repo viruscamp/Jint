@@ -18,23 +18,29 @@ namespace Jint.Native
             }
         }
 
-        public JsNumber() : this(0d)
+        public JsNumber(JsObject prototype)
+            : this(0d, prototype)
         {
         }
 
-        public JsNumber(double num)
+        public JsNumber(double num, JsObject prototype) : base(prototype)
         {
             value = num;
         }
 
-        public JsNumber(int num)
+        public JsNumber(int num, JsObject prototype) : base(prototype)
         {
             value = num;
+        }
+
+        public static bool NumberToBoolean(double value)
+        {
+            return value != 0;
         }
 
         public override bool ToBoolean()
         {
-            return value > 0;
+            return NumberToBoolean(value);
         }
 
         public override double ToNumber()

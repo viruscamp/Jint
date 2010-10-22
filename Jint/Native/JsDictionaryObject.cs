@@ -18,20 +18,16 @@ namespace Jint.Native
         public JsDictionaryObject()
         {
             Extensible = true;
-            DefineOwnProperty(PROTOTYPE, prototypeDescriptor = new ValueDescriptor(this, PROTOTYPE, JsUndefined.Instance), PropertyAttributes.DontEnum);
+            Prototype = JsNull.Instance;
         }
 
-        public JsDictionaryObject Prototype
+        public JsDictionaryObject(JsDictionaryObject prototype)
         {
-            get
-            {
-                return this[PROTOTYPE] as JsDictionaryObject;
-            }
-            set
-            {
-                this[PROTOTYPE] = value;
-            }
+            this.Prototype = prototype;
+            Extensible = true;
         }
+
+        private JsDictionaryObject Prototype { get; set; }
 
         public virtual bool HasProperty(string key)
         {
@@ -67,7 +63,7 @@ namespace Jint.Native
             {
                 if (length == int.MinValue)
                 {
-                    return properties.Count - 1;
+                    return properties.Count;
                 }
 
                 return length;
@@ -94,26 +90,12 @@ namespace Jint.Native
             set { this[key.ToString()] = value; }
         }
 
-        protected Descriptor prototypeDescriptor;
-        protected Descriptor constructorDescriptor;
-
         public virtual Descriptor GetDescriptor(string index)
         {
-            if (index == PROTOTYPE)
-            {
-                return prototypeDescriptor;
-            }
-
-            if (index == CONSTRUCTOR && constructorDescriptor != null)
-            {
-                return constructorDescriptor;
-            }
 
             Descriptor result;
             if (properties.TryGet(index, out result))
             {
-                if (index == CONSTRUCTOR)
-                    constructorDescriptor = result;
                 return result;
             }
 
@@ -123,22 +105,9 @@ namespace Jint.Native
                 result = Prototype.GetDescriptor(index);
                 if (result != null)
                     return result;
-
-                if (index != CONSTRUCTOR)
-                {
-                    Descriptor ctorDescriptor = GetDescriptor(CONSTRUCTOR);
-                    if (ctorDescriptor != null)
-                    {
-                        JsInstance ctor = ctorDescriptor.Get(this);
-                        if (ctor != JsUndefined.Instance && ctor != JsNull.Instance)
-                            return ((JsFunction)ctor).Scope.GetDescriptor(index);
-                    }
-                }
-
-                return result;
             }
-            else
-                return null;
+            
+            return null;
         }
 
         public bool TryGetDescriptor(string index, out Descriptor result)
@@ -171,26 +140,10 @@ namespace Jint.Native
             set
             {
                 Descriptor d = GetDescriptor(index);
-                if (d == null || (d.DescriptorType == DescriptorType.Value && d.Owner != this))
-                {
-                    bool enumerable = index != PROTOTYPE;
-
-                    if (index == PROTOTYPE)
-                    {
-                        prototypeDescriptor.Set(this, value);
-                    }
-                    else
-                    {
-                        if (d == null)
-                            properties.Put(index, new ValueDescriptor(this, index, value) { Enumerable = enumerable });
-                        else
-                            d.Set(this, value);
-                    }
-                }
+                if (d == null)
+                    properties.Put(index, new ValueDescriptor(this, index, value) );
                 else
-                {
                     d.Set(this, value);
-                }
             }
         }
 

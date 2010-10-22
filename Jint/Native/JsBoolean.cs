@@ -14,18 +14,15 @@ namespace Jint.Native
             get { return value; }
         }
 
-        public JsBoolean()
+        public JsBoolean(JsObject prototype) : this(false,prototype)
         {
             value = false;
         }
 
-        public JsBoolean(bool boolean)
+        public JsBoolean(bool boolean, JsObject prototype): base(prototype)
         {
             value = boolean;
         }
-
-        public static JsBoolean False = new JsBoolean(false);
-        public static JsBoolean True = new JsBoolean(true);
         
         public const string TYPEOF = "boolean";
 
@@ -44,9 +41,14 @@ namespace Jint.Native
             return value ? "true" : "false";
         }
 
-        public override double ToNumber()
+        public static double BooleanToNumber(bool value)
         {
             return value ? 1 : 0;
+        }
+
+        public override double ToNumber()
+        {
+            return BooleanToNumber(value);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Jint.Native
     {
         public JsFunction Callee { get; set; }
 
-        public CallProxyFunction(JsFunction callee)
+        public CallProxyFunction(JsFunction callee) : base(callee)
         {
             Callee = callee;
         }

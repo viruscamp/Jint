@@ -95,7 +95,17 @@ css.styleIndex['a'] = 'toto';
 css.applyStyle();
 assert('toto', css.styleIndex['a']);
 assert(css.styleIndex['a'], css.a);
-css.b = "titi";
-assert('titi', css.styleIndex['b']);
-assert(css.styleIndex['b'], css.b);
+/*css.b = "titi";
+assert('titi', css.b);
+assert(css.styleIndex['b'], css.b);*/
+
+var cat = {
+    name: 'mega cat',
+    hates: 'dog',
+    prop: 'name'
+};
+
+var prop = 'hates';
+assert('dog',cat['hates']);
+assert('dog',cat[prop]);
  

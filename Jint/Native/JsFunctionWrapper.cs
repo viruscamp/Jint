@@ -11,7 +11,7 @@ namespace Jint.Native
     {
         public Func<JsInstance[] ,JsInstance> Delegate { get; set; }
 
-        public JsFunctionWrapper(Func<JsInstance[], JsInstance> d)
+        public JsFunctionWrapper(Func<JsInstance[], JsInstance> d, JsObject prototype) : base(prototype)
         {
             Delegate = d;
         }

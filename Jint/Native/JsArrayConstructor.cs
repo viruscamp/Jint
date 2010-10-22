@@ -13,12 +13,12 @@ namespace Jint.Native
             : base(global)
         {
             Name = "Array";
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontDelete | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global)
         {
-            Prototype = new JsObject() { Prototype = global.FunctionClass.Prototype };
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
+            var Prototype = PrototypeProperty;
 
             #region Methods
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsArray>(ToStringImpl), PropertyAttributes.DontEnum);
@@ -44,7 +44,7 @@ namespace Jint.Native
 
         public JsArray New()
         {
-            JsArray array = new JsArray() { Prototype = this.Prototype };
+            JsArray array = new JsArray( PrototypeProperty );
             //array.DefineOwnProperty("constructor", new ValueDescriptor(this) { Enumerable = false });
             return array;
         }
@@ -473,7 +473,8 @@ namespace Jint.Native
                         target.Delete(to);
                     }
                 }
-                if (target.length != int.MinValue && target.Prototype != Prototype)
+                // if target is array
+                if (target.length != int.MinValue && HasInstance( target ) )
                     target.length += len - actualDeleteCount + items.Count;
 
                 for (int k = 0; items.Count > 0; k++)

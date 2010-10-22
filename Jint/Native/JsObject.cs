@@ -9,18 +9,22 @@ namespace Jint.Native
     {
         public JsObject()
         {
-            //Prototype = null;
         }
 
-        public JsObject(object value)
+        public JsObject(object value, JsObject prototype) : base(prototype)
         {
-            //Prototype = null;
             this.value = value;
         }
 
-        public JsObject(JsFunction constructor)
+        public JsObject(JsFunction constructor) : base(constructor.PrototypeProperty)
         {
-            Prototype = new JsObject(constructor.Prototype);
+            throw new Exception("Warning, this is a deprecated constructor");
+        }
+
+        public JsObject(JsObject prototype)
+            : base(prototype)
+        {
+
         }
 
         public const string TYPEOF = "Object";
@@ -45,10 +49,10 @@ namespace Jint.Native
 
         public override bool ToBoolean()
         {
-            if (Prototype == null || Prototype == JsUndefined.Instance || Prototype == JsNull.Instance)
+            /*if (Prototype == null || Prototype == JsUndefined.Instance || Prototype == JsNull.Instance)
             {
                 return false;
-            }
+            }*/
 
             switch (Convert.GetTypeCode(value))
             {
@@ -56,9 +60,9 @@ namespace Jint.Native
                     return (bool)value;
                 case TypeCode.Char:
                 case TypeCode.String:
-                    return new JsString((string)value).ToBoolean();
+                    return JsString.StringToBoolean((string)value);
                 case TypeCode.DateTime:
-                    return new JsDate((DateTime)value).ToBoolean();
+                    return JsNumber.NumberToBoolean( JsDate.DateToDouble((DateTime)value));
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.Int32:
@@ -70,7 +74,7 @@ namespace Jint.Native
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                 case TypeCode.Single:
-                    return new JsNumber((double)value).ToBoolean();
+                    return JsNumber.NumberToBoolean((double)value);
                 case TypeCode.Object:
                     return Convert.ToBoolean(value);
                 case TypeCode.DBNull:
@@ -97,12 +101,12 @@ namespace Jint.Native
             switch (Convert.GetTypeCode(value))
             {
                 case TypeCode.Boolean:
-                    return new JsBoolean((bool)value).ToNumber();
+                    return JsBoolean.BooleanToNumber((bool)value);
                 case TypeCode.Char:
                 case TypeCode.String:
-                    return new JsString((string)value).ToNumber();
+                    return JsString.StringToNumber((string)value);
                 case TypeCode.DateTime:
-                    return new JsDate((DateTime)value).ToNumber();
+                    return JsDate.DateToDouble((DateTime)value);
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.Int32:

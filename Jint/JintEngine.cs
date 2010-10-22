@@ -47,21 +47,23 @@ namespace Jint
             permissionSet = new PermissionSet(PermissionState.None);
             MaxRecursions = 2000;
 
-            visitor.GlobalScope.Prototype["ToBoolean"] = visitor.Global.FunctionClass.New(new Func<object, Boolean>(Convert.ToBoolean));
-            visitor.GlobalScope.Prototype["ToByte"] = visitor.Global.FunctionClass.New(new Func<object, Byte>(Convert.ToByte));
-            visitor.GlobalScope.Prototype["ToChar"] = visitor.Global.FunctionClass.New(new Func<object, Char>(Convert.ToChar));
-            visitor.GlobalScope.Prototype["ToDateTime"] = visitor.Global.FunctionClass.New(new Func<object, DateTime>(Convert.ToDateTime));
-            visitor.GlobalScope.Prototype["ToDecimal"] = visitor.Global.FunctionClass.New(new Func<object, Decimal>(Convert.ToDecimal));
-            visitor.GlobalScope.Prototype["ToDouble"] = visitor.Global.FunctionClass.New(new Func<object, Double>(Convert.ToDouble));
-            visitor.GlobalScope.Prototype["ToInt16"] = visitor.Global.FunctionClass.New(new Func<object, Int16>(Convert.ToInt16));
-            visitor.GlobalScope.Prototype["ToInt32"] = visitor.Global.FunctionClass.New(new Func<object, Int32>(Convert.ToInt32));
-            visitor.GlobalScope.Prototype["ToInt64"] = visitor.Global.FunctionClass.New(new Func<object, Int64>(Convert.ToInt64));
-            visitor.GlobalScope.Prototype["ToSByte"] = visitor.Global.FunctionClass.New(new Func<object, SByte>(Convert.ToSByte));
-            visitor.GlobalScope.Prototype["ToSingle"] = visitor.Global.FunctionClass.New(new Func<object, Single>(Convert.ToSingle));
-            visitor.GlobalScope.Prototype["ToString"] = visitor.Global.FunctionClass.New(new Func<object, String>(Convert.ToString));
-            visitor.GlobalScope.Prototype["ToUInt16"] = visitor.Global.FunctionClass.New(new Func<object, UInt16>(Convert.ToUInt16));
-            visitor.GlobalScope.Prototype["ToUInt32"] = visitor.Global.FunctionClass.New(new Func<object, UInt32>(Convert.ToUInt32));
-            visitor.GlobalScope.Prototype["ToUInt64"] = visitor.Global.FunctionClass.New(new Func<object, UInt64>(Convert.ToUInt64));
+            JsObject global = visitor.Global as JsObject;
+
+            global["ToBoolean"] = visitor.Global.FunctionClass.New(new Func<object, Boolean>(Convert.ToBoolean));
+            global["ToByte"] = visitor.Global.FunctionClass.New(new Func<object, Byte>(Convert.ToByte));
+            global["ToChar"] = visitor.Global.FunctionClass.New(new Func<object, Char>(Convert.ToChar));
+            global["ToDateTime"] = visitor.Global.FunctionClass.New(new Func<object, DateTime>(Convert.ToDateTime));
+            global["ToDecimal"] = visitor.Global.FunctionClass.New(new Func<object, Decimal>(Convert.ToDecimal));
+            global["ToDouble"] = visitor.Global.FunctionClass.New(new Func<object, Double>(Convert.ToDouble));
+            global["ToInt16"] = visitor.Global.FunctionClass.New(new Func<object, Int16>(Convert.ToInt16));
+            global["ToInt32"] = visitor.Global.FunctionClass.New(new Func<object, Int32>(Convert.ToInt32));
+            global["ToInt64"] = visitor.Global.FunctionClass.New(new Func<object, Int64>(Convert.ToInt64));
+            global["ToSByte"] = visitor.Global.FunctionClass.New(new Func<object, SByte>(Convert.ToSByte));
+            global["ToSingle"] = visitor.Global.FunctionClass.New(new Func<object, Single>(Convert.ToSingle));
+            global["ToString"] = visitor.Global.FunctionClass.New(new Func<object, String>(Convert.ToString));
+            global["ToUInt16"] = visitor.Global.FunctionClass.New(new Func<object, UInt16>(Convert.ToUInt16));
+            global["ToUInt32"] = visitor.Global.FunctionClass.New(new Func<object, UInt32>(Convert.ToUInt32));
+            global["ToUInt64"] = visitor.Global.FunctionClass.New(new Func<object, UInt64>(Convert.ToUInt64));
 
             BreakPoints = new List<BreakPoint>();
         }

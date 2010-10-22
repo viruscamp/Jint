@@ -16,7 +16,7 @@ namespace Jint.Native
         private IMethodInvoker methodGetter;
         private IFieldGetter fieldGetter;
 
-        public JsClr(IJintVisitor visitor)
+        public JsClr(IJintVisitor visitor, JsObject prototype) : base(prototype)
         {
             this.global = visitor.Global;
             this.propertyGetter = visitor.PropertyGetter;
@@ -26,8 +26,8 @@ namespace Jint.Native
 
         }
 
-        public JsClr(IJintVisitor visitor, object clr)
-            : this(visitor)
+        public JsClr(IJintVisitor visitor, object clr,JsObject prototype)
+            : this(visitor, prototype)
         {
             value = clr;
             if (value != null)
@@ -123,13 +123,13 @@ namespace Jint.Native
         {
             get
             {
-                if (Prototype == global.BooleanClass.Prototype)
+                if (global.BooleanClass.HasInstance(this) )
                     return JsBoolean.TYPEOF;
-                if (Prototype == global.DateClass.Prototype)
+                if (global.DateClass.HasInstance(this))
                     return JsDate.TYPEOF;
-                if (Prototype == global.NumberClass.Prototype)
+                if (global.NumberClass.HasInstance(this))
                     return JsNumber.TYPEOF;
-                if (Prototype == global.StringClass.Prototype)
+                if (global.StringClass.HasInstance(this))
                     return JsString.TYPEOF;
                 return TYPEOF;
             }

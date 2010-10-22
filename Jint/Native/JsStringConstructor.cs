@@ -13,14 +13,14 @@ namespace Jint.Native
         public JsStringConstructor(IGlobal global)
             : base(global)
         {
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontDelete | PropertyAttributes.DontEnum);
             Name = "String";
         }
 
         public override void InitPrototype(IGlobal global)
         {
-            //Prototype = global.FunctionClass.Prototype;
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
-
+            var Prototype = PrototypeProperty;
+            
             Prototype.DefineOwnProperty("split", global.FunctionClass.New<JsDictionaryObject>(SplitImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("replace", global.FunctionClass.New<JsDictionaryObject>(ReplaceImpl, 2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
@@ -55,7 +55,7 @@ namespace Jint.Native
 
         public JsString New(string value)
         {
-            return new JsString(value) { Prototype = this.Prototype };
+            return new JsString(value, PrototypeProperty);
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
@@ -290,6 +290,9 @@ namespace Jint.Native
             JsArray result = Global.ArrayClass.New();
             int i = 0;
             var match = ((Regex) (parameters[0].Value)).Match(target.ToString());
+            if (!match.Success)
+                return JsNull.Instance;
+
             foreach (Group group in match.Groups)
             {
                 result[i++.ToString()] = Global.StringClass.New(group.Value);

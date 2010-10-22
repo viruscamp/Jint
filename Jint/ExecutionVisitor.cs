@@ -30,8 +30,9 @@ namespace Jint
 
         protected Stack<JsDictionaryObject> Scopes = new Stack<JsDictionaryObject>();
 
-        protected bool exit = false;
-        protected JsInstance returnInstance = null;
+        protected bool exit;
+        protected JsInstance returnInstance;
+        protected int recursionLevel;
 
         public event EventHandler<DebugInformation> Step;
         public Stack<string> CallStack { get; set; }
@@ -59,11 +60,11 @@ namespace Jint
 
         public ExecutionVisitor(Options options)
         {
-            this.methodInvoker = new CachedMethodInvoker(this);
-            this.propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
-            this.constructorInvoker = new CachedConstructorInvoker(methodInvoker);
-            this.typeResolver = new CachedTypeResolver();
-            this.fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
+            methodInvoker = new CachedMethodInvoker(this);
+            propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
+            constructorInvoker = new CachedConstructorInvoker(methodInvoker);
+            typeResolver = new CachedTypeResolver();
+            fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
 
             Global = new JsGlobal(this, options);
             GlobalScope = new JsScope(Global as JsObject);
@@ -1728,7 +1729,7 @@ namespace Jint
                 return;
             }
 
-            if (Scopes.Count > MaxRecursions) {
+            if ( recursionLevel++ > MaxRecursions ) {
                 throw new JsException(Global.ErrorClass.New("Too many recursions in the script."));
             }
 
@@ -1783,6 +1784,7 @@ namespace Jint
                 // return to previous execution state
                 Scopes = oldScopeStack;
                 CodeAccessPermission.RevertPermitOnly();
+                recursionLevel--;
             }
         }
 

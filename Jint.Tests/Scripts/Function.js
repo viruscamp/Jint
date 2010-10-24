@@ -109,3 +109,12 @@ MyType = function() { };
 MyType.prototype = {};
 MyType.test();
 
+var foo = 'foo';
+function bar() {
+    foo = 'bar';    
+    var foo;
+}
+
+bar();
+assert(foo,'foo');
+

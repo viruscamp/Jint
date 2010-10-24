@@ -1010,14 +1010,14 @@ var fakeButton = new Test.FakeButton();");
             catch(e){
                 assert(true, true);
             }");
-            //Strict mode disnabled
+            
+            //Strict mode disabled
             engine = new JintEngine(Options.Ecmascript3)
             .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
             ;
             engine.Run(@"
             try{
                 var test1=function(eval){}
-                //should not execute the next statement
                 assert(true, true);
             }
             catch(e){
@@ -1025,7 +1025,6 @@ var fakeButton = new Test.FakeButton();");
             }
             try{
                 function test2(eval){}
-                //should not execute the next statement
                 assert(true, true);
             }
             catch(e){
@@ -1374,6 +1373,27 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void MaxRecursionsShouldBeDetected() {
+            Test(@"
+                function doSomething(){
+                    doSomethingElse();
+                }
+
+                function doSomethingElse(){
+                    doSomething();
+                }
+
+                try {
+                    doSomething();
+                    assert(true, false);
+                }
+                catch (e){
+                    return;                
+                }
+                ");
+        }
+
+        [TestMethod]
         public void ObjectShouldBePassedToDelegates() {
             var engine = new JintEngine();
             engine.SetFunction("render", new Action<object>(s => Console.WriteLine(s)));
@@ -1401,6 +1421,22 @@ var fakeButton = new Test.FakeButton();");
 
             engine.Run(script);
         }
+
+        [TestMethod]
+        public void IndexerShouldBeEvaluatedBeforeUsed() {
+            Test(@"
+                var cat = {
+                    name : 'mega cat',
+                    prop: 'name',
+                    hates: 'dog'
+                };
+
+                var prop = 'hates';
+                assert('dog', cat[prop]);
+
+                ");
+        }
+
     }
 
     public struct Size

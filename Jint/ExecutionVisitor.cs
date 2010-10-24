@@ -30,14 +30,16 @@ namespace Jint
 
         protected Stack<JsDictionaryObject> Scopes = new Stack<JsDictionaryObject>();
 
-        protected bool exit = false;
-        protected JsInstance returnInstance = null;
+        protected bool exit;
+        protected JsInstance returnInstance;
+        protected int recursionLevel;
 
         public event EventHandler<DebugInformation> Step;
         public Stack<string> CallStack { get; set; }
         public Statement CurrentStatement { get; set; }
 
         public bool DebugMode { get; set; }
+        public int MaxRecursions { get; set; }
 
         public JsInstance Result { get; set; }
         public JsInstance Returned { get { return returnInstance; } }
@@ -58,11 +60,11 @@ namespace Jint
 
         public ExecutionVisitor(Options options)
         {
-            this.methodInvoker = new CachedMethodInvoker(this);
-            this.propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
-            this.constructorInvoker = new CachedConstructorInvoker(methodInvoker);
-            this.typeResolver = new CachedTypeResolver();
-            this.fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
+            methodInvoker = new CachedMethodInvoker(this);
+            propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
+            constructorInvoker = new CachedConstructorInvoker(methodInvoker);
+            typeResolver = new CachedTypeResolver();
+            fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
 
             Global = new JsGlobal(this, options);
             GlobalScope = new JsScope(Global as JsObject);
@@ -583,11 +585,8 @@ namespace Jint
             JsFunction f = Global.FunctionClass.New();
             f.Statement = functionDeclaration.Statement;
             f.Name = functionDeclaration.Name;
-            foreach (JsDictionaryObject scope in Scopes)
-            {
-                f.DeclaringScopes.Add(scope);
-            }
-
+            f.DeclaringScopes = new Stack<JsDictionaryObject>(Scopes);
+            
             // add a return undefined; statement at the end of each method
             BlockStatement block = (BlockStatement)f.Statement;
             if (block.Statements.Count == 0)
@@ -753,16 +752,26 @@ namespace Jint
             if (statement.Expression != null)
             {
                 statement.Expression.Accept(this);
-            }
-
-            if (statement.Global)
-            {
-                SetInScopes(statement.Identifier, Result);
+                if (statement.Global)
+                {
+                    SetInScopes(statement.Identifier, Result);
+                }
+                else
+                {
+                    if (!CurrentScope.HasOwnProperty(statement.Identifier))
+                        CurrentScope.DefineOwnProperty(statement.Identifier, Result);
+                    else
+                        CurrentScope[statement.Identifier] = Result;
+                }
             }
             else
-            {
-                CurrentScope.DefineOwnProperty(statement.Identifier, Result);
+            {        
+                // a var declaration should not affect existing one
+                if (!CurrentScope.HasOwnProperty(statement.Identifier))
+                    CurrentScope.DefineOwnProperty(statement.Identifier, JsUndefined.Instance);
             }
+
+            
 
         }
 
@@ -1503,7 +1512,9 @@ namespace Jint
 
             JsDictionaryObject currentScope = CurrentScope;
 
+            // if the indexer is a variable, it must be evaluated in the scope outside the indexed object
             ExitScope();
+
             try
             {
                 indexer.Index.Accept(this);
@@ -1513,56 +1524,46 @@ namespace Jint
                 EnterScope(currentScope);
             }
 
-            if (temp.IsClr) // && ((JsValue)Result).Type == JsValueType.CLRObject)
-            {
+            if (temp.IsClr) {
                 EnsureClrAllowed();
 
                 PermissionSet.PermitOnly();
 
-                try
-                {
-                    if (temp.Value.GetType().IsArray)
-                    {
+                try {
+                    if (temp.Value.GetType().IsArray) {
                         Result = Global.ObjectClass.New(((Array)temp.Value).GetValue((int)Result.ToNumber()));
                         return;
                     }
-                    else
-                    {
+                    else {
                         var parameters = JsClr.ConvertParameters(Result);
 
                         PropertyInfo pi = propertyGetter.GetValue(temp.Value, "Item", parameters);
 
-                        if (pi != null)
-                        {
+                        if (pi != null) {
                             Result = Global.WrapClr(pi.GetValue(temp.Value, parameters));
                             return;
                         }
-                        else
-                        {
+                        else {
                             pi = propertyGetter.GetValue(temp.Value, Result.ToString());
 
-                            if (pi != null)
-                            {
+                            if (pi != null) {
                                 Result = Global.WrapClr(pi.GetValue(temp.Value, null));
                                 return;
                             }
 
                             FieldInfo fi = fieldGetter.GetValue(temp.Value, Result.ToString());
 
-                            if (fi != null)
-                            {
+                            if (fi != null) {
                                 Result = Global.WrapClr(fi.GetValue(temp.Value));
                                 return;
                             }
-                            else
-                            {
+                            else {
                                 throw new JintException("Index not found: " + Result.ToString());
                             }
                         }
                     }
                 }
-                finally
-                {
+                finally {
                     CodeAccessPermission.RevertPermitOnly();
                 }
             }
@@ -1735,6 +1736,10 @@ namespace Jint
                 return;
             }
 
+            if ( recursionLevel++ > MaxRecursions ) {
+                throw new JsException(Global.ErrorClass.New("Too many recursions in the script."));
+            }
+
             // ecma chapter 10.
 
             // create new argument object and instantinate arguments into it
@@ -1766,6 +1771,8 @@ namespace Jint
             if(function.DeclaringScopes.Count > 0)
                 Scopes = new Stack<JsDictionaryObject>(function.DeclaringScopes);
 
+            var prevScopesCount = Scopes.Count;
+
             // enter activation object
             EnterScope(functionScope);
 
@@ -1784,8 +1791,12 @@ namespace Jint
             finally
             {
                 // return to previous execution state
+                ExitScope();
+                if (prevScopesCount != Scopes.Count)
+                    throw new ApplicationException("Scopes count is changed");
                 Scopes = oldScopeStack;
                 CodeAccessPermission.RevertPermitOnly();
+                recursionLevel--;
             }
         }
 

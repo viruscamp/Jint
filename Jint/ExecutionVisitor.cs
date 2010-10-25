@@ -122,6 +122,11 @@ namespace Jint
 
         public void Visit(Program program)
         {
+            // initialize local variables, in case the visitor is used multiple times by the same engine
+            typeFullname = new StringBuilder();
+            exit = false;
+            lastIdentifier = String.Empty;
+
             foreach (var statement in program.ReorderStatements())
             {
                 CurrentStatement = statement;

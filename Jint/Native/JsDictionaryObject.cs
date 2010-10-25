@@ -14,6 +14,13 @@ namespace Jint.Native
         protected internal IPropertyBag properties = new MiniCachedPropertyBag();
 
         public bool Extensible { get; set; }
+        
+        private int m_length = 0;
+
+        /// <summary>
+        /// gets the number of an actually stored properties
+        /// </summary>
+        public virtual int Length { get { return m_length; } set { } }
 
         public JsDictionaryObject()
         {
@@ -51,27 +58,7 @@ namespace Jint.Native
         public virtual bool HasOwnProperty(string key)
         {
             Descriptor desc;
-            return properties.TryGet(key, out desc);
-        }
-
-        protected internal int length = int.MinValue;
-
-        public virtual int Length
-        {
-            //length minus prototype
-            get
-            {
-                if (length == int.MinValue)
-                {
-                    return properties.Count;
-                }
-
-                return length;
-            }
-            set
-            {
-                length = value;
-            }
+            return properties.TryGet(key, out desc) && desc.Owner == this;
         }
 
         public bool HasProperty(JsInstance key)
@@ -84,7 +71,7 @@ namespace Jint.Native
             return this.HasOwnProperty(key.ToString());
         }
 
-        public JsInstance this[JsInstance key]
+        public virtual JsInstance this[JsInstance key]
         {
             get { return this[key.ToString()]; }
             set { this[key.ToString()] = value; }
@@ -99,15 +86,10 @@ namespace Jint.Native
                 return result;
             }
 
-            JsDictionaryObject prototype = Prototype;
-            if (prototype != JsUndefined.Instance && prototype != JsNull.Instance)
-            {
-                result = Prototype.GetDescriptor(index);
-                if (result != null)
-                    return result;
-            }
-            
-            return null;
+            // Prototype always a JsObject, (JsNull.Instance is also an object and next call will return null in case of null)
+            if( (result = Prototype.GetDescriptor(index) ) != null)
+                properties.Put(index, result); // cache descriptior
+            return result;
         }
 
         public bool TryGetDescriptor(string index, out Descriptor result)
@@ -140,7 +122,7 @@ namespace Jint.Native
             set
             {
                 Descriptor d = GetDescriptor(index);
-                if (d == null)
+                if (d == null || d.Owner != this )
                     properties.Put(index, new ValueDescriptor(this, index, value) );
                 else
                     d.Set(this, value);
@@ -159,15 +141,12 @@ namespace Jint.Native
             {
                 if (d.Configurable)
                 {
-                //d.Delete();
                     properties.Delete(index);
-
-                if (length > -1)
-                    length--;
+                    m_length--;
                 }
                 else
                 {
-                    throw new JintException();
+                    throw new JintException("Property " + index + " isn't configurable");
                 }
             }
         }
@@ -192,8 +171,9 @@ namespace Jint.Native
         public void DefineOwnProperty(string key, Descriptor currentDescriptor)
         {
             Descriptor desc;
-            if (properties.TryGet(key, out desc))
+            if (properties.TryGet(key, out desc) && desc.Owner == this)
             {
+                // updating an existing property
                 switch (desc.DescriptorType)
                 {
                     case DescriptorType.Value:
@@ -228,7 +208,9 @@ namespace Jint.Native
             }
             else
             {
+                // add a new property
                 properties.Put(key, currentDescriptor);
+                m_length++;
             }
         }
 
@@ -279,7 +261,7 @@ namespace Jint.Native
 
             foreach (KeyValuePair<string, Descriptor> descriptor in properties)
             {
-                if (descriptor.Value.Enumerable)
+                if (descriptor.Value.Enumerable && descriptor.Value.Owner == this)
                     yield return descriptor.Key;
             }
             yield break;

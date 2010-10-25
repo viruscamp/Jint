@@ -838,8 +838,17 @@ namespace Jint
                     parameters[i] = Result;
                 }
 
+                // TODO: implement construct method inside the JsFunction
                 // Calls the constructor on a brand new object
-                JsObject instance = new JsObject(function.PrototypeProperty);
+                JsObject instance;
+                if (function is JsArrayConstructor)
+                {
+                    instance = new JsArray(function.PrototypeProperty);
+                }
+                else
+                {
+                    instance = new JsObject(function.PrototypeProperty);
+                }
 
                 // Once 'new' is called, the result is the new instance, given by the Execute() method on the proper constructor
                 ExecuteFunction(function, instance, parameters);

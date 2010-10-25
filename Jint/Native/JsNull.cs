@@ -12,7 +12,6 @@ namespace Jint.Native
 
         public JsNull()
         {
-            length = 0;
         }
 
         public const string TYPEOF = "object";
@@ -20,6 +19,17 @@ namespace Jint.Native
         public override string Class
         {
             get { return TYPEOF; }
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+            }
         }
 
         public override bool ToBoolean()
@@ -78,7 +88,7 @@ namespace Jint.Native
         {
             get
             {
-                return JsUndefined.Instance[index];
+                return JsUndefined.Instance;
             }
             set
             {

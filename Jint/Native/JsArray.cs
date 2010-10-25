@@ -7,6 +7,8 @@ namespace Jint.Native
     [Serializable]
     public sealed class JsArray : JsObject
     {
+        protected internal int length = 0;
+        
         public JsArray(JsObject prototype)
             : base(prototype)
         {
@@ -15,6 +17,66 @@ namespace Jint.Native
         public override bool ToBoolean()
         {
             return Length > 0;
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return length;
+            }
+            set
+            {
+                int oldLen = length;
+                length = value;
+
+                for (int i = length; i < oldLen; i++)
+                    if (HasOwnProperty(i.ToString()))
+                        Delete(i.ToString());
+            }
+        }
+
+        public override JsInstance this[string index]
+        {
+            get
+            {
+                return base[index];
+            }
+            set
+            {
+                try
+                {
+                    int i = Convert.ToInt32(index);
+                    if (i < 0)
+                        throw new JintException("Index is out of range");
+                    length = Math.Max(length, i + 1);
+                }
+                catch (FormatException)
+                {
+                }
+                finally
+                {
+                    base[index] = value;
+                }
+            }
+        }
+
+        public override void DefineOwnProperty(string key, JsInstance value)
+        {
+            try
+            {
+                int i = Convert.ToInt32(key);
+                if (i < 0)
+                    throw new JintException("Index is out of range");
+                length = Math.Max(length, i + 1);
+            }
+            catch (FormatException)
+            {
+            }
+            finally
+            {
+                base.DefineOwnProperty(key, value);
+            }
         }
 
         public override double ToNumber()

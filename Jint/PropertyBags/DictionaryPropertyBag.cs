@@ -13,7 +13,8 @@ namespace Jint
 
         public Descriptor Put(string name, Descriptor descriptor)
         {
-            bag.Add(name, descriptor);
+            // replace existing without any exception
+            bag[name] = descriptor;
             return descriptor;
         }
 

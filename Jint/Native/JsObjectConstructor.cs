@@ -187,13 +187,7 @@ namespace Jint.Native
 
             string name = parameters[1].ToString();
             Descriptor desc = Descriptor.ToPropertyDesciptor(Global, (JsDictionaryObject)instance, name, parameters[2]);
-            if (desc.DescriptorType == DescriptorType.Accessor)
-            {
-                if (((PropertyDescriptor)desc).GetFunction != null)
-                    ((PropertyDescriptor)desc).GetFunction.Scope[JsScope.THIS] = instance;
-                if (((PropertyDescriptor)desc).SetFunction != null)
-                    ((PropertyDescriptor)desc).SetFunction.Scope[JsScope.THIS] = instance;
-            }
+
             ((JsDictionaryObject)instance).DefineOwnProperty(name, desc);
 
             return instance;

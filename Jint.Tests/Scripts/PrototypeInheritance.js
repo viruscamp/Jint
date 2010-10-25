@@ -48,3 +48,14 @@ C.prototype.M2 = function() {
 
 assert('passed', new C(true).M2());
 assert('passed2', new C(false).M2());
+
+function Foo() {
+}
+
+Foo.prototype.name = 'Foo';
+
+var baz = new Foo();
+assert('Foo',baz.name);
+baz.name = 'Baz';
+assert('Foo',Foo.prototype.name);
+assert('Baz',baz.name);

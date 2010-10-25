@@ -242,7 +242,7 @@ namespace Jint.Native
                 length++;
             }
 
-            return target["length"] = Global.NumberClass.New(length);
+            return Global.NumberClass.New(length);
         }
 
         /// <summary>
@@ -318,8 +318,8 @@ namespace Jint.Native
                 }
             }
             target.Delete((target.Length - 1).ToString());
-            if (length != int.MinValue)
-                length -= parameters.Length;
+            target.Length--;
+            
             return first;
         }
 
@@ -474,8 +474,9 @@ namespace Jint.Native
                     }
                 }
                 // if target is array
-                if (target.length != int.MinValue && HasInstance( target ) )
-                    target.length += len - actualDeleteCount + items.Count;
+                // if (target.length != int.MinValue && HasInstance( target ) )
+                //    target.length += len - actualDeleteCount + items.Count;
+                target.Length += len - actualDeleteCount + items.Count;
 
                 for (int k = 0; items.Count > 0; k++)
                 {

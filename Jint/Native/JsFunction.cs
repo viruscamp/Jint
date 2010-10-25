@@ -44,7 +44,6 @@ namespace Jint.Native
         {
             Arguments = new List<string>();
             Statement = new EmptyStatement();
-            Scope = new JsScope();
             DeclaringScopes = new Stack<JsDictionaryObject>();
         }
 

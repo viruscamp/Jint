@@ -65,7 +65,6 @@ namespace Jint.Native
         {
             JsFunction function = new JsFunction(PrototypeProperty);
             function.PrototypeProperty = Global.ObjectClass.New(function);
-            function.Scope = new JsScope( );
             return function;
         }
 

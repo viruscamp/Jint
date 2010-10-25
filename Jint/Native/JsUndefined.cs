@@ -12,7 +12,17 @@ namespace Jint.Native
 
         public JsUndefined()
         {
-            length = 0;
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+            }
         }
 
         public override Descriptor GetDescriptor(string index)

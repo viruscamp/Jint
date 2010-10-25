@@ -35,10 +35,11 @@ namespace Jint.Native
             }
 
             length = arguments.Length;
-            calleeDescriptor = new ValueDescriptor(this, CALLEE);
+            calleeDescriptor = new ValueDescriptor(this, CALLEE) { Attributes = PropertyAttributes.DontEnum };
             DefineOwnProperty(CALLEE, calleeDescriptor);
             calleeDescriptor.Set(this, callee);
-            DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength));
+
+            DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength) { Attributes = PropertyAttributes.DontEnum } );
         }
 
         // this is just an object without special stuff
@@ -75,6 +76,21 @@ namespace Jint.Native
         public override double ToNumber()
         {
             return Length;
+        }
+
+        /// <summary>
+        /// The number of the actually passed arguments
+        /// </summary>
+        public override int Length
+        {
+            get
+            {
+                return length;
+            }
+            set
+            {
+                length = value;
+            }
         }
 
         public const string TYPEOF = "Arguments";

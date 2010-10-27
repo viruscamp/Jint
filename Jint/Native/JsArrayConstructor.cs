@@ -224,6 +224,7 @@ namespace Jint.Native
             var key = (length - 1).ToString();
             var result = target[key];
             target.Delete(key);
+            target.Length--;
             return result;
         }
 

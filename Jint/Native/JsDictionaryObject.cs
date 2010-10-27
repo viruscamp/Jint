@@ -61,12 +61,12 @@ namespace Jint.Native
             return properties.TryGet(key, out desc) && desc.Owner == this;
         }
 
-        public bool HasProperty(JsInstance key)
+        public virtual bool HasProperty(JsInstance key)
         {
             return this.HasProperty(key.ToString());
         }
 
-        public bool HasOwnProperty(JsInstance key)
+        public virtual bool HasOwnProperty(JsInstance key)
         {
             return this.HasOwnProperty(key.ToString());
         }
@@ -92,13 +92,13 @@ namespace Jint.Native
             return result;
         }
 
-        public bool TryGetDescriptor(string index, out Descriptor result)
+        public virtual bool TryGetDescriptor(string index, out Descriptor result)
         {
             result = GetDescriptor(index);
             return result != null;
         }
 
-        public bool TryGetProperty(string index, out JsInstance result)
+        public virtual bool TryGetProperty(string index, out JsInstance result)
         {
             Descriptor d = GetDescriptor(index);
             if (d == null)
@@ -129,12 +129,12 @@ namespace Jint.Native
             }
         }
 
-        public void Delete(JsInstance key)
+        public virtual void Delete(JsInstance key)
         {
             Delete(key.ToString());
         }
 
-        public void Delete(string index)
+        public virtual void Delete(string index)
         {
             Descriptor d = null;
             if (TryGetDescriptor(index, out d))
@@ -151,11 +151,12 @@ namespace Jint.Native
             }
         }
 
-        public void DefineOwnProperty(string key, JsInstance value, PropertyAttributes propertyAttributes)
+        public virtual void DefineOwnProperty(string key, JsInstance value, PropertyAttributes propertyAttributes)
         {
             DefineOwnProperty(key, new ValueDescriptor(this, key, value) { Writable = (propertyAttributes & PropertyAttributes.ReadOnly) == 0, Enumerable = (propertyAttributes & PropertyAttributes.DontEnum) == 0 });
         }
 
+        // TODO: restrict using DefineOwnProperty, use indexer instead ???
         public virtual void DefineOwnProperty(string key, JsInstance value)
         {
             if (value != null && value.Class == Descriptor.TYPEOF)
@@ -168,7 +169,7 @@ namespace Jint.Native
             }
         }
 
-        public void DefineOwnProperty(string key, Descriptor currentDescriptor)
+        public virtual void DefineOwnProperty(string key, Descriptor currentDescriptor)
         {
             Descriptor desc;
             if (properties.TryGet(key, out desc) && desc.Owner == this)
@@ -236,7 +237,7 @@ namespace Jint.Native
 
         #endregion
 
-        public IEnumerable<JsInstance> GetValues()
+        public virtual IEnumerable<JsInstance> GetValues()
         {
             foreach (Descriptor descriptor in properties.Values)
             {
@@ -273,7 +274,7 @@ namespace Jint.Native
         /// <param name="instance"></param>
         /// <param name="p"></param>
         /// <param name="currentDescriptor"></param>
-        public JsInstance GetGetFunction(JsDictionaryObject target, JsInstance[] parameters)
+        public virtual JsInstance GetGetFunction(JsDictionaryObject target, JsInstance[] parameters)
         {
             if (parameters.Length <= 0)
             {
@@ -301,7 +302,7 @@ namespace Jint.Native
         /// <param name="instance"></param>
         /// <param name="p"></param>
         /// <param name="currentDescriptor"></param>
-        public JsInstance GetSetFunction(JsDictionaryObject target, JsInstance[] parameters)
+        public virtual JsInstance GetSetFunction(JsDictionaryObject target, JsInstance[] parameters)
         {
             if (parameters.Length <= 0)
             {

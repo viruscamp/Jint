@@ -1583,7 +1583,7 @@ namespace Jint
             }
             else
             {
-                Result = temp[Result.ToString()];
+                Result = temp[Result];
             }
         }
 

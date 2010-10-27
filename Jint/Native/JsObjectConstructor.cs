@@ -22,7 +22,7 @@ namespace Jint.Native
             // we need to keep this becouse the prototype is passed to the consctrucor rather than created in it
             Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
 
-            Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsDictionaryObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl));
+            //Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsDictionaryObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl));
 
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
@@ -192,33 +192,5 @@ namespace Jint.Native
 
             return instance;
         }
-
-        public JsInstance GetLengthImpl(JsDictionaryObject target) {
-            return Global.NumberClass.New(target.Length);
-        }
-
-        public JsInstance SetLengthImpl(JsInstance target, JsInstance[] parameters) {
-            int length = (int)parameters[0].ToNumber();
-
-            if (length < 0 || double.IsNaN(length) || double.IsInfinity(length)) {
-                throw new JsException(Global.RangeErrorClass.New("invalid array length"));
-            }
-
-            JsDictionaryObject array = (JsDictionaryObject)target;
-            if (length < array.Length) {
-                int oldLength = array.Length;
-                for (int i = length; i < oldLength; i++) {
-                    array.Delete(i.ToString());
-                }
-            }
-            else {
-                for (int i = array.Length; i < length; i++) {
-                    array[i.ToString()] = JsUndefined.Instance;
-                }
-            }
-
-            return parameters[0];
-        }
-
     }
 }

@@ -114,13 +114,13 @@ namespace Jint.Native
             }
         }
 
-        private JsInstance get(int i)
+        public JsInstance get(int i)
         {
             JsInstance value;
             return m_data.TryGetValue(i, out value) && value != null ? value : JsUndefined.Instance;
         }
 
-        private JsInstance put(int i, JsInstance value)
+        public JsInstance put(int i, JsInstance value)
         {
             if (i >= length)
                 length = i + 1;
@@ -137,7 +137,7 @@ namespace Jint.Native
                 int keyIndex = FindKeyOrNext(newLength);
                 if (keyIndex >= 0)
                 {
-                    for (int i = m_data.Count - 1; i >= keyIndex; i++ )
+                    for (int i = m_data.Count - 1; i >= keyIndex; i-- )
                         m_data.RemoveAt(i);
                 }
             }
@@ -228,7 +228,7 @@ namespace Jint.Native
 
         #region array specific methods
 
-        JsArray concat(IGlobal global,JsInstance[] args)
+        public JsArray concat(IGlobal global,JsInstance[] args)
         {
             var newData = new SortedList<int, JsInstance>(m_data);
             int offset = length;
@@ -262,7 +262,7 @@ namespace Jint.Native
             return new JsArray(newData, offset, global.ArrayClass.PrototypeProperty);
         }
 
-        JsString join(IGlobal global, JsInstance separator)
+        public JsString join(IGlobal global, JsInstance separator)
         {
             if (length == 0)
                 return global.StringClass.New();
@@ -271,13 +271,11 @@ namespace Jint.Native
             string[] map = new string[length];
             
             JsInstance item;
-            for( int i = 0; i< length; i++ )
+            for( int i = 0; i < length; i++ )
                 map[i] = m_data.TryGetValue(i,out item) && item != JsNull.Instance && item != JsUndefined.Instance ? item.ToString() : "";
 
             return global.StringClass.New( String.Join(sep, map) );
         }
-
-
 
         #endregion
 
@@ -303,6 +301,15 @@ namespace Jint.Native
 
             foreach (var key in base.GetKeys())
                 yield return key;
+        }
+
+        public override IEnumerable<JsInstance> GetValues()
+        {
+            var vals = m_data.Values;
+            for (int i = 0; i < vals.Count; i++)
+                yield return vals[i];
+            foreach (var val in base.GetValues())
+                yield return val;
         }
 
         public override bool HasOwnProperty(string key)

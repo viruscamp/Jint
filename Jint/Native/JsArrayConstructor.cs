@@ -20,7 +20,8 @@ namespace Jint.Native
         {
             var Prototype = PrototypeProperty;
 
-            #region Methods
+            Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl) { Enumerable = false } );
+
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsArray>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsArray>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("concat", global.FunctionClass.New<JsObject>(Concat), PropertyAttributes.DontEnum);
@@ -34,12 +35,8 @@ namespace Jint.Native
             Prototype.DefineOwnProperty("splice", global.FunctionClass.New<JsObject>(Splice, 2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("unshift", global.FunctionClass.New<JsObject>(UnShift, 1), PropertyAttributes.DontEnum);
 
-            #region ES5
             Prototype.DefineOwnProperty("indexOf", global.FunctionClass.New<JsObject>(IndexOfImpl, 1), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("lastIndexOf", global.FunctionClass.New<JsObject>(LastIndexOfImpl, 1), PropertyAttributes.DontEnum);
-            #endregion
-
-            #endregion
         }
 
         public JsArray New()
@@ -138,6 +135,8 @@ namespace Jint.Native
         /// <returns></returns>
         public JsInstance Concat(JsObject target, JsInstance[] parameters)
         {
+            if (target is JsArray)
+                return ((JsArray)target).concat(Global,parameters);
             JsArray array = Global.ArrayClass.New();
             List<JsInstance> items = new List<JsInstance>();
             items.Add(target);
@@ -147,22 +146,20 @@ namespace Jint.Native
             {
                 JsInstance e = items[0];
                 items.RemoveAt(0);
-                if (e.Class == JsArray.TYPEOF)
+                if (Global.ArrayClass.HasInstance(e as JsObject))
                 {
-                    for (int k = 0; k < ((JsArray)e).Length; k++)
+                    for (int k = 0; k < ((JsObject)e).Length; k++)
                     {
                         string p = k.ToString();
                         JsInstance result = null;
-                        if (((JsDictionaryObject)e).TryGetProperty(p, out result))
-                        {
-                            array.DefineOwnProperty(n.ToString(), new ValueDescriptor(this, n.ToString(), result));
-                            n++;
-                        }
+                        if (((JsObject)e).TryGetProperty(p, out result))
+                            array.put(n,result);
+                        n++;
                     }
                 }
                 else
                 {
-                    array.DefineOwnProperty(n.ToString(), new ValueDescriptor(this, n.ToString(), e));
+                    array.put(n,e);
                     n++;
                 }
             }
@@ -177,6 +174,8 @@ namespace Jint.Native
         /// <returns></returns>
         public JsInstance Join(JsObject target, JsInstance[] parameters)
         {
+            if (target is JsArray)
+                return ((JsArray)target).join(Global, parameters.Length > 0 ? parameters[0] : JsUndefined.Instance );
             string separator = (parameters.Length == 0 || parameters[0] == JsUndefined.Instance)
                 ? ","
                 : parameters[0].ToString();
@@ -239,7 +238,7 @@ namespace Jint.Native
             int length = (int)target["length"].ToNumber();
             foreach (var arg in parameters)
             {
-                target[length.ToString()] = arg;
+                target[ Global.NumberClass.New(length) ] = arg;
                 length++;
             }
 
@@ -429,7 +428,7 @@ namespace Jint.Native
                 JsInstance result = null;
                 if (target.TryGetProperty(from, out result))
                 {
-                    array.DefineOwnProperty(k.ToString(), new ValueDescriptor(target, k.ToString(), result));
+                    array.put(k, result);
                 }
             }
 
@@ -437,6 +436,8 @@ namespace Jint.Native
             items.AddRange(parameters);
             items.RemoveAt(0);
             items.RemoveAt(0);
+
+            // use non-distructional copy, determine direction
             if (items.Count < actualDeleteCount)
             {
                 for (int k = actualStart; k < len - actualDeleteCount; k++)
@@ -453,10 +454,13 @@ namespace Jint.Native
                         target.Delete(to);
                     }
                 }
+                
                 for (int k = target.Length; k > len - actualDeleteCount + items.Count; k--)
                 {
                     target.Delete((k - 1).ToString());
                 }
+
+                target.Length = len - actualDeleteCount + items.Count;
             }
             else
             {
@@ -474,18 +478,12 @@ namespace Jint.Native
                         target.Delete(to);
                     }
                 }
-                // if target is array
-                // if (target.length != int.MinValue && HasInstance( target ) )
-                //    target.length += len - actualDeleteCount + items.Count;
-                target.Length += len - actualDeleteCount + items.Count;
-
-                for (int k = 0; items.Count > 0; k++)
-                {
-                    JsInstance e = items[0];
-                    items.RemoveAt(0);
-                    target[k.ToString()] = e;
-                }
+                
+                
             }
+            for (int k = 0; k < items.Count; k++)
+                target[k.ToString()] = items[k];
+           
             return array;
         }
 
@@ -602,6 +600,30 @@ namespace Jint.Native
                 k++;
             }
             return Global.NumberClass.New(-1);
+        }
+
+        JsInstance GetLengthImpl(JsObject that)
+        {
+            return Global.NumberClass.New(that.Length);
+
+        }
+
+        JsInstance SetLengthImpl(JsObject that, JsInstance[] parameters)
+        {
+            if (that is JsArray)
+            {
+                that.Length = (int)parameters[0].ToNumber();
+            }
+            else
+            {
+                int oldLen = that.Length;
+                that.Length = (int)parameters[0].ToNumber();
+
+                for (int i = that.Length; i < oldLen; i++)
+                    that.Delete(Global.NumberClass.New(i));
+            }
+
+            return parameters[0];
         }
     }
 }

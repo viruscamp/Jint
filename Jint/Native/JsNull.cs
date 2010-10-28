@@ -69,7 +69,7 @@ namespace Jint.Native
             }
         }
 
-        public override void DefineOwnProperty(string key, JsInstance value)
+        public override void DefineOwnProperty(string key, Descriptor value)
         {
             
         }

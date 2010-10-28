@@ -29,41 +29,17 @@ namespace Jint.Native
 
                 d.Set(this, i < arguments.Length ? arguments[i] : JsUndefined.Instance);
 
-                if (i < callee.Arguments.Count)
-                    this.DefineOwnProperty(callee.Arguments[i], d);
                 this.DefineOwnProperty(i.ToString(), d);
             }
 
             length = arguments.Length;
+            
             calleeDescriptor = new ValueDescriptor(this, CALLEE) { Attributes = PropertyAttributes.DontEnum };
             DefineOwnProperty(CALLEE, calleeDescriptor);
             calleeDescriptor.Set(this, callee);
 
             DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength) { Attributes = PropertyAttributes.DontEnum } );
         }
-
-        // this is just an object without special stuff
-        // TODO: cleanup
-        /* public override Descriptor GetDescriptor(string index)
-        {
-
-            Descriptor result;
-            result = base.GetDescriptor(index);
-            if (result != null)
-                return result;
-
-            if (index == "callee" || Callee == null)
-                return null;
-
-            foreach (JsDictionaryObject declaringScope in Callee.DeclaringScopes)
-            {
-                result = declaringScope.GetDescriptor(index);
-                if (result != null)
-                    return result;
-            }
-
-            return null;
-        } */
 
         private int length;
         private IGlobal global;

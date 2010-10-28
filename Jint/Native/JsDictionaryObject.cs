@@ -7,12 +7,23 @@ using Jint.PropertyBags;
 
 namespace Jint.Native
 {
-
+    /// <summary>
+    /// Base class for a JsObject class.
+    /// </summary>
+    /// <remarks>
+    /// Implements generic property storing mechanism
+    /// </remarks>
     [Serializable]
     public abstract class JsDictionaryObject : JsInstance, IEnumerable<KeyValuePair<string, JsInstance>>
     {
         protected internal IPropertyBag properties = new MiniCachedPropertyBag();
 
+        /// <summary>
+        /// Determines wheater object is extensible or not. Extensible object allows defining new own properties.
+        /// </summary>
+        /// <remarks>
+        /// When object becomes non-extensible it can not becoma extansible again
+        /// </remarks>
         public bool Extensible { get; set; }
         
         private int m_length = 0;
@@ -20,22 +31,43 @@ namespace Jint.Native
         /// <summary>
         /// gets the number of an actually stored properties
         /// </summary>
+        /// <remarks>
+        /// This is a non ecma262 standart property
+        /// </remarks>
         public virtual int Length { get { return m_length; } set { } }
 
+        /// <summary>
+        /// Creates new Object without prototype
+        /// </summary>
         public JsDictionaryObject()
         {
             Extensible = true;
             Prototype = JsNull.Instance;
         }
 
+        /// <summary>
+        /// Creates new object with an specified prototype
+        /// </summary>
+        /// <param name="prototype">Prototype</param>
         public JsDictionaryObject(JsDictionaryObject prototype)
         {
             this.Prototype = prototype;
             Extensible = true;
         }
 
+        /// <summary>
+        /// ecma262 [[prototype]] property
+        /// </summary>
         private JsDictionaryObject Prototype { get; set; }
 
+        /// <summary>
+        /// Checks whether an object or it's [[prototype]] has the specified property.
+        /// </summary>
+        /// <param name="key">property name</param>
+        /// <returns>true or false indicating check result</returns>
+        /// <remarks>
+        /// This implementation uses a HasOwnProperty method while walking a prototypes chain.
+        /// </remarks>
         public virtual bool HasProperty(string key)
         {
             JsDictionaryObject obj = this;
@@ -55,6 +87,11 @@ namespace Jint.Native
             }
         }
 
+        /// <summary>
+        /// Checks whether object has an own property
+        /// </summary>
+        /// <param name="key">property name</param>
+        /// <returns>true of false</returns>
         public virtual bool HasOwnProperty(string key)
         {
             Descriptor desc;
@@ -69,12 +106,6 @@ namespace Jint.Native
         public virtual bool HasOwnProperty(JsInstance key)
         {
             return this.HasOwnProperty(key.ToString());
-        }
-
-        public virtual JsInstance this[JsInstance key]
-        {
-            get { return this[key.ToString()]; }
-            set { this[key.ToString()] = value; }
         }
 
         public virtual Descriptor GetDescriptor(string index)
@@ -92,10 +123,20 @@ namespace Jint.Native
             return result;
         }
 
+        public virtual bool TryGetDescriptor(JsInstance index, out Descriptor result)
+        {
+            return TryGetDescriptor(index.ToString(), out result);
+        }
+
         public virtual bool TryGetDescriptor(string index, out Descriptor result)
         {
             result = GetDescriptor(index);
             return result != null;
+        }
+
+        public virtual bool TryGetProperty(JsInstance index, out JsInstance result)
+        {
+            return TryGetProperty(index.ToString(), out result);
         }
 
         public virtual bool TryGetProperty(string index, out JsInstance result)
@@ -112,6 +153,12 @@ namespace Jint.Native
             return true;
         }
 
+        public virtual JsInstance this[JsInstance key]
+        {
+            get { return this[key.ToString()]; }
+            set { this[key.ToString()] = value; }
+        }
+
         public virtual JsInstance this[string index]
         {
             get
@@ -123,7 +170,7 @@ namespace Jint.Native
             {
                 Descriptor d = GetDescriptor(index);
                 if (d == null || d.Owner != this )
-                    properties.Put(index, new ValueDescriptor(this, index, value) );
+                    DefineOwnProperty( index, new ValueDescriptor(this, index, value) );
                 else
                     d.Set(this, value);
             }
@@ -151,13 +198,12 @@ namespace Jint.Native
             }
         }
 
-        public virtual void DefineOwnProperty(string key, JsInstance value, PropertyAttributes propertyAttributes)
+        public void DefineOwnProperty(string key, JsInstance value, PropertyAttributes propertyAttributes)
         {
             DefineOwnProperty(key, new ValueDescriptor(this, key, value) { Writable = (propertyAttributes & PropertyAttributes.ReadOnly) == 0, Enumerable = (propertyAttributes & PropertyAttributes.DontEnum) == 0 });
         }
 
-        // TODO: restrict using DefineOwnProperty, use indexer instead ???
-        public virtual void DefineOwnProperty(string key, JsInstance value)
+        public void DefineOwnProperty(string key, JsInstance value)
         {
             if (value != null && value.Class == Descriptor.TYPEOF)
             {
@@ -174,6 +220,7 @@ namespace Jint.Native
             Descriptor desc;
             if (properties.TryGet(key, out desc) && desc.Owner == this)
             {
+
                 // updating an existing property
                 switch (desc.DescriptorType)
                 {
@@ -344,6 +391,12 @@ namespace Jint.Native
             if (target.Prototype == this)
                 return true;
             return IsPrototypeOf(target.Prototype);
+        }
+
+        public override object Value
+        {
+            get { return null; }
+            set { }
         }
     }
 }

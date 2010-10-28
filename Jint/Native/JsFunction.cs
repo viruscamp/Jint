@@ -18,8 +18,6 @@ namespace Jint.Native
         public List<string> Arguments { get; set; }
         public JsScope Scope { get; set; }
 
-        public Stack<JsDictionaryObject> DeclaringScopes { get; set; }
-
         public JsFunction(IGlobal global, Statement statement)
             : this(global)
         {
@@ -44,7 +42,6 @@ namespace Jint.Native
         {
             Arguments = new List<string>();
             Statement = new EmptyStatement();
-            DeclaringScopes = new Stack<JsDictionaryObject>();
         }
 
         public JsObject PrototypeProperty

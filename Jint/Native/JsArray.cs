@@ -102,15 +102,15 @@ namespace Jint.Native
             }
         }
 
-        public override void DefineOwnProperty(string key, JsInstance value)
+        public override void DefineOwnProperty(string key, Descriptor d)
         {
             try
             {
-                put(Convert.ToInt32(key), value);
+                put(Convert.ToInt32(key), d.Get(this) );
             }
             catch (FormatException)
             {
-                base.DefineOwnProperty(key, value);
+                base.DefineOwnProperty(key, d);
             }
         }
 

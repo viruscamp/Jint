@@ -26,9 +26,9 @@ namespace Jint
         protected internal ITypeResolver typeResolver;
 
         public IGlobal Global { get; private set; }
-        public JsDictionaryObject GlobalScope { get; private set; }
+        public JsScope GlobalScope { get; private set; }
 
-        protected Stack<JsDictionaryObject> Scopes = new Stack<JsDictionaryObject>();
+        protected Stack<JsScope> Scopes = new Stack<JsScope>();
 
         protected bool exit;
         protected JsInstance returnInstance;
@@ -89,27 +89,26 @@ namespace Jint
             info.CallStack = CallStack;
             info.Locals = new JsObject(JsNull.Instance);
             DebugMode = false;
-            foreach (JsDictionaryObject scope in Scopes.ToArray())
-            {
-                foreach (var property in scope.GetKeys())
-                {
-                    if (!info.Locals.HasProperty(property))
-                    {
-                        info.Locals[property] = scope[property];
-                    }
-                }
-            }
+            
+            foreach (var property in CurrentScope.GetKeys())
+                info.Locals[property] = CurrentScope[property];
+                
             DebugMode = true;
 
             return info;
         }
 
-        public JsDictionaryObject CurrentScope
+        public JsScope CurrentScope
         {
             get { return Scopes.Peek(); }
         }
 
         protected void EnterScope(JsDictionaryObject scope)
+        {
+            Scopes.Push(new JsScope( CurrentScope, scope ));
+        }
+
+        protected void EnterScope(JsScope scope)
         {
             Scopes.Push(scope);
         }
@@ -198,6 +197,7 @@ namespace Jint
 
             if (left.Previous != null)
             {
+                // if this a property
                 left.Previous.Accept(this);
 
                 if (!(Result is JsDictionaryObject))
@@ -207,19 +207,10 @@ namespace Jint
             }
             else
             {
-                // resolve which CurrentScope to use
+                // this a variable
                 propertyName = ((Identifier)left.Member).Text;
-
-                Result = GlobalScope;
-
-                foreach (JsDictionaryObject scope in Scopes.ToArray())
-                {
-                    if (scope != GlobalScope && scope.TryGetDescriptor(propertyName, out d))
-                    {
-                        Result = scope;
-                        break;
-                    }
-                }
+                Result = CurrentScope;
+                CurrentScope.TryGetDescriptor(propertyName, out d);
             }
 
             if (left.Member is Identifier)
@@ -273,43 +264,37 @@ namespace Jint
             if (value.Class == JsFunction.TYPEOF)
                 ((JsFunction)value).Name = propertyName;
 
-
-            // Assignment to Clr property
-            //if (Result.IsClr)
-            //{
-            //    var parameters = JsClr.ConvertParameters(value);
-            //    var pi = propertyGetter.GetValue(Result.Value, propertyName);
-
-            //    if (pi != null)
-            //    {
-            //        var setMethod = pi.GetSetMethod();
-            //        methodInvoker.GetAppropriateParameters(parameters, setMethod.GetParameters(), Result.Value);
-            //        setMethod.Invoke(Result.Value, parameters);
-            //    }
-            //    else
-            //    {
-            //        var fi = fieldGetter.GetValue(Result.Value, propertyName);
-            //        if (fi != null)
-            //        {
-            //            methodInvoker.GetAppropriateParameters(parameters, new Type[] { fi.FieldType }, Result.Value);
-            //            fi.SetValue(Result.Value, parameters[0]);
-            //        }
-            //    }
-            //}
-
             JsDictionaryObject oldCallTarget = callTarget;
             callTarget = (JsDictionaryObject)Result;
             JsDictionaryObject target = callTarget;
             //Descriptor d = target.GetDescriptor(propertyName);
 
-            if (d != null && (d.DescriptorType != DescriptorType.Value || (d.Owner.Class != JsScope.TYPEOF && (d.DescriptorType == DescriptorType.Value && !d.Owner.IsPrototypeOf(target))) || d.Owner.Class == JsArguments.TYPEOF))
+            /*
+            if (
+                d != null && // if we have an existing property
+                (
+                    // and this isn't a value property
+                    d.DescriptorType != DescriptorType.Value ||
+                    (
+                    // or a variable from one of the scopes
+                        d.Owner.Class != JsScope.TYPEOF &&
+                        (
+                            d.DescriptorType == DescriptorType.Value &&
+                            !d.Owner.IsPrototypeOf(target)
+                         )
+                    ) ||
+                    d.Owner.Class == JsArguments.TYPEOF
+                )
+            )
+            {
                 d.Set(target, value);
+            }
             else
             {
-                /* if (target.Class == JsFunction.TYPEOF)
-                    target = ((JsFunction)target).Scope; */
                 target.DefineOwnProperty(propertyName, value);
-            }
+            }*/
+
+            target[propertyName] = value;
 
             callTarget = oldCallTarget;
         }
@@ -410,24 +395,9 @@ namespace Jint
             statement.Expression.Accept(this);
         }
 
-        private JsDictionaryObject SetInScopes(string key, JsInstance value)
-        {
-            foreach (JsDictionaryObject scope in Scopes.ToArray())
-            {
-                Descriptor d = null;
-                if (scope.TryGetDescriptor(key, out d))
-                {
-                    d.Set(scope, value);
-                    return scope;
-                }
-            }
-
-            GlobalScope[key] = value;
-            return GlobalScope;
-        }
-
         public void Visit(ForEachInStatement statement)
         {
+            // todo: may be declare own property in the current scope if not a globalDeclaration?
             bool globalDeclaration = true;
             string identifier = String.Empty;
 
@@ -454,15 +424,8 @@ namespace Jint
             {
                 foreach (object value in (IEnumerable)Result.Value)
                 {
-                    if (globalDeclaration)
-                    {
-                        SetInScopes(identifier, Global.WrapClr(value));
-                    }
-                    else
-                    {
-                        CurrentScope[identifier] = Global.WrapClr(value);
-                    }
-
+                    CurrentScope[identifier] = Global.WrapClr(value);
+                    
                     statement.Statement.Accept(this);
 
                     ResetContinueIfPresent(statement.Label);
@@ -489,15 +452,8 @@ namespace Jint
                 {
                     string value = keys[i];
 
-                    if (globalDeclaration)
-                    {
-                        SetInScopes(identifier, Global.StringClass.New(value));
-                    }
-                    else
-                    {
-                        CurrentScope[identifier] = Global.StringClass.New(value);
-                    }
-
+                    CurrentScope[identifier] = Global.StringClass.New(value);
+                    
                     statement.Statement.Accept(this);
 
                     ResetContinueIfPresent(statement.Label);
@@ -585,7 +541,7 @@ namespace Jint
             JsFunction f = Global.FunctionClass.New();
             f.Statement = functionDeclaration.Statement;
             f.Name = functionDeclaration.Name;
-            f.DeclaringScopes = new Stack<JsDictionaryObject>(Scopes);
+            f.Scope = CurrentScope; // copy current scope hierarchy
             
             // add a return undefined; statement at the end of each method
             BlockStatement block = (BlockStatement)f.Statement;
@@ -754,7 +710,7 @@ namespace Jint
                 statement.Expression.Accept(this);
                 if (statement.Global)
                 {
-                    SetInScopes(statement.Identifier, Result);
+                    // todo: where is it from? 
                 }
                 else
                 {
@@ -1461,21 +1417,19 @@ namespace Jint
 
         public void Visit(MemberExpression expression)
         {
-            bool enterScope = false;
-            if (expression.Previous != null)
-            {
-                expression.Previous.Accept(this);
-
-                enterScope = Result is JsDictionaryObject;// && !(Result is JsCallFunction); // && !(Result is JsFunction && CurrentScope is JsFunction); // if a function inside a function (closure) then don't enter scope
-                //if (Result == JsUndefined.Instance && System.Diagnostics.Debugger.IsAttached)
-                //    System.Diagnostics.Debugger.Break();
-                if (enterScope)
-                {
-                    EnterScope((JsDictionaryObject)Result);
-                }
-            }
+            var oldTarget = callTarget;
             try
             {
+                if (expression.Previous != null)
+                {
+                    expression.Previous.Accept(this);
+                    callTarget = Result as JsDictionaryObject;
+                }
+                else
+                {
+                    callTarget = CurrentScope;
+                }
+                
                 expression.Member.Accept(this);
 
                 callTarget = null;
@@ -1508,10 +1462,7 @@ namespace Jint
             }
             finally
             {
-                if (enterScope)
-                {
-                    ExitScope();
-                }
+                callTarget = oldTarget;
             }
         }
 
@@ -1607,27 +1558,16 @@ namespace Jint
 
             if (methodCall.Arguments.Count > 0)
             {
+                // keep result unchanged while forming arguments
                 JsInstance oldResult = Result;
-                JsDictionaryObject oldCallTarget = callTarget;
-                callTarget = null;
-                JsDictionaryObject currentScope = CurrentScope;
-                if (currentScope.Class != JsScope.TYPEOF)
-                    ExitScope();
-                try
+                
+                for (int j = 0; j < methodCall.Arguments.Count; j++)
                 {
-                    for (int j = 0; j < methodCall.Arguments.Count; j++)
-                    {
-                        methodCall.Arguments[j].Accept(this);
-                        parameters[j] = Result;
-                    }
+                    methodCall.Arguments[j].Accept(this);
+                    parameters[j] = Result;
                 }
-                finally
-                {
-                    if (currentScope.Class != JsScope.TYPEOF)
-                        EnterScope(currentScope);
-                }
+            
                 Result = oldResult;
-                callTarget = oldCallTarget;
             }
             #endregion
 
@@ -1755,7 +1695,19 @@ namespace Jint
             JsArguments args = new JsArguments(Global, function, parameters);
 
             // create new activation object and copy instantinated arguments to it
-            JsScope functionScope = new JsScope(args);
+            // Activation should be before the function.Scope hierarchy
+            JsScope functionScope = new JsScope( function.Scope ?? GlobalScope );
+
+            for (int i = 0; i < function.Arguments.Count; i++)
+                functionScope.DefineOwnProperty(
+                    function.Arguments[i],
+                    new LinkedDescriptor(
+                        functionScope,
+                        function.Arguments[i],
+                        args.GetDescriptor(i.ToString())
+                    )
+                );
+
 
             // define arguments variable
             if (HasOption(Options.Strict))
@@ -1763,24 +1715,9 @@ namespace Jint
             else
                 args.DefineOwnProperty(JsScope.ARGUMENTS, args);
 
-            // TODO: properties of the activation object should be linked to the properties of the arguments object
-            // But now activation object is derived from the arguments objects
-            /*foreach (var pair in args)
-                functionScope.DefineOwnProperty(pair.Key, args.GetDescriptor(pair.Key));*/
-
             // set this variable
             if (that != null)
                 functionScope.DefineOwnProperty(JsScope.THIS, that);
-
-
-            // save old execution state
-            var oldScopeStack = Scopes;
-
-            // init new scopes if the function has DeclaringScopes
-            if(function.DeclaringScopes.Count > 0)
-                Scopes = new Stack<JsDictionaryObject>(function.DeclaringScopes);
-
-            var prevScopesCount = Scopes.Count;
 
             // enter activation object
             EnterScope(functionScope);
@@ -1801,9 +1738,7 @@ namespace Jint
             {
                 // return to previous execution state
                 ExitScope();
-                if (prevScopesCount != Scopes.Count)
-                    throw new ApplicationException("Scopes count is changed");
-                Scopes = oldScopeStack;
+
                 CodeAccessPermission.RevertPermitOnly();
                 recursionLevel--;
             }
@@ -1983,6 +1918,7 @@ namespace Jint
 
 
             // Search for .NET property or method
+            // TODO: migrate Clr handling to JsScope or to the object
             if (CurrentScope.IsClr && CurrentScope.Value != null)
             {
                 EnsureClrAllowed();
@@ -2004,29 +1940,14 @@ namespace Jint
                 // Not a property, then must be a method
                 Result = new JsClrMethodInfo(propertyName);
                 return;
-
-                throw new JintException("Invalid property name: " + propertyName);
             }
 
-            // escalade scopes
-            JsDictionaryObject oldCallTarget = callTarget;
-            try
+            JsInstance result = null;
+            if (CurrentScope.TryGetProperty(propertyName, out result))
             {
-                foreach (JsDictionaryObject scope in Scopes.ToArray())
-                {
-                    callTarget = scope;
-                    JsInstance result = null;
-                    if (scope.TryGetProperty(propertyName, out result))
-                    {
-                        Result = result;
-                        if (Result != null)
-                            return;
-                    }
-                }
-            }
-            finally
-            {
-                callTarget = oldCallTarget;
+                Result = result;
+                if (Result != null)
+                    return;
             }
 
             if (propertyName == "null")

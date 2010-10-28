@@ -42,7 +42,7 @@ namespace Jint.Native
 
         public override string ToString()
         {
-            return (Value ?? "undefined").ToString();
+            return (Value ?? Class).ToString();
         }
 
         public override int GetHashCode()

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jint.Shell", "Jint.Shell\Ji
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jint.Play", "Jint.Play\Jint.Play.csproj", "{05C7712A-1CEA-4AED-8F0A-66F775A35E83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jint.Temp", "Jint.Temp\Jint.Temp.csproj", "{46CF77AA-6BAB-4C2F-91B7-8C825320D303}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Jint.vsmdi
@@ -40,6 +42,10 @@ Global
 		{05C7712A-1CEA-4AED-8F0A-66F775A35E83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05C7712A-1CEA-4AED-8F0A-66F775A35E83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05C7712A-1CEA-4AED-8F0A-66F775A35E83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46CF77AA-6BAB-4C2F-91B7-8C825320D303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46CF77AA-6BAB-4C2F-91B7-8C825320D303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46CF77AA-6BAB-4C2F-91B7-8C825320D303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46CF77AA-6BAB-4C2F-91B7-8C825320D303}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

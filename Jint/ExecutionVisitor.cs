@@ -14,6 +14,12 @@ namespace Jint
     [Serializable]
     public class ExecutionVisitor : IStatementVisitor, IJintVisitor, IDeserializationCallback
     {
+        struct LastResult
+        {
+            // When the last result is a base object
+            public JsDictionaryObject baseObject;
+            public JsInstance result;
+        }
         [NonSerialized]
         protected internal IFieldGetter fieldGetter;
         [NonSerialized]
@@ -42,6 +48,9 @@ namespace Jint
         public int MaxRecursions { get; set; }
 
         public JsInstance Result { get; set; }
+
+
+
         public JsInstance Returned { get { return returnInstance; } }
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
@@ -129,7 +138,7 @@ namespace Jint
                 {
                     OnStep(CreateDebugInformation(statement));
                 }
-
+                Result = null;
                 statement.Accept(this);
 
                 if (exit)
@@ -212,6 +221,8 @@ namespace Jint
                 Result = CurrentScope;
                 CurrentScope.TryGetDescriptor(propertyName, out d);
             }
+
+            // now result contains an object or a scope against which to resolve left.Member
 
             if (left.Member is Identifier)
             {
@@ -329,6 +340,7 @@ namespace Jint
                     OnStep(CreateDebugInformation(s));
                 }
 
+                Result = null;
                 s.Accept(this);
 
                 if (StopStatementFlow())
@@ -1417,52 +1429,28 @@ namespace Jint
 
         public void Visit(MemberExpression expression)
         {
-            var oldTarget = callTarget;
-            try
+            callTarget = null;
+
+            if (expression.Previous != null)
             {
-                if (expression.Previous != null)
-                {
-                    expression.Previous.Accept(this);
-                    callTarget = Result as JsDictionaryObject;
-                }
-                else
-                {
-                    callTarget = CurrentScope;
-                }
-                
-                expression.Member.Accept(this);
-
-                callTarget = null;
-
-                #region Retain member if result is a function
-                if (Result != null && Result.Class == JsFunction.TYPEOF)
-                {
-                    callTarget = CurrentScope;
-                }
-
-                if (Result != null && Result.Class == JsClrMethodInfo.TYPEOF)
-                {
-                    callTarget = CurrentScope;
-                }
-                #endregion
-
-                // Try to evaluate a CLR type
-                if (Result == JsUndefined.Instance && typeFullname.Length > 0)
-                {
-                    EnsureClrAllowed();
-
-                    Type type = typeResolver.ResolveType(typeFullname.ToString());
-
-                    if (type != null)
-                    {
-                        Result = Global.WrapClr(type);
-                        typeFullname = new StringBuilder();
-                    }
-                }
+                // the previous part is an property, it will set a callTarget
+                expression.Previous.Accept(this);
             }
-            finally
+
+            expression.Member.Accept(this);
+            
+            // Try to evaluate a CLR type
+            if (Result == JsUndefined.Instance && typeFullname.Length > 0)
             {
-                callTarget = oldTarget;
+                EnsureClrAllowed();
+
+                Type type = typeResolver.ResolveType(typeFullname.ToString());
+
+                if (type != null)
+                {
+                    Result = Global.WrapClr(type);
+                    typeFullname = new StringBuilder();
+                }
             }
         }
 
@@ -1540,15 +1528,17 @@ namespace Jint
 
         public void Visit(MethodCall methodCall)
         {
+            // callTarget contains target object
+            // result contains actual method
             if (Result == JsUndefined.Instance || Result == null)
             {
                 if (!String.IsNullOrEmpty(lastIdentifier))
                 {
-                    throw new JsException(Global.TypeErrorClass.New("Object expected: " + lastIdentifier));
+                    throw new JsException(Global.TypeErrorClass.New("Method isn't defined: " + lastIdentifier));
                 }
                 else
                 {
-                    throw new JsException(Global.TypeErrorClass.New("Object expected"));
+                    throw new JsException(Global.TypeErrorClass.New("Method isn't defined"));
                 }
             }
 
@@ -1624,7 +1614,6 @@ namespace Jint
                     List<Type> generics = new List<Type>();
                     if (methodCall.Generics.Count > 0)
                     {
-                        JsDictionaryObject oldCallTarget = callTarget;
                         foreach (Expression generic in methodCall.Generics)
                         {
                             generic.Accept(this);
@@ -1637,7 +1626,6 @@ namespace Jint
 
                             generics.Add((Type)Result.Value);
                         }
-                        callTarget = oldCallTarget;
                     }
 
                     MethodInfo methodInfo = methodInvoker.Invoke(callTarget.Value, clrMethod.Value.ToString(), clrParameters, generics.ToArray());
@@ -1762,75 +1750,50 @@ namespace Jint
 
         public void Visit(PropertyExpression expression)
         {
+            // save base of current expression
+            callTarget = Result as JsDictionaryObject;
+            if ((callTarget) == null || callTarget == JsUndefined.Instance || callTarget == JsNull.Instance)
+            {
+                throw new JsException( Global.TypeErrorClass.New( String.Format("An object is required: {0} while resolving property {1}", lastIdentifier, expression.Text) ) );
+            }
 
             Result = null;
 
             string propertyName = lastIdentifier = expression.Text;
 
-            // todo: boolshit here
-
-            /*if (propertyName == JsFunction.PROTOTYPE)
-            {
-                Result = CurrentScope.Prototype;
-                return;
-            }*/
-
             JsInstance result = null;
 
-            JsDictionaryObject oldCallTarget = callTarget;
-            callTarget = CurrentScope;
-            try
-            {// Closure ?
-                // TODO: cleanup
-                /*callTarget = CurrentScope;
-                if (CurrentScope.Class == JsFunction.TYPEOF)
-                {
-                    JsScope scope = ((JsFunction)CurrentScope).Scope;
-                    if (scope.TryGetProperty(propertyName, out result))
-                    {
-                        Result = result;
-                        return;
-                    }
-                }*/
-
-                callTarget = CurrentScope;
-                if (CurrentScope.TryGetProperty(propertyName, out result))
-                {
+            if (callTarget.TryGetProperty(propertyName, out result))
+            {
                     Result = result;
                     return;
-                }
             }
-            finally
-            {
-                callTarget = oldCallTarget;
-            }
-
 
             // Search for .NET property or method
-            if (CurrentScope.IsClr && CurrentScope.Value != null)
+            if (callTarget.IsClr && callTarget.Value != null)
             {
                 EnsureClrAllowed();
 
                 // enum ?
-                var type = CurrentScope.Value as Type;
+                var type = callTarget.Value as Type;
                 if (type != null && type.IsEnum)
                 {
                     Result = Global.WrapClr(Enum.Parse(type, propertyName));
                     return;
                 }
 
-                var propertyInfo = propertyGetter.GetValue(CurrentScope.Value, propertyName);
+                var propertyInfo = propertyGetter.GetValue(callTarget.Value, propertyName);
                 if (propertyInfo != null)
                 {
-                    Result = Global.WrapClr(propertyInfo.GetValue(CurrentScope.Value, null));
+                    Result = Global.WrapClr(propertyInfo.GetValue(callTarget.Value, null));
                     return;
                 }
 
 
-                var fieldInfo = fieldGetter.GetValue(CurrentScope.Value, propertyName);
+                var fieldInfo = fieldGetter.GetValue(callTarget.Value, propertyName);
                 if (fieldInfo != null)
                 {
-                    Result = Global.WrapClr(fieldInfo.GetValue(CurrentScope.Value));
+                    Result = Global.WrapClr(fieldInfo.GetValue(callTarget.Value));
                     return;
                 }
 

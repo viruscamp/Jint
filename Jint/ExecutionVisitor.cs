@@ -160,6 +160,11 @@ namespace Jint
 
         public void Visit(Program program)
         {
+            // initialize local variables, in case the visitor is used multiple times by the same engine
+            typeFullname = new StringBuilder();
+            exit = false;
+            lastIdentifier = String.Empty;
+
             foreach (var statement in program.ReorderStatements())
             {
                 CurrentStatement = statement;
@@ -1513,7 +1518,6 @@ namespace Jint
 
             if (methodCall.Arguments.Count > 0)
             {
-                // keep result unchanged while forming arguments
             
                 for (int j = 0; j < methodCall.Arguments.Count; j++)
                 {

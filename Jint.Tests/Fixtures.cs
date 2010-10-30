@@ -1437,6 +1437,14 @@ var fakeButton = new Test.FakeButton();");
                 ");
         }
 
+        [TestMethod]
+        public void StaticMemberAfterUndefinedReference() {
+            var engine = new Jint.JintEngine();
+
+            Assert.AreEqual(System.String.Format("{0}", 1), engine.Run("System.String.Format('{0}', 1)"));
+            Assert.AreEqual("undefined", engine.Run("typeof thisIsNotDefined"));
+            Assert.AreEqual(System.String.Format("{0}", 1), engine.Run("System.String.Format('{0}', 1)"));
+        }
     }
 
     public struct Size

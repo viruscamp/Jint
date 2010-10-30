@@ -1,4 +1,4 @@
-﻿var obj = { name:"Nicolas", get Name(){ return "My name is "+name}, set Name(value) { this.name=value; } };
+﻿var obj = { name:"Nicolas", get Name(){ return "My name is "+this.name}, set Name(value) { this.name=value; } };
 
 assert("Nicolas", obj.name);
 assert("My name is Nicolas", obj.Name);
@@ -70,11 +70,13 @@ var CSS2Properties = function() {
     this.styleIndex = {};
     this.applyStyle = function() {
         for (var style in { 'a': null, 'b': null }) {
+            that = this;
             (function(name) {
-                CSS2Properties.prototype.__defineGetter__(this, name, function() {
+                // we can't use this inside this function becouse it's called without base!!!
+                CSS2Properties.prototype.__defineGetter__(that, name, function() {
                     return this.styleIndex[name];
                 });
-                CSS2Properties.prototype.__defineSetter__(this, name, function(value) {
+                CSS2Properties.prototype.__defineSetter__(that, name, function(value) {
                     this.setProperty(name,value);
                 });
             })(style);

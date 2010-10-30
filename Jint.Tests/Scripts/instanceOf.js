@@ -1,9 +1,7 @@
 ﻿var func = function() {
-    
 }
 
 function Foo() {
-    
 }
 
 var bar = new Foo();

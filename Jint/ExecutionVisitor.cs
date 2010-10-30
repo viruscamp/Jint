@@ -14,12 +14,13 @@ namespace Jint
     [Serializable]
     public class ExecutionVisitor : IStatementVisitor, IJintVisitor, IDeserializationCallback
     {
-        struct LastResult
+        struct ResultInfo
         {
             // When the last result is a base object
             public JsDictionaryObject baseObject;
             public JsInstance result;
         }
+
         [NonSerialized]
         protected internal IFieldGetter fieldGetter;
         [NonSerialized]
@@ -47,10 +48,6 @@ namespace Jint
         public bool DebugMode { get; set; }
         public int MaxRecursions { get; set; }
 
-        public JsInstance Result { get; set; }
-
-
-
         public JsInstance Returned { get { return returnInstance; } }
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
@@ -63,9 +60,42 @@ namespace Jint
         /// evaluating the MethodCall, the latest Result is a JsFunction, and myArray is lost. Here it will be 
         /// in callTarget
         /// </summary>
-        private JsDictionaryObject callTarget;
 
-        public JsDictionaryObject CallTarget { get { return callTarget; } }
+        ResultInfo lastResult;
+        Stack<ResultInfo> stackResults = new Stack<ResultInfo>();
+
+        public JsDictionaryObject CallTarget {
+            get
+            {
+                return lastResult.baseObject;
+            }
+        }
+        public JsInstance Result {
+            get
+            {
+                return lastResult.result;
+            }
+            set
+            {
+                lastResult.result = value;
+                lastResult.baseObject = null;
+            }
+        }
+        
+        public void SetResult(JsInstance value, JsDictionaryObject baseObject)
+        {
+            lastResult.result = value;
+            lastResult.baseObject = baseObject;
+        }
+
+        void SaveResult()
+        {
+            stackResults.Push(lastResult);
+        }
+        void RestoreResult()
+        {
+            lastResult = stackResults.Pop();
+        }
 
         public ExecutionVisitor(Options options)
         {
@@ -204,25 +234,27 @@ namespace Jint
                 throw new JintException("The left member of an assignment must be a member");
             }
 
+            JsDictionaryObject baseObject;
+
             if (left.Previous != null)
             {
                 // if this a property
                 left.Previous.Accept(this);
+                baseObject = Result as JsDictionaryObject;
 
-                if (!(Result is JsDictionaryObject))
-                {
+                if (baseObject == null)
                     throw new JintException("Attempt to assign to an undefined variable.");
-                }
             }
             else
             {
+                baseObject = CurrentScope;
                 // this a variable
                 propertyName = ((Identifier)left.Member).Text;
-                Result = CurrentScope;
+                
                 CurrentScope.TryGetDescriptor(propertyName, out d);
             }
 
-            // now result contains an object or a scope against which to resolve left.Member
+            // now baseObject contains an object or a scope against which to resolve left.Member
 
             if (left.Member is Identifier)
             {
@@ -230,16 +262,17 @@ namespace Jint
             }
             else
             {
-                JsInstance temp = Result;
                 Indexer indexer = left.Member as Indexer;
+                
+                // calculate index expression
                 indexer.Index.Accept(this);
 
                 // The left member might be a CLR instance
-                if (temp.IsClr)
+                if (baseObject.IsClr)
                 {
-                    if (temp.Value.GetType().IsArray)
+                    if (baseObject.Value.GetType().IsArray)
                     {
-                        Array array = (Array)temp.Value;
+                        Array array = (Array)baseObject.Value;
                         array.SetValue(Convert.ChangeType(value.Value, array.GetType().GetElementType()), (int)Result.ToNumber());
                         return;
                     }
@@ -248,66 +281,25 @@ namespace Jint
                         // Converts to CLR objects
                         var parameters = JsClr.ConvertParameters(Result, value);
 
-                        PropertyInfo pi = propertyGetter.GetValue(temp.Value, "Item", parameters);
+                        PropertyInfo pi = propertyGetter.GetValue(baseObject.Value, "Item", parameters);
 
                         if (pi != null)
                         {
-                            pi.GetSetMethod().Invoke(temp.Value, parameters);
-                            Result = Global.ObjectClass.New(temp.Value);
+                            pi.GetSetMethod().Invoke(baseObject.Value, parameters);
+                            Result = Global.ObjectClass.New(baseObject.Value);
                             return;
                         }
                     }
                 }
 
                 propertyName = Result.Value.ToString();
-
-                Result = temp;
             }
-
-            if (!(Result is JsDictionaryObject))
-            {
-                throw new JintException("The property is not valid in the current context: " + propertyName);
-            }
-            if (d == null)
-                d = ((JsDictionaryObject)Result).GetDescriptor(propertyName);
 
             //Assigning function Name
             if (value.Class == JsFunction.TYPEOF)
                 ((JsFunction)value).Name = propertyName;
 
-            JsDictionaryObject oldCallTarget = callTarget;
-            callTarget = (JsDictionaryObject)Result;
-            JsDictionaryObject target = callTarget;
-            //Descriptor d = target.GetDescriptor(propertyName);
-
-            /*
-            if (
-                d != null && // if we have an existing property
-                (
-                    // and this isn't a value property
-                    d.DescriptorType != DescriptorType.Value ||
-                    (
-                    // or a variable from one of the scopes
-                        d.Owner.Class != JsScope.TYPEOF &&
-                        (
-                            d.DescriptorType == DescriptorType.Value &&
-                            !d.Owner.IsPrototypeOf(target)
-                         )
-                    ) ||
-                    d.Owner.Class == JsArguments.TYPEOF
-                )
-            )
-            {
-                d.Set(target, value);
-            }
-            else
-            {
-                target.DefineOwnProperty(propertyName, value);
-            }*/
-
-            target[propertyName] = value;
-
-            callTarget = oldCallTarget;
+            Result = baseObject[propertyName] = value;
         }
 
         public void Visit(CommaOperatorStatement statement)
@@ -555,12 +547,14 @@ namespace Jint
             f.Name = functionDeclaration.Name;
             f.Scope = CurrentScope; // copy current scope hierarchy
             
+            // TODO: cleanup
             // add a return undefined; statement at the end of each method
-            BlockStatement block = (BlockStatement)f.Statement;
+            /* BlockStatement block = (BlockStatement)f.Statement;
             if (block.Statements.Count == 0)
             {
-                block.Statements.AddLast(new ReturnStatement(new PropertyExpression(JsUndefined.TYPEOF)));
+                block.Statements.AddLast(new ReturnStatement(new ValueExpression(JsUndefined.TYPEOF)));
             }
+             */
 
             f.Arguments = functionDeclaration.Parameters;
             if (HasOption(Options.Strict))
@@ -577,21 +571,8 @@ namespace Jint
 
         public void Visit(FunctionDeclarationStatement statement)
         {
-            // todo: cleanup
             JsFunction f = CreateFunction(statement);
-            // Closures ?
-            /*
-            if (CurrentScope.Class == JsFunction.TYPEOF)
-            {
-                ((JsFunction)CurrentScope).Scope[statement.Name] = f;
-            }
-            else
-            {*/
-                //if (Scopes.Count == 2)
-                CurrentScope[statement.Name] = f;
-                //else
-                //    CurrentScope[statement.Name] = f;
-            //}
+            CurrentScope[statement.Name] = f;
         }
 
         public void Visit(IfStatement statement)
@@ -998,8 +979,6 @@ namespace Jint
 
         public void Visit(BinaryExpression expression)
         {
-            JsInstance old = Result;
-
             // Evaluates the left expression and saves the value
             expression.LeftExpression.Accept(this);
             JsInstance left = Result;
@@ -1018,13 +997,9 @@ namespace Jint
                 return;
             }
 
-            Result = null;
-
             // Evaluates the right expression and saves the value
             expression.RightExpression.Accept(this);
             JsInstance right = Result;
-
-            Result = old;
 
             switch (expression.Type)
             {
@@ -1318,47 +1293,47 @@ namespace Jint
                 case UnaryExpressionType.PostfixPlusPlus:
 
                     expression.Expression.Accept(this);
-                    JsInstance temp = Result;
+                    JsInstance value = Result;
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
 
-                    Assign(member, Global.NumberClass.New(temp.ToNumber() + 1));
+                    Assign(member, Global.NumberClass.New(value.ToNumber() + 1));
 
-                    Result = temp;
+                    Result = value;
+
                     break;
 
                 case UnaryExpressionType.PostfixMinusMinus:
 
                     expression.Expression.Accept(this);
-                    temp = Result;
+                    value = Result;
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
 
-                    Assign(member, Global.NumberClass.New(temp.ToNumber() - 1));
+                    Assign(member, Global.NumberClass.New(value.ToNumber() - 1));
 
-                    Result = temp;
+                    Result = value;
+
                     break;
 
                 case UnaryExpressionType.PrefixPlusPlus:
 
                     expression.Expression.Accept(this);
-                    temp = Global.NumberClass.New(Result.ToNumber() + 1);
+                    value = Global.NumberClass.New(Result.ToNumber() + 1);
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
-                    Assign(member, temp);
+                    Assign(member, value);
 
-                    Result = temp;
                     break;
 
                 case UnaryExpressionType.PrefixMinusMinus:
 
                     expression.Expression.Accept(this);
-                    temp = Global.NumberClass.New(Result.ToNumber() - 1);
+                    value = Global.NumberClass.New(Result.ToNumber() - 1);
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
-                    Assign(member, temp);
+                    Assign(member, value);
 
-                    Result = temp;
                     break;
 
                 case UnaryExpressionType.Delete:
@@ -1367,7 +1342,7 @@ namespace Jint
                     if (member == null)
                         throw new NotImplementedException("delete");
                     member.Previous.Accept(this);
-                    temp = Result;
+                    value = Result;
                     string propertyName = null;
                     if (member.Member is PropertyExpression)
                         propertyName = ((PropertyExpression)member.Member).Text;
@@ -1380,18 +1355,20 @@ namespace Jint
                         throw new JsException(Global.TypeErrorClass.New());
                     try
                     {
-                        ((JsDictionaryObject)temp).Delete(propertyName);
+                        ((JsDictionaryObject)value).Delete(propertyName);
                     }
                     catch (JintException e)
                     {
                         throw new JsException(Global.TypeErrorClass.New());
                     }
-                    Result = temp;
+                    Result = value;
                     break;
 
                 case UnaryExpressionType.Void:
 
-                    throw new NotImplementedException("void");
+                    expression.Accept(this);
+                    Result = JsUndefined.Instance;
+                    break;
 
                 case UnaryExpressionType.Inv:
 
@@ -1429,8 +1406,6 @@ namespace Jint
 
         public void Visit(MemberExpression expression)
         {
-            callTarget = null;
-
             if (expression.Previous != null)
             {
                 // the previous part is an property, it will set a callTarget
@@ -1456,53 +1431,41 @@ namespace Jint
 
         public void Visit(Indexer indexer)
         {
-            JsDictionaryObject temp = (JsDictionaryObject)Result;
+            JsDictionaryObject target = (JsDictionaryObject)Result;
 
-            JsDictionaryObject currentScope = CurrentScope;
+            indexer.Index.Accept(this);            
 
-            // if the indexer is a variable, it must be evaluated in the scope outside the indexed object
-            ExitScope();
-
-            try
-            {
-                indexer.Index.Accept(this);
-            }
-            finally
-            {
-                EnterScope(currentScope);
-            }
-
-            if (temp.IsClr) {
+            if (target.IsClr) {
                 EnsureClrAllowed();
 
                 PermissionSet.PermitOnly();
 
                 try {
-                    if (temp.Value.GetType().IsArray) {
-                        Result = Global.ObjectClass.New(((Array)temp.Value).GetValue((int)Result.ToNumber()));
+                    if (target.Value.GetType().IsArray) {
+                        Result = Global.ObjectClass.New(((Array)target.Value).GetValue((int)Result.ToNumber()));
                         return;
                     }
                     else {
                         var parameters = JsClr.ConvertParameters(Result);
 
-                        PropertyInfo pi = propertyGetter.GetValue(temp.Value, "Item", parameters);
+                        PropertyInfo pi = propertyGetter.GetValue(target.Value, "Item", parameters);
 
                         if (pi != null) {
-                            Result = Global.WrapClr(pi.GetValue(temp.Value, parameters));
+                            Result = Global.WrapClr(pi.GetValue(target.Value, parameters));
                             return;
                         }
                         else {
-                            pi = propertyGetter.GetValue(temp.Value, Result.ToString());
+                            pi = propertyGetter.GetValue(target.Value, Result.ToString());
 
                             if (pi != null) {
-                                Result = Global.WrapClr(pi.GetValue(temp.Value, null));
+                                Result = Global.WrapClr(pi.GetValue(target.Value, null));
                                 return;
                             }
 
-                            FieldInfo fi = fieldGetter.GetValue(temp.Value, Result.ToString());
+                            FieldInfo fi = fieldGetter.GetValue(target.Value, Result.ToString());
 
                             if (fi != null) {
-                                Result = Global.WrapClr(fi.GetValue(temp.Value));
+                                Result = Global.WrapClr(fi.GetValue(target.Value));
                                 return;
                             }
                             else {
@@ -1516,21 +1479,22 @@ namespace Jint
                 }
             }
 
-            if (temp.Class == JsString.TYPEOF)
+            if (target.Class == JsString.TYPEOF)
             {
-                Result = Global.StringClass.New(temp.ToString()[Convert.ToInt32(Result.ToNumber())].ToString());
+                Result = Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString());
             }
             else
             {
-                Result = temp[Result];
+                Result = target[Result];
             }
         }
 
         public void Visit(MethodCall methodCall)
         {
-            // callTarget contains target object
-            // result contains actual method
-            if (Result == JsUndefined.Instance || Result == null)
+            var that = CallTarget;
+            var target = Result;
+
+            if (target == JsUndefined.Instance || Result == null)
             {
                 if (!String.IsNullOrEmpty(lastIdentifier))
                 {
@@ -1545,25 +1509,24 @@ namespace Jint
             #region Evaluates parameters
             JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
             Type[] types = new Type[methodCall.Arguments.Count];
+            
 
             if (methodCall.Arguments.Count > 0)
             {
                 // keep result unchanged while forming arguments
-                JsInstance oldResult = Result;
-                
+            
                 for (int j = 0; j < methodCall.Arguments.Count; j++)
                 {
                     methodCall.Arguments[j].Accept(this);
                     parameters[j] = Result;
                 }
-            
-                Result = oldResult;
+                
             }
             #endregion
 
-            if (Result.Class == JsFunction.TYPEOF)
+            if (target.Class == JsFunction.TYPEOF)
             {
-                JsFunction function = (JsFunction)Result;
+                JsFunction function = (JsFunction)target;
 
                 if (DebugMode)
                 {
@@ -1585,7 +1548,7 @@ namespace Jint
 
                 returnInstance = JsUndefined.Instance;
 
-                ExecuteFunction(function, callTarget, parameters);
+                ExecuteFunction(function, that, parameters);
 
                 if (DebugMode)
                 {
@@ -1596,7 +1559,7 @@ namespace Jint
                 return;
             }
 
-            if (Result.Class == JsClrMethodInfo.TYPEOF)
+            if (target.Class == JsClrMethodInfo.TYPEOF)
             {
                 // Fallback to CLR methods
                 object result = null;
@@ -1607,7 +1570,7 @@ namespace Jint
                 object[] clrParameters = JsClr.ConvertParameters(parameters);
                 #endregion
 
-                JsClrMethodInfo clrMethod = (JsClrMethodInfo)Result;
+                JsClrMethodInfo clrMethod = (JsClrMethodInfo)target;
                 try
                 {
 
@@ -1628,7 +1591,7 @@ namespace Jint
                         }
                     }
 
-                    MethodInfo methodInfo = methodInvoker.Invoke(callTarget.Value, clrMethod.Value.ToString(), clrParameters, generics.ToArray());
+                    MethodInfo methodInfo = methodInvoker.Invoke(that.Value, clrMethod.Value.ToString(), clrParameters, generics.ToArray());
 
                     PermissionSet.PermitOnly();
 
@@ -1639,7 +1602,7 @@ namespace Jint
 
                     try
                     {
-                        result = methodInfo.Invoke(callTarget.Value, clrParameters);
+                        result = methodInfo.Invoke(that.Value, clrParameters);
                     }
                     catch (Exception e)
                     {
@@ -1678,7 +1641,7 @@ namespace Jint
             }
 
             // ecma chapter 10.
-
+            // TODO: move creation of the activation object to the JsFunction
             // create new argument object and instantinate arguments into it
             JsArguments args = new JsArguments(Global, function, parameters);
 
@@ -1706,6 +1669,8 @@ namespace Jint
             // set this variable
             if (that != null)
                 functionScope.DefineOwnProperty(JsScope.THIS, that);
+            else
+                functionScope.DefineOwnProperty(JsScope.THIS, Global as JsObject);
 
             // enter activation object
             EnterScope(functionScope);
@@ -1751,11 +1716,13 @@ namespace Jint
         public void Visit(PropertyExpression expression)
         {
             // save base of current expression
-            callTarget = Result as JsDictionaryObject;
-            if ((callTarget) == null || callTarget == JsUndefined.Instance || callTarget == JsNull.Instance)
-            {
-                throw new JsException( Global.TypeErrorClass.New( String.Format("An object is required: {0} while resolving property {1}", lastIdentifier, expression.Text) ) );
-            }
+            var callTarget = Result as JsDictionaryObject;
+            
+            // this check is disabled becouse it prevents Clr names to resolve
+            //if ((callTarget) == null || callTarget == JsUndefined.Instance || callTarget == JsNull.Instance)
+            //{
+            //    throw new JsException( Global.TypeErrorClass.New( String.Format("An object is required: {0} while resolving property {1}", lastIdentifier, expression.Text) ) );
+            //}
 
             Result = null;
 
@@ -1765,7 +1732,7 @@ namespace Jint
 
             if (callTarget.TryGetProperty(propertyName, out result))
             {
-                    Result = result;
+                    SetResult(result,callTarget);
                     return;
             }
 
@@ -1778,14 +1745,14 @@ namespace Jint
                 var type = callTarget.Value as Type;
                 if (type != null && type.IsEnum)
                 {
-                    Result = Global.WrapClr(Enum.Parse(type, propertyName));
+                    SetResult(Global.WrapClr(Enum.Parse(type, propertyName)), callTarget );
                     return;
                 }
 
                 var propertyInfo = propertyGetter.GetValue(callTarget.Value, propertyName);
                 if (propertyInfo != null)
                 {
-                    Result = Global.WrapClr(propertyInfo.GetValue(callTarget.Value, null));
+                    SetResult(Global.WrapClr(propertyInfo.GetValue(callTarget.Value, null)), callTarget);
                     return;
                 }
 
@@ -1793,12 +1760,12 @@ namespace Jint
                 var fieldInfo = fieldGetter.GetValue(callTarget.Value, propertyName);
                 if (fieldInfo != null)
                 {
-                    Result = Global.WrapClr(fieldInfo.GetValue(callTarget.Value));
+                    SetResult(Global.WrapClr(fieldInfo.GetValue(callTarget.Value)),callTarget);
                     return;
                 }
 
                 // Not a property, then must be a method
-                Result = new JsClrMethodInfo(propertyName);
+                SetResult( new JsClrMethodInfo(propertyName), callTarget);
                 return;
 
                 throw new JintException("Invalid property name: " + propertyName);
@@ -1818,19 +1785,19 @@ namespace Jint
                     var propertyInfo = propertyGetter.GetValue(type, propertyName);
                     if (propertyInfo != null)
                     {
-                        Result = Global.WrapClr(propertyInfo.GetValue(type, null));
+                        SetResult( Global.WrapClr(propertyInfo.GetValue(type, null)), callTarget );
                         return;
                     }
 
                     var fieldInfo = fieldGetter.GetValue(type, propertyName);
                     if (fieldInfo != null)
                     {
-                        Result = Global.WrapClr(fieldInfo.GetValue(type));
+                        SetResult( Global.WrapClr(fieldInfo.GetValue(type)), callTarget );
                         return;
                     }
 
                     // Not a property, then must be a method
-                    Result = new JsClrMethodInfo(propertyName);
+                    SetResult( new JsClrMethodInfo(propertyName), callTarget );
                     return;
 
                     throw new JintException("Invalid property name: " + propertyName);
@@ -1842,16 +1809,19 @@ namespace Jint
                 typeFullname.Append('.').Append(propertyName);
             }
 
-            Result = JsUndefined.Instance;
+            SetResult( JsUndefined.Instance, callTarget );
         }
 
         public void Visit(PropertyDeclarationExpression expression)
         {
+            // previous result was the object in which we need to define a property
+            var target = Result as JsDictionaryObject;
+
             switch (expression.Mode)
             {
                 case PropertyExpressionType.Data:
                     expression.Expression.Accept(this);
-                    Result = new ValueDescriptor(CurrentScope, expression.Name, Result);
+                    Result = new ValueDescriptor(target, expression.Name, Result);
                     break;
                 case PropertyExpressionType.Get:
                 case PropertyExpressionType.Set:
@@ -1866,7 +1836,7 @@ namespace Jint
                         expression.SetExpression.Accept(this);
                         set = (JsFunction)Result;
                     }
-                    Result = new PropertyDescriptor(Global, CurrentScope, expression.Name) { GetFunction = get, SetFunction = set, Enumerable = true };
+                    Result = new PropertyDescriptor(Global, target, expression.Name) { GetFunction = get, SetFunction = set, Enumerable = true };
                     break;
                 default:
                     break;
@@ -1946,23 +1916,13 @@ namespace Jint
         {
             JsObject instance = Global.ObjectClass.New();
 
-            /*JsScope scope = new JsScope();
-            scope.DefineOwnProperty(JsScope.THIS, instance);
-            EnterScope(scope);*/
-            EnterScope(instance);
-            try
+            foreach (var item in json.Values)
             {
-                foreach (var item in json.Values)
-                {
-                    item.Value.Accept(this);
-                    instance.DefineOwnProperty(item.Key, Result);
-                }
+                Result = instance;
+                item.Value.Accept(this);
+                instance.DefineOwnProperty(item.Key, Result);
             }
-            finally
-            {
-                ExitScope();
-            }
-
+        
             Result = instance;
         }
 

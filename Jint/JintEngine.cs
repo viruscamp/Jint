@@ -45,7 +45,7 @@ namespace Jint
             visitor = new ExecutionVisitor(options);
             AllowClr = true;
             permissionSet = new PermissionSet(PermissionState.None);
-            MaxRecursions = 2000;
+            MaxRecursions = 400;
 
             JsObject global = visitor.Global as JsObject;
 

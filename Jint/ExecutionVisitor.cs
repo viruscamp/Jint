@@ -1447,7 +1447,7 @@ namespace Jint
 
                 try {
                     if (target.Value.GetType().IsArray) {
-                        Result = Global.ObjectClass.New(((Array)target.Value).GetValue((int)Result.ToNumber()));
+                        SetResult(Global.ObjectClass.New(((Array)target.Value).GetValue((int)Result.ToNumber())), target);
                         return;
                     }
                     else {
@@ -1456,21 +1456,21 @@ namespace Jint
                         PropertyInfo pi = propertyGetter.GetValue(target.Value, "Item", parameters);
 
                         if (pi != null) {
-                            Result = Global.WrapClr(pi.GetValue(target.Value, parameters));
+                            SetResult( Global.WrapClr(pi.GetValue(target.Value, parameters)), target);
                             return;
                         }
                         else {
                             pi = propertyGetter.GetValue(target.Value, Result.ToString());
 
                             if (pi != null) {
-                                Result = Global.WrapClr(pi.GetValue(target.Value, null));
+                                SetResult(Global.WrapClr(pi.GetValue(target.Value, null)), target);
                                 return;
                             }
 
                             FieldInfo fi = fieldGetter.GetValue(target.Value, Result.ToString());
 
                             if (fi != null) {
-                                Result = Global.WrapClr(fi.GetValue(target.Value));
+                                SetResult( Global.WrapClr(fi.GetValue(target.Value)),target );
                                 return;
                             }
                             else {
@@ -1486,11 +1486,11 @@ namespace Jint
 
             if (target.Class == JsString.TYPEOF)
             {
-                Result = Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString());
+                SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()),target );
             }
             else
             {
-                Result = target[Result];
+                SetResult(target[Result],target);
             }
         }
 

@@ -1366,10 +1366,10 @@ var fakeButton = new Test.FakeButton();");
         [TestMethod]
         public void RandomValuesShouldNotRepeat() {
             Test(@"
-                assert(false, Math.random() == Math.random());
-                assert(false, Math.random() == Math.random());
-                assert(false, Math.random() == Math.random());
-                ");
+                for(var i=0; i<100; i++){
+                    assert(false, Math.random() == Math.random());
+                }
+            ");
         }
 
         [TestMethod]

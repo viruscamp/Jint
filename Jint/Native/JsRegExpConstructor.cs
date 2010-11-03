@@ -50,37 +50,63 @@ namespace Jint.Native
 
         public JsInstance ExecImpl(JsRegExp regexp, JsInstance[] parameters)
         {
-            string S = parameters[0].ToString();
-            int length = S.Length;
-            int lastIndex = (int)regexp["lastIndex"].ToNumber();
-            int i = lastIndex;
-            if (regexp["global"].ToBoolean())
+            var R = regexp;
+            var S = parameters[0].ToString();
+            var length = S.Length;
+            var lastIndex = R["lastIndex"];
+            var i = lastIndex.ToInteger();
+            var global = R.IsGlobal;
+            
+            if (global == false)
                 i = 0;
-            if (i < 0 || i > length)
+
+            Match r = null;
+            MatchCollection rs = null;
+            var matchSucceeded = false;
+            while (matchSucceeded == false) 
             {
-                lastIndex = 0;
-                return JsNull.Instance;
+                if (i < 0 || i > length) 
+                {
+                    R["lastIndex"] = Global.NumberClass.New(0);
+                    return JsNull.Instance;
+                }
+
+                rs = ((Regex)regexp.Value).Matches(S, i);
+
+                if (rs.Count == 0) {
+                    i++;
+                }
+                else {
+                    r = rs[0];
+                    matchSucceeded = true;
+                }
+
             }
-            Match r = ((Regex)regexp.Value).Match(S, i);
-            if (!r.Success)
-            {
-                lastIndex = 0;
-                return JsNull.Instance;
+
+            var e = r.Index + r.Length;
+
+            if (R.IsGlobal) {
+                R["lastIndex"] = Global.NumberClass.New(e);
             }
-            int e = r.Index + r.Length;
-            if (regexp["global"].ToBoolean())
-                lastIndex = e;
-            int n = r.Groups.Count;
-            JsArray result = Global.ArrayClass.New();
-            result["index"] = Global.NumberClass.New(r.Index);
-            result["input"] = Global.StringClass.New(S);
-            result["length"] = Global.NumberClass.New(n + 1);
-            result[Global.NumberClass.New(0)] = Global.StringClass.New(r.Value);
-            for (i = 1; i > 0 && i < n; i++)
-            {
-                result[Global.NumberClass.New(i)] = Global.StringClass.New(r.Groups[i].Value);
+
+            var n = r.Groups.Count;
+            JsArray A = Global.ArrayClass.New();
+            var matchIndex = r.Index;
+            A["index"] = Global.NumberClass.New(matchIndex);
+            A["input"] = Global.StringClass.New(S);
+
+            if (regexp.IsGlobal) {
+                for (i = 0; i < rs.Count; i++) {
+                    A[Global.NumberClass.New(i)] = Global.StringClass.New(rs[i].Value);
+                }
             }
-            return result;
+            else {
+                for (i = 0; i < r.Groups.Count; i++) {
+                    A[Global.NumberClass.New(i)] = Global.StringClass.New(r.Groups[i].Value);
+                }
+            }
+
+            return A;
         }
 
         public JsInstance TestImpl(JsRegExp regex, JsInstance[] parameters)

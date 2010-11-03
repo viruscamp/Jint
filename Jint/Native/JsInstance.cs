@@ -25,9 +25,12 @@ namespace Jint.Native
             return true;
         }
 
-        public virtual double ToNumber()
-        {
+        public virtual double ToNumber() {
             return 0;
+        }
+
+        public virtual int ToInteger() {
+            return (int)ToNumber();
         }
 
         public virtual object ToObject()

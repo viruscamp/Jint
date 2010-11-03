@@ -1,11 +1,9 @@
-﻿
-pattern = /(aa|aabaac|ba|b|c)*/;
+﻿pattern = /(aa|aabaac|ba|b|c)*/;
 string = 'aabaac';
 actualmatch = string.match(pattern);
 expectedmatch = Array('aaba', 'ba');
 assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
-
 
 var r = /\w+@\w+\.com/;
 var r = new RegExp('\\w+@\\w+\\.com');
@@ -95,3 +93,10 @@ assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
 
 assert('/x/g', /x/g.toString());
+
+pattern = /(\S+)/g;
+string = ' -0.1344972E+01 -0.4862373E+01 -0.1942746E+01';
+actualmatch = string.match(pattern);
+expectedmatch = Array('-0.1344972E+01', '-0.4862373E+01', '-0.1942746E+01');
+//assert(expectedmatch.length, actualmatch.length);
+assert(expectedmatch.toString(), actualmatch.toString());

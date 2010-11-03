@@ -287,18 +287,7 @@ namespace Jint.Native
                 parameters[0] = Global.RegExpClass.New(parameters[0].ToString(), false, false, false);
             }
 
-            JsArray result = Global.ArrayClass.New();
-            int i = 0;
-            var match = ((Regex) (parameters[0].Value)).Match(target.ToString());
-            if (!match.Success)
-                return JsNull.Instance;
-
-            foreach (Group group in match.Groups)
-            {
-                result[i++.ToString()] = Global.StringClass.New(group.Value);
-            }
-
-            return result;
+            return Global.RegExpClass.ExecImpl((JsRegExp)parameters[0], new[] { target });
         }
 
         /// <summary>

@@ -14,6 +14,16 @@ assert(1, parseFloat("1"));
 assert(10, parseFloat("1e1"));
 assert(1.5, parseFloat("15e-1"));
 
+assert(3.14, parseFloat("0.0314E+2"));
+assert(3.14, parseFloat("3.14more non-digit characters"));
+
+assert("1.234568e+2", 123.456789012.toExponential(6));
+
+someNumberString = "123.456789012";
+someNumber = parseFloat(someNumberString);
+assert("1.234568e+2", someNumber.toExponential(6));
+
+
 istrue(isFinite(0));
 isfalse(isFinite(NaN));
 isfalse(isFinite(1 / 0));

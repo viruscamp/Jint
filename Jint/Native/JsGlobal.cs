@@ -5,6 +5,7 @@ using Jint.Delegates;
 using Jint.Expressions;
 using System.Globalization;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Jint.Native
 {
@@ -221,9 +222,13 @@ namespace Jint.Native
             }
 
             string number = arguments[0].ToString().Trim();
+            // the parseFloat function should stop parsing when it encounters an unalowed char
+            Regex regexp = new Regex(@"^[\+\-\d\.e]*", RegexOptions.IgnoreCase);
 
-            float result;
-            if (float.TryParse(number, NumberStyles.Float, new CultureInfo("en-US"), out result))
+            Match match = regexp.Match(number);
+
+            double result;
+            if (match.Success && double.TryParse(match.Value, NumberStyles.Float, new CultureInfo("en-US"), out result))
             {
                 return NumberClass.New(result);
             }

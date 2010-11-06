@@ -300,7 +300,9 @@ namespace Jint
                 propertyName = Result.Value.ToString();
             }
 
-            //Assigning function Name
+            EnsureIdentifierIsDefined(value);
+
+            // Assigning function Name
             if (value.Class == JsFunction.TYPEOF)
                 ((JsFunction)value).Name = propertyName;
 
@@ -768,10 +770,12 @@ namespace Jint
             foreach (var property in expression.Identifiers)
             {
                 property.Accept(this);
-                if (Result == JsUndefined.Instance)
+
+                if (Result == null)
                 {
                     break;
                 }
+
                 EnterScope((JsDictionaryObject)Result);
             }
             while (scopes < Scopes.Count)
@@ -810,7 +814,7 @@ namespace Jint
                 return;
             }
 
-            if (Result.IsClr && Result.Value is Type)
+            if (Result != null && Result.IsClr && Result.Value is Type)
             {
                 Type type = (Type)Result.Value;
 
@@ -864,7 +868,7 @@ namespace Jint
             }
 
             // Try to get identifiers as a CLR type
-            if (Result == JsUndefined.Instance)
+            if (Result == null)
             {
                 EnsureClrAllowed();
 
@@ -986,6 +990,9 @@ namespace Jint
         {
             // Evaluates the left expression and saves the value
             expression.LeftExpression.Accept(this);
+
+            EnsureIdentifierIsDefined(Result);
+
             JsInstance left = Result;
 
             //prevents execution of the right hand side if false
@@ -1004,6 +1011,9 @@ namespace Jint
 
             // Evaluates the right expression and saves the value
             expression.RightExpression.Accept(this);
+
+            EnsureIdentifierIsDefined(Result);
+
             JsInstance right = Result;
 
             switch (expression.Type)
@@ -1239,7 +1249,7 @@ namespace Jint
 
                 case BinaryExpressionType.InstanceOf:
                     {
-                        var func  = right as JsFunction;
+                        var func = right as JsFunction;
                         var obj = left as JsObject;
                         if (func == null)
                             throw new JsException( Global.TypeErrorClass.New("Right argument should be a function: " + expression.RightExpression.ToString()) );
@@ -1276,28 +1286,38 @@ namespace Jint
                 case UnaryExpressionType.TypeOf:
 
                     expression.Expression.Accept(this);
-                    Result = Global.StringClass.New(Result.Class.ToLower());
+
+                    if (Result == null) {
+                        Result = Global.StringClass.New(JsUndefined.Instance.Class);
+                    }
+                    else {
+                        Result = Global.StringClass.New(Result.Class.ToLower());
+                    }
 
                     break;
 
                 case UnaryExpressionType.Not:
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     Result = Global.BooleanClass.New(!Result.ToBoolean());
                     break;
 
                 case UnaryExpressionType.Negate:
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     Result = Global.NumberClass.New(-Result.ToNumber());
                     break;
 
                 case UnaryExpressionType.Positive:
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     Result = Global.NumberClass.New(+Result.ToNumber());
                     break;
 
                 case UnaryExpressionType.PostfixPlusPlus:
 
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     JsInstance value = Result;
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
@@ -1311,6 +1331,7 @@ namespace Jint
                 case UnaryExpressionType.PostfixMinusMinus:
 
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     value = Result;
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
@@ -1324,6 +1345,7 @@ namespace Jint
                 case UnaryExpressionType.PrefixPlusPlus:
 
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     value = Global.NumberClass.New(Result.ToNumber() + 1);
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
@@ -1334,6 +1356,7 @@ namespace Jint
                 case UnaryExpressionType.PrefixMinusMinus:
 
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     value = Global.NumberClass.New(Result.ToNumber() - 1);
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
@@ -1347,6 +1370,7 @@ namespace Jint
                     if (member == null)
                         throw new NotImplementedException("delete");
                     member.Previous.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     value = Result;
                     string propertyName = null;
                     if (member.Member is PropertyExpression)
@@ -1378,6 +1402,7 @@ namespace Jint
                 case UnaryExpressionType.Inv:
 
                     expression.Expression.Accept(this);
+                    EnsureIdentifierIsDefined(Result);
                     Result = Global.NumberClass.New(~Convert.ToUInt64(Result.ToNumber()));
 
                     break;
@@ -1434,8 +1459,16 @@ namespace Jint
             }
         }
 
+        public void EnsureIdentifierIsDefined(object value) {
+            if (value == null) {
+                throw new JsException(Global.ReferenceErrorClass.New(lastIdentifier + " is not defined"));
+            }
+        }
+
         public void Visit(Indexer indexer)
         {
+            EnsureIdentifierIsDefined(Result);
+
             JsDictionaryObject target = (JsDictionaryObject)Result;
 
             indexer.Index.Accept(this);            
@@ -1734,14 +1767,14 @@ namespace Jint
 
             JsInstance result = null;
 
-            if (callTarget.TryGetProperty(propertyName, out result))
+            if (callTarget != null && callTarget.TryGetProperty(propertyName, out result))
             {
                     SetResult(result,callTarget);
                     return;
             }
 
             // Search for .NET property or method
-            if (callTarget.IsClr && callTarget.Value != null)
+            if (callTarget != null && callTarget.IsClr && callTarget.Value != null)
             {
                 EnsureClrAllowed();
 
@@ -1890,13 +1923,11 @@ namespace Jint
             if (propertyName == "null")
             {
                 Result = JsNull.Instance;
-                return;
             }
 
             if (propertyName == "undefined")
             {
                 Result = JsUndefined.Instance;
-                return;
             }
 
             // Try to record full path in case it's a type
@@ -1904,8 +1935,6 @@ namespace Jint
             {
                 typeFullname.Append(propertyName);
             }
-
-            Result = JsUndefined.Instance;
         }
 
         private void EnsureClrAllowed()

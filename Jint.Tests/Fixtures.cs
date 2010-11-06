@@ -168,7 +168,7 @@ namespace Jint.Tests
                 var Sébastien = 'a strange variable';
                 assert('a strange variable', 経済協力開発機構);
                 assert('a strange variable', Sébastien);
-                assert(undefined, sébastien);
+                assert('undefined', typeof sébastien);
             ";
 
             Test(script);
@@ -1138,14 +1138,25 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void Dummy() {
-            //Test(@"assert('[object Function]', Object.prototype.toString.apply(function f() { }));");
+        public void ShouldCatchNotDefinedVariable() {
+            Test(@"
+                try {
+                    a = b;
+                    assert(true, false);
+                } 
+                catch(e) {
+                }
 
-            //            Test(@"Type = Function;
-            //Type.prototype.test = function() { print('hello'); };
-            //MyType = function() { };
-            //MyType.prototype = {};
-            //MyType.test();");
+                assert('undefined', typeof foo);
+                
+                try {
+                    var y;
+                    assert(false, y instanceof Foo);
+                    assert(true, false);
+                } 
+                catch(e) {
+                }                
+            ");
         }
 
         [TestMethod]
@@ -1445,6 +1456,8 @@ var fakeButton = new Test.FakeButton();");
             Assert.AreEqual("undefined", engine.Run("typeof thisIsNotDefined"));
             Assert.AreEqual(System.String.Format("{0}", 1), engine.Run("System.String.Format('{0}', 1)"));
         }
+
+
     }
 
     public struct Size

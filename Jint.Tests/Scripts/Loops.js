@@ -92,7 +92,7 @@ for (var i in obj) {
 assert("prop1prop2prop3", result);
 
 // multiple init statements
-
+var one;
 for (var i = one ? index : 0, max = one ? index + 1 : 2; i < max; i++) {
 }
 

@@ -766,21 +766,33 @@ namespace Jint
 
         public void Visit(NewExpression expression)
         {
-            int scopes = Scopes.Count;
-            foreach (var property in expression.Identifiers)
-            {
-                property.Accept(this);
 
-                if (Result == null)
-                {
-                    break;
-                }
 
-                EnterScope((JsDictionaryObject)Result);
-            }
-            while (scopes < Scopes.Count)
-            {
-                ExitScope();
+            //int scopes = Scopes.Count;
+
+            //foreach (var property in expression.Identifiers)
+            //{
+            //    property.Accept(this);
+
+            //    if (Result == null)
+            //    {
+            //        break;
+            //    }
+
+            //    EnterScope((JsDictionaryObject)Result);
+            //}
+
+            //while (scopes < Scopes.Count)
+            //{
+            //    ExitScope();
+            //}
+
+            Result = null;
+
+            // don't even try if there is a generic type specifier
+            
+            if (expression.Generics.Count == 0) {
+                expression.Expression.Accept(this);
             }
 
             if (Result != null && Result.Class == JsFunction.TYPEOF)
@@ -833,37 +845,32 @@ namespace Jint
 
                 var constructor = constructorInvoker.Invoke(type, parameters);
 
-                if (constructor == null)
-                {
+                if (constructor == null) {
                     // Struct don't reflect their default constructor
-                    if (type.IsValueType)
-                    {
+                    if (type.IsValueType) {
                         PermissionSet.PermitOnly();
 
-                        try
-                        {
+                        try {
                             Result = Global.WrapClr(Activator.CreateInstance(type));
                         }
-                        finally
-                        {
+                        finally {
                             CodeAccessPermission.RevertPermitOnly();
                         }
                     }
-                    else
-                    {
+                    else {
                         throw new JintException("Matching constructor not found for: " + type.Name);
                     }
                 }
+                else {
 
-                PermissionSet.PermitOnly();
+                    PermissionSet.PermitOnly();
 
-                try
-                {
-                    Result = Global.WrapClr(constructor.Invoke(parameters));
-                }
-                finally
-                {
-                    CodeAccessPermission.RevertPermitOnly();
+                    try {
+                        Result = Global.WrapClr(constructor.Invoke(parameters));
+                    }
+                    finally {
+                        CodeAccessPermission.RevertPermitOnly();
+                    }
                 }
             }
 
@@ -882,20 +889,16 @@ namespace Jint
                     parameters[i] = JsClr.ConvertParameter(Result);
                 }
 
-                StringBuilder typeBuilder = new StringBuilder();
-                foreach (var property in expression.Identifiers)
-                {
-                    typeBuilder.Append(property.Text).Append(".");
-                }
+                expression.Expression.Accept(this);
 
-                typeBuilder.Remove(typeBuilder.Length - 1, 1);
+                var typeBuilder = new StringBuilder(typeFullname.ToString());
 
-                typeFullname = new StringBuilder();
                 if (expression.Generics.Count > 0)
                 {
                     List<string> types = new List<string>();
                     foreach (Expression generic in expression.Generics)
                     {
+                        typeFullname = new StringBuilder();
                         generic.Accept(this);
 
                         if (!(Result.Value is Type))
@@ -905,6 +908,7 @@ namespace Jint
 
                         types.Add(Result.Value.ToString());
                     }
+
                     typeBuilder.Append("`").Append(types.Count);
                     typeBuilder.Append("[");
                     typeBuilder.Append(String.Join(",", types.ToArray()));

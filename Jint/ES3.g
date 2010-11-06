@@ -1037,7 +1037,7 @@ memberExpression returns [Expression value]
 	;
 
 newExpression returns [NewExpression value]
-	: NEW^ first=Identifier { $value = new NewExpression(); $value.Identifiers.Add(new Identifier(first.Text)); }
+	: NEW^ first=memberExpression { $value = new NewExpression(first.value); }
 	;
 	
 arguments returns [List<Expression> value]
@@ -1073,7 +1073,7 @@ leftHandSideExpression returns [Expression value]
 	
 		| LBRACK exp=expression RBRACK { $value = new MemberExpression(new Indexer(exp.value), $value); } 
 			
-		| DOT id=Identifier {  if($value is NewExpression) { ((NewExpression)$value).Identifiers.Add(new PropertyExpression(id.Text)); } else { $value = new MemberExpression(new PropertyExpression(id.Text), $value); } }
+		| DOT id=Identifier {  if($value is NewExpression) { ((NewExpression)$value).Expression = new MemberExpression(new PropertyExpression(id.Text), ((NewExpression)$value).Expression); } else { $value = new MemberExpression(new PropertyExpression(id.Text), $value); } }
 	)* 
 	  
 	;

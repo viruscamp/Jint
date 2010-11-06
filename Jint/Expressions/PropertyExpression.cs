@@ -1,18 +1,14 @@
 using System;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public class PropertyExpression : Identifier, IAssignable
-	{
+    public class PropertyExpression : Identifier, IAssignable {
         public PropertyExpression(string text)
-            : base(text)
-        {
+            : base(text) {
         }
 
         [System.Diagnostics.DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
     }

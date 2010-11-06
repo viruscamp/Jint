@@ -3,28 +3,23 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Delegates;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsArguments : JsObject
-    {
+    public class JsArguments : JsObject {
         public const string CALLEE = "callee";
 
         protected ValueDescriptor calleeDescriptor;
 
-        protected JsFunction Callee
-        {
+        protected JsFunction Callee {
             get { return this[CALLEE] as JsFunction; }
             set { this[CALLEE] = value; }
         }
 
         public JsArguments(IGlobal global, JsFunction callee, JsInstance[] arguments)
-            : base( global.ObjectClass.New() )
-        {
+            : base(global.ObjectClass.New()) {
             this.global = global;
             // Add the named parameters
-            for (int i = 0; i < Math.Max(arguments.Length, callee.Arguments.Count); i++)
-            {
+            for (int i = 0; i < Math.Max(arguments.Length, callee.Arguments.Count); i++) {
                 ValueDescriptor d = new ValueDescriptor(this, i < callee.Arguments.Count ? callee.Arguments[i] : i.ToString()) { Attributes = PropertyAttributes.DontDelete };
 
                 d.Set(this, i < arguments.Length ? arguments[i] : JsUndefined.Instance);
@@ -33,51 +28,44 @@ namespace Jint.Native
             }
 
             length = arguments.Length;
-            
+
             calleeDescriptor = new ValueDescriptor(this, CALLEE) { Attributes = PropertyAttributes.DontEnum };
             DefineOwnProperty(CALLEE, calleeDescriptor);
             calleeDescriptor.Set(this, callee);
 
-            DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength) { Attributes = PropertyAttributes.DontEnum } );
+            DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength) { Attributes = PropertyAttributes.DontEnum });
         }
 
         private int length;
         private IGlobal global;
 
-        public override bool ToBoolean()
-        {
+        public override bool ToBoolean() {
             return false;
         }
 
-        public override double ToNumber()
-        {
+        public override double ToNumber() {
             return Length;
         }
 
         /// <summary>
         /// The number of the actually passed arguments
         /// </summary>
-        public override int Length
-        {
-            get
-            {
+        public override int Length {
+            get {
                 return length;
             }
-            set
-            {
+            set {
                 length = value;
             }
         }
 
         public const string TYPEOF = "Arguments";
 
-        public override string Class
-        {
+        public override string Class {
             get { return TYPEOF; }
         }
 
-        public JsInstance GetLength(JsArguments target)
-        {
+        public JsInstance GetLength(JsArguments target) {
             return global.NumberClass.New(target.length);
         }
     }

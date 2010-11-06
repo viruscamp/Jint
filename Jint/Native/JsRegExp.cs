@@ -4,35 +4,31 @@ using System.Text;
 using Jint.Delegates;
 using System.Text.RegularExpressions;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsRegExp : JsObject
-    {
+    public class JsRegExp : JsObject {
         public bool IsGlobal { get { return this["global"].ToBoolean(); } }
         public bool IsIgnoreCase { get { return (value.Options & RegexOptions.IgnoreCase) == RegexOptions.IgnoreCase; } }
         public bool IsMultiline { get { return (value.Options & RegexOptions.Multiline) == RegexOptions.Multiline; } }
 
-        public JsRegExp(JsObject prototype) : base(prototype)
-        {
+        public JsRegExp(JsObject prototype)
+            : base(prototype) {
         }
 
         private Regex value;
         private string pattern;
 
-        public JsRegExp(string pattern, JsObject prototype) : this(pattern, false, false, false, prototype)
-        {
+        public JsRegExp(string pattern, JsObject prototype)
+            : this(pattern, false, false, false, prototype) {
         }
 
-        public JsRegExp(string pattern, bool g, bool i, bool m, JsObject prototype) : base(prototype)
-        {
-            if (pattern.Contains("$"))
-            {
+        public JsRegExp(string pattern, bool g, bool i, bool m, JsObject prototype)
+            : base(prototype) {
+            if (pattern.Contains("$")) {
                 pattern = Regex.Replace(pattern, @"(?=[^\\])\$", m ? "(?=\r|\n|\r\n)" : @"\z", RegexOptions.Compiled);
             }
 
-            if (pattern.StartsWith("^") && m)
-            {
+            if (pattern.StartsWith("^") && m) {
                 pattern = "(?!\r|\n|\r\n)" + pattern.Substring(1);
             }
 
@@ -40,13 +36,11 @@ namespace Jint.Native
 
             RegexOptions options = RegexOptions.ECMAScript;
 
-            if (m)
-            {
+            if (m) {
                 options |= RegexOptions.Multiline;
             }
 
-            if(i)
-            {
+            if (i) {
                 options |= RegexOptions.IgnoreCase;
             }
 
@@ -56,28 +50,23 @@ namespace Jint.Native
 
         public string Pattern { get { return pattern; } }
 
-        public override object Value
-        {
-            get
-            {
+        public override object Value {
+            get {
                 return value;
             }
         }
 
-        public override string ToSource()
-        {
+        public override string ToSource() {
             return "/" + value.ToString() + "/";
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return "/" + value.ToString() + "/" + (IsGlobal ? "g" : String.Empty) + (IsIgnoreCase ? "i" : String.Empty) + (IsMultiline ? "m" : String.Empty);
         }
 
         public const string TYPEOF = "regexp";
 
-        public override string Class
-        {
+        public override string Class {
             get { return TYPEOF; }
         }
     }

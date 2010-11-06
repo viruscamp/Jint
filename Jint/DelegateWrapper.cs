@@ -5,19 +5,15 @@ using Jint.Native;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Jint
-{
-    public class DelegateWrapper
-    {
+namespace Jint {
+    public class DelegateWrapper {
         public ExecutionVisitor Visitor { get; set; }
         public JsFunction Function { get; set; }
         public JsDictionaryObject That { get; set; }
 
-        public object Invoke(object[] parameters)
-        {
+        public object Invoke(object[] parameters) {
             JsInstance[] arguments = new JsInstance[parameters.Length];
-            for (int i = 0; i < parameters.Length; i++)
-            {
+            for (int i = 0; i < parameters.Length; i++) {
                 arguments[i] = Visitor.Global.WrapClr(parameters[i]);
             }
 
@@ -30,12 +26,9 @@ namespace Jint
         static MethodInfo changeTypeMethodInfo = typeof(Convert).GetMethod("ChangeType", new Type[] { typeof(object), typeof(Type) });
         static MethodInfo invokeWrapper = typeof(DelegateWrapper).GetMethod("Invoke", new Type[] { typeof(object[]) });
 
-        public static DynamicMethod GenerateDynamicMethod(Type delegateType)
-        {
-            lock (delegateCache)
-            {
-                if (delegateCache.ContainsKey(delegateType))
-                {
+        public static DynamicMethod GenerateDynamicMethod(Type delegateType) {
+            lock (delegateCache) {
+                if (delegateCache.ContainsKey(delegateType)) {
                     return delegateCache[delegateType];
                 }
             }
@@ -45,8 +38,7 @@ namespace Jint
             ParameterInfo[] parameters = mi.GetParameters();
             Type[] parametersType = new Type[parameters.Length + 1];
             parametersType[0] = typeof(DelegateWrapper);
-            for (int i = 0; i < parameters.Length; i++)
-            {
+            for (int i = 0; i < parameters.Length; i++) {
                 parametersType[i + 1] = parameters[i].ParameterType;
             }
 
@@ -62,13 +54,11 @@ namespace Jint
             il.Emit(OpCodes.Stloc_0);
 
             // args[i] = parameters[i];
-            for (int i = 0; i < parameters.Length; i++)
-            {
+            for (int i = 0; i < parameters.Length; i++) {
                 il.Emit(OpCodes.Ldloc_0);
                 il.Emit(OpCodes.Ldc_I4, i);
                 il.Emit(OpCodes.Ldarg, i + 1);
-                if (!parametersType[i].IsByRef)
-                {
+                if (!parametersType[i].IsByRef) {
                     il.Emit(OpCodes.Box, parametersType[i + 1]);
                 }
                 il.Emit(OpCodes.Stelem_Ref);
@@ -78,27 +68,23 @@ namespace Jint
             il.Emit(OpCodes.Ldloc_0); // args
             il.EmitCall(OpCodes.Call, invokeWrapper, null); // this.Invoke(args);
 
-            if (mi.ReturnType == typeof(void))
-            {
+            if (mi.ReturnType == typeof(void)) {
                 il.Emit(OpCodes.Pop);
             }
-            else
-            {
+            else {
                 //il.DeclareLocal(typeof(Type));
                 //il.Emit(OpCodes.Ldtoken, mi.ReturnType);
                 //il.Emit(OpCodes.Ldloc_1);
                 //il.EmitCall(OpCodes.Call, changeTypeMethodInfo, null); // System.Convert.ChangeType( this.Invoke(args), mi.ReturnType) )
 
-                if (!mi.ReturnType.IsByRef)
-                {
+                if (!mi.ReturnType.IsByRef) {
                     il.Emit(OpCodes.Unbox_Any, mi.ReturnType);
                 }
             }
 
             il.Emit(OpCodes.Ret);
 
-            lock (delegateType)
-            {
+            lock (delegateType) {
                 return delegateCache[delegateType] = dm;
             }
         }

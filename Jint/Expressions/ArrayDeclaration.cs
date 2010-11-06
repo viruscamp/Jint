@@ -2,21 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public class ArrayDeclaration : Expression
-    {
+    public class ArrayDeclaration : Expression {
         public List<Statement> Parameters { get; set; }
 
-        public ArrayDeclaration()
-        {
+        public ArrayDeclaration() {
             Parameters = new List<Statement>();
         }
 
         [System.Diagnostics.DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
 

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public abstract class JsConstructor : JsFunction
-    {
+    public abstract class JsConstructor : JsFunction {
         /// <summary>
         /// Stores Global object used for creating this function.
         /// This property may be used in the InitProtype method.
@@ -17,8 +15,8 @@ namespace Jint.Native
         /// Constructs JsContructor, setting [[Prototype]] property to global.FunctionClass.PrototypeProperty
         /// </summary>
         /// <param name="global">Global</param>
-        public JsConstructor(IGlobal global) : base( global )
-        {
+        public JsConstructor(IGlobal global)
+            : base(global) {
             Global = global;
         }
 
@@ -27,9 +25,8 @@ namespace Jint.Native
         /// </summary>
         /// <param name="global">Global</param>
         /// <param name="prototype">Prototype</param>
-        protected JsConstructor(IGlobal global,JsObject prototype)
-            : base(prototype)
-        {
+        protected JsConstructor(IGlobal global, JsObject prototype)
+            : base(prototype) {
             Global = global;
         }
 

@@ -1,15 +1,13 @@
 ﻿using System;
 using Jint.Delegates;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsMathConstructor : JsObject
-    {
+    public class JsMathConstructor : JsObject {
         public IGlobal Global { get; set; }
 
-        public JsMathConstructor(IGlobal global): base(global.ObjectClass.PrototypeProperty)
-        {
+        public JsMathConstructor(IGlobal global)
+            : base(global.ObjectClass.PrototypeProperty) {
             Global = global;
             var random = new Random();
 
@@ -45,8 +43,7 @@ namespace Jint.Native
 
         public const string MathType = "object";
 
-        public override string Class
-        {
+        public override string Class {
             get { return MathType; }
         }
     }

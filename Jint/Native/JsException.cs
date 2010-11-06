@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsException : Exception
-    {
+    public class JsException : Exception {
         public JsInstance Value { get; set; }
 
-        public JsException()
-        {
+        public JsException() {
         }
 
-        public JsException(JsInstance value)
-        {
+        public JsException(JsInstance value) {
             Value = value;
             //if (value is JsDictionaryObject)
             //    ((JsDictionaryObject)value)["jintException"] = new JsClr(this);

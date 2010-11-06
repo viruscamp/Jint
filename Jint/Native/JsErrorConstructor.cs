@@ -3,24 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Expressions;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsErrorConstructor : JsConstructor
-    {
+    public class JsErrorConstructor : JsConstructor {
         private string errorType;
 
         public JsErrorConstructor(IGlobal global, string errorType)
-            : base(global)
-        {
+            : base(global) {
             this.errorType = errorType;
             Name = errorType;
 
             DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
         }
 
-        public override void InitPrototype(IGlobal global)
-        {
+        public override void InitPrototype(IGlobal global) {
             //Prototype = global.FunctionClass;
             var Prototype = PrototypeProperty;
 
@@ -29,32 +25,25 @@ namespace Jint.Native
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
         }
 
-        public JsError New(string message)
-        {
+        public JsError New(string message) {
             var error = new JsError(Global);
             error["message"] = Global.StringClass.New(message);
             return error;
         }
 
-        public JsError New()
-        {
+        public JsError New() {
             return New(String.Empty);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
-        {
-            if (that == null)
-            {
+        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+            if (that == null) {
                 visitor.Return(parameters.Length > 0 ? New(parameters[0].ToString()) : New());
             }
-            else
-            {
-                if (parameters.Length > 0)
-                {
+            else {
+                if (parameters.Length > 0) {
                     that.Value = parameters[0].ToString();
                 }
-                else
-                {
+                else {
                     that.Value = String.Empty;
                 }
 
@@ -64,8 +53,7 @@ namespace Jint.Native
             return that;
         }
 
-        public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters)
-        {
+        public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
             return Global.StringClass.New(target["name"] + ": " + target["message"]);
         }
     }

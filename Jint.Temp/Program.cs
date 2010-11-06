@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jint.Temp
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
+namespace Jint.Temp {
+    class Program {
+        static void Main(string[] args) {
             var engine = new Jint.JintEngine();
             engine.SetDebugMode(true);
 

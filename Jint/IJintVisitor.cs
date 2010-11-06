@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Collections;
 using Jint.Native;
-namespace Jint.Expressions
-{
-    public interface IStatementVisitor
-    {
+namespace Jint.Expressions {
+    public interface IStatementVisitor {
         void Visit(Program expression);
         void Visit(AssignmentExpression expression);
         void Visit(BlockStatement expression);
@@ -47,8 +45,7 @@ namespace Jint.Expressions
 
     }
 
-    public interface IJintVisitor
-    {
+    public interface IJintVisitor {
         IPropertyGetter PropertyGetter { get; }
         IMethodInvoker MethodGetter { get; }
         IFieldGetter FieldGetter { get; }

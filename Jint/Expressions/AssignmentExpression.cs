@@ -2,24 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public class AssignmentExpression : Expression
-    {
+    public class AssignmentExpression : Expression {
         public Expression Left { get; set; }
         public Expression Right { get; set; }
         public AssignmentOperator AssignmentOperator { get; set; }
 
         [System.Diagnostics.DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
     }
 
-    public enum AssignmentOperator
-    {
+    public enum AssignmentOperator {
         Assign,
         Multiply,
         Divide,

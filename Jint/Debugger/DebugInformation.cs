@@ -4,11 +4,9 @@ using System.Text;
 using Jint.Expressions;
 using Jint.Native;
 
-namespace Jint.Debugger
-{
+namespace Jint.Debugger {
     [Serializable]
-    public class DebugInformation : EventArgs
-    {
+    public class DebugInformation : EventArgs {
         public Stack<string> CallStack { get; set; }
         public Statement CurrentStatement { get; set; }
         public JsDictionaryObject Locals { get; set; }

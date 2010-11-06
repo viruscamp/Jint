@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Expressions;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public abstract class JsInstance
-    {
+    public abstract class JsInstance {
         public static JsInstance[] EMPTY = new JsInstance[0];
 
         public abstract bool IsClr { get; }
@@ -16,12 +14,10 @@ namespace Jint.Native
 
         public PropertyAttributes Attributes { get; set; }
 
-        public JsInstance()
-        {
+        public JsInstance() {
         }
 
-        public virtual bool ToBoolean()
-        {
+        public virtual bool ToBoolean() {
             return true;
         }
 
@@ -33,30 +29,25 @@ namespace Jint.Native
             return (int)ToNumber();
         }
 
-        public virtual object ToObject()
-        {
+        public virtual object ToObject() {
             return Value;
         }
 
-        public virtual string ToSource()
-        {
+        public virtual string ToSource() {
             return ToString();
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return (Value ?? Class).ToString();
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return Value.GetHashCode();
         }
 
         public abstract string Class { get; }
 
-        public virtual object Call(IJintVisitor visitor, string function, params JsInstance[] parameters)
-        {
+        public virtual object Call(IJintVisitor visitor, string function, params JsInstance[] parameters) {
             if (function == "toString")
                 return visitor.Global.StringClass.New(ToString());
             return JsUndefined.Instance;

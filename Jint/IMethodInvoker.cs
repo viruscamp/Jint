@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 
-namespace Jint
-{
-    public interface IMethodInvoker
-    {
+namespace Jint {
+    public interface IMethodInvoker {
         /// <summary>
         /// Searches a method with parameters compatible with the specified ECMAScript ones
         /// </summary>
@@ -35,6 +33,6 @@ namespace Jint
         /// <returns>True if the compatible parameters are found</returns>
         bool TryGetAppropriateParameters(object[] parameters, Type[] pis, object subject);
         bool TryGetAppropriateParameters(object[] parameters, ParameterInfo[] pis, object subject);
-        
+
     }
 }

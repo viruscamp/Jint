@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public class NewExpression : Expression, IGenericExpression
-    {
+    public class NewExpression : Expression, IGenericExpression {
         // public List<Identifier> Identifiers { get; set; }
         public List<Expression> Arguments { get; set; }
         public Expression Expression { get; set; }
 
-        public NewExpression(Expression expression)
-        {
+        public NewExpression(Expression expression) {
             Expression = expression;
 
             // Identifiers = new List<Identifier>();
@@ -21,8 +18,7 @@ namespace Jint.Expressions
         }
 
         [System.Diagnostics.DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
 

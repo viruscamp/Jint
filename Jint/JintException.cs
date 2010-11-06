@@ -2,24 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint
-{
+namespace Jint {
     [Serializable]
-    public class JintException : Exception
-    {
+    public class JintException : Exception {
         public JintException()
-            : base()
-        {
+            : base() {
         }
 
         public JintException(string message)
-            : base(message)
-        {
+            : base(message) {
         }
 
         public JintException(string message, Exception innerException)
-            : base(message, innerException)
-        {
+            : base(message, innerException) {
         }
     }
 }

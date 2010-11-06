@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     /// <summary>
     /// Scope. Uses Prototype inheritance to store scopes hierarchy.
     /// </summary>
@@ -11,8 +10,7 @@ namespace Jint.Native
     /// Tries to add new properties to the global scope.
     /// </remarks>
     [Serializable]
-    public class JsScope : JsDictionaryObject
-    {
+    public class JsScope : JsDictionaryObject {
         private Descriptor thisDescriptor;
         private Descriptor argumentsDescriptor;
         private JsScope globalScope;
@@ -24,8 +22,8 @@ namespace Jint.Native
         /// <summary>
         /// Creates a new Global scope
         /// </summary>
-        public JsScope() : base(JsNull.Instance)
-        {
+        public JsScope()
+            : base(JsNull.Instance) {
             globalScope = null;
         }
 
@@ -34,8 +32,7 @@ namespace Jint.Native
         /// </summary>
         /// <param name="outer">Scope inside which the new scope should be created</param>
         public JsScope(JsScope outer)
-            : base(outer)
-        {
+            : base(outer) {
             if (outer == null)
                 throw new ArgumentNullException("outer");
 
@@ -43,8 +40,7 @@ namespace Jint.Native
         }
 
         public JsScope(JsScope outer, JsDictionaryObject bag)
-            : base(outer)
-        {
+            : base(outer) {
             if (outer == null)
                 throw new ArgumentNullException("outer");
             if (bag == null)
@@ -54,78 +50,62 @@ namespace Jint.Native
         }
 
         public JsScope(JsDictionaryObject bag)
-            : base(JsNull.Instance)
-        {
+            : base(JsNull.Instance) {
             this.bag = bag;
         }
 
         public const string TYPEOF = "scope";
 
-        public override string Class
-        {
+        public override string Class {
             get { return TYPEOF; }
         }
 
-        public JsScope Global
-        {
+        public JsScope Global {
             get { return globalScope ?? this; }
         }
 
-        public override JsInstance this[string index]
-        {
-            get
-            {
+        public override JsInstance this[string index] {
+            get {
                 if (index == THIS && thisDescriptor != null)
                     return thisDescriptor.Get(this);
                 if (index == ARGUMENTS && argumentsDescriptor != null)
                     return argumentsDescriptor.Get(this);
                 return base[index]; // will use overriden GetDescriptor
             }
-            set
-            {
-                if (index == THIS)
-                {
+            set {
+                if (index == THIS) {
                     if (thisDescriptor != null)
                         thisDescriptor.Set(this, value);
-                    else
-                    {
+                    else {
                         DefineOwnProperty(index, thisDescriptor = new ValueDescriptor(this, index, value));
                     }
                 }
-                else if (index == ARGUMENTS)
-                {
+                else if (index == ARGUMENTS) {
                     if (argumentsDescriptor != null)
                         argumentsDescriptor.Set(this, value);
-                    else
-                    {
+                    else {
                         DefineOwnProperty(index, argumentsDescriptor = new ValueDescriptor(this, index, value));
                     }
                 }
-                else
-                {
+                else {
                     Descriptor d = GetDescriptor(index);
-                    if (d != null)
-                    {
+                    if (d != null) {
                         // we have a property in the scopes hierarchy or in the bag
-                        if (d.Owner == bag || d.Owner == this || d.Owner.IsPrototypeOf(this))
-                        {
+                        if (d.Owner == bag || d.Owner == this || d.Owner.IsPrototypeOf(this)) {
                             // if this is an own property of the bag or in scopes
                             d.Set(d.Owner, value);
                         }
-                        else
-                        {
+                        else {
                             // this property should be from one of prototypes of the bag
                             if (bag != null)
                                 bag[index] = value;
                         }
                     }
-                    else if (globalScope != null)
-                    {
+                    else if (globalScope != null) {
                         // define missing property in the global scope
                         globalScope.DefineOwnProperty(index, value);
                     }
-                    else
-                    {
+                    else {
                         // this scope is a global scope
                         DefineOwnProperty(index, value);
                     }
@@ -145,8 +125,7 @@ namespace Jint.Native
         /// </remarks>
         /// <param name="index">Property name.</param>
         /// <returns>Descriptor</returns>
-        public override Descriptor GetDescriptor(string index)
-        {
+        public override Descriptor GetDescriptor(string index) {
             Descriptor own, d;
             if ((own = base.GetDescriptor(index)) != null && own.Owner == this)
                 return own;
@@ -157,9 +136,8 @@ namespace Jint.Native
             return own;
         }
 
-        public override IEnumerable<string> GetKeys()
-        {
-            if ( bag != null) {
+        public override IEnumerable<string> GetKeys() {
+            if (bag != null) {
                 foreach (var key in bag.GetKeys())
                     if (base.GetDescriptor(key) == null)
                         yield return key;
@@ -168,28 +146,22 @@ namespace Jint.Native
                 yield return key;
         }
 
-        public override IEnumerable<JsInstance> GetValues()
-        {
+        public override IEnumerable<JsInstance> GetValues() {
             foreach (var key in GetKeys())
                 yield return this[key];
         }
 
-        public override bool IsClr
-        {
-            get
-            {
+        public override bool IsClr {
+            get {
                 return bag != null ? bag.IsClr : false;
             }
         }
 
-        public override object Value
-        {
-            get
-            {
+        public override object Value {
+            get {
                 return bag != null ? bag.Value : null;
             }
-            set
-            {
+            set {
                 if (bag != null)
                     bag.Value = value;
             }

@@ -7,11 +7,9 @@ using System.Globalization;
 using System.Web;
 using System.Text.RegularExpressions;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsGlobal : JsObject, IGlobal
-    {
+    public class JsGlobal : JsObject, IGlobal {
         /// <summary>
         /// Useful for eval()
         /// </summary>
@@ -19,17 +17,16 @@ namespace Jint.Native
 
         public Options Options { get; set; }
 
-        public JsGlobal(ExecutionVisitor visitor, Options options) : base(JsNull.Instance)
-        {
+        public JsGlobal(ExecutionVisitor visitor, Options options)
+            : base(JsNull.Instance) {
             this.Options = options;
             this.Visitor = visitor;
 
             this["null"] = JsNull.Instance;
             JsObject objectProrotype = new JsObject(JsNull.Instance);
-            
+
             JsFunction functionPrototype = new JsFunctionWrapper(
-                delegate(JsInstance[] arguments)
-                {
+                delegate(JsInstance[] arguments) {
                     return JsUndefined.Instance;
                 },
                 objectProrotype
@@ -37,10 +34,10 @@ namespace Jint.Native
 
             #region Global Classes
             this["Function"] = FunctionClass = new JsFunctionConstructor(this, functionPrototype);
-            this["Object"] = ObjectClass = new JsObjectConstructor(this,functionPrototype,objectProrotype);
+            this["Object"] = ObjectClass = new JsObjectConstructor(this, functionPrototype, objectProrotype);
             ObjectClass.InitPrototype(this);
 
-            
+
             this["Array"] = ArrayClass = new JsArrayConstructor(this);
             this["Boolean"] = BooleanClass = new JsBooleanConstructor(this);
             this["Date"] = DateClass = new JsDateConstructor(this);
@@ -63,10 +60,8 @@ namespace Jint.Native
             #endregion
 
 
-            foreach (JsInstance c in this.GetValues())
-            {
-                if (c is JsConstructor)
-                {
+            foreach (JsInstance c in this.GetValues()) {
+                if (c is JsConstructor) {
                     ((JsConstructor)c).InitPrototype(this);
                 }
             }
@@ -116,30 +111,24 @@ namespace Jint.Native
         /// <summary>
         /// 15.1.2.1
         /// </summary>
-        public JsInstance Eval(JsInstance[] arguments)
-        {
-            if (JsString.TYPEOF != arguments[0].Class)
-            {
+        public JsInstance Eval(JsInstance[] arguments) {
+            if (JsString.TYPEOF != arguments[0].Class) {
                 return arguments[0];
             }
 
             Program p;
 
-            try
-            {
+            try {
                 p = JintEngine.Compile(arguments[0].ToString(), Visitor.DebugMode);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new JsException(this.SyntaxErrorClass.New(e.Message));
             }
 
-            try
-            {
+            try {
                 p.Accept((IStatementVisitor)Visitor);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new JsException(this.EvalErrorClass.New(e.Message));
             }
 
@@ -149,10 +138,8 @@ namespace Jint.Native
         /// <summary>
         /// 15.1.2.2
         /// </summary>
-        public JsInstance ParseInt(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        public JsInstance ParseInt(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return JsUndefined.Instance;
             }
 
@@ -164,49 +151,39 @@ namespace Jint.Native
             int sign = 1;
             int radix = 10;
 
-            if (number == String.Empty)
-            {
+            if (number == String.Empty) {
                 return this["NaN"];
             }
 
-            if (number.StartsWith("-"))
-            {
+            if (number.StartsWith("-")) {
                 number = number.Substring(1);
                 sign = -1;
             }
-            else if (number.StartsWith("+"))
-            {
+            else if (number.StartsWith("+")) {
                 number = number.Substring(1);
             }
 
-            if (arguments.Length >= 2)
-            {
-                if (arguments[1] != JsUndefined.Instance && !0.Equals(arguments[1]))
-                {
+            if (arguments.Length >= 2) {
+                if (arguments[1] != JsUndefined.Instance && !0.Equals(arguments[1])) {
                     radix = Convert.ToInt32(arguments[1].Value);
                 }
             }
 
-            if (radix == 0)
-            {
+            if (radix == 0) {
                 radix = 10;
             }
-            else if (radix < 2 || radix > 36)
-            {
+            else if (radix < 2 || radix > 36) {
                 return this["NaN"];
             }
 
-            if (number.ToLower().StartsWith("0x"))
-            {
+            if (number.ToLower().StartsWith("0x")) {
                 radix = 16;
             }
 
-            try
-            {
+            try {
                 return NumberClass.New(sign * Convert.ToInt32(number, radix));
             }
-            catch
-            {
+            catch {
                 return this["NaN"];
             }
         }
@@ -214,10 +191,8 @@ namespace Jint.Native
         /// <summary>
         /// 15.1.2.3
         /// </summary>
-        public JsInstance ParseFloat(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        public JsInstance ParseFloat(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return JsUndefined.Instance;
             }
 
@@ -228,12 +203,10 @@ namespace Jint.Native
             Match match = regexp.Match(number);
 
             double result;
-            if (match.Success && double.TryParse(match.Value, NumberStyles.Float, new CultureInfo("en-US"), out result))
-            {
+            if (match.Success && double.TryParse(match.Value, NumberStyles.Float, new CultureInfo("en-US"), out result)) {
                 return NumberClass.New(result);
             }
-            else
-            {
+            else {
                 return this["NaN"];
             }
         }
@@ -241,10 +214,8 @@ namespace Jint.Native
         /// <summary>
         /// 15.1.2.4
         /// </summary>
-        public JsInstance IsNaN(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        public JsInstance IsNaN(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return BooleanClass.New(false);
             }
 
@@ -254,24 +225,20 @@ namespace Jint.Native
         /// <summary>
         /// 15.1.2.5
         /// </summary>
-        protected JsInstance isFinite(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        protected JsInstance isFinite(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return BooleanClass.False;
             }
 
             var value = arguments[0];
-            return BooleanClass.New( (value != NumberClass["NaN"]
+            return BooleanClass.New((value != NumberClass["NaN"]
                 && value != NumberClass["POSITIVE_INFINITY"]
                 && value != NumberClass["NEGATIVE_INFINITY"])
             );
         }
 
-        protected JsInstance DecodeURI(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        protected JsInstance DecodeURI(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return StringClass.New();
             }
 
@@ -281,49 +248,40 @@ namespace Jint.Native
         private static char[] reservedEncoded = new char[] { ';', ',', '/', '?', ':', '@', '&', '=', '+', '$', '#' };
         private static char[] reservedEncodedComponent = new char[] { '-', '_', '.', '!', '~', '*', '\'', '(', ')', '[', ']' };
 
-        protected JsInstance EncodeURI(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        protected JsInstance EncodeURI(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return this.StringClass.New();
             }
 
             string encoded = Uri.EscapeDataString(arguments[0].ToString());
 
-            foreach (char c in reservedEncoded)
-            {
+            foreach (char c in reservedEncoded) {
                 encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
             }
 
-            foreach (char c in reservedEncodedComponent)
-            {
+            foreach (char c in reservedEncodedComponent) {
                 encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
             }
 
             return this.StringClass.New(encoded.ToUpper());
         }
 
-        protected JsInstance DecodeURIComponent(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        protected JsInstance DecodeURIComponent(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return this.StringClass.New();
             }
 
             return this.StringClass.New(Uri.UnescapeDataString(arguments[0].ToString().Replace("+", " ")));
         }
 
-        protected JsInstance EncodeURIComponent(JsInstance[] arguments)
-        {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance)
-            {
+        protected JsInstance EncodeURIComponent(JsInstance[] arguments) {
+            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return this.StringClass.New();
             }
 
             string encoded = Uri.EscapeDataString(arguments[0].ToString());
 
-            foreach (char c in reservedEncodedComponent)
-            {
+            foreach (char c in reservedEncodedComponent) {
                 encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
             }
 
@@ -332,10 +290,8 @@ namespace Jint.Native
 
         #endregion
 
-        public JsObject Wrap(object value)
-        {
-            switch (Convert.GetTypeCode(value))
-            {
+        public JsObject Wrap(object value) {
+            switch (Convert.GetTypeCode(value)) {
                 case TypeCode.Boolean:
                     return BooleanClass.New((bool)value);
                 case TypeCode.Char:
@@ -364,17 +320,14 @@ namespace Jint.Native
             }
         }
 
-        public JsObject WrapClr(object value)
-        {
-            if (value == null)
-            {
-                return new JsClr(Visitor,null,JsNull.Instance);
+        public JsObject WrapClr(object value) {
+            if (value == null) {
+                return new JsClr(Visitor, null, JsNull.Instance);
             }
 
             JsObject proto;
 
-            switch (Convert.GetTypeCode(value))
-            {
+            switch (Convert.GetTypeCode(value)) {
                 case TypeCode.Boolean:
                     proto = BooleanClass.PrototypeProperty;
                     break;
@@ -412,16 +365,14 @@ namespace Jint.Native
             return new JsClr(Visitor, value, proto);
         }
 
-        public bool HasOption(Options options)
-        {
+        public bool HasOption(Options options) {
             return (Options & options) == options;
         }
 
         #region IGlobal Members
 
 
-        public JsInstance NaN
-        {
+        public JsInstance NaN {
             get { return this["NaN"]; }
         }
 

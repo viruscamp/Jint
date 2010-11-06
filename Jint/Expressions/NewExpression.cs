@@ -7,12 +7,15 @@ namespace Jint.Expressions
     [Serializable]
     public class NewExpression : Expression, IGenericExpression
     {
-        public List<Identifier> Identifiers { get; set; }
+        // public List<Identifier> Identifiers { get; set; }
         public List<Expression> Arguments { get; set; }
+        public Expression Expression { get; set; }
 
-        public NewExpression()
+        public NewExpression(Expression expression)
         {
-            Identifiers = new List<Identifier>();
+            Expression = expression;
+
+            // Identifiers = new List<Identifier>();
             Arguments = new List<Expression>();
             Generics = new List<Expression>();
         }

@@ -1449,6 +1449,16 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void ShouldParseCoffeeScript() {
+            Test(@"
+                xhr = new (String || Number)('123');
+                var type = String || Number;
+                var x = new type('123');
+                assert('123', x);
+            ");
+        }
+
+        [TestMethod]
         public void StaticMemberAfterUndefinedReference() {
             var engine = new Jint.JintEngine();
 

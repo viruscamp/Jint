@@ -1,4 +1,8 @@
-﻿var d = System.DateTime.Now;
+﻿var a = new System.Collections.Generic.List{System.Int32}(); 
+a.Add(7); a.Add(3); a.Add(4);
+
+
+var d = System.DateTime.Now;
 assert(System.Convert.ToInt32(new Date().getFullYear()), d.Year);
 
 // implicit constructor call

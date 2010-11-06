@@ -5,49 +5,39 @@ using System.Text.RegularExpressions;
 using Jint.Delegates;
 using System.Reflection;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsClrConstructorInfo : JsObject
-    {
+    public class JsClrConstructorInfo : JsObject {
         private ConstructorInfo value;
 
-        public JsClrConstructorInfo()
-        {
+        public JsClrConstructorInfo() {
             value = null;
         }
 
-        public JsClrConstructorInfo(ConstructorInfo clr)
-        {
+        public JsClrConstructorInfo(ConstructorInfo clr) {
             value = clr;
         }
 
-        public override bool ToBoolean()
-        {
+        public override bool ToBoolean() {
             return false;
         }
 
-        public override double ToNumber()
-        {
+        public override double ToNumber() {
             return 0;
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return value.Name;
         }
 
         public const string TYPEOF = "clrMethodInfo";
 
-        public override string Class
-        {
+        public override string Class {
             get { return TYPEOF; }
         }
 
-        public override object Value
-        {
-            get
-            {
+        public override object Value {
+            get {
                 return value;
             }
         }

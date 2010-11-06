@@ -3,20 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 
-namespace Jint.Expressions
-{
-    public enum PropertyExpressionType
-    {
+namespace Jint.Expressions {
+    public enum PropertyExpressionType {
         Data,
         Get,
         Set
     }
 
     [Serializable]
-    public class PropertyDeclarationExpression : Expression
-    {
-        public PropertyDeclarationExpression()
-        {
+    public class PropertyDeclarationExpression : Expression {
+        public PropertyDeclarationExpression() {
 
         }
 
@@ -31,18 +27,15 @@ namespace Jint.Expressions
         public Expression SetExpression { get; set; }
 
         [DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
 
-        internal void SetSet(PropertyDeclarationExpression propertyExpression)
-        {
+        internal void SetSet(PropertyDeclarationExpression propertyExpression) {
             SetExpression = propertyExpression.Expression;
         }
 
-        internal void SetGet(PropertyDeclarationExpression propertyExpression)
-        {
+        internal void SetGet(PropertyDeclarationExpression propertyExpression) {
             GetExpression = propertyExpression.Expression;
         }
     }

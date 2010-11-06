@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint
-{
-    public interface ITypeResolver
-    {
+namespace Jint {
+    public interface ITypeResolver {
         Type ResolveType(string fullname);
 
     }

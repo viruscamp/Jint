@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Delegates;
 
-namespace Jint.Native
-{
+namespace Jint.Native {
     [Serializable]
-    public class JsError : JsObject
-    {
+    public class JsError : JsObject {
         private string message { get { return this["message"].ToString(); } set { this["message"] = global.StringClass.New(value); } }
 
-        public override object Value
-        {
-            get
-            {
+        public override object Value {
+            get {
                 return message;
             }
         }
@@ -21,25 +17,22 @@ namespace Jint.Native
         private IGlobal global;
 
         public JsError(IGlobal global)
-            : this(global, string.Empty)
-        {
+            : this(global, string.Empty) {
         }
 
-        public JsError(IGlobal global, string message) : base(global.ErrorClass.PrototypeProperty)
-        {
+        public JsError(IGlobal global, string message)
+            : base(global.ErrorClass.PrototypeProperty) {
             this.global = global;
             this.message = message;
         }
 
         public const string TYPEOF = "object";
 
-        public override string Class
-        {
+        public override string Class {
             get { return TYPEOF; }
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return Value.ToString();
         }
     }

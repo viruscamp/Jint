@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public class MethodCall : Expression, IGenericExpression
-	{
-        public MethodCall()
-        {
+    public class MethodCall : Expression, IGenericExpression {
+        public MethodCall() {
             Arguments = new List<Expression>();
             Generics = new List<Expression>();
         }
 
-        public MethodCall(List<Expression> arguments) : this()
-        {
+        public MethodCall(List<Expression> arguments)
+            : this() {
             Arguments.AddRange(arguments);
         }
 
@@ -21,8 +18,7 @@ namespace Jint.Expressions
         public List<Expression> Generics { get; set; }
 
         [System.Diagnostics.DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
     }

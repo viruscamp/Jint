@@ -10,8 +10,7 @@ using Jint.Debugger;
 using System.Security.Permissions;
 using System.Diagnostics;
 
-namespace Jint.Tests
-{
+namespace Jint.Tests {
     /// <summary>
     /// Summary description for UnitTest1
     /// </summary>
@@ -42,7 +41,7 @@ namespace Jint.Tests
             var sw = new Stopwatch();
             sw.Start();
 
-            foreach ( string script in scripts )
+            foreach (string script in scripts)
                 result = jint.Run(script);
 
             Console.WriteLine(sw.Elapsed);
@@ -66,20 +65,19 @@ namespace Jint.Tests
         [TestMethod]
         public void ShouldHandleDictionaryObjects() {
             var dic = new JsObject();
-            dic["prop1"] = new JsNumber(1,JsNull.Instance);
-            Assert.IsTrue(dic.HasProperty(new JsString("prop1",JsNull.Instance)));
+            dic["prop1"] = new JsNumber(1, JsNull.Instance);
+            Assert.IsTrue(dic.HasProperty(new JsString("prop1", JsNull.Instance)));
             Assert.IsTrue(dic.HasProperty("prop1"));
             Assert.AreEqual(1, dic["prop1"].ToNumber());
         }
 
         [TestMethod]
-        public void ShouldRunInRun()
-        {
+        public void ShouldRunInRun() {
             var filename = Path.GetTempFileName();
             File.WriteAllText(filename, "a='bar'");
 
             var engine = new JintEngine().AddPermission(new FileIOPermission(PermissionState.Unrestricted));
-            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using ( var reader = File.OpenText(fileName) ) { engine.Run(reader); } }));
+            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using (var reader = File.OpenText(fileName)) { engine.Run(reader); } }));
             engine.SetFunction("print", new Action<string>(Console.WriteLine));
             engine.Run("var a='foo'; load('" + JintEngine.EscapteStringLiteral(filename) + "'); print(a);");
 
@@ -91,9 +89,9 @@ namespace Jint.Tests
         public void ShouldNotRunInRun() {
             var filename = Path.GetTempFileName();
             File.WriteAllText(filename, "a='bar'");
-            
+
             var engine = new JintEngine().AddPermission(new FileIOPermission(PermissionState.None));
-            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using ( var reader = File.OpenText(fileName) ) { engine.Run(reader); } }));
+            engine.SetFunction("load", new Action<string>(delegate(string fileName) { using (var reader = File.OpenText(fileName)) { engine.Run(reader); } }));
             engine.SetFunction("print", new Action<string>(Console.WriteLine));
             engine.Run("var a='foo'; load('" + JintEngine.EscapteStringLiteral(filename) + "'); print(a);");
         }
@@ -827,14 +825,14 @@ var fakeButton = new Test.FakeButton();");
         [TestMethod]
         public void ShouldParseScripts() {
             var assembly = Assembly.GetExecutingAssembly();
-            foreach ( var resx in assembly.GetManifestResourceNames() ) {
+            foreach (var resx in assembly.GetManifestResourceNames()) {
                 // Ignore scripts not in /Scripts
-                if ( !resx.Contains(".Parse") ) {
+                if (!resx.Contains(".Parse")) {
                     continue;
                 }
 
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
-                if ( program.Trim() == String.Empty ) {
+                if (program.Trim() == String.Empty) {
                     continue;
                 }
                 Trace.WriteLine(Path.GetFileNameWithoutExtension(resx));
@@ -878,9 +876,9 @@ var fakeButton = new Test.FakeButton();");
             var extensions = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.extensions.js")).ReadToEnd();
 
             var resources = new List<string>();
-            foreach ( var resx in assembly.GetManifestResourceNames() ) {
+            foreach (var resx in assembly.GetManifestResourceNames()) {
                 // Ignore scripts not in /Scripts
-                if ( !resx.Contains(".ecma_3.") || !resx.Contains("Array") ) {
+                if (!resx.Contains(".ecma_3.") || !resx.Contains("Array")) {
                     continue;
                 }
 
@@ -891,13 +889,13 @@ var fakeButton = new Test.FakeButton();");
 
             //Run the shell first if defined
             string additionalShell = null;
-            if ( resources[resources.Count - 1].EndsWith("shell.js") ) {
+            if (resources[resources.Count - 1].EndsWith("shell.js")) {
                 additionalShell = resources[resources.Count - 1];
                 resources.RemoveAt(resources.Count - 1);
                 additionalShell = new StreamReader(assembly.GetManifestResourceStream(additionalShell)).ReadToEnd();
             }
 
-            foreach ( var resx in resources ) {
+            foreach (var resx in resources) {
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
                 Console.WriteLine(Path.GetFileNameWithoutExtension(resx));
 
@@ -908,14 +906,14 @@ var fakeButton = new Test.FakeButton();");
                 jint.Run(extensions);
                 jint.Run(shell);
                 jint.Run("test = _test;");
-                if ( additionalShell != null ) {
+                if (additionalShell != null) {
                     jint.Run(additionalShell);
                 }
 
                 try {
                     jint.Run(program);
                 }
-                catch ( Exception e ) {
+                catch (Exception e) {
                     jint.Run("print('Error in : ' + gTestfile)");
                     Console.WriteLine(e.Message);
                 }
@@ -929,9 +927,9 @@ var fakeButton = new Test.FakeButton();");
             var extensions = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.extensions.js")).ReadToEnd();
 
             var resources = new List<string>();
-            foreach ( var resx in assembly.GetManifestResourceNames() ) {
+            foreach (var resx in assembly.GetManifestResourceNames()) {
                 // Ignore scripts not in /Scripts
-                if ( !resx.Contains(".ecma_5.") || resx.Contains(".Scripts.") ) {
+                if (!resx.Contains(".ecma_5.") || resx.Contains(".Scripts.")) {
                     continue;
                 }
 
@@ -942,13 +940,13 @@ var fakeButton = new Test.FakeButton();");
 
             //Run the shell first if defined
             string additionalShell = null;
-            if ( resources[resources.Count - 1].EndsWith("shell.js") ) {
+            if (resources[resources.Count - 1].EndsWith("shell.js")) {
                 additionalShell = resources[resources.Count - 1];
                 resources.RemoveAt(resources.Count - 1);
                 additionalShell = new StreamReader(assembly.GetManifestResourceStream(additionalShell)).ReadToEnd();
             }
 
-            foreach ( var resx in resources ) {
+            foreach (var resx in resources) {
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
                 Console.WriteLine(Path.GetFileNameWithoutExtension(resx));
 
@@ -959,14 +957,14 @@ var fakeButton = new Test.FakeButton();");
                 jint.Run(extensions);
                 //jint.Run(shell);
                 jint.Run("test = _test;");
-                if ( additionalShell != null ) {
+                if (additionalShell != null) {
                     jint.Run(additionalShell);
                 }
 
                 try {
                     jint.Run(program);
                 }
-                catch ( Exception e ) {
+                catch (Exception e) {
                     jint.Run("print('Error in : ' + gTestfile)");
                     Console.WriteLine(e.Message);
                 }
@@ -976,10 +974,10 @@ var fakeButton = new Test.FakeButton();");
         public List<int> FindAll(List<int> source, Predicate<int> predicate) {
             var result = new List<int>();
 
-            foreach ( var i in source ) {
+            foreach (var i in source) {
                 var obj = predicate(i);
 
-                if ( obj ) {
+                if (obj) {
                     result.Add(i);
                 }
             }
@@ -1010,7 +1008,7 @@ var fakeButton = new Test.FakeButton();");
             catch(e){
                 assert(true, true);
             }");
-            
+
             //Strict mode disabled
             engine = new JintEngine(Options.Ecmascript3)
             .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
@@ -1369,8 +1367,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void InstanceOfScriptShouldPassTests()
-        {
+        public void InstanceOfScriptShouldPassTests() {
             ExecuteEmbededScript("instanceOf.js");
         }
 
@@ -1466,18 +1463,14 @@ var fakeButton = new Test.FakeButton();");
             Assert.AreEqual("undefined", engine.Run("typeof thisIsNotDefined"));
             Assert.AreEqual(System.String.Format("{0}", 1), engine.Run("System.String.Format('{0}', 1)"));
         }
-
-
     }
 
-    public struct Size
-    {
+    public struct Size {
         public int Width;
         public int Height;
     }
 
-    public class Box
-    {
+    public class Box {
         // public fields
         public int width;
         public int height;
@@ -1486,24 +1479,20 @@ var fakeButton = new Test.FakeButton();");
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public void SetSize(int width, int height)
-        {
+        public void SetSize(int width, int height) {
             Width = width;
             Height = height;
         }
 
-        public int Foo(int a, object b)
-        {
+        public int Foo(int a, object b) {
             return a;
         }
 
-        public int Foo(int a)
-        {
+        public int Foo(int a) {
             return a;
         }
 
-        public void Write(object value)
-        {
+        public void Write(object value) {
             Console.WriteLine(value);
         }
     }

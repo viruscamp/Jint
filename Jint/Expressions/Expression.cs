@@ -1,10 +1,8 @@
 using System;
 using Antlr.Runtime.Tree;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public abstract class Expression : Statement
-    {
+    public abstract class Expression : Statement {
     }
 }

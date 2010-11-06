@@ -2,20 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint
-{
-    public class Number
-    {
-        public static object Add(object a, object b)
-        {
+namespace Jint {
+    public class Number {
+        public static object Add(object a, object b) {
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
-            switch (typeCodeA)
-            {
+            switch (typeCodeA) {
                 case TypeCode.Byte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (Byte)a + (SByte)b;
                         case TypeCode.Int16: return (Byte)a + (Int16)b;
                         case TypeCode.UInt16: return (Byte)a + (UInt16)b;
@@ -29,8 +24,7 @@ namespace Jint
                     }
                     break;
                 case TypeCode.SByte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (SByte)a + (SByte)b;
                         case TypeCode.Int16: return (SByte)a + (Int16)b;
                         case TypeCode.UInt16: return (SByte)a + (UInt16)b;
@@ -45,8 +39,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int16: return (Int16)a + (Int16)b;
                         case TypeCode.UInt16: return (Int16)a + (UInt16)b;
                         case TypeCode.Int32: return (Int16)a + (Int32)b;
@@ -60,8 +53,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt16: return (UInt16)a + (UInt16)b;
                         case TypeCode.Int32: return (UInt16)a + (Int32)b;
                         case TypeCode.UInt32: return (UInt16)a + (UInt32)b;
@@ -74,8 +66,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int32: return (Int32)a + (Int32)b;
                         case TypeCode.UInt32: return (Int32)a + (UInt32)b;
                         case TypeCode.Int64: return (Int32)a + (Int64)b;
@@ -87,8 +78,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt32: return (UInt32)a + (UInt32)b;
                         case TypeCode.Int64: return (UInt32)a + (Int64)b;
                         case TypeCode.UInt64: return (UInt32)a + (UInt64)b;
@@ -99,8 +89,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int64: return (Int64)a + (Int64)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'long' and 'ulong'"); ;
                         case TypeCode.Single: return (Int64)a + (Single)b;
@@ -110,8 +99,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt64: return (UInt64)a + (UInt64)b;
                         case TypeCode.Single: return (UInt64)a + (Single)b;
                         case TypeCode.Double: return (UInt64)a + (Double)b;
@@ -120,8 +108,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Single:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Single: return (Single)a + (Single)b;
                         case TypeCode.Double: return (Single)a + (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'float' and 'decimal'"); ;
@@ -129,16 +116,14 @@ namespace Jint
                     break;
 
                 case TypeCode.Double:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Double: return (Double)a + (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '+' can't be applied to operands of types 'double' and 'decimal'"); ;
                     }
                     break;
 
                 case TypeCode.Decimal:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Decimal: return (Decimal)a + (Decimal)b;
                     }
                     break;
@@ -146,16 +131,13 @@ namespace Jint
 
             return null;
         }
-        public static object Soustract(object a, object b)
-        {
+        public static object Soustract(object a, object b) {
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
-            switch (typeCodeA)
-            {
+            switch (typeCodeA) {
                 case TypeCode.Byte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (Byte)a - (SByte)b;
                         case TypeCode.Int16: return (Byte)a - (Int16)b;
                         case TypeCode.UInt16: return (Byte)a - (UInt16)b;
@@ -169,8 +151,7 @@ namespace Jint
                     }
                     break;
                 case TypeCode.SByte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (SByte)a - (SByte)b;
                         case TypeCode.Int16: return (SByte)a - (Int16)b;
                         case TypeCode.UInt16: return (SByte)a - (UInt16)b;
@@ -185,8 +166,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int16: return (Int16)a - (Int16)b;
                         case TypeCode.UInt16: return (Int16)a - (UInt16)b;
                         case TypeCode.Int32: return (Int16)a - (Int32)b;
@@ -200,8 +180,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt16: return (UInt16)a - (UInt16)b;
                         case TypeCode.Int32: return (UInt16)a - (Int32)b;
                         case TypeCode.UInt32: return (UInt16)a - (UInt32)b;
@@ -214,8 +193,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int32: return (Int32)a - (Int32)b;
                         case TypeCode.UInt32: return (Int32)a - (UInt32)b;
                         case TypeCode.Int64: return (Int32)a - (Int64)b;
@@ -227,8 +205,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt32: return (UInt32)a - (UInt32)b;
                         case TypeCode.Int64: return (UInt32)a - (Int64)b;
                         case TypeCode.UInt64: return (UInt32)a - (UInt64)b;
@@ -239,8 +216,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int64: return (Int64)a - (Int64)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '-' can't be applied to operands of types 'long' and 'ulong'"); ;
                         case TypeCode.Single: return (Int64)a - (Single)b;
@@ -250,8 +226,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt64: return (UInt64)a - (UInt64)b;
                         case TypeCode.Single: return (UInt64)a - (Single)b;
                         case TypeCode.Double: return (UInt64)a - (Double)b;
@@ -260,8 +235,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Single:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Single: return (Single)a - (Single)b;
                         case TypeCode.Double: return (Single)a - (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '-' can't be applied to operands of types 'float' and 'decimal'"); ;
@@ -269,16 +243,14 @@ namespace Jint
                     break;
 
                 case TypeCode.Double:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Double: return (Double)a - (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '-' can't be applied to operands of types 'double' and 'decimal'"); ;
                     }
                     break;
 
                 case TypeCode.Decimal:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Decimal: return (Byte)a - (Decimal)b;
                     }
                     break;
@@ -286,16 +258,13 @@ namespace Jint
 
             return null;
         }
-        public static object Multiply(object a, object b)
-        {
+        public static object Multiply(object a, object b) {
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
-            switch (typeCodeA)
-            {
+            switch (typeCodeA) {
                 case TypeCode.Byte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (Byte)a * (SByte)b;
                         case TypeCode.Int16: return (Byte)a * (Int16)b;
                         case TypeCode.UInt16: return (Byte)a * (UInt16)b;
@@ -309,8 +278,7 @@ namespace Jint
                     }
                     break;
                 case TypeCode.SByte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (SByte)a * (SByte)b;
                         case TypeCode.Int16: return (SByte)a * (Int16)b;
                         case TypeCode.UInt16: return (SByte)a * (UInt16)b;
@@ -325,8 +293,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int16: return (Int16)a * (Int16)b;
                         case TypeCode.UInt16: return (Int16)a * (UInt16)b;
                         case TypeCode.Int32: return (Int16)a * (Int32)b;
@@ -340,8 +307,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt16: return (UInt16)a * (UInt16)b;
                         case TypeCode.Int32: return (UInt16)a * (Int32)b;
                         case TypeCode.UInt32: return (UInt16)a * (UInt32)b;
@@ -354,8 +320,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int32: return (Int32)a * (Int32)b;
                         case TypeCode.UInt32: return (Int32)a * (UInt32)b;
                         case TypeCode.Int64: return (Int32)a * (Int64)b;
@@ -367,8 +332,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt32: return (UInt32)a * (UInt32)b;
                         case TypeCode.Int64: return (UInt32)a * (Int64)b;
                         case TypeCode.UInt64: return (UInt32)a * (UInt64)b;
@@ -379,8 +343,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int64: return (Int64)a * (Int64)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '*' can't be applied to operands of types 'long' and 'ulong'"); ;
                         case TypeCode.Single: return (Int64)a * (Single)b;
@@ -390,8 +353,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt64: return (UInt64)a * (UInt64)b;
                         case TypeCode.Single: return (UInt64)a * (Single)b;
                         case TypeCode.Double: return (UInt64)a * (Double)b;
@@ -400,8 +362,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Single:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Single: return (Single)a * (Single)b;
                         case TypeCode.Double: return (Single)a * (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '*' can't be applied to operands of types 'float' and 'decimal'"); ;
@@ -409,16 +370,14 @@ namespace Jint
                     break;
 
                 case TypeCode.Double:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Double: return (Double)a * (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '*' can't be applied to operands of types 'double' and 'decimal'"); ;
                     }
                     break;
 
                 case TypeCode.Decimal:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Decimal: return (Byte)a * (Decimal)b;
                     }
                     break;
@@ -426,16 +385,13 @@ namespace Jint
 
             return null;
         }
-        public static object Divide(object a, object b)
-        {
+        public static object Divide(object a, object b) {
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
-            switch (typeCodeA)
-            {
+            switch (typeCodeA) {
                 case TypeCode.Byte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (Byte)a / (SByte)b;
                         case TypeCode.Int16: return (Byte)a / (Int16)b;
                         case TypeCode.UInt16: return (Byte)a / (UInt16)b;
@@ -449,8 +405,7 @@ namespace Jint
                     }
                     break;
                 case TypeCode.SByte:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.SByte: return (SByte)a / (SByte)b;
                         case TypeCode.Int16: return (SByte)a / (Int16)b;
                         case TypeCode.UInt16: return (SByte)a / (UInt16)b;
@@ -465,8 +420,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int16: return (Int16)a / (Int16)b;
                         case TypeCode.UInt16: return (Int16)a / (UInt16)b;
                         case TypeCode.Int32: return (Int16)a / (Int32)b;
@@ -480,8 +434,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt16:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt16: return (UInt16)a / (UInt16)b;
                         case TypeCode.Int32: return (UInt16)a / (Int32)b;
                         case TypeCode.UInt32: return (UInt16)a / (UInt32)b;
@@ -494,8 +447,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int32: return (Int32)a / (Int32)b;
                         case TypeCode.UInt32: return (Int32)a / (UInt32)b;
                         case TypeCode.Int64: return (Int32)a / (Int64)b;
@@ -507,8 +459,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt32:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt32: return (UInt32)a / (UInt32)b;
                         case TypeCode.Int64: return (UInt32)a / (Int64)b;
                         case TypeCode.UInt64: return (UInt32)a / (UInt64)b;
@@ -519,8 +470,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Int64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Int64: return (Int64)a / (Int64)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '/' can't be applied to operands of types 'long' and 'ulong'"); ;
                         case TypeCode.Single: return (Int64)a / (Single)b;
@@ -530,8 +480,7 @@ namespace Jint
                     break;
 
                 case TypeCode.UInt64:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.UInt64: return (UInt64)a / (UInt64)b;
                         case TypeCode.Single: return (UInt64)a / (Single)b;
                         case TypeCode.Double: return (UInt64)a / (Double)b;
@@ -540,8 +489,7 @@ namespace Jint
                     break;
 
                 case TypeCode.Single:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Single: return (Single)a / (Single)b;
                         case TypeCode.Double: return (Single)a / (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '/' can't be applied to operands of types 'float' and 'decimal'"); ;
@@ -549,16 +497,14 @@ namespace Jint
                     break;
 
                 case TypeCode.Double:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Double: return (Double)a / (Double)b;
                         case TypeCode.UInt64: throw new InvalidOperationException("Operator '/' can't be applied to operands of types 'double' and 'decimal'"); ;
                     }
                     break;
 
                 case TypeCode.Decimal:
-                    switch (typeCodeB)
-                    {
+                    switch (typeCodeB) {
                         case TypeCode.Decimal: return (Byte)a / (Decimal)b;
                     }
                     break;
@@ -566,28 +512,23 @@ namespace Jint
 
             return null;
         }
-        public static object Max(object a, object b)
-        {
-            if (a == null && b == null)
-            {
+        public static object Max(object a, object b) {
+            if (a == null && b == null) {
                 return null;
             }
 
-            if (a == null)
-            {
+            if (a == null) {
                 return b;
             }
 
-            if (b == null)
-            {
+            if (b == null) {
                 return a;
             }
 
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
-            switch (typeCodeA)
-            {
+            switch (typeCodeA) {
                 case TypeCode.Byte:
                     return Math.Max((Byte)a, Convert.ToByte(b));
                 case TypeCode.SByte:
@@ -614,28 +555,23 @@ namespace Jint
 
             return null;
         }
-        public static object Min(object a, object b)
-        {
-            if (a == null && b == null)
-            {
+        public static object Min(object a, object b) {
+            if (a == null && b == null) {
                 return null;
             }
 
-            if (a == null)
-            {
+            if (a == null) {
                 return b;
             }
 
-            if (b == null)
-            {
+            if (b == null) {
                 return a;
             }
-            
+
             TypeCode typeCodeA = Type.GetTypeCode(a.GetType());
             TypeCode typeCodeB = Type.GetTypeCode(b.GetType());
 
-            switch (typeCodeA)
-            {
+            switch (typeCodeA) {
                 case TypeCode.Byte:
                     return Math.Min((Byte)a, Convert.ToByte(b));
                 case TypeCode.SByte:

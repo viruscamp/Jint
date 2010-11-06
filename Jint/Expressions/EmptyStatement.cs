@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Expressions
-{
+namespace Jint.Expressions {
     [Serializable]
-    public class EmptyStatement : Statement
-    {
+    public class EmptyStatement : Statement {
         [System.Diagnostics.DebuggerStepThrough]
-        public override void Accept(IStatementVisitor visitor)
-        {
+        public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
 

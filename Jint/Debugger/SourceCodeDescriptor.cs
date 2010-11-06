@@ -2,31 +2,25 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Debugger
-{
+namespace Jint.Debugger {
     [Serializable]
-    public class SourceCodeDescriptor
-    {
+    public class SourceCodeDescriptor {
         [Serializable]
-        public class Location
-        {
-            public Location(int line, int c)
-            {
-                this.line= line;
+        public class Location {
+            public Location(int line, int c) {
+                this.line = line;
                 this._Char = c;
             }
 
             private int line;
 
-            public int Line
-            {
+            public int Line {
                 get { return line; }
                 set { line = value; }
             }
             private int _Char;
 
-            public int Char
-            {
+            public int Char {
                 get { return _Char; }
                 set { _Char = value; }
             }
@@ -34,32 +28,28 @@ namespace Jint.Debugger
 
         protected Location start;
 
-        public Location Start
-        {
+        public Location Start {
             get { return start; }
             set { start = value; }
         }
         protected Location stop;
 
-        public Location Stop
-        {
+        public Location Stop {
             get { return stop; }
             set { stop = value; }
         }
 
         public string Code { get; private set; }
 
-        public SourceCodeDescriptor(int startLine, int startChar, int stopLine, int stopChar, string code)
-        {
+        public SourceCodeDescriptor(int startLine, int startChar, int stopLine, int stopChar, string code) {
             Code = code;
 
             Start = new Location(startLine, startChar);
-            Stop = new Location(stopLine,stopChar);
+            Stop = new Location(stopLine, stopChar);
 
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return "Line: " + Start.Line + " Char: " + Start.Char;
         }
     }

@@ -19,7 +19,7 @@ namespace Jint.Native
         public JsScope Scope { get; set; }
 
         public JsFunction(IGlobal global, Statement statement)
-            : this(global)
+            : this(global.FunctionClass.PrototypeProperty)
         {
             Statement = statement;
         }
@@ -54,31 +54,6 @@ namespace Jint.Native
             }
         }
 
-        /*public override bool HasProperty(string key)
-        {
-            return GetDescriptor(key) != null;
-        }*/
-
-        /*public override Descriptor GetDescriptor(string index)
-        {
-            Descriptor d = base.GetDescriptor(index);
-            if ( d != null)
-                return d;
-
-            d = Scope.GetDescriptor(index);
-            if (d != null)
-                return d;
-
-            foreach (JsDictionaryObject scope in DeclaringScopes)
-            {
-                d = scope.GetDescriptor(index);
-                if (d != null)
-                    return d;
-            }
-
-            return null;
-        }*/
-
         //15.3.5.3
         public virtual bool HasInstance(JsObject inst)
         {
@@ -87,6 +62,15 @@ namespace Jint.Native
                 return this.PrototypeProperty.IsPrototypeOf(inst);
             }
             return false;
+        }
+
+        //13.2.2
+        public virtual JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor)
+        {
+            var instance = visitor.Global.ObjectClass.New(PrototypeProperty);
+            visitor.ExecuteFunction(this,instance,parameters);
+
+            return (visitor.Result as JsObject ?? instance);
         }
 
         public override object Value

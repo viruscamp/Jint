@@ -25,6 +25,7 @@ namespace Jint.Native
         /// <summary>
         /// Special form of the contructor used when constructin JsFunctionConstructor
         /// </summary>
+        /// <remarks>This constructor is called when the global.FunctionClass isn't set yet.</remarks>
         /// <param name="global">Global</param>
         /// <param name="prototype">Prototype</param>
         protected JsConstructor(IGlobal global,JsObject prototype)

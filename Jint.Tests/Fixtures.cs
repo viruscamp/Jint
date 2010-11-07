@@ -9,6 +9,7 @@ using System.Reflection;
 using Jint.Debugger;
 using System.Security.Permissions;
 using System.Diagnostics;
+using System.Text;
 
 namespace Jint.Tests {
     /// <summary>
@@ -869,8 +870,7 @@ var fakeButton = new Test.FakeButton();");
             ");
         }
 
-        [TestMethod]
-        public void ShouldExecuteMozillaTestsScripts() {
+        public void RunMozillaTests(string folder) {
             var assembly = Assembly.GetExecutingAssembly();
             var shell = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.shell.js")).ReadToEnd();
             var extensions = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.extensions.js")).ReadToEnd();
@@ -878,7 +878,7 @@ var fakeButton = new Test.FakeButton();");
             var resources = new List<string>();
             foreach (var resx in assembly.GetManifestResourceNames()) {
                 // Ignore scripts not in /Scripts
-                if (!resx.Contains(".ecma_3.") || !resx.Contains("Array")) {
+                if (!resx.Contains(".ecma_3.") || !resx.Contains(folder)) {
                     continue;
                 }
 
@@ -899,9 +899,12 @@ var fakeButton = new Test.FakeButton();");
                 var program = new StreamReader(assembly.GetManifestResourceStream(resx)).ReadToEnd();
                 Console.WriteLine(Path.GetFileNameWithoutExtension(resx));
 
+                StringBuilder output = new StringBuilder();
+                StringWriter sw = new StringWriter(output);
+
                 var jint = new JintEngine()
                 .SetDebugMode(true)
-                .SetFunction("print", new Action<string>(System.Console.WriteLine));
+                .SetFunction("print", new Action<string>(sw.WriteLine));
 
                 jint.Run(extensions);
                 jint.Run(shell);
@@ -912,10 +915,14 @@ var fakeButton = new Test.FakeButton();");
 
                 try {
                     jint.Run(program);
+                    string result = sw.ToString();
+                    if(result.Contains("FAILED")){
+                        Assert.Fail(result);
+                    }
                 }
                 catch (Exception e) {
                     jint.Run("print('Error in : ' + gTestfile)");
-                    Console.WriteLine(e.Message);
+                    Assert.Fail(e.Message);
                 }
             }
         }
@@ -1463,6 +1470,12 @@ var fakeButton = new Test.FakeButton();");
             Assert.AreEqual("undefined", engine.Run("typeof thisIsNotDefined"));
             Assert.AreEqual(System.String.Format("{0}", 1), engine.Run("System.String.Format('{0}', 1)"));
         }
+
+        [TestMethod]
+        public void MozillaNumber() {
+            RunMozillaTests("Number");
+        }
+
     }
 
     public struct Size {

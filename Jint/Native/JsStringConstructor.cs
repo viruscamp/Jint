@@ -17,7 +17,7 @@ namespace Jint.Native {
         public override void InitPrototype(IGlobal global) {
             var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("split", global.FunctionClass.New<JsDictionaryObject>(SplitImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("split", global.FunctionClass.New<JsDictionaryObject>(SplitImpl, 2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("replace", global.FunctionClass.New<JsDictionaryObject>(ReplaceImpl, 2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
@@ -286,7 +286,7 @@ namespace Jint.Native {
                 }
 
                 if (replaceValue.Class == JsFunction.TYPEOF) {
-                    string ret = ((Regex)(parameters[0].Value)).Replace(source, delegate(Match m) {
+                    string ret = ((JsRegExp)parameters[0]).Regex.Replace(source, delegate(Match m) {
                         List<JsInstance> replaceParameters = new List<JsInstance>();
                         if (!regexp.IsGlobal) {
                             regexp["lastIndex"] = Global.NumberClass.New(m.Index + 1);
@@ -315,7 +315,7 @@ namespace Jint.Native {
                 }
                 else {
                     string str = parameters[1].ToString();
-                    string ret = ((Regex)(parameters[0].Value)).Replace(target.ToString(), delegate(Match m) {
+                    string ret = ((JsRegExp)parameters[0]).Regex.Replace(target.ToString(), delegate(Match m) {
                         if (!regexp.IsGlobal) {
                             regexp["lastIndex"] = Global.NumberClass.New(m.Index + 1);
                         }
@@ -423,8 +423,7 @@ namespace Jint.Native {
             string[] result;
 
             if (separator.Class == JsRegExp.TYPEOF) {
-                var regexp = (Regex)((JsRegExp)separator).Value;
-                result = regexp.Split(S, limit);
+                result = ((JsRegExp)parameters[0]).Regex.Split(S, limit);
             }
             else {
                 result = S.Split(new string[] { separator.ToString() }, limit, StringSplitOptions.None);

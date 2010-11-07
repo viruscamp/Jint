@@ -1,4 +1,11 @@
-﻿pattern = /(aa|aabaac|ba|b|c)*/;
+﻿pattern = /(.*?)a(?!(a+)b\2c)\2(.*)/;
+string = 'baaabaac';
+actualmatch = string.match(pattern);
+expectedmatch = Array('baaabaac', 'ba', undefined, 'abaac');
+assert(expectedmatch.length, actualmatch.length);
+assert(expectedmatch.toString(), actualmatch.toString());
+
+pattern = /(aa|aabaac|ba|b|c)*/;
 string = 'aabaac';
 actualmatch = string.match(pattern);
 expectedmatch = Array('aaba', 'ba');
@@ -75,13 +82,6 @@ pattern = /(?=(a+))a*b\1/;
 string = 'baaabac';
 actualmatch = string.match(pattern);
 expectedmatch = Array('aba', 'a');
-assert(expectedmatch.length, actualmatch.length);
-assert(expectedmatch.toString(), actualmatch.toString());
-
-pattern = /(.*?)a(?!(a+)b\2c)\2(.*)/;
-string = 'baaabaac';
-actualmatch = string.match(pattern);
-expectedmatch = Array('baaabaac', 'ba', undefined, 'abaac');
 assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
 

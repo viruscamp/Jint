@@ -8,15 +8,15 @@ namespace Jint.Native {
     [Serializable]
     public class JsRegExp : JsObject {
         public bool IsGlobal { get { return this["global"].ToBoolean(); } }
-        public bool IsIgnoreCase { get { return (value.Options & RegexOptions.IgnoreCase) == RegexOptions.IgnoreCase; } }
-        public bool IsMultiline { get { return (value.Options & RegexOptions.Multiline) == RegexOptions.Multiline; } }
+        public bool IsIgnoreCase { get { return (options & RegexOptions.IgnoreCase) == RegexOptions.IgnoreCase; } }
+        public bool IsMultiline { get { return (options & RegexOptions.Multiline) == RegexOptions.Multiline; } }
+
+        private string pattern;
+        private RegexOptions options;
 
         public JsRegExp(JsObject prototype)
             : base(prototype) {
         }
-
-        private Regex value;
-        private string pattern;
 
         public JsRegExp(string pattern, JsObject prototype)
             : this(pattern, false, false, false, prototype) {
@@ -24,17 +24,7 @@ namespace Jint.Native {
 
         public JsRegExp(string pattern, bool g, bool i, bool m, JsObject prototype)
             : base(prototype) {
-            if (pattern.Contains("$")) {
-                pattern = Regex.Replace(pattern, @"(?=[^\\])\$", m ? "(?=\r|\n|\r\n)" : @"\z", RegexOptions.Compiled);
-            }
-
-            if (pattern.StartsWith("^") && m) {
-                pattern = "(?!\r|\n|\r\n)" + pattern.Substring(1);
-            }
-
-            pattern = Regex.Replace(pattern, @"(?=[^\\])?\\(\d)", @"\k<$1>", RegexOptions.Compiled);
-
-            RegexOptions options = RegexOptions.ECMAScript;
+            options = RegexOptions.ECMAScript;
 
             if (m) {
                 options |= RegexOptions.Multiline;
@@ -44,24 +34,33 @@ namespace Jint.Native {
                 options |= RegexOptions.IgnoreCase;
             }
 
-            value = new Regex(pattern, options);
             this.pattern = pattern;
         }
 
-        public string Pattern { get { return pattern; } }
+        public string Pattern {
+            get { return pattern; }
+        }
+
+        public Regex Regex {
+            get { return new Regex(pattern, options); }
+        }
+
+        public RegexOptions Options {
+            get { return options; }
+        }
 
         public override object Value {
             get {
-                return value;
+                return null;
             }
         }
 
         public override string ToSource() {
-            return "/" + value.ToString() + "/";
+            return "/" + pattern.ToString() + "/";
         }
 
         public override string ToString() {
-            return "/" + value.ToString() + "/" + (IsGlobal ? "g" : String.Empty) + (IsIgnoreCase ? "i" : String.Empty) + (IsMultiline ? "m" : String.Empty);
+            return "/" + pattern.ToString() + "/" + (IsGlobal ? "g" : String.Empty) + (IsIgnoreCase ? "i" : String.Empty) + (IsMultiline ? "m" : String.Empty);
         }
 
         public const string TYPEOF = "regexp";

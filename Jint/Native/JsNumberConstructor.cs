@@ -11,12 +11,13 @@ namespace Jint.Native {
             : base(global) {
             Name = "Number";
 
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontDelete);
+
             this.DefineOwnProperty("MAX_VALUE", New(Double.MaxValue));
             this.DefineOwnProperty("MIN_VALUE", New(Double.MinValue));
             this.DefineOwnProperty("NaN", New(Double.NaN));
             this.DefineOwnProperty("NEGATIVE_INFINITY", New(Double.PositiveInfinity));
             this.DefineOwnProperty("POSITIVE_INFINITY", New(Double.NegativeInfinity));
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontDelete);
         }
 
         public override void InitPrototype(IGlobal global) {

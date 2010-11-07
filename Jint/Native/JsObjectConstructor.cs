@@ -66,6 +66,11 @@ namespace Jint.Native
             return New((object)null);
         }
 
+        public JsObject New(JsObject prototype)
+        {
+            return new JsObject(prototype);
+        }
+
         /// <summary>
         /// 15.2.2.1
         /// </summary>

@@ -551,15 +551,6 @@ namespace Jint
             f.Statement = functionDeclaration.Statement;
             f.Name = functionDeclaration.Name;
             f.Scope = CurrentScope; // copy current scope hierarchy
-            
-            // TODO: cleanup
-            // add a return undefined; statement at the end of each method
-            /* BlockStatement block = (BlockStatement)f.Statement;
-            if (block.Statements.Count == 0)
-            {
-                block.Statements.AddLast(new ReturnStatement(new ValueExpression(JsUndefined.TYPEOF)));
-            }
-             */
 
             f.Arguments = functionDeclaration.Parameters;
             if (HasOption(Options.Strict))
@@ -792,20 +783,7 @@ namespace Jint
                     parameters[i] = Result;
                 }
 
-                // TODO: implement construct method inside the JsFunction
-                // Calls the constructor on a brand new object
-                JsObject instance;
-                if (function is JsArrayConstructor)
-                {
-                    instance = new JsArray(function.PrototypeProperty);
-                }
-                else
-                {
-                    instance = new JsObject(function.PrototypeProperty);
-                }
-
-                // Once 'new' is called, the result is the new instance, given by the Execute() method on the proper constructor
-                ExecuteFunction(function, instance, parameters);
+                Result = function.Construct(parameters, null, this);
 
                 return;
             }
@@ -1512,9 +1490,7 @@ namespace Jint
             }
 
             #region Evaluates parameters
-            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
-            Type[] types = new Type[methodCall.Arguments.Count];
-            
+            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];            
 
             if (methodCall.Arguments.Count > 0)
             {
@@ -1706,6 +1682,7 @@ namespace Jint
             return Global.HasOption(options);
         }
 
+        //TODO: remove CallFunction from a visitor
         /// <summary>
         /// 
         /// </summary>

@@ -90,6 +90,8 @@ namespace Jint.Native
             this["encodeURIComponent"] = new JsFunctionWrapper(EncodeURIComponent, FunctionClass.PrototypeProperty);
             #endregion
 
+            Marshaller = new Marshal(this);
+
         }
 
         #region Global Functions
@@ -111,6 +113,7 @@ namespace Jint.Native
         public JsNumberConstructor NumberClass { get; private set; }
         public JsRegExpConstructor RegExpClass { get; private set; }
         public JsStringConstructor StringClass { get; private set; }
+        public Marshal Marshaller { get; private set; }
 
         /// <summary>
         /// 15.1.2.1

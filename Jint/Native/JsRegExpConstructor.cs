@@ -42,58 +42,25 @@ namespace Jint.Native {
         }
 
         public JsInstance ExecImpl(JsRegExp regexp, JsInstance[] parameters) {
-            var R = regexp;
-            var S = parameters[0].ToString();
-            var length = S.Length;
-            var lastIndex = R["lastIndex"];
-            var i = lastIndex.ToInteger();
-            var global = R.IsGlobal;
+            JsArray A = Global.ArrayClass.New();
+            string input = parameters[0].ToString();
+            A["input"] = Global.StringClass.New(input);
 
-            if (global == false)
-                i = 0;
-
-            Match r = null;
-            MatchCollection rs = null;
-            var matchSucceeded = false;
-            while (matchSucceeded == false) {
-                if (i < 0 || i > length) {
-                    R["lastIndex"] = Global.NumberClass.New(0);
-                    return JsNull.Instance;
-                }
-
-                rs = ((Regex)regexp.Value).Matches(S, i);
-
-                if (rs.Count == 0) {
-                    i++;
+            int i = 0;
+            MatchCollection matches = Regex.Matches(input, regexp.Pattern, regexp.Options);
+            if (matches.Count > 0) {
+                if (regexp.IsGlobal) {
+                    foreach (Match m in matches) {
+                        A[Global.NumberClass.New(i++)] = Global.StringClass.New(m.Value);
+                    }
                 }
                 else {
-                    r = rs[0];
-                    matchSucceeded = true;
+                    foreach (Group g in matches[0].Groups) {
+                        A[Global.NumberClass.New(i++)] = Global.StringClass.New(g.Value);
+                    }
                 }
 
-            }
-
-            var e = r.Index + r.Length;
-
-            if (R.IsGlobal) {
-                R["lastIndex"] = Global.NumberClass.New(e);
-            }
-
-            var n = r.Groups.Count;
-            JsArray A = Global.ArrayClass.New();
-            var matchIndex = r.Index;
-            A["index"] = Global.NumberClass.New(matchIndex);
-            A["input"] = Global.StringClass.New(S);
-
-            if (regexp.IsGlobal) {
-                for (i = 0; i < rs.Count; i++) {
-                    A[Global.NumberClass.New(i)] = Global.StringClass.New(rs[i].Value);
-                }
-            }
-            else {
-                for (i = 0; i < r.Groups.Count; i++) {
-                    A[Global.NumberClass.New(i)] = Global.StringClass.New(r.Groups[i].Value);
-                }
+                A["index"] = Global.NumberClass.New(matches[0].Index);
             }
 
             return A;

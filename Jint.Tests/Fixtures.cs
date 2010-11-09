@@ -703,10 +703,41 @@ var fakeButton = new Test.FakeButton();");
                 function square(x) { 
                     return x*x; 
                 }
+
                 return square(i);
             ");
 
             Assert.IsTrue(brokeOnReturn);
+
+        }
+
+        [TestMethod]
+        public void ShouldBreakInLoops() {
+            var jint = new JintEngine()
+                .SetDebugMode(true);
+            jint.BreakPoints.Add(new BreakPoint(4, 22)); // x += 1;
+
+            jint.Step += (sender, info) => Assert.IsNotNull(info.CurrentStatement);
+
+            bool brokeInLoop = false;
+
+            jint.Break += (sender, info) => {
+                Assert.IsNotNull(info.CurrentStatement);
+                Assert.IsTrue(info.CurrentStatement is ExpressionStatement);
+                Assert.AreEqual(7, Convert.ToInt32(info.Locals["x"].Value));
+
+                brokeInLoop = true;
+            };
+
+            jint.Run(@"
+                var x = 7;
+                for(i=0; i<3; i++) { 
+                    x += i; 
+                    return;
+                }
+            ");
+
+            Assert.IsTrue(brokeInLoop);
         }
 
         [TestMethod]

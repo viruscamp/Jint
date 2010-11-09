@@ -1414,7 +1414,15 @@ options
 	
 statementTail returns [Statement value] 
 @after{
-	$value.Source = ExtractSourceCode((CommonToken)retval.Start, (CommonToken)retval.Stop);
+        if (!(retval.value is ForStatement ||
+            retval.value is BlockStatement ||
+            retval.value is WhileStatement ||
+            retval.value is DoWhileStatement ||
+            retval.value is SwitchStatement ||
+            retval.value is TryStatement ||
+            retval.value is IfStatement)) {
+            retval.value.Source = ExtractSourceCode((CommonToken)retval.Start, (CommonToken)retval.Stop);
+        }
 }
 	: variableStatement { $value = $variableStatement.value; }
 	| emptyStatement { $value = $emptyStatement.value; }

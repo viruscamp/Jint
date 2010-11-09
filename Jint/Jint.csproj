@@ -51,6 +51,8 @@
     <Compile Include="Native\ClrMethodDescriptor.cs" />
     <Compile Include="Native\ILiteral.cs" />
     <Compile Include="Native\LinkedDescriptor.cs" />
+    <Compile Include="Parser\ES3Lexer.cs" />
+    <Compile Include="Parser\ES3Parser.cs" />
     <Compile Include="PropertyBags\DictionaryPropertyBag.cs" />
     <Compile Include="PropertyBags\DoubleListPropertyBag.cs" />
     <Compile Include="IFieldGetter.cs" />
@@ -77,8 +79,6 @@
     <Compile Include="Native\PropertyDescriptor.cs" />
     <Compile Include="Native\ValueDescriptor.cs" />
     <Compile Include="Options.cs" />
-    <Compile Include="Parser\ES3Lexer.cs" />
-    <Compile Include="Parser\ES3Parser.cs" />
     <Compile Include="ExecutionVisitor.cs" />
     <Compile Include="Expressions\ArrayDeclaration.cs" />
     <Compile Include="Expressions\CommaOperatorStatement.cs" />

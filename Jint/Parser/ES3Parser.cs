@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g 2010-11-06 15:26:50
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g 2010-11-09 08:02:35
 
 
 using System.Text;
@@ -7245,13 +7245,13 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1419:2: ( variableStatement | emptyStatement | expressionStatement | ifStatement | iterationStatement | continueStatement | breakStatement | returnStatement | withStatement | labelledStatement | switchStatement | throwStatement | tryStatement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1427:2: ( variableStatement | emptyStatement | expressionStatement | ifStatement | iterationStatement | continueStatement | breakStatement | returnStatement | withStatement | labelledStatement | switchStatement | throwStatement | tryStatement )
             int alt58 = 13;
             alt58 = dfa58.Predict(input);
             switch (alt58) 
             {
                 case 1 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1419:4: variableStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1427:4: variableStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7265,7 +7265,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1420:4: emptyStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1428:4: emptyStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7279,7 +7279,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1421:4: expressionStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1429:4: expressionStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7293,7 +7293,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 4 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1422:4: ifStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1430:4: ifStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7307,7 +7307,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 5 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1423:4: iterationStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1431:4: iterationStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7321,7 +7321,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 6 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1424:4: continueStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1432:4: continueStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7335,7 +7335,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 7 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1425:4: breakStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1433:4: breakStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7349,7 +7349,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 8 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1426:4: returnStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1434:4: returnStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7363,7 +7363,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 9 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1427:4: withStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1435:4: withStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7377,7 +7377,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 10 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1428:4: labelledStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1436:4: labelledStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7391,7 +7391,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 11 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1429:4: switchStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1437:4: switchStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7405,7 +7405,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 12 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1430:4: throwStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1438:4: throwStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7419,7 +7419,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 13 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1431:4: tryStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1439:4: tryStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -7439,7 +7439,15 @@ public class ES3Parser : Parser
             	retval.Tree = (object)adaptor.RulePostProcessing(root_0);
             	adaptor.SetTokenBoundaries(retval.Tree, (IToken) retval.Start, (IToken) retval.Stop);
 
-            	retval.value.Source = ExtractSourceCode((CommonToken)retval.Start, (CommonToken)retval.Stop);
+                    if (!(retval.value is ForStatement ||
+                        retval.value is BlockStatement ||
+                        retval.value is WhileStatement ||
+                        retval.value is DoWhileStatement ||
+                        retval.value is SwitchStatement ||
+                        retval.value is TryStatement ||
+                        retval.value is IfStatement)) {
+                        retval.value.Source = ExtractSourceCode((CommonToken)retval.Start, (CommonToken)retval.Stop);
+                    }
 
         }
         catch (RecognitionException re) 
@@ -7469,7 +7477,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "block"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1436:1: block returns [BlockStatement value] : lb= LBRACE ( statement )* RBRACE ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1444:1: block returns [BlockStatement value] : lb= LBRACE ( statement )* RBRACE ;
     public ES3Parser.block_return block() // throws RecognitionException [1]
     {   
         ES3Parser.block_return retval = new ES3Parser.block_return();
@@ -7490,8 +7498,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1443:2: (lb= LBRACE ( statement )* RBRACE )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1443:4: lb= LBRACE ( statement )* RBRACE
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1451:2: (lb= LBRACE ( statement )* RBRACE )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1451:4: lb= LBRACE ( statement )* RBRACE
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -7499,7 +7507,7 @@ public class ES3Parser : Parser
             		lb_tree = (object)adaptor.Create(lb);
             		adaptor.AddChild(root_0, lb_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1443:14: ( statement )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1451:14: ( statement )*
             	do 
             	{
             	    int alt59 = 2;
@@ -7514,7 +7522,7 @@ public class ES3Parser : Parser
             	    switch (alt59) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1443:15: statement
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1451:15: statement
             			    {
             			    	PushFollow(FOLLOW_statement_in_block5376);
             			    	statement102 = statement();
@@ -7576,7 +7584,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "variableStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1451:1: variableStatement returns [Statement value] : VAR first= variableDeclaration ( COMMA follow= variableDeclaration )* semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1459:1: variableStatement returns [Statement value] : VAR first= variableDeclaration ( COMMA follow= variableDeclaration )* semic ;
     public ES3Parser.variableStatement_return variableStatement() // throws RecognitionException [1]
     {   
         ES3Parser.variableStatement_return retval = new ES3Parser.variableStatement_return();
@@ -7601,8 +7609,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1455:2: ( VAR first= variableDeclaration ( COMMA follow= variableDeclaration )* semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1455:4: VAR first= variableDeclaration ( COMMA follow= variableDeclaration )* semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1463:2: ( VAR first= variableDeclaration ( COMMA follow= variableDeclaration )* semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1463:4: VAR first= variableDeclaration ( COMMA follow= variableDeclaration )* semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -7616,7 +7624,7 @@ public class ES3Parser : Parser
 
             	adaptor.AddChild(root_0, first.Tree);
             	 first.value.Global = false; retval.value =  first.value; 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1455:88: ( COMMA follow= variableDeclaration )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1463:88: ( COMMA follow= variableDeclaration )*
             	do 
             	{
             	    int alt60 = 2;
@@ -7631,7 +7639,7 @@ public class ES3Parser : Parser
             	    switch (alt60) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1455:90: COMMA follow= variableDeclaration
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1463:90: COMMA follow= variableDeclaration
             			    {
             			    	COMMA105=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_variableStatement5418); 
             			    		COMMA105_tree = (object)adaptor.Create(COMMA105);
@@ -7696,7 +7704,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "variableDeclaration"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1459:1: variableDeclaration returns [VariableDeclarationStatement value] : id= Identifier ( ASSIGN ass= assignmentExpression )? ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1467:1: variableDeclaration returns [VariableDeclarationStatement value] : id= Identifier ( ASSIGN ass= assignmentExpression )? ;
     public ES3Parser.variableDeclaration_return variableDeclaration() // throws RecognitionException [1]
     {   
         ES3Parser.variableDeclaration_return retval = new ES3Parser.variableDeclaration_return();
@@ -7718,8 +7726,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1464:2: (id= Identifier ( ASSIGN ass= assignmentExpression )? )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1464:4: id= Identifier ( ASSIGN ass= assignmentExpression )?
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:2: (id= Identifier ( ASSIGN ass= assignmentExpression )? )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:4: id= Identifier ( ASSIGN ass= assignmentExpression )?
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -7728,7 +7736,7 @@ public class ES3Parser : Parser
             		adaptor.AddChild(root_0, id_tree);
 
             	 retval.value.Identifier = id.Text; 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1464:51: ( ASSIGN ass= assignmentExpression )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:51: ( ASSIGN ass= assignmentExpression )?
             	int alt61 = 2;
             	int LA61_0 = input.LA(1);
 
@@ -7739,7 +7747,7 @@ public class ES3Parser : Parser
             	switch (alt61) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1464:53: ASSIGN ass= assignmentExpression
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:53: ASSIGN ass= assignmentExpression
             	        {
             	        	ASSIGN107=(IToken)Match(input,ASSIGN,FOLLOW_ASSIGN_in_variableDeclaration5462); 
             	        		ASSIGN107_tree = (object)adaptor.Create(ASSIGN107);
@@ -7792,7 +7800,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "variableDeclarationNoIn"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1467:1: variableDeclarationNoIn returns [VariableDeclarationStatement value] : id= Identifier ( ASSIGN ass= assignmentExpressionNoIn )? ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1475:1: variableDeclarationNoIn returns [VariableDeclarationStatement value] : id= Identifier ( ASSIGN ass= assignmentExpressionNoIn )? ;
     public ES3Parser.variableDeclarationNoIn_return variableDeclarationNoIn() // throws RecognitionException [1]
     {   
         ES3Parser.variableDeclarationNoIn_return retval = new ES3Parser.variableDeclarationNoIn_return();
@@ -7814,8 +7822,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:2: (id= Identifier ( ASSIGN ass= assignmentExpressionNoIn )? )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:4: id= Identifier ( ASSIGN ass= assignmentExpressionNoIn )?
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1480:2: (id= Identifier ( ASSIGN ass= assignmentExpressionNoIn )? )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1480:4: id= Identifier ( ASSIGN ass= assignmentExpressionNoIn )?
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -7824,7 +7832,7 @@ public class ES3Parser : Parser
             		adaptor.AddChild(root_0, id_tree);
 
             	 retval.value.Identifier = id.Text; 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:51: ( ASSIGN ass= assignmentExpressionNoIn )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1480:51: ( ASSIGN ass= assignmentExpressionNoIn )?
             	int alt62 = 2;
             	int LA62_0 = input.LA(1);
 
@@ -7835,7 +7843,7 @@ public class ES3Parser : Parser
             	switch (alt62) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1472:53: ASSIGN ass= assignmentExpressionNoIn
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1480:53: ASSIGN ass= assignmentExpressionNoIn
             	        {
             	        	ASSIGN108=(IToken)Match(input,ASSIGN,FOLLOW_ASSIGN_in_variableDeclarationNoIn5501); 
             	        		ASSIGN108_tree = (object)adaptor.Create(ASSIGN108);
@@ -7888,7 +7896,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "emptyStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1479:1: emptyStatement returns [Statement value] : SEMIC ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1487:1: emptyStatement returns [Statement value] : SEMIC ;
     public ES3Parser.emptyStatement_return emptyStatement() // throws RecognitionException [1]
     {   
         ES3Parser.emptyStatement_return retval = new ES3Parser.emptyStatement_return();
@@ -7902,8 +7910,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1480:2: ( SEMIC )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1480:4: SEMIC
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1488:2: ( SEMIC )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1488:4: SEMIC
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -7944,7 +7952,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "expressionStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1493:1: expressionStatement returns [Statement value] : expression semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1501:1: expressionStatement returns [Statement value] : expression semic ;
     public ES3Parser.expressionStatement_return expressionStatement() // throws RecognitionException [1]
     {   
         ES3Parser.expressionStatement_return retval = new ES3Parser.expressionStatement_return();
@@ -7960,8 +7968,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1494:2: ( expression semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1494:4: expression semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1502:2: ( expression semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1502:4: expression semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8010,7 +8018,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "ifStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1501:1: ifStatement returns [Statement value] : IF LPAREN expression RPAREN then= statement ({...}? ELSE els= statement )? ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1509:1: ifStatement returns [Statement value] : IF LPAREN expression RPAREN then= statement ({...}? ELSE els= statement )? ;
     public ES3Parser.ifStatement_return ifStatement() // throws RecognitionException [1]
     {   
         ES3Parser.ifStatement_return retval = new ES3Parser.ifStatement_return();
@@ -8040,8 +8048,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1507:2: ( IF LPAREN expression RPAREN then= statement ({...}? ELSE els= statement )? )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1507:4: IF LPAREN expression RPAREN then= statement ({...}? ELSE els= statement )?
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1515:2: ( IF LPAREN expression RPAREN then= statement ({...}? ELSE els= statement )? )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1515:4: IF LPAREN expression RPAREN then= statement ({...}? ELSE els= statement )?
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8069,7 +8077,7 @@ public class ES3Parser : Parser
 
             	adaptor.AddChild(root_0, then.Tree);
             	 st.Then = ((then != null) ? then.value : null); 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1507:113: ({...}? ELSE els= statement )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1515:113: ({...}? ELSE els= statement )?
             	int alt63 = 2;
             	int LA63_0 = input.LA(1);
 
@@ -8085,7 +8093,7 @@ public class ES3Parser : Parser
             	switch (alt63) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1507:115: {...}? ELSE els= statement
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1515:115: {...}? ELSE els= statement
             	        {
             	        	if ( !(( input.LA(1) == ELSE )) ) 
             	        	{
@@ -8142,7 +8150,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "iterationStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1516:1: iterationStatement returns [Statement value] : (dos= doStatement | wh= whileStatement | fo= forStatement );
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1524:1: iterationStatement returns [Statement value] : (dos= doStatement | wh= whileStatement | fo= forStatement );
     public ES3Parser.iterationStatement_return iterationStatement() // throws RecognitionException [1]
     {   
         ES3Parser.iterationStatement_return retval = new ES3Parser.iterationStatement_return();
@@ -8160,7 +8168,7 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1517:2: (dos= doStatement | wh= whileStatement | fo= forStatement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1525:2: (dos= doStatement | wh= whileStatement | fo= forStatement )
             int alt64 = 3;
             switch ( input.LA(1) ) 
             {
@@ -8189,7 +8197,7 @@ public class ES3Parser : Parser
             switch (alt64) 
             {
                 case 1 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1517:4: dos= doStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1525:4: dos= doStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -8203,7 +8211,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1518:4: wh= whileStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1526:4: wh= whileStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -8217,7 +8225,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1519:4: fo= forStatement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1527:4: fo= forStatement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -8264,7 +8272,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "doStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1522:1: doStatement returns [Statement value] : DO statement WHILE LPAREN expression RPAREN semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1530:1: doStatement returns [Statement value] : DO statement WHILE LPAREN expression RPAREN semic ;
     public ES3Parser.doStatement_return doStatement() // throws RecognitionException [1]
     {   
         ES3Parser.doStatement_return retval = new ES3Parser.doStatement_return();
@@ -8290,8 +8298,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1523:2: ( DO statement WHILE LPAREN expression RPAREN semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1523:4: DO statement WHILE LPAREN expression RPAREN semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1531:2: ( DO statement WHILE LPAREN expression RPAREN semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1531:4: DO statement WHILE LPAREN expression RPAREN semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8362,7 +8370,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "whileStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1527:1: whileStatement returns [Statement value] : WHILE LPAREN expression RPAREN statement ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1535:1: whileStatement returns [Statement value] : WHILE LPAREN expression RPAREN statement ;
     public ES3Parser.whileStatement_return whileStatement() // throws RecognitionException [1]
     {   
         ES3Parser.whileStatement_return retval = new ES3Parser.whileStatement_return();
@@ -8384,8 +8392,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1528:2: ( WHILE LPAREN expression RPAREN statement )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1528:4: WHILE LPAREN expression RPAREN statement
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1536:2: ( WHILE LPAREN expression RPAREN statement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1536:4: WHILE LPAREN expression RPAREN statement
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8441,7 +8449,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "forStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1572:1: forStatement returns [IForStatement value] : FOR LPAREN fo= forControl RPAREN st= statement ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1580:1: forStatement returns [IForStatement value] : FOR LPAREN fo= forControl RPAREN st= statement ;
     public ES3Parser.forStatement_return forStatement() // throws RecognitionException [1]
     {   
         ES3Parser.forStatement_return retval = new ES3Parser.forStatement_return();
@@ -8463,8 +8471,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1573:2: ( FOR LPAREN fo= forControl RPAREN st= statement )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1573:4: FOR LPAREN fo= forControl RPAREN st= statement
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1581:2: ( FOR LPAREN fo= forControl RPAREN st= statement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1581:4: FOR LPAREN fo= forControl RPAREN st= statement
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8521,7 +8529,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "forControl"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1576:1: forControl returns [IForStatement value] : (ex1= forControlVar | ex2= forControlExpression | ex3= forControlSemic );
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1584:1: forControl returns [IForStatement value] : (ex1= forControlVar | ex2= forControlExpression | ex3= forControlSemic );
     public ES3Parser.forControl_return forControl() // throws RecognitionException [1]
     {   
         ES3Parser.forControl_return retval = new ES3Parser.forControl_return();
@@ -8539,7 +8547,7 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1577:2: (ex1= forControlVar | ex2= forControlExpression | ex3= forControlSemic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1585:2: (ex1= forControlVar | ex2= forControlExpression | ex3= forControlSemic )
             int alt65 = 3;
             switch ( input.LA(1) ) 
             {
@@ -8591,7 +8599,7 @@ public class ES3Parser : Parser
             switch (alt65) 
             {
                 case 1 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1577:4: ex1= forControlVar
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1585:4: ex1= forControlVar
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -8605,7 +8613,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1578:4: ex2= forControlExpression
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1586:4: ex2= forControlExpression
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -8619,7 +8627,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1579:4: ex3= forControlSemic
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1587:4: ex3= forControlSemic
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -8666,7 +8674,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "forControlVar"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1582:1: forControlVar returns [IForStatement value] : VAR first= variableDeclarationNoIn ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) ) ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1590:1: forControlVar returns [IForStatement value] : VAR first= variableDeclarationNoIn ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) ) ;
     public ES3Parser.forControlVar_return forControlVar() // throws RecognitionException [1]
     {   
         ES3Parser.forControlVar_return retval = new ES3Parser.forControlVar_return();
@@ -8703,8 +8711,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1589:2: ( VAR first= variableDeclarationNoIn ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) ) )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1589:4: VAR first= variableDeclarationNoIn ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1597:2: ( VAR first= variableDeclarationNoIn ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) ) )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1597:4: VAR first= variableDeclarationNoIn ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) )
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8718,7 +8726,7 @@ public class ES3Parser : Parser
 
             	adaptor.AddChild(root_0, first.Tree);
             	 foreachStatement.InitialisationStatement = forStatement.InitialisationStatement = first.value; first.value.Global = false;  
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1590:2: ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) )
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1598:2: ( ( IN ex= expression ) | ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? ) )
             	int alt69 = 2;
             	int LA69_0 = input.LA(1);
 
@@ -8740,10 +8748,10 @@ public class ES3Parser : Parser
             	switch (alt69) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1591:3: ( IN ex= expression )
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1599:3: ( IN ex= expression )
             	        {
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1591:3: ( IN ex= expression )
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1592:4: IN ex= expression
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1599:3: ( IN ex= expression )
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1600:4: IN ex= expression
             	        	{
             	        		IN133=(IToken)Match(input,IN,FOLLOW_IN_in_forControlVar5837); 
             	        			IN133_tree = (object)adaptor.Create(IN133);
@@ -8762,12 +8770,12 @@ public class ES3Parser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1596:3: ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? )
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1604:3: ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? )
             	        {
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1596:3: ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? )
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1597:4: ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )?
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1604:3: ( ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )? )
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1605:4: ( COMMA follow= variableDeclarationNoIn )* SEMIC (ex1= expression )? SEMIC (ex2= expression )?
             	        	{
-            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1597:4: ( COMMA follow= variableDeclarationNoIn )*
+            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1605:4: ( COMMA follow= variableDeclarationNoIn )*
             	        		do 
             	        		{
             	        		    int alt66 = 2;
@@ -8782,7 +8790,7 @@ public class ES3Parser : Parser
             	        		    switch (alt66) 
             	        			{
             	        				case 1 :
-            	        				    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1597:6: COMMA follow= variableDeclarationNoIn
+            	        				    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1605:6: COMMA follow= variableDeclarationNoIn
             	        				    {
             	        				    	COMMA134=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_forControlVar5866); 
             	        				    		COMMA134_tree = (object)adaptor.Create(COMMA134);
@@ -8811,7 +8819,7 @@ public class ES3Parser : Parser
             	        			SEMIC135_tree = (object)adaptor.Create(SEMIC135);
             	        			adaptor.AddChild(root_0, SEMIC135_tree);
 
-            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1598:10: (ex1= expression )?
+            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1606:10: (ex1= expression )?
             	        		int alt67 = 2;
             	        		int LA67_0 = input.LA(1);
 
@@ -8822,7 +8830,7 @@ public class ES3Parser : Parser
             	        		switch (alt67) 
             	        		{
             	        		    case 1 :
-            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1598:12: ex1= expression
+            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1606:12: ex1= expression
             	        		        {
             	        		        	PushFollow(FOLLOW_expression_in_forControlVar5889);
             	        		        	ex1 = expression();
@@ -8840,7 +8848,7 @@ public class ES3Parser : Parser
             	        			SEMIC136_tree = (object)adaptor.Create(SEMIC136);
             	        			adaptor.AddChild(root_0, SEMIC136_tree);
 
-            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1598:87: (ex2= expression )?
+            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1606:87: (ex2= expression )?
             	        		int alt68 = 2;
             	        		int LA68_0 = input.LA(1);
 
@@ -8851,7 +8859,7 @@ public class ES3Parser : Parser
             	        		switch (alt68) 
             	        		{
             	        		    case 1 :
-            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1598:88: ex2= expression
+            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1606:88: ex2= expression
             	        		        {
             	        		        	PushFollow(FOLLOW_expression_in_forControlVar5902);
             	        		        	ex2 = expression();
@@ -8910,7 +8918,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "forControlExpression"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1604:1: forControlExpression returns [IForStatement value] : ex1= expressionNoIn ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) ) ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1612:1: forControlExpression returns [IForStatement value] : ex1= expressionNoIn ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) ) ;
     public ES3Parser.forControlExpression_return forControlExpression() // throws RecognitionException [1]
     {   
         ES3Parser.forControlExpression_return retval = new ES3Parser.forControlExpression_return();
@@ -8940,8 +8948,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1612:2: (ex1= expressionNoIn ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) ) )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1612:4: ex1= expressionNoIn ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:2: (ex1= expressionNoIn ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) ) )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:4: ex1= expressionNoIn ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) )
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -8951,7 +8959,7 @@ public class ES3Parser : Parser
 
             	adaptor.AddChild(root_0, ex1.Tree);
             	 foreachStatement.InitialisationStatement = forStatement.InitialisationStatement = ex1.value; 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1613:2: ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) )
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1621:2: ({...}? ( IN ex2= expression ) | ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? ) )
             	int alt72 = 2;
             	int LA72_0 = input.LA(1);
 
@@ -8973,14 +8981,14 @@ public class ES3Parser : Parser
             	switch (alt72) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1614:3: {...}? ( IN ex2= expression )
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1622:3: {...}? ( IN ex2= expression )
             	        {
             	        	if ( !(( IsLeftHandSideIn(ex1.value, isLhs) )) ) 
             	        	{
             	        	    throw new FailedPredicateException(input, "forControlExpression", " IsLeftHandSideIn(ex1.value, isLhs) ");
             	        	}
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1614:43: ( IN ex2= expression )
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1615:4: IN ex2= expression
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1622:43: ( IN ex2= expression )
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1623:4: IN ex2= expression
             	        	{
             	        		IN137=(IToken)Match(input,IN,FOLLOW_IN_in_forControlExpression5958); 
             	        			IN137_tree = (object)adaptor.Create(IN137);
@@ -8999,16 +9007,16 @@ public class ES3Parser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1619:3: ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? )
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1627:3: ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? )
             	        {
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1619:3: ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? )
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:4: SEMIC (ex2= expression )? SEMIC (ex3= expression )?
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1627:3: ( SEMIC (ex2= expression )? SEMIC (ex3= expression )? )
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1628:4: SEMIC (ex2= expression )? SEMIC (ex3= expression )?
             	        	{
             	        		SEMIC138=(IToken)Match(input,SEMIC,FOLLOW_SEMIC_in_forControlExpression5985); 
             	        			SEMIC138_tree = (object)adaptor.Create(SEMIC138);
             	        			adaptor.AddChild(root_0, SEMIC138_tree);
 
-            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:10: (ex2= expression )?
+            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1628:10: (ex2= expression )?
             	        		int alt70 = 2;
             	        		int LA70_0 = input.LA(1);
 
@@ -9019,7 +9027,7 @@ public class ES3Parser : Parser
             	        		switch (alt70) 
             	        		{
             	        		    case 1 :
-            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:12: ex2= expression
+            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1628:12: ex2= expression
             	        		        {
             	        		        	PushFollow(FOLLOW_expression_in_forControlExpression5991);
             	        		        	ex2 = expression();
@@ -9037,7 +9045,7 @@ public class ES3Parser : Parser
             	        			SEMIC139_tree = (object)adaptor.Create(SEMIC139);
             	        			adaptor.AddChild(root_0, SEMIC139_tree);
 
-            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:86: (ex3= expression )?
+            	        		// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1628:86: (ex3= expression )?
             	        		int alt71 = 2;
             	        		int LA71_0 = input.LA(1);
 
@@ -9048,7 +9056,7 @@ public class ES3Parser : Parser
             	        		switch (alt71) 
             	        		{
             	        		    case 1 :
-            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1620:87: ex3= expression
+            	        		        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1628:87: ex3= expression
             	        		        {
             	        		        	PushFollow(FOLLOW_expression_in_forControlExpression6004);
             	        		        	ex3 = expression();
@@ -9107,7 +9115,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "forControlSemic"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1626:1: forControlSemic returns [ForStatement value] : SEMIC (ex1= expression )? SEMIC (ex2= expression )? ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1634:1: forControlSemic returns [ForStatement value] : SEMIC (ex1= expression )? SEMIC (ex2= expression )? ;
     public ES3Parser.forControlSemic_return forControlSemic() // throws RecognitionException [1]
     {   
         ES3Parser.forControlSemic_return retval = new ES3Parser.forControlSemic_return();
@@ -9130,8 +9138,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1630:2: ( SEMIC (ex1= expression )? SEMIC (ex2= expression )? )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1630:4: SEMIC (ex1= expression )? SEMIC (ex2= expression )?
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1638:2: ( SEMIC (ex1= expression )? SEMIC (ex2= expression )? )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1638:4: SEMIC (ex1= expression )? SEMIC (ex2= expression )?
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9139,7 +9147,7 @@ public class ES3Parser : Parser
             		SEMIC140_tree = (object)adaptor.Create(SEMIC140);
             		adaptor.AddChild(root_0, SEMIC140_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1630:10: (ex1= expression )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1638:10: (ex1= expression )?
             	int alt73 = 2;
             	int LA73_0 = input.LA(1);
 
@@ -9150,7 +9158,7 @@ public class ES3Parser : Parser
             	switch (alt73) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1630:12: ex1= expression
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1638:12: ex1= expression
             	        {
             	        	PushFollow(FOLLOW_expression_in_forControlSemic6046);
             	        	ex1 = expression();
@@ -9168,7 +9176,7 @@ public class ES3Parser : Parser
             		SEMIC141_tree = (object)adaptor.Create(SEMIC141);
             		adaptor.AddChild(root_0, SEMIC141_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1630:80: (ex2= expression )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1638:80: (ex2= expression )?
             	int alt74 = 2;
             	int LA74_0 = input.LA(1);
 
@@ -9179,7 +9187,7 @@ public class ES3Parser : Parser
             	switch (alt74) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1630:81: ex2= expression
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1638:81: ex2= expression
             	        {
             	        	PushFollow(FOLLOW_expression_in_forControlSemic6059);
             	        	ex2 = expression();
@@ -9228,7 +9236,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "continueStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1643:1: continueStatement returns [Statement value] : CONTINUE (lb= Identifier )? semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1651:1: continueStatement returns [Statement value] : CONTINUE (lb= Identifier )? semic ;
     public ES3Parser.continueStatement_return continueStatement() // throws RecognitionException [1]
     {   
         ES3Parser.continueStatement_return retval = new ES3Parser.continueStatement_return();
@@ -9249,8 +9257,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1647:2: ( CONTINUE (lb= Identifier )? semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1647:4: CONTINUE (lb= Identifier )? semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1655:2: ( CONTINUE (lb= Identifier )? semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1655:4: CONTINUE (lb= Identifier )? semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9259,7 +9267,7 @@ public class ES3Parser : Parser
             		root_0 = (object)adaptor.BecomeRoot(CONTINUE142_tree, root_0);
 
             	 if (input.LA(1) == Identifier) PromoteEOL(null); 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1647:67: (lb= Identifier )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1655:67: (lb= Identifier )?
             	int alt75 = 2;
             	int LA75_0 = input.LA(1);
 
@@ -9270,7 +9278,7 @@ public class ES3Parser : Parser
             	switch (alt75) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1647:68: lb= Identifier
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1655:68: lb= Identifier
             	        {
             	        	lb=(IToken)Match(input,Identifier,FOLLOW_Identifier_in_continueStatement6101); 
             	        		lb_tree = (object)adaptor.Create(lb);
@@ -9323,7 +9331,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "breakStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1659:1: breakStatement returns [Statement value] : BREAK (lb= Identifier )? semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1667:1: breakStatement returns [Statement value] : BREAK (lb= Identifier )? semic ;
     public ES3Parser.breakStatement_return breakStatement() // throws RecognitionException [1]
     {   
         ES3Parser.breakStatement_return retval = new ES3Parser.breakStatement_return();
@@ -9344,8 +9352,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1663:2: ( BREAK (lb= Identifier )? semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1663:4: BREAK (lb= Identifier )? semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1671:2: ( BREAK (lb= Identifier )? semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1671:4: BREAK (lb= Identifier )? semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9354,7 +9362,7 @@ public class ES3Parser : Parser
             		root_0 = (object)adaptor.BecomeRoot(BREAK144_tree, root_0);
 
             	 if (input.LA(1) == Identifier) PromoteEOL(null); 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1663:64: (lb= Identifier )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1671:64: (lb= Identifier )?
             	int alt76 = 2;
             	int LA76_0 = input.LA(1);
 
@@ -9365,7 +9373,7 @@ public class ES3Parser : Parser
             	switch (alt76) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1663:65: lb= Identifier
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1671:65: lb= Identifier
             	        {
             	        	lb=(IToken)Match(input,Identifier,FOLLOW_Identifier_in_breakStatement6146); 
             	        		lb_tree = (object)adaptor.Create(lb);
@@ -9418,7 +9426,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "returnStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1683:1: returnStatement returns [ReturnStatement value] : RETURN (expr= expression )? semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1691:1: returnStatement returns [ReturnStatement value] : RETURN (expr= expression )? semic ;
     public ES3Parser.returnStatement_return returnStatement() // throws RecognitionException [1]
     {   
         ES3Parser.returnStatement_return retval = new ES3Parser.returnStatement_return();
@@ -9439,8 +9447,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1687:2: ( RETURN (expr= expression )? semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1687:4: RETURN (expr= expression )? semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1695:2: ( RETURN (expr= expression )? semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1695:4: RETURN (expr= expression )? semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9449,7 +9457,7 @@ public class ES3Parser : Parser
             		root_0 = (object)adaptor.BecomeRoot(RETURN146_tree, root_0);
 
             	 PromoteEOL(null); 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1687:34: (expr= expression )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1695:34: (expr= expression )?
             	int alt77 = 2;
             	int LA77_0 = input.LA(1);
 
@@ -9460,7 +9468,7 @@ public class ES3Parser : Parser
             	switch (alt77) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1687:35: expr= expression
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1695:35: expr= expression
             	        {
             	        	PushFollow(FOLLOW_expression_in_returnStatement6191);
             	        	expr = expression();
@@ -9513,7 +9521,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "withStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1694:1: withStatement returns [Statement value] : WITH LPAREN exp= expression RPAREN smt= statement ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1702:1: withStatement returns [Statement value] : WITH LPAREN exp= expression RPAREN smt= statement ;
     public ES3Parser.withStatement_return withStatement() // throws RecognitionException [1]
     {   
         ES3Parser.withStatement_return retval = new ES3Parser.withStatement_return();
@@ -9535,8 +9543,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1695:2: ( WITH LPAREN exp= expression RPAREN smt= statement )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1695:4: WITH LPAREN exp= expression RPAREN smt= statement
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1703:2: ( WITH LPAREN exp= expression RPAREN smt= statement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1703:4: WITH LPAREN exp= expression RPAREN smt= statement
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9592,7 +9600,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "switchStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1702:1: switchStatement returns [Statement value] : SWITCH LPAREN expression RPAREN LBRACE ({...}? => defaultClause | caseClause )* RBRACE ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1710:1: switchStatement returns [Statement value] : SWITCH LPAREN expression RPAREN LBRACE ({...}? => defaultClause | caseClause )* RBRACE ;
     public ES3Parser.switchStatement_return switchStatement() // throws RecognitionException [1]
     {   
         ES3Parser.switchStatement_return retval = new ES3Parser.switchStatement_return();
@@ -9625,8 +9633,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1708:2: ( SWITCH LPAREN expression RPAREN LBRACE ({...}? => defaultClause | caseClause )* RBRACE )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1708:4: SWITCH LPAREN expression RPAREN LBRACE ({...}? => defaultClause | caseClause )* RBRACE
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1716:2: ( SWITCH LPAREN expression RPAREN LBRACE ({...}? => defaultClause | caseClause )* RBRACE )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1716:4: SWITCH LPAREN expression RPAREN LBRACE ({...}? => defaultClause | caseClause )* RBRACE
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9652,7 +9660,7 @@ public class ES3Parser : Parser
             		LBRACE155_tree = (object)adaptor.Create(LBRACE155);
             		adaptor.AddChild(root_0, LBRACE155_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1709:10: ({...}? => defaultClause | caseClause )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:10: ({...}? => defaultClause | caseClause )*
             	do 
             	{
             	    int alt78 = 3;
@@ -9671,7 +9679,7 @@ public class ES3Parser : Parser
             	    switch (alt78) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1709:12: {...}? => defaultClause
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:12: {...}? => defaultClause
             			    {
             			    	if ( !(( defaultClauseCount == 0 )) ) 
             			    	{
@@ -9687,7 +9695,7 @@ public class ES3Parser : Parser
             			    }
             			    break;
             			case 2 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1709:141: caseClause
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:141: caseClause
             			    {
             			    	PushFollow(FOLLOW_caseClause_in_switchStatement6286);
             			    	caseClause157 = caseClause();
@@ -9746,7 +9754,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "caseClause"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1713:1: caseClause returns [CaseClause value] : CASE expression COLON ( statement )* ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1721:1: caseClause returns [CaseClause value] : CASE expression COLON ( statement )* ;
     public ES3Parser.caseClause_return caseClause() // throws RecognitionException [1]
     {   
         ES3Parser.caseClause_return retval = new ES3Parser.caseClause_return();
@@ -9769,8 +9777,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:2: ( CASE expression COLON ( statement )* )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:4: CASE expression COLON ( statement )*
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1725:2: ( CASE expression COLON ( statement )* )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1725:4: CASE expression COLON ( statement )*
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9785,7 +9793,7 @@ public class ES3Parser : Parser
             	adaptor.AddChild(root_0, expression160.Tree);
             	 retval.value.Expression = ((expression160 != null) ? expression160.value : null); 
             	COLON161=(IToken)Match(input,COLON,FOLLOW_COLON_in_caseClause6323); 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:70: ( statement )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1725:70: ( statement )*
             	do 
             	{
             	    int alt79 = 2;
@@ -9800,7 +9808,7 @@ public class ES3Parser : Parser
             	    switch (alt79) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1717:72: statement
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1725:72: statement
             			    {
             			    	PushFollow(FOLLOW_statement_in_caseClause6327);
             			    	statement162 = statement();
@@ -9855,7 +9863,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "defaultClause"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1720:1: defaultClause returns [BlockStatement value] : DEFAULT COLON ( statement )* ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1728:1: defaultClause returns [BlockStatement value] : DEFAULT COLON ( statement )* ;
     public ES3Parser.defaultClause_return defaultClause() // throws RecognitionException [1]
     {   
         ES3Parser.defaultClause_return retval = new ES3Parser.defaultClause_return();
@@ -9876,8 +9884,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1724:2: ( DEFAULT COLON ( statement )* )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1724:4: DEFAULT COLON ( statement )*
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1732:2: ( DEFAULT COLON ( statement )* )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1732:4: DEFAULT COLON ( statement )*
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -9886,7 +9894,7 @@ public class ES3Parser : Parser
             		root_0 = (object)adaptor.BecomeRoot(DEFAULT163_tree, root_0);
 
             	COLON164=(IToken)Match(input,COLON,FOLLOW_COLON_in_defaultClause6355); 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1724:20: ( statement )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1732:20: ( statement )*
             	do 
             	{
             	    int alt80 = 2;
@@ -9901,7 +9909,7 @@ public class ES3Parser : Parser
             	    switch (alt80) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1724:21: statement
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1732:21: statement
             			    {
             			    	PushFollow(FOLLOW_statement_in_defaultClause6359);
             			    	statement165 = statement();
@@ -9956,7 +9964,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "labelledStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1731:1: labelledStatement returns [Statement value] : lb= Identifier COLON st= statement ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1739:1: labelledStatement returns [Statement value] : lb= Identifier COLON st= statement ;
     public ES3Parser.labelledStatement_return labelledStatement() // throws RecognitionException [1]
     {   
         ES3Parser.labelledStatement_return retval = new ES3Parser.labelledStatement_return();
@@ -9974,8 +9982,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1732:2: (lb= Identifier COLON st= statement )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1732:4: lb= Identifier COLON st= statement
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1740:2: (lb= Identifier COLON st= statement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1740:4: lb= Identifier COLON st= statement
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10028,7 +10036,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "throwStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1755:1: throwStatement returns [Statement value] : THROW exp= expression semic ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1763:1: throwStatement returns [Statement value] : THROW exp= expression semic ;
     public ES3Parser.throwStatement_return throwStatement() // throws RecognitionException [1]
     {   
         ES3Parser.throwStatement_return retval = new ES3Parser.throwStatement_return();
@@ -10046,8 +10054,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1756:2: ( THROW exp= expression semic )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1756:4: THROW exp= expression semic
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1764:2: ( THROW exp= expression semic )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1764:4: THROW exp= expression semic
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10101,7 +10109,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "tryStatement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1763:1: tryStatement returns [TryStatement value] : TRY b= block (c= catchClause (first= finallyClause )? | last= finallyClause ) ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1771:1: tryStatement returns [TryStatement value] : TRY b= block (c= catchClause (first= finallyClause )? | last= finallyClause ) ;
     public ES3Parser.tryStatement_return tryStatement() // throws RecognitionException [1]
     {   
         ES3Parser.tryStatement_return retval = new ES3Parser.tryStatement_return();
@@ -10126,8 +10134,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:2: ( TRY b= block (c= catchClause (first= finallyClause )? | last= finallyClause ) )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:4: TRY b= block (c= catchClause (first= finallyClause )? | last= finallyClause )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:2: ( TRY b= block (c= catchClause (first= finallyClause )? | last= finallyClause ) )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:4: TRY b= block (c= catchClause (first= finallyClause )? | last= finallyClause )
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10141,7 +10149,7 @@ public class ES3Parser : Parser
 
             	adaptor.AddChild(root_0, b.Tree);
             	 retval.value.Statement = b.value; 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:50: (c= catchClause (first= finallyClause )? | last= finallyClause )
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:50: (c= catchClause (first= finallyClause )? | last= finallyClause )
             	int alt82 = 2;
             	int LA82_0 = input.LA(1);
 
@@ -10163,7 +10171,7 @@ public class ES3Parser : Parser
             	switch (alt82) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:52: c= catchClause (first= finallyClause )?
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:52: c= catchClause (first= finallyClause )?
             	        {
             	        	PushFollow(FOLLOW_catchClause_in_tryStatement6468);
             	        	c = catchClause();
@@ -10171,7 +10179,7 @@ public class ES3Parser : Parser
 
             	        	adaptor.AddChild(root_0, c.Tree);
             	        	 retval.value.Catch = c.value; 
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:94: (first= finallyClause )?
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:94: (first= finallyClause )?
             	        	int alt81 = 2;
             	        	int LA81_0 = input.LA(1);
 
@@ -10182,7 +10190,7 @@ public class ES3Parser : Parser
             	        	switch (alt81) 
             	        	{
             	        	    case 1 :
-            	        	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:95: first= finallyClause
+            	        	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:95: first= finallyClause
             	        	        {
             	        	        	PushFollow(FOLLOW_finallyClause_in_tryStatement6475);
             	        	        	first = finallyClause();
@@ -10200,7 +10208,7 @@ public class ES3Parser : Parser
             	        }
             	        break;
             	    case 2 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1767:153: last= finallyClause
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:153: last= finallyClause
             	        {
             	        	PushFollow(FOLLOW_finallyClause_in_tryStatement6485);
             	        	last = finallyClause();
@@ -10249,7 +10257,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "catchClause"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1770:1: catchClause returns [CatchClause value] : CATCH LPAREN id= Identifier RPAREN block ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1778:1: catchClause returns [CatchClause value] : CATCH LPAREN id= Identifier RPAREN block ;
     public ES3Parser.catchClause_return catchClause() // throws RecognitionException [1]
     {   
         ES3Parser.catchClause_return retval = new ES3Parser.catchClause_return();
@@ -10271,8 +10279,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1771:2: ( CATCH LPAREN id= Identifier RPAREN block )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1771:4: CATCH LPAREN id= Identifier RPAREN block
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1779:2: ( CATCH LPAREN id= Identifier RPAREN block )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1779:4: CATCH LPAREN id= Identifier RPAREN block
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10327,7 +10335,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "finallyClause"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1774:1: finallyClause returns [FinallyClause value] : FINALLY block ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1782:1: finallyClause returns [FinallyClause value] : FINALLY block ;
     public ES3Parser.finallyClause_return finallyClause() // throws RecognitionException [1]
     {   
         ES3Parser.finallyClause_return retval = new ES3Parser.finallyClause_return();
@@ -10343,8 +10351,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:2: ( FINALLY block )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1775:4: FINALLY block
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1783:2: ( FINALLY block )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1783:4: FINALLY block
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10393,7 +10401,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "functionDeclaration"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1788:1: functionDeclaration returns [Statement value] : FUNCTION name= Identifier parameters= formalParameterList body= functionBody ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1796:1: functionDeclaration returns [Statement value] : FUNCTION name= Identifier parameters= formalParameterList body= functionBody ;
     public ES3Parser.functionDeclaration_return functionDeclaration() // throws RecognitionException [1]
     {   
         ES3Parser.functionDeclaration_return retval = new ES3Parser.functionDeclaration_return();
@@ -10417,8 +10425,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1793:2: ( FUNCTION name= Identifier parameters= formalParameterList body= functionBody )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1793:4: FUNCTION name= Identifier parameters= formalParameterList body= functionBody
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1801:2: ( FUNCTION name= Identifier parameters= formalParameterList body= functionBody )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1801:4: FUNCTION name= Identifier parameters= formalParameterList body= functionBody
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10478,7 +10486,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "functionExpression"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1800:1: functionExpression returns [FunctionExpression value] : FUNCTION (name= Identifier )? formalParameterList functionBody ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1808:1: functionExpression returns [FunctionExpression value] : FUNCTION (name= Identifier )? formalParameterList functionBody ;
     public ES3Parser.functionExpression_return functionExpression() // throws RecognitionException [1]
     {   
         ES3Parser.functionExpression_return retval = new ES3Parser.functionExpression_return();
@@ -10501,8 +10509,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1804:2: ( FUNCTION (name= Identifier )? formalParameterList functionBody )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1804:4: FUNCTION (name= Identifier )? formalParameterList functionBody
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1812:2: ( FUNCTION (name= Identifier )? formalParameterList functionBody )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1812:4: FUNCTION (name= Identifier )? formalParameterList functionBody
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10510,7 +10518,7 @@ public class ES3Parser : Parser
             		FUNCTION177_tree = (object)adaptor.Create(FUNCTION177);
             		adaptor.AddChild(root_0, FUNCTION177_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1804:13: (name= Identifier )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1812:13: (name= Identifier )?
             	int alt83 = 2;
             	int LA83_0 = input.LA(1);
 
@@ -10521,7 +10529,7 @@ public class ES3Parser : Parser
             	switch (alt83) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1804:14: name= Identifier
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1812:14: name= Identifier
             	        {
             	        	name=(IToken)Match(input,Identifier,FOLLOW_Identifier_in_functionExpression6627); 
             	        		name_tree = (object)adaptor.Create(name);
@@ -10581,7 +10589,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "formalParameterList"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1809:1: formalParameterList returns [List<string> value] : LPAREN (first= Identifier ( COMMA follow= Identifier )* )? RPAREN ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1817:1: formalParameterList returns [List<string> value] : LPAREN (first= Identifier ( COMMA follow= Identifier )* )? RPAREN ;
     public ES3Parser.formalParameterList_return formalParameterList() // throws RecognitionException [1]
     {   
         ES3Parser.formalParameterList_return retval = new ES3Parser.formalParameterList_return();
@@ -10607,8 +10615,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1814:2: ( LPAREN (first= Identifier ( COMMA follow= Identifier )* )? RPAREN )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1814:4: LPAREN (first= Identifier ( COMMA follow= Identifier )* )? RPAREN
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1822:2: ( LPAREN (first= Identifier ( COMMA follow= Identifier )* )? RPAREN )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1822:4: LPAREN (first= Identifier ( COMMA follow= Identifier )* )? RPAREN
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10616,7 +10624,7 @@ public class ES3Parser : Parser
             		LPAREN180_tree = (object)adaptor.Create(LPAREN180);
             		adaptor.AddChild(root_0, LPAREN180_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1814:11: (first= Identifier ( COMMA follow= Identifier )* )?
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1822:11: (first= Identifier ( COMMA follow= Identifier )* )?
             	int alt85 = 2;
             	int LA85_0 = input.LA(1);
 
@@ -10627,14 +10635,14 @@ public class ES3Parser : Parser
             	switch (alt85) 
             	{
             	    case 1 :
-            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1814:13: first= Identifier ( COMMA follow= Identifier )*
+            	        // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1822:13: first= Identifier ( COMMA follow= Identifier )*
             	        {
             	        	first=(IToken)Match(input,Identifier,FOLLOW_Identifier_in_formalParameterList6669); 
             	        		first_tree = (object)adaptor.Create(first);
             	        		adaptor.AddChild(root_0, first_tree);
 
             	        	 identifiers.Add(((first != null) ? first.Text : null)); 
-            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1814:64: ( COMMA follow= Identifier )*
+            	        	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1822:64: ( COMMA follow= Identifier )*
             	        	do 
             	        	{
             	        	    int alt84 = 2;
@@ -10649,7 +10657,7 @@ public class ES3Parser : Parser
             	        	    switch (alt84) 
             	        		{
             	        			case 1 :
-            	        			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1814:66: COMMA follow= Identifier
+            	        			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1822:66: COMMA follow= Identifier
             	        			    {
             	        			    	COMMA181=(IToken)Match(input,COMMA,FOLLOW_COMMA_in_formalParameterList6675); 
             	        			    		COMMA181_tree = (object)adaptor.Create(COMMA181);
@@ -10717,7 +10725,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "functionBody"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1818:1: functionBody returns [Statement value] : lb= LBRACE ( sourceElement )* RBRACE ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1826:1: functionBody returns [Statement value] : lb= LBRACE ( sourceElement )* RBRACE ;
     public ES3Parser.functionBody_return functionBody() // throws RecognitionException [1]
     {   
         ES3Parser.functionBody_return retval = new ES3Parser.functionBody_return();
@@ -10739,8 +10747,8 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1823:2: (lb= LBRACE ( sourceElement )* RBRACE )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1823:4: lb= LBRACE ( sourceElement )* RBRACE
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1831:2: (lb= LBRACE ( sourceElement )* RBRACE )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1831:4: lb= LBRACE ( sourceElement )* RBRACE
             {
             	root_0 = (object)adaptor.GetNilNode();
 
@@ -10748,7 +10756,7 @@ public class ES3Parser : Parser
             		lb_tree = (object)adaptor.Create(lb);
             		adaptor.AddChild(root_0, lb_tree);
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1823:14: ( sourceElement )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1831:14: ( sourceElement )*
             	do 
             	{
             	    int alt86 = 2;
@@ -10763,7 +10771,7 @@ public class ES3Parser : Parser
             	    switch (alt86) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1823:15: sourceElement
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1831:15: sourceElement
             			    {
             			    	PushFollow(FOLLOW_sourceElement_in_functionBody6716);
             			    	sourceElement183 = sourceElement();
@@ -10822,7 +10830,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "program"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1831:1: program returns [Program value] : (follow= sourceElement )* ;
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1839:1: program returns [Program value] : (follow= sourceElement )* ;
     public ES3Parser.program_return program() // throws RecognitionException [1]
     {   
         ES3Parser.program_return retval = new ES3Parser.program_return();
@@ -10840,12 +10848,12 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1836:2: ( (follow= sourceElement )* )
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1836:4: (follow= sourceElement )*
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1844:2: ( (follow= sourceElement )* )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1844:4: (follow= sourceElement )*
             {
             	root_0 = (object)adaptor.GetNilNode();
 
-            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1836:4: (follow= sourceElement )*
+            	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1844:4: (follow= sourceElement )*
             	do 
             	{
             	    int alt87 = 2;
@@ -10860,7 +10868,7 @@ public class ES3Parser : Parser
             	    switch (alt87) 
             		{
             			case 1 :
-            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1836:5: follow= sourceElement
+            			    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1844:5: follow= sourceElement
             			    {
             			    	PushFollow(FOLLOW_sourceElement_in_program6752);
             			    	follow = sourceElement();
@@ -10916,7 +10924,7 @@ public class ES3Parser : Parser
     };
 
     // $ANTLR start "sourceElement"
-    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1844:1: sourceElement returns [Statement value] options {k=1; } : ({...}?func= functionDeclaration | stat= statement );
+    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1852:1: sourceElement returns [Statement value] options {k=1; } : ({...}?func= functionDeclaration | stat= statement );
     public ES3Parser.sourceElement_return sourceElement() // throws RecognitionException [1]
     {   
         ES3Parser.sourceElement_return retval = new ES3Parser.sourceElement_return();
@@ -10932,13 +10940,13 @@ public class ES3Parser : Parser
 
         try 
     	{
-            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1850:2: ({...}?func= functionDeclaration | stat= statement )
+            // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1858:2: ({...}?func= functionDeclaration | stat= statement )
             int alt88 = 2;
             alt88 = dfa88.Predict(input);
             switch (alt88) 
             {
                 case 1 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1850:4: {...}?func= functionDeclaration
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1858:4: {...}?func= functionDeclaration
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -10956,7 +10964,7 @@ public class ES3Parser : Parser
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1851:4: stat= statement
+                    // C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1859:4: stat= statement
                     {
                     	root_0 = (object)adaptor.GetNilNode();
 
@@ -11292,7 +11300,7 @@ public class ES3Parser : Parser
 
         override public string Description
         {
-            get { return "1844:1: sourceElement returns [Statement value] options {k=1; } : ({...}?func= functionDeclaration | stat= statement );"; }
+            get { return "1852:1: sourceElement returns [Statement value] options {k=1; } : ({...}?func= functionDeclaration | stat= statement );"; }
         }
 
     }

@@ -85,3 +85,9 @@ assert(true, "gib melson".match(/^\w+/) ? true : false );
 assert(false, "#$$%#".match(/^\w+/) ? true : false );
 
 assert('undefined', undefined + '');
+
+var name = "over there";
+assert(5, name.search("there"));
+assert(0, name.search("over"));
+assert(-1, name.search("should return -1"));
+

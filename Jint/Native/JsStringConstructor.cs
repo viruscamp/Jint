@@ -369,9 +369,9 @@ namespace Jint.Native {
                 parameters[0] = Global.RegExpClass.New(parameters[0].ToString(), false, false, false);
             }
 
-            Match m = ((Regex)(parameters[0].Value)).Match(target.ToString());
+            Match m = ((JsRegExp)parameters[0]).Regex.Match(target.ToString());
 
-            if (m != null) {
+            if (m != null && m.Success) {
                 return Global.NumberClass.New(m.Index);
             }
             else {

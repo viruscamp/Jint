@@ -83,6 +83,7 @@ assert(10, "Blue Whale".indexOf("", 11));
 // String.match tests
 assert(true, "gib melson".match(/^\w+/) ? true : false );
 assert(false, "#$$%#".match(/^\w+/) ? true : false );
+assert('hello', 'hello world'.match('hello').toString());
 
 assert('undefined', undefined + '');
 

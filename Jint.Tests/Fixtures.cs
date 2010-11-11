@@ -1507,6 +1507,17 @@ var fakeButton = new Test.FakeButton();");
             RunMozillaTests("Number");
         }
 
+        [TestMethod]
+        public void CheckingErrorsShouldNotThrow() {
+            string errors;
+            Assert.IsTrue(JintEngine.HasErrors("var s = @string?;", out errors));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(JintException))]
+        public void RunningInvalidScriptSourceShouldThrow() {
+            new JintEngine().Run("var s = @string?;");
+        }
     }
 
     public struct Size {

@@ -247,12 +247,11 @@ namespace Jint.Native {
         /// <param name="parameters"></param>
         /// <returns></returns>
         public JsInstance MatchFunc(JsDictionaryObject target, JsInstance[] parameters) {
-            // Converts the parameters to a regex
-            if (parameters[0].Class == JsString.TYPEOF) {
-                parameters[0] = Global.RegExpClass.New(parameters[0].ToString(), false, false, false);
-            }
+            JsRegExp regexp = parameters[0].Class == JsString.TYPEOF
+                ? Global.RegExpClass.New(parameters[0].ToString(), false, false, false)
+                : (JsRegExp)parameters[0];
 
-            return Global.RegExpClass.ExecImpl((JsRegExp)parameters[0], new[] { target });
+            return Global.RegExpClass.ExecImpl(regexp, new JsInstance[] { target });
         }
 
         /// <summary>

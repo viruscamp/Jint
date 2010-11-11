@@ -175,7 +175,16 @@ namespace Jint {
                 throw new
                     ArgumentException("Script can't be null", "script");
 
-            Program program = Compile(script, DebugMode);
+            Program program;
+
+
+
+            try {
+                program = Compile(script, DebugMode);
+            }
+            catch (Exception e) {
+                throw new JintException("An unexpected error occured while parsing the script", e);
+            }
 
             if (program == null)
                 return null;

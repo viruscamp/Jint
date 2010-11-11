@@ -1,4 +1,9 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g 2010-11-09 08:02:35
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g 2010-11-11 09:14:41
+
+// The variable 'variable' is assigned but its value is never used.
+#pragma warning disable 168, 219
+// Unreachable code detected.
+#pragma warning disable 162
 
 
 using System.Text;
@@ -18,7 +23,7 @@ using Stack 		= Antlr.Runtime.Collections.StackList;
 
 using Antlr.Runtime.Tree;
 
-public class ES3Parser : Parser 
+public partial class ES3Parser : Parser
 {
     public static readonly string[] tokenNames = new string[] 
 	{
@@ -378,7 +383,7 @@ public class ES3Parser : Parser
             InitializeCyclicDFAs();
 
              
-       }
+        }
         
     protected ITreeAdaptor adaptor = new CommonTreeAdaptor();
 
@@ -674,11 +679,11 @@ public class ES3Parser : Parser
 
         IToken Identifier2 = null;
         IToken StringLiteral5 = null;
-        ES3Parser.reservedWord_return reservedWord1 = null;
+        ES3Parser.reservedWord_return reservedWord1 = default(ES3Parser.reservedWord_return);
 
-        ES3Parser.punctuator_return punctuator3 = null;
+        ES3Parser.punctuator_return punctuator3 = default(ES3Parser.punctuator_return);
 
-        ES3Parser.numericLiteral_return numericLiteral4 = null;
+        ES3Parser.numericLiteral_return numericLiteral4 = default(ES3Parser.numericLiteral_return);
 
 
         object Identifier2_tree=null;
@@ -936,11 +941,11 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken NULL8 = null;
-        ES3Parser.keyword_return keyword6 = null;
+        ES3Parser.keyword_return keyword6 = default(ES3Parser.keyword_return);
 
-        ES3Parser.futureReservedWord_return futureReservedWord7 = null;
+        ES3Parser.futureReservedWord_return futureReservedWord7 = default(ES3Parser.futureReservedWord_return);
 
-        ES3Parser.booleanLiteral_return booleanLiteral9 = null;
+        ES3Parser.booleanLiteral_return booleanLiteral9 = default(ES3Parser.booleanLiteral_return);
 
 
         object NULL8_tree=null;
@@ -1329,9 +1334,9 @@ public class ES3Parser : Parser
         IToken exp1 = null;
         IToken exp4 = null;
         IToken exp5 = null;
-        ES3Parser.booleanLiteral_return exp2 = null;
+        ES3Parser.booleanLiteral_return exp2 = default(ES3Parser.booleanLiteral_return);
 
-        ES3Parser.numericLiteral_return exp3 = null;
+        ES3Parser.numericLiteral_return exp3 = default(ES3Parser.numericLiteral_return);
 
 
         object exp1_tree=null;
@@ -1710,13 +1715,13 @@ public class ES3Parser : Parser
         IToken ex2 = null;
         IToken lpar = null;
         IToken RPAREN15 = null;
-        ES3Parser.literal_return ex3 = null;
+        ES3Parser.literal_return ex3 = default(ES3Parser.literal_return);
 
-        ES3Parser.arrayLiteral_return ex4 = null;
+        ES3Parser.arrayLiteral_return ex4 = default(ES3Parser.arrayLiteral_return);
 
-        ES3Parser.objectLiteral_return ex5 = null;
+        ES3Parser.objectLiteral_return ex5 = default(ES3Parser.objectLiteral_return);
 
-        ES3Parser.expression_return ex6 = null;
+        ES3Parser.expression_return ex6 = default(ES3Parser.expression_return);
 
 
         object ex1_tree=null;
@@ -1911,9 +1916,9 @@ public class ES3Parser : Parser
         IToken lb = null;
         IToken COMMA16 = null;
         IToken RBRACK17 = null;
-        ES3Parser.arrayItem_return first = null;
+        ES3Parser.arrayItem_return first = default(ES3Parser.arrayItem_return);
 
-        ES3Parser.arrayItem_return follow = null;
+        ES3Parser.arrayItem_return follow = default(ES3Parser.arrayItem_return);
 
 
         object lb_tree=null;
@@ -2054,7 +2059,7 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.assignmentExpression_return expr = null;
+        ES3Parser.assignmentExpression_return expr = default(ES3Parser.assignmentExpression_return);
 
 
 
@@ -2231,9 +2236,9 @@ public class ES3Parser : Parser
         IToken lb = null;
         IToken COMMA18 = null;
         IToken RBRACE19 = null;
-        ES3Parser.propertyAssignment_return first = null;
+        ES3Parser.propertyAssignment_return first = default(ES3Parser.propertyAssignment_return);
 
-        ES3Parser.propertyAssignment_return follow = null;
+        ES3Parser.propertyAssignment_return follow = default(ES3Parser.propertyAssignment_return);
 
 
         object lb_tree=null;
@@ -2366,17 +2371,17 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken COLON20 = null;
-        ES3Parser.accessor_return acc = null;
+        ES3Parser.accessor_return acc = default(ES3Parser.accessor_return);
 
-        ES3Parser.propertyName_return prop2 = null;
+        ES3Parser.propertyName_return prop2 = default(ES3Parser.propertyName_return);
 
-        ES3Parser.formalParameterList_return parameters = null;
+        ES3Parser.formalParameterList_return parameters = default(ES3Parser.formalParameterList_return);
 
-        ES3Parser.functionBody_return statements = null;
+        ES3Parser.functionBody_return statements = default(ES3Parser.functionBody_return);
 
-        ES3Parser.propertyName_return prop1 = null;
+        ES3Parser.propertyName_return prop1 = default(ES3Parser.propertyName_return);
 
-        ES3Parser.assignmentExpression_return ass = null;
+        ES3Parser.assignmentExpression_return ass = default(ES3Parser.assignmentExpression_return);
 
 
         object COLON20_tree=null;
@@ -2607,7 +2612,7 @@ public class ES3Parser : Parser
 
         IToken ex1 = null;
         IToken ex2 = null;
-        ES3Parser.numericLiteral_return ex3 = null;
+        ES3Parser.numericLiteral_return ex3 = default(ES3Parser.numericLiteral_return);
 
 
         object ex1_tree=null;
@@ -2727,11 +2732,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.primaryExpression_return prim = null;
+        ES3Parser.primaryExpression_return prim = default(ES3Parser.primaryExpression_return);
 
-        ES3Parser.functionExpression_return func = null;
+        ES3Parser.functionExpression_return func = default(ES3Parser.functionExpression_return);
 
-        ES3Parser.newExpression_return exp = null;
+        ES3Parser.newExpression_return exp = default(ES3Parser.newExpression_return);
 
 
 
@@ -2862,7 +2867,7 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken NEW21 = null;
-        ES3Parser.memberExpression_return first = null;
+        ES3Parser.memberExpression_return first = default(ES3Parser.memberExpression_return);
 
 
         object NEW21_tree=null;
@@ -2930,9 +2935,9 @@ public class ES3Parser : Parser
         IToken LPAREN22 = null;
         IToken COMMA23 = null;
         IToken RPAREN24 = null;
-        ES3Parser.assignmentExpression_return first = null;
+        ES3Parser.assignmentExpression_return first = default(ES3Parser.assignmentExpression_return);
 
-        ES3Parser.assignmentExpression_return follow = null;
+        ES3Parser.assignmentExpression_return follow = default(ES3Parser.assignmentExpression_return);
 
 
         object LPAREN22_tree=null;
@@ -3067,9 +3072,9 @@ public class ES3Parser : Parser
         IToken LBRACE25 = null;
         IToken COMMA26 = null;
         IToken RBRACE27 = null;
-        ES3Parser.assignmentExpression_return first = null;
+        ES3Parser.assignmentExpression_return first = default(ES3Parser.assignmentExpression_return);
 
-        ES3Parser.assignmentExpression_return follow = null;
+        ES3Parser.assignmentExpression_return follow = default(ES3Parser.assignmentExpression_return);
 
 
         object LBRACE25_tree=null;
@@ -3205,13 +3210,13 @@ public class ES3Parser : Parser
         IToken LBRACK28 = null;
         IToken RBRACK29 = null;
         IToken DOT30 = null;
-        ES3Parser.memberExpression_return mem = null;
+        ES3Parser.memberExpression_return mem = default(ES3Parser.memberExpression_return);
 
-        ES3Parser.generics_return gen = null;
+        ES3Parser.generics_return gen = default(ES3Parser.generics_return);
 
-        ES3Parser.arguments_return arg = null;
+        ES3Parser.arguments_return arg = default(ES3Parser.arguments_return);
 
-        ES3Parser.expression_return exp = null;
+        ES3Parser.expression_return exp = default(ES3Parser.expression_return);
 
 
         object id_tree=null;
@@ -3395,9 +3400,9 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.leftHandSideExpression_return left = null;
+        ES3Parser.leftHandSideExpression_return left = default(ES3Parser.leftHandSideExpression_return);
 
-        ES3Parser.postfixOperator_return post = null;
+        ES3Parser.postfixOperator_return post = default(ES3Parser.postfixOperator_return);
 
 
 
@@ -3577,11 +3582,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.postfixExpression_return post = null;
+        ES3Parser.postfixExpression_return post = default(ES3Parser.postfixExpression_return);
 
-        ES3Parser.unaryOperator_return op = null;
+        ES3Parser.unaryOperator_return op = default(ES3Parser.unaryOperator_return);
 
-        ES3Parser.unaryExpression_return exp = null;
+        ES3Parser.unaryExpression_return exp = default(ES3Parser.unaryExpression_return);
 
 
 
@@ -3923,9 +3928,9 @@ public class ES3Parser : Parser
         IToken MUL38 = null;
         IToken DIV39 = null;
         IToken MOD40 = null;
-        ES3Parser.unaryExpression_return left = null;
+        ES3Parser.unaryExpression_return left = default(ES3Parser.unaryExpression_return);
 
-        ES3Parser.unaryExpression_return right = null;
+        ES3Parser.unaryExpression_return right = default(ES3Parser.unaryExpression_return);
 
 
         object MUL38_tree=null;
@@ -4092,9 +4097,9 @@ public class ES3Parser : Parser
 
         IToken ADD41 = null;
         IToken SUB42 = null;
-        ES3Parser.multiplicativeExpression_return left = null;
+        ES3Parser.multiplicativeExpression_return left = default(ES3Parser.multiplicativeExpression_return);
 
-        ES3Parser.multiplicativeExpression_return right = null;
+        ES3Parser.multiplicativeExpression_return right = default(ES3Parser.multiplicativeExpression_return);
 
 
         object ADD41_tree=null;
@@ -4243,9 +4248,9 @@ public class ES3Parser : Parser
         IToken SHL43 = null;
         IToken SHR44 = null;
         IToken SHU45 = null;
-        ES3Parser.additiveExpression_return left = null;
+        ES3Parser.additiveExpression_return left = default(ES3Parser.additiveExpression_return);
 
-        ES3Parser.additiveExpression_return right = null;
+        ES3Parser.additiveExpression_return right = default(ES3Parser.additiveExpression_return);
 
 
         object SHL43_tree=null;
@@ -4416,9 +4421,9 @@ public class ES3Parser : Parser
         IToken GTE49 = null;
         IToken INSTANCEOF50 = null;
         IToken IN51 = null;
-        ES3Parser.shiftExpression_return left = null;
+        ES3Parser.shiftExpression_return left = default(ES3Parser.shiftExpression_return);
 
-        ES3Parser.shiftExpression_return right = null;
+        ES3Parser.shiftExpression_return right = default(ES3Parser.shiftExpression_return);
 
 
         object LT46_tree=null;
@@ -4639,9 +4644,9 @@ public class ES3Parser : Parser
         IToken LTE54 = null;
         IToken GTE55 = null;
         IToken INSTANCEOF56 = null;
-        ES3Parser.shiftExpression_return left = null;
+        ES3Parser.shiftExpression_return left = default(ES3Parser.shiftExpression_return);
 
-        ES3Parser.shiftExpression_return right = null;
+        ES3Parser.shiftExpression_return right = default(ES3Parser.shiftExpression_return);
 
 
         object LT52_tree=null;
@@ -4844,9 +4849,9 @@ public class ES3Parser : Parser
         IToken NEQ58 = null;
         IToken SAME59 = null;
         IToken NSAME60 = null;
-        ES3Parser.relationalExpression_return left = null;
+        ES3Parser.relationalExpression_return left = default(ES3Parser.relationalExpression_return);
 
-        ES3Parser.relationalExpression_return right = null;
+        ES3Parser.relationalExpression_return right = default(ES3Parser.relationalExpression_return);
 
 
         object EQ57_tree=null;
@@ -5032,9 +5037,9 @@ public class ES3Parser : Parser
         IToken NEQ62 = null;
         IToken SAME63 = null;
         IToken NSAME64 = null;
-        ES3Parser.relationalExpressionNoIn_return left = null;
+        ES3Parser.relationalExpressionNoIn_return left = default(ES3Parser.relationalExpressionNoIn_return);
 
-        ES3Parser.relationalExpressionNoIn_return right = null;
+        ES3Parser.relationalExpressionNoIn_return right = default(ES3Parser.relationalExpressionNoIn_return);
 
 
         object EQ61_tree=null;
@@ -5217,9 +5222,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken AND65 = null;
-        ES3Parser.equalityExpression_return left = null;
+        ES3Parser.equalityExpression_return left = default(ES3Parser.equalityExpression_return);
 
-        ES3Parser.equalityExpression_return right = null;
+        ES3Parser.equalityExpression_return right = default(ES3Parser.equalityExpression_return);
 
 
         object AND65_tree=null;
@@ -5320,9 +5325,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken AND66 = null;
-        ES3Parser.equalityExpressionNoIn_return left = null;
+        ES3Parser.equalityExpressionNoIn_return left = default(ES3Parser.equalityExpressionNoIn_return);
 
-        ES3Parser.equalityExpressionNoIn_return right = null;
+        ES3Parser.equalityExpressionNoIn_return right = default(ES3Parser.equalityExpressionNoIn_return);
 
 
         object AND66_tree=null;
@@ -5423,9 +5428,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken XOR67 = null;
-        ES3Parser.bitwiseANDExpression_return left = null;
+        ES3Parser.bitwiseANDExpression_return left = default(ES3Parser.bitwiseANDExpression_return);
 
-        ES3Parser.bitwiseANDExpression_return right = null;
+        ES3Parser.bitwiseANDExpression_return right = default(ES3Parser.bitwiseANDExpression_return);
 
 
         object XOR67_tree=null;
@@ -5526,9 +5531,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken XOR68 = null;
-        ES3Parser.bitwiseANDExpressionNoIn_return left = null;
+        ES3Parser.bitwiseANDExpressionNoIn_return left = default(ES3Parser.bitwiseANDExpressionNoIn_return);
 
-        ES3Parser.bitwiseANDExpressionNoIn_return right = null;
+        ES3Parser.bitwiseANDExpressionNoIn_return right = default(ES3Parser.bitwiseANDExpressionNoIn_return);
 
 
         object XOR68_tree=null;
@@ -5629,9 +5634,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken OR69 = null;
-        ES3Parser.bitwiseXORExpression_return left = null;
+        ES3Parser.bitwiseXORExpression_return left = default(ES3Parser.bitwiseXORExpression_return);
 
-        ES3Parser.bitwiseXORExpression_return right = null;
+        ES3Parser.bitwiseXORExpression_return right = default(ES3Parser.bitwiseXORExpression_return);
 
 
         object OR69_tree=null;
@@ -5732,9 +5737,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken OR70 = null;
-        ES3Parser.bitwiseXORExpressionNoIn_return left = null;
+        ES3Parser.bitwiseXORExpressionNoIn_return left = default(ES3Parser.bitwiseXORExpressionNoIn_return);
 
-        ES3Parser.bitwiseXORExpressionNoIn_return right = null;
+        ES3Parser.bitwiseXORExpressionNoIn_return right = default(ES3Parser.bitwiseXORExpressionNoIn_return);
 
 
         object OR70_tree=null;
@@ -5835,9 +5840,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken LAND71 = null;
-        ES3Parser.bitwiseORExpression_return left = null;
+        ES3Parser.bitwiseORExpression_return left = default(ES3Parser.bitwiseORExpression_return);
 
-        ES3Parser.bitwiseORExpression_return right = null;
+        ES3Parser.bitwiseORExpression_return right = default(ES3Parser.bitwiseORExpression_return);
 
 
         object LAND71_tree=null;
@@ -5938,9 +5943,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken LAND72 = null;
-        ES3Parser.bitwiseORExpressionNoIn_return left = null;
+        ES3Parser.bitwiseORExpressionNoIn_return left = default(ES3Parser.bitwiseORExpressionNoIn_return);
 
-        ES3Parser.bitwiseORExpressionNoIn_return right = null;
+        ES3Parser.bitwiseORExpressionNoIn_return right = default(ES3Parser.bitwiseORExpressionNoIn_return);
 
 
         object LAND72_tree=null;
@@ -6041,9 +6046,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken LOR73 = null;
-        ES3Parser.logicalANDExpression_return left = null;
+        ES3Parser.logicalANDExpression_return left = default(ES3Parser.logicalANDExpression_return);
 
-        ES3Parser.logicalANDExpression_return right = null;
+        ES3Parser.logicalANDExpression_return right = default(ES3Parser.logicalANDExpression_return);
 
 
         object LOR73_tree=null;
@@ -6144,9 +6149,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken LOR74 = null;
-        ES3Parser.logicalANDExpressionNoIn_return left = null;
+        ES3Parser.logicalANDExpressionNoIn_return left = default(ES3Parser.logicalANDExpressionNoIn_return);
 
-        ES3Parser.logicalANDExpressionNoIn_return right = null;
+        ES3Parser.logicalANDExpressionNoIn_return right = default(ES3Parser.logicalANDExpressionNoIn_return);
 
 
         object LOR74_tree=null;
@@ -6248,11 +6253,11 @@ public class ES3Parser : Parser
 
         IToken QUE75 = null;
         IToken COLON76 = null;
-        ES3Parser.logicalORExpression_return expr1 = null;
+        ES3Parser.logicalORExpression_return expr1 = default(ES3Parser.logicalORExpression_return);
 
-        ES3Parser.assignmentExpression_return expr2 = null;
+        ES3Parser.assignmentExpression_return expr2 = default(ES3Parser.assignmentExpression_return);
 
-        ES3Parser.assignmentExpression_return expr3 = null;
+        ES3Parser.assignmentExpression_return expr3 = default(ES3Parser.assignmentExpression_return);
 
 
         object QUE75_tree=null;
@@ -6351,11 +6356,11 @@ public class ES3Parser : Parser
 
         IToken QUE77 = null;
         IToken COLON78 = null;
-        ES3Parser.logicalORExpressionNoIn_return expr1 = null;
+        ES3Parser.logicalORExpressionNoIn_return expr1 = default(ES3Parser.logicalORExpressionNoIn_return);
 
-        ES3Parser.assignmentExpressionNoIn_return expr2 = null;
+        ES3Parser.assignmentExpressionNoIn_return expr2 = default(ES3Parser.assignmentExpressionNoIn_return);
 
-        ES3Parser.assignmentExpressionNoIn_return expr3 = null;
+        ES3Parser.assignmentExpressionNoIn_return expr3 = default(ES3Parser.assignmentExpressionNoIn_return);
 
 
         object QUE77_tree=null;
@@ -6452,11 +6457,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.conditionalExpression_return lhs = null;
+        ES3Parser.conditionalExpression_return lhs = default(ES3Parser.conditionalExpression_return);
 
-        ES3Parser.assignmentOperator_return ass = null;
+        ES3Parser.assignmentOperator_return ass = default(ES3Parser.assignmentOperator_return);
 
-        ES3Parser.assignmentExpression_return exp = null;
+        ES3Parser.assignmentExpression_return exp = default(ES3Parser.assignmentExpression_return);
 
 
 
@@ -6626,11 +6631,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.conditionalExpressionNoIn_return lhs = null;
+        ES3Parser.conditionalExpressionNoIn_return lhs = default(ES3Parser.conditionalExpressionNoIn_return);
 
-        ES3Parser.assignmentOperator_return ass = null;
+        ES3Parser.assignmentOperator_return ass = default(ES3Parser.assignmentOperator_return);
 
-        ES3Parser.assignmentExpressionNoIn_return exp = null;
+        ES3Parser.assignmentExpressionNoIn_return exp = default(ES3Parser.assignmentExpressionNoIn_return);
 
 
 
@@ -6650,7 +6655,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, lhs.Tree);
-            	  assignment.Left = retval.value =  ((lhs != null) ? lhs.value : null); 
+            	  assignment.Left = retval.value =  ((lhs != null) ? lhs.value : default(Expression)); 
             	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1342:2: ({...}?ass= assignmentOperator exp= assignmentExpressionNoIn )?
             	int alt53 = 2;
             	int LA53_0 = input.LA(1);
@@ -6735,9 +6740,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken COMMA80 = null;
-        ES3Parser.assignmentExpression_return first = null;
+        ES3Parser.assignmentExpression_return first = default(ES3Parser.assignmentExpression_return);
 
-        ES3Parser.assignmentExpression_return follow = null;
+        ES3Parser.assignmentExpression_return follow = default(ES3Parser.assignmentExpression_return);
 
 
         object COMMA80_tree=null;
@@ -6842,9 +6847,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken COMMA81 = null;
-        ES3Parser.assignmentExpressionNoIn_return first = null;
+        ES3Parser.assignmentExpressionNoIn_return first = default(ES3Parser.assignmentExpressionNoIn_return);
 
-        ES3Parser.assignmentExpressionNoIn_return follow = null;
+        ES3Parser.assignmentExpressionNoIn_return follow = default(ES3Parser.assignmentExpressionNoIn_return);
 
 
         object COMMA81_tree=null;
@@ -7108,11 +7113,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.functionDeclaration_return func = null;
+        ES3Parser.functionDeclaration_return func = default(ES3Parser.functionDeclaration_return);
 
-        ES3Parser.block_return block87 = null;
+        ES3Parser.block_return block87 = default(ES3Parser.block_return);
 
-        ES3Parser.statementTail_return statementTail88 = null;
+        ES3Parser.statementTail_return statementTail88 = default(ES3Parser.statementTail_return);
 
 
 
@@ -7137,7 +7142,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, block87.Tree);
-                    	 retval.value =  ((block87 != null) ? block87.value : null); 
+                    	 retval.value =  ((block87 != null) ? block87.value : default(BlockStatement)); 
 
                     }
                     break;
@@ -7169,7 +7174,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, statementTail88.Tree);
-                    	 retval.value =  ((statementTail88 != null) ? statementTail88.value : null); 
+                    	 retval.value =  ((statementTail88 != null) ? statementTail88.value : default(Statement)); 
 
                     }
                     break;
@@ -7215,31 +7220,31 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.variableStatement_return variableStatement89 = null;
+        ES3Parser.variableStatement_return variableStatement89 = default(ES3Parser.variableStatement_return);
 
-        ES3Parser.emptyStatement_return emptyStatement90 = null;
+        ES3Parser.emptyStatement_return emptyStatement90 = default(ES3Parser.emptyStatement_return);
 
-        ES3Parser.expressionStatement_return expressionStatement91 = null;
+        ES3Parser.expressionStatement_return expressionStatement91 = default(ES3Parser.expressionStatement_return);
 
-        ES3Parser.ifStatement_return ifStatement92 = null;
+        ES3Parser.ifStatement_return ifStatement92 = default(ES3Parser.ifStatement_return);
 
-        ES3Parser.iterationStatement_return iterationStatement93 = null;
+        ES3Parser.iterationStatement_return iterationStatement93 = default(ES3Parser.iterationStatement_return);
 
-        ES3Parser.continueStatement_return continueStatement94 = null;
+        ES3Parser.continueStatement_return continueStatement94 = default(ES3Parser.continueStatement_return);
 
-        ES3Parser.breakStatement_return breakStatement95 = null;
+        ES3Parser.breakStatement_return breakStatement95 = default(ES3Parser.breakStatement_return);
 
-        ES3Parser.returnStatement_return returnStatement96 = null;
+        ES3Parser.returnStatement_return returnStatement96 = default(ES3Parser.returnStatement_return);
 
-        ES3Parser.withStatement_return withStatement97 = null;
+        ES3Parser.withStatement_return withStatement97 = default(ES3Parser.withStatement_return);
 
-        ES3Parser.labelledStatement_return labelledStatement98 = null;
+        ES3Parser.labelledStatement_return labelledStatement98 = default(ES3Parser.labelledStatement_return);
 
-        ES3Parser.switchStatement_return switchStatement99 = null;
+        ES3Parser.switchStatement_return switchStatement99 = default(ES3Parser.switchStatement_return);
 
-        ES3Parser.throwStatement_return throwStatement100 = null;
+        ES3Parser.throwStatement_return throwStatement100 = default(ES3Parser.throwStatement_return);
 
-        ES3Parser.tryStatement_return tryStatement101 = null;
+        ES3Parser.tryStatement_return tryStatement101 = default(ES3Parser.tryStatement_return);
 
 
 
@@ -7260,7 +7265,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, variableStatement89.Tree);
-                    	 retval.value =  ((variableStatement89 != null) ? variableStatement89.value : null); 
+                    	 retval.value =  ((variableStatement89 != null) ? variableStatement89.value : default(Statement)); 
 
                     }
                     break;
@@ -7274,7 +7279,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, emptyStatement90.Tree);
-                    	 retval.value =  ((emptyStatement90 != null) ? emptyStatement90.value : null); 
+                    	 retval.value =  ((emptyStatement90 != null) ? emptyStatement90.value : default(Statement)); 
 
                     }
                     break;
@@ -7288,7 +7293,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, expressionStatement91.Tree);
-                    	 retval.value =  ((expressionStatement91 != null) ? expressionStatement91.value : null); 
+                    	 retval.value =  ((expressionStatement91 != null) ? expressionStatement91.value : default(Statement)); 
 
                     }
                     break;
@@ -7302,7 +7307,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, ifStatement92.Tree);
-                    	 retval.value =  ((ifStatement92 != null) ? ifStatement92.value : null); 
+                    	 retval.value =  ((ifStatement92 != null) ? ifStatement92.value : default(Statement)); 
 
                     }
                     break;
@@ -7316,7 +7321,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, iterationStatement93.Tree);
-                    	 retval.value =  ((iterationStatement93 != null) ? iterationStatement93.value : null); 
+                    	 retval.value =  ((iterationStatement93 != null) ? iterationStatement93.value : default(Statement)); 
 
                     }
                     break;
@@ -7330,7 +7335,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, continueStatement94.Tree);
-                    	 retval.value =  ((continueStatement94 != null) ? continueStatement94.value : null); 
+                    	 retval.value =  ((continueStatement94 != null) ? continueStatement94.value : default(Statement)); 
 
                     }
                     break;
@@ -7344,7 +7349,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, breakStatement95.Tree);
-                    	 retval.value =  ((breakStatement95 != null) ? breakStatement95.value : null); 
+                    	 retval.value =  ((breakStatement95 != null) ? breakStatement95.value : default(Statement)); 
 
                     }
                     break;
@@ -7358,7 +7363,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, returnStatement96.Tree);
-                    	 retval.value =  ((returnStatement96 != null) ? returnStatement96.value : null); 
+                    	 retval.value =  ((returnStatement96 != null) ? returnStatement96.value : default(ReturnStatement)); 
 
                     }
                     break;
@@ -7372,7 +7377,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, withStatement97.Tree);
-                    	 retval.value =  ((withStatement97 != null) ? withStatement97.value : null); 
+                    	 retval.value =  ((withStatement97 != null) ? withStatement97.value : default(Statement)); 
 
                     }
                     break;
@@ -7386,7 +7391,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, labelledStatement98.Tree);
-                    	 retval.value =  ((labelledStatement98 != null) ? labelledStatement98.value : null); 
+                    	 retval.value =  ((labelledStatement98 != null) ? labelledStatement98.value : default(Statement)); 
 
                     }
                     break;
@@ -7400,7 +7405,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, switchStatement99.Tree);
-                    	 retval.value =  ((switchStatement99 != null) ? switchStatement99.value : null); 
+                    	 retval.value =  ((switchStatement99 != null) ? switchStatement99.value : default(Statement)); 
 
                     }
                     break;
@@ -7414,7 +7419,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, throwStatement100.Tree);
-                    	 retval.value =  ((throwStatement100 != null) ? throwStatement100.value : null); 
+                    	 retval.value =  ((throwStatement100 != null) ? throwStatement100.value : default(Statement)); 
 
                     }
                     break;
@@ -7428,7 +7433,7 @@ public class ES3Parser : Parser
                     	state.followingStackPointer--;
 
                     	adaptor.AddChild(root_0, tryStatement101.Tree);
-                    	 retval.value =  ((tryStatement101 != null) ? tryStatement101.value : null); 
+                    	 retval.value =  ((tryStatement101 != null) ? tryStatement101.value : default(TryStatement)); 
 
                     }
                     break;
@@ -7487,7 +7492,7 @@ public class ES3Parser : Parser
 
         IToken lb = null;
         IToken RBRACE103 = null;
-        ES3Parser.statement_return statement102 = null;
+        ES3Parser.statement_return statement102 = default(ES3Parser.statement_return);
 
 
         object lb_tree=null;
@@ -7529,7 +7534,7 @@ public class ES3Parser : Parser
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, statement102.Tree);
-            			    	 retval.value.Statements.AddLast(((statement102 != null) ? statement102.value : null)); 
+            			    	 retval.value.Statements.AddLast(((statement102 != null) ? statement102.value : default(Statement))); 
 
             			    }
             			    break;
@@ -7594,11 +7599,11 @@ public class ES3Parser : Parser
 
         IToken VAR104 = null;
         IToken COMMA105 = null;
-        ES3Parser.variableDeclaration_return first = null;
+        ES3Parser.variableDeclaration_return first = default(ES3Parser.variableDeclaration_return);
 
-        ES3Parser.variableDeclaration_return follow = null;
+        ES3Parser.variableDeclaration_return follow = default(ES3Parser.variableDeclaration_return);
 
-        ES3Parser.semic_return semic106 = null;
+        ES3Parser.semic_return semic106 = default(ES3Parser.semic_return);
 
 
         object VAR104_tree=null;
@@ -7714,7 +7719,7 @@ public class ES3Parser : Parser
 
         IToken id = null;
         IToken ASSIGN107 = null;
-        ES3Parser.assignmentExpression_return ass = null;
+        ES3Parser.assignmentExpression_return ass = default(ES3Parser.assignmentExpression_return);
 
 
         object id_tree=null;
@@ -7810,7 +7815,7 @@ public class ES3Parser : Parser
 
         IToken id = null;
         IToken ASSIGN108 = null;
-        ES3Parser.assignmentExpressionNoIn_return ass = null;
+        ES3Parser.assignmentExpressionNoIn_return ass = default(ES3Parser.assignmentExpressionNoIn_return);
 
 
         object id_tree=null;
@@ -7960,9 +7965,9 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.expression_return expression110 = null;
+        ES3Parser.expression_return expression110 = default(ES3Parser.expression_return);
 
-        ES3Parser.semic_return semic111 = null;
+        ES3Parser.semic_return semic111 = default(ES3Parser.semic_return);
 
 
 
@@ -7982,7 +7987,7 @@ public class ES3Parser : Parser
             	semic111 = semic();
             	state.followingStackPointer--;
 
-            	 retval.value =  new ExpressionStatement(((expression110 != null) ? expression110.value : null)); 
+            	 retval.value =  new ExpressionStatement(((expression110 != null) ? expression110.value : default(Expression))); 
 
             }
 
@@ -8030,11 +8035,11 @@ public class ES3Parser : Parser
         IToken LPAREN113 = null;
         IToken RPAREN115 = null;
         IToken ELSE116 = null;
-        ES3Parser.statement_return then = null;
+        ES3Parser.statement_return then = default(ES3Parser.statement_return);
 
-        ES3Parser.statement_return els = null;
+        ES3Parser.statement_return els = default(ES3Parser.statement_return);
 
-        ES3Parser.expression_return expression114 = null;
+        ES3Parser.expression_return expression114 = default(ES3Parser.expression_return);
 
 
         object IF112_tree=null;
@@ -8066,7 +8071,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression114.Tree);
-            	 st.Expression = ((expression114 != null) ? expression114.value : null); 
+            	 st.Expression = ((expression114 != null) ? expression114.value : default(Expression)); 
             	RPAREN115=(IToken)Match(input,RPAREN,FOLLOW_RPAREN_in_ifStatement5595); 
             		RPAREN115_tree = (object)adaptor.Create(RPAREN115);
             		adaptor.AddChild(root_0, RPAREN115_tree);
@@ -8076,7 +8081,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, then.Tree);
-            	 st.Then = ((then != null) ? then.value : null); 
+            	 st.Then = ((then != null) ? then.value : default(Statement)); 
             	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1515:113: ({...}? ELSE els= statement )?
             	int alt63 = 2;
             	int LA63_0 = input.LA(1);
@@ -8108,7 +8113,7 @@ public class ES3Parser : Parser
             	        	state.followingStackPointer--;
 
             	        	adaptor.AddChild(root_0, els.Tree);
-            	        	 st.Else = ((els != null) ? els.value : null); 
+            	        	 st.Else = ((els != null) ? els.value : default(Statement)); 
 
             	        }
             	        break;
@@ -8158,11 +8163,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.doStatement_return dos = null;
+        ES3Parser.doStatement_return dos = default(ES3Parser.doStatement_return);
 
-        ES3Parser.whileStatement_return wh = null;
+        ES3Parser.whileStatement_return wh = default(ES3Parser.whileStatement_return);
 
-        ES3Parser.forStatement_return fo = null;
+        ES3Parser.forStatement_return fo = default(ES3Parser.forStatement_return);
 
 
 
@@ -8284,11 +8289,11 @@ public class ES3Parser : Parser
         IToken WHILE119 = null;
         IToken LPAREN120 = null;
         IToken RPAREN122 = null;
-        ES3Parser.statement_return statement118 = null;
+        ES3Parser.statement_return statement118 = default(ES3Parser.statement_return);
 
-        ES3Parser.expression_return expression121 = null;
+        ES3Parser.expression_return expression121 = default(ES3Parser.expression_return);
 
-        ES3Parser.semic_return semic123 = null;
+        ES3Parser.semic_return semic123 = default(ES3Parser.semic_return);
 
 
         object DO117_tree=null;
@@ -8334,7 +8339,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, semic123.Tree);
-            	 retval.value =  new DoWhileStatement(((expression121 != null) ? expression121.value : null), ((statement118 != null) ? statement118.value : null)); 
+            	 retval.value =  new DoWhileStatement(((expression121 != null) ? expression121.value : default(Expression)), ((statement118 != null) ? statement118.value : default(Statement))); 
 
             }
 
@@ -8381,9 +8386,9 @@ public class ES3Parser : Parser
         IToken WHILE124 = null;
         IToken LPAREN125 = null;
         IToken RPAREN127 = null;
-        ES3Parser.expression_return expression126 = null;
+        ES3Parser.expression_return expression126 = default(ES3Parser.expression_return);
 
-        ES3Parser.statement_return statement128 = null;
+        ES3Parser.statement_return statement128 = default(ES3Parser.statement_return);
 
 
         object WHILE124_tree=null;
@@ -8413,7 +8418,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, statement128.Tree);
-            	 retval.value =  new WhileStatement(((expression126 != null) ? expression126.value : null), ((statement128 != null) ? statement128.value : null)); 
+            	 retval.value =  new WhileStatement(((expression126 != null) ? expression126.value : default(Expression)), ((statement128 != null) ? statement128.value : default(Statement))); 
 
             }
 
@@ -8460,9 +8465,9 @@ public class ES3Parser : Parser
         IToken FOR129 = null;
         IToken LPAREN130 = null;
         IToken RPAREN131 = null;
-        ES3Parser.forControl_return fo = null;
+        ES3Parser.forControl_return fo = default(ES3Parser.forControl_return);
 
-        ES3Parser.statement_return st = null;
+        ES3Parser.statement_return st = default(ES3Parser.statement_return);
 
 
         object FOR129_tree=null;
@@ -8537,11 +8542,11 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.forControlVar_return ex1 = null;
+        ES3Parser.forControlVar_return ex1 = default(ES3Parser.forControlVar_return);
 
-        ES3Parser.forControlExpression_return ex2 = null;
+        ES3Parser.forControlExpression_return ex2 = default(ES3Parser.forControlExpression_return);
 
-        ES3Parser.forControlSemic_return ex3 = null;
+        ES3Parser.forControlSemic_return ex3 = default(ES3Parser.forControlSemic_return);
 
 
 
@@ -8687,15 +8692,15 @@ public class ES3Parser : Parser
         IToken COMMA134 = null;
         IToken SEMIC135 = null;
         IToken SEMIC136 = null;
-        ES3Parser.variableDeclarationNoIn_return first = null;
+        ES3Parser.variableDeclarationNoIn_return first = default(ES3Parser.variableDeclarationNoIn_return);
 
-        ES3Parser.expression_return ex = null;
+        ES3Parser.expression_return ex = default(ES3Parser.expression_return);
 
-        ES3Parser.variableDeclarationNoIn_return follow = null;
+        ES3Parser.variableDeclarationNoIn_return follow = default(ES3Parser.variableDeclarationNoIn_return);
 
-        ES3Parser.expression_return ex1 = null;
+        ES3Parser.expression_return ex1 = default(ES3Parser.expression_return);
 
-        ES3Parser.expression_return ex2 = null;
+        ES3Parser.expression_return ex2 = default(ES3Parser.expression_return);
 
 
         object VAR132_tree=null;
@@ -8762,7 +8767,7 @@ public class ES3Parser : Parser
             	        		state.followingStackPointer--;
 
             	        		adaptor.AddChild(root_0, ex.Tree);
-            	        		 retval.value =  foreachStatement; foreachStatement.Expression = ((ex != null) ? ex.value : null); 
+            	        		 retval.value =  foreachStatement; foreachStatement.Expression = ((ex != null) ? ex.value : default(Expression)); 
 
             	        	}
 
@@ -8837,7 +8842,7 @@ public class ES3Parser : Parser
             	        		        	state.followingStackPointer--;
 
             	        		        	adaptor.AddChild(root_0, ex1.Tree);
-            	        		        	 forStatement.ConditionExpression = ((ex1 != null) ? ex1.value : null);
+            	        		        	 forStatement.ConditionExpression = ((ex1 != null) ? ex1.value : default(Expression));
 
             	        		        }
             	        		        break;
@@ -8866,7 +8871,7 @@ public class ES3Parser : Parser
             	        		        	state.followingStackPointer--;
 
             	        		        	adaptor.AddChild(root_0, ex2.Tree);
-            	        		        	  forStatement.IncrementExpression = ((ex2 != null) ? ex2.value : null); 
+            	        		        	  forStatement.IncrementExpression = ((ex2 != null) ? ex2.value : default(Expression)); 
 
             	        		        }
             	        		        break;
@@ -8929,11 +8934,11 @@ public class ES3Parser : Parser
         IToken IN137 = null;
         IToken SEMIC138 = null;
         IToken SEMIC139 = null;
-        ES3Parser.expressionNoIn_return ex1 = null;
+        ES3Parser.expressionNoIn_return ex1 = default(ES3Parser.expressionNoIn_return);
 
-        ES3Parser.expression_return ex2 = null;
+        ES3Parser.expression_return ex2 = default(ES3Parser.expression_return);
 
-        ES3Parser.expression_return ex3 = null;
+        ES3Parser.expression_return ex3 = default(ES3Parser.expression_return);
 
 
         object IN137_tree=null;
@@ -9125,9 +9130,9 @@ public class ES3Parser : Parser
 
         IToken SEMIC140 = null;
         IToken SEMIC141 = null;
-        ES3Parser.expression_return ex1 = null;
+        ES3Parser.expression_return ex1 = default(ES3Parser.expression_return);
 
-        ES3Parser.expression_return ex2 = null;
+        ES3Parser.expression_return ex2 = default(ES3Parser.expression_return);
 
 
         object SEMIC140_tree=null;
@@ -9246,7 +9251,7 @@ public class ES3Parser : Parser
 
         IToken lb = null;
         IToken CONTINUE142 = null;
-        ES3Parser.semic_return semic143 = null;
+        ES3Parser.semic_return semic143 = default(ES3Parser.semic_return);
 
 
         object lb_tree=null;
@@ -9341,7 +9346,7 @@ public class ES3Parser : Parser
 
         IToken lb = null;
         IToken BREAK144 = null;
-        ES3Parser.semic_return semic145 = null;
+        ES3Parser.semic_return semic145 = default(ES3Parser.semic_return);
 
 
         object lb_tree=null;
@@ -9435,9 +9440,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken RETURN146 = null;
-        ES3Parser.expression_return expr = null;
+        ES3Parser.expression_return expr = default(ES3Parser.expression_return);
 
-        ES3Parser.semic_return semic147 = null;
+        ES3Parser.semic_return semic147 = default(ES3Parser.semic_return);
 
 
         object RETURN146_tree=null;
@@ -9532,9 +9537,9 @@ public class ES3Parser : Parser
         IToken WITH148 = null;
         IToken LPAREN149 = null;
         IToken RPAREN150 = null;
-        ES3Parser.expression_return exp = null;
+        ES3Parser.expression_return exp = default(ES3Parser.expression_return);
 
-        ES3Parser.statement_return smt = null;
+        ES3Parser.statement_return smt = default(ES3Parser.statement_return);
 
 
         object WITH148_tree=null;
@@ -9613,11 +9618,11 @@ public class ES3Parser : Parser
         IToken RPAREN154 = null;
         IToken LBRACE155 = null;
         IToken RBRACE158 = null;
-        ES3Parser.expression_return expression153 = null;
+        ES3Parser.expression_return expression153 = default(ES3Parser.expression_return);
 
-        ES3Parser.defaultClause_return defaultClause156 = null;
+        ES3Parser.defaultClause_return defaultClause156 = default(ES3Parser.defaultClause_return);
 
-        ES3Parser.caseClause_return caseClause157 = null;
+        ES3Parser.caseClause_return caseClause157 = default(ES3Parser.caseClause_return);
 
 
         object SWITCH151_tree=null;
@@ -9651,7 +9656,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression153.Tree);
-            	 switchStatement.Expression = ((expression153 != null) ? expression153.value : null); 
+            	 switchStatement.Expression = ((expression153 != null) ? expression153.value : default(Expression)); 
             	RPAREN154=(IToken)Match(input,RPAREN,FOLLOW_RPAREN_in_switchStatement6268); 
             		RPAREN154_tree = (object)adaptor.Create(RPAREN154);
             		adaptor.AddChild(root_0, RPAREN154_tree);
@@ -9690,7 +9695,7 @@ public class ES3Parser : Parser
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, defaultClause156.Tree);
-            			    	 defaultClauseCount++; switchStatement.DefaultStatements=((defaultClause156 != null) ? defaultClause156.value : null); 
+            			    	 defaultClauseCount++; switchStatement.DefaultStatements=((defaultClause156 != null) ? defaultClause156.value : default(BlockStatement)); 
 
             			    }
             			    break;
@@ -9702,7 +9707,7 @@ public class ES3Parser : Parser
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, caseClause157.Tree);
-            			    	 switchStatement.CaseClauses.Add(((caseClause157 != null) ? caseClause157.value : null)); 
+            			    	 switchStatement.CaseClauses.Add(((caseClause157 != null) ? caseClause157.value : default(CaseClause))); 
 
             			    }
             			    break;
@@ -9764,9 +9769,9 @@ public class ES3Parser : Parser
 
         IToken CASE159 = null;
         IToken COLON161 = null;
-        ES3Parser.expression_return expression160 = null;
+        ES3Parser.expression_return expression160 = default(ES3Parser.expression_return);
 
-        ES3Parser.statement_return statement162 = null;
+        ES3Parser.statement_return statement162 = default(ES3Parser.statement_return);
 
 
         object CASE159_tree=null;
@@ -9791,7 +9796,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, expression160.Tree);
-            	 retval.value.Expression = ((expression160 != null) ? expression160.value : null); 
+            	 retval.value.Expression = ((expression160 != null) ? expression160.value : default(Expression)); 
             	COLON161=(IToken)Match(input,COLON,FOLLOW_COLON_in_caseClause6323); 
             	// C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g:1725:70: ( statement )*
             	do 
@@ -9815,7 +9820,7 @@ public class ES3Parser : Parser
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, statement162.Tree);
-            			    	 retval.value.Statements.Statements.AddLast(((statement162 != null) ? statement162.value : null)); 
+            			    	 retval.value.Statements.Statements.AddLast(((statement162 != null) ? statement162.value : default(Statement))); 
 
             			    }
             			    break;
@@ -9873,7 +9878,7 @@ public class ES3Parser : Parser
 
         IToken DEFAULT163 = null;
         IToken COLON164 = null;
-        ES3Parser.statement_return statement165 = null;
+        ES3Parser.statement_return statement165 = default(ES3Parser.statement_return);
 
 
         object DEFAULT163_tree=null;
@@ -9916,7 +9921,7 @@ public class ES3Parser : Parser
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, statement165.Tree);
-            			    	 retval.value.Statements.AddLast(((statement165 != null) ? statement165.value : null)); 
+            			    	 retval.value.Statements.AddLast(((statement165 != null) ? statement165.value : default(Statement))); 
 
             			    }
             			    break;
@@ -9974,7 +9979,7 @@ public class ES3Parser : Parser
 
         IToken lb = null;
         IToken COLON166 = null;
-        ES3Parser.statement_return st = null;
+        ES3Parser.statement_return st = default(ES3Parser.statement_return);
 
 
         object lb_tree=null;
@@ -10045,9 +10050,9 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken THROW167 = null;
-        ES3Parser.expression_return exp = null;
+        ES3Parser.expression_return exp = default(ES3Parser.expression_return);
 
-        ES3Parser.semic_return semic168 = null;
+        ES3Parser.semic_return semic168 = default(ES3Parser.semic_return);
 
 
         object THROW167_tree=null;
@@ -10118,13 +10123,13 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken TRY169 = null;
-        ES3Parser.block_return b = null;
+        ES3Parser.block_return b = default(ES3Parser.block_return);
 
-        ES3Parser.catchClause_return c = null;
+        ES3Parser.catchClause_return c = default(ES3Parser.catchClause_return);
 
-        ES3Parser.finallyClause_return first = null;
+        ES3Parser.finallyClause_return first = default(ES3Parser.finallyClause_return);
 
-        ES3Parser.finallyClause_return last = null;
+        ES3Parser.finallyClause_return last = default(ES3Parser.finallyClause_return);
 
 
         object TRY169_tree=null;
@@ -10269,7 +10274,7 @@ public class ES3Parser : Parser
         IToken CATCH170 = null;
         IToken LPAREN171 = null;
         IToken RPAREN172 = null;
-        ES3Parser.block_return block173 = null;
+        ES3Parser.block_return block173 = default(ES3Parser.block_return);
 
 
         object id_tree=null;
@@ -10299,7 +10304,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, block173.Tree);
-            	 retval.value =  new CatchClause(((id != null) ? id.Text : null), ((block173 != null) ? block173.value : null)); 
+            	 retval.value =  new CatchClause(((id != null) ? id.Text : null), ((block173 != null) ? block173.value : default(BlockStatement))); 
 
             }
 
@@ -10344,7 +10349,7 @@ public class ES3Parser : Parser
         object root_0 = null;
 
         IToken FINALLY174 = null;
-        ES3Parser.block_return block175 = null;
+        ES3Parser.block_return block175 = default(ES3Parser.block_return);
 
 
         object FINALLY174_tree=null;
@@ -10365,7 +10370,7 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, block175.Tree);
-            	 retval.value =  new FinallyClause(((block175 != null) ? block175.value : null)); 
+            	 retval.value =  new FinallyClause(((block175 != null) ? block175.value : default(BlockStatement))); 
 
             }
 
@@ -10411,9 +10416,9 @@ public class ES3Parser : Parser
 
         IToken name = null;
         IToken FUNCTION176 = null;
-        ES3Parser.formalParameterList_return parameters = null;
+        ES3Parser.formalParameterList_return parameters = default(ES3Parser.formalParameterList_return);
 
-        ES3Parser.functionBody_return body = null;
+        ES3Parser.functionBody_return body = default(ES3Parser.functionBody_return);
 
 
         object name_tree=null;
@@ -10496,9 +10501,9 @@ public class ES3Parser : Parser
 
         IToken name = null;
         IToken FUNCTION177 = null;
-        ES3Parser.formalParameterList_return formalParameterList178 = null;
+        ES3Parser.formalParameterList_return formalParameterList178 = default(ES3Parser.formalParameterList_return);
 
-        ES3Parser.functionBody_return functionBody179 = null;
+        ES3Parser.functionBody_return functionBody179 = default(ES3Parser.functionBody_return);
 
 
         object name_tree=null;
@@ -10547,13 +10552,13 @@ public class ES3Parser : Parser
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, formalParameterList178.Tree);
-            	 retval.value.Parameters.AddRange(((formalParameterList178 != null) ? formalParameterList178.value : null)) ;
+            	 retval.value.Parameters.AddRange(((formalParameterList178 != null) ? formalParameterList178.value : default(List<string>))) ;
             	PushFollow(FOLLOW_functionBody_in_functionExpression6638);
             	functionBody179 = functionBody();
             	state.followingStackPointer--;
 
             	adaptor.AddChild(root_0, functionBody179.Tree);
-            	 retval.value.Statement = ((functionBody179 != null) ? functionBody179.value : null); 
+            	 retval.value.Statement = ((functionBody179 != null) ? functionBody179.value : default(Statement)); 
 
             }
 
@@ -10735,7 +10740,7 @@ public class ES3Parser : Parser
 
         IToken lb = null;
         IToken RBRACE184 = null;
-        ES3Parser.sourceElement_return sourceElement183 = null;
+        ES3Parser.sourceElement_return sourceElement183 = default(ES3Parser.sourceElement_return);
 
 
         object lb_tree=null;
@@ -10778,7 +10783,7 @@ public class ES3Parser : Parser
             			    	state.followingStackPointer--;
 
             			    	adaptor.AddChild(root_0, sourceElement183.Tree);
-            			    	 block.Statements.AddLast(((sourceElement183 != null) ? sourceElement183.value : null)); 
+            			    	 block.Statements.AddLast(((sourceElement183 != null) ? sourceElement183.value : default(Statement))); 
 
             			    }
             			    break;
@@ -10838,7 +10843,7 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.sourceElement_return follow = null;
+        ES3Parser.sourceElement_return follow = default(ES3Parser.sourceElement_return);
 
 
 
@@ -10932,9 +10937,9 @@ public class ES3Parser : Parser
 
         object root_0 = null;
 
-        ES3Parser.functionDeclaration_return func = null;
+        ES3Parser.functionDeclaration_return func = default(ES3Parser.functionDeclaration_return);
 
-        ES3Parser.statement_return stat = null;
+        ES3Parser.statement_return stat = default(ES3Parser.statement_return);
 
 
 

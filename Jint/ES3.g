@@ -43,7 +43,7 @@ grammar ES3 ;
 options
 {
 	output = AST ;
-	language = CSharp ;
+	language = CSharp2 ;
 }
 
 

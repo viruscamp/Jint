@@ -1,4 +1,9 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g 2010-11-09 08:02:35
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 C:\\Users\\s.ros\\Projets\\Jint\\Jint\\ES3.g 2010-11-11 09:14:42
+
+// The variable 'variable' is assigned but its value is never used.
+#pragma warning disable 168, 219
+// Unreachable code detected.
+#pragma warning disable 162
 
 
 using System;
@@ -8,7 +13,7 @@ using ArrayList 	= System.Collections.ArrayList;
 using Stack 		= Antlr.Runtime.Collections.StackList;
 
 
-public class ES3Lexer : Lexer {
+public partial class ES3Lexer : Lexer {
     public const int PACKAGE = 52;
     public const int FUNCTION = 17;
     public const int LOR = 95;

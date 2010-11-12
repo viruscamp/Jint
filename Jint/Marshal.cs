@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Jint.Native;
+using System.Reflection;
 
 namespace Jint
 {
@@ -25,6 +26,7 @@ namespace Jint
     /// </remarks>
     public class Marshal
     {
+        public delegate JsInstance NativeMethodImpl(IGlobal global, JsInstance that, JsInstance[] arguments);
         IGlobal global;
 
         public Marshal(IGlobal global)
@@ -41,6 +43,13 @@ namespace Jint
         public T JsToClrValue<T>(JsInstance value)
         {
             return (T)Convert.ChangeType(value.Value, typeof(T));
+        }
+
+        public NativeMethodImpl WrapDelegate(Delegate d)
+        {
+            MethodInfo info = d.Method;
+
+
         }
     }
 }

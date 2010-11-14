@@ -54,7 +54,7 @@ namespace Jint.Native
 
                 code.Emit(OpCodes.Ldarg_1); // 'that' parameter
 
-                code.Emit(OpCodes.Call, typeof(Marshal).GetMethod("JsToClrValue").MakeGenericMethod(info.DeclaringType));
+                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("JsToClrValue").MakeGenericMethod(info.DeclaringType));
 
                 // check result
                 code.Emit(OpCodes.Dup); // remember converted result
@@ -120,7 +120,7 @@ namespace Jint.Native
                 // convert current parameter to a proper type
                 code.Emit(
                     OpCodes.Call,
-                    typeof(Marshal).GetMethod("JsToClrValue").MakeGenericMethod(parameters[i].ParameterType)
+                    typeof(Marshaller).GetMethod("JsToClrValue").MakeGenericMethod(parameters[i].ParameterType)
                 );
             }
 
@@ -130,7 +130,7 @@ namespace Jint.Native
             if (info.ReturnType != null)
             {
                 // convert a result into JsInstance
-                code.Emit(OpCodes.Call, typeof(Marshal).GetMethod("ClrToJsValue").MakeGenericMethod(info.ReturnType));
+                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("ClrToJsValue").MakeGenericMethod(info.ReturnType));
             }
             else
             {

@@ -30,6 +30,6 @@ namespace Jint.Native
         JsInstance NaN { get; }
 
         Jint.Expressions.IJintVisitor Visitor { get; }
-        Jint.Marshal Marshaller { get; }
+        Jint.Marshaller Marshaller { get; }
     }
 }

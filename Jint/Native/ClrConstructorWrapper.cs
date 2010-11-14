@@ -74,7 +74,7 @@ namespace Jint.Native
                 // convert current parameter to a proper type
                 code.Emit(
                     OpCodes.Call,
-                    typeof(Marshal).GetMethod("JsToClrValue").MakeGenericMethod(parameter.ParameterType)
+                    typeof(Marshaller).GetMethod("JsToClrValue").MakeGenericMethod(parameter.ParameterType)
                 );
 
                 i++;

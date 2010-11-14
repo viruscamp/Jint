@@ -48,7 +48,11 @@
     <Compile Include="CachedReflectionPropertyGetter.cs" />
     <Compile Include="CachedTypeResolver.cs" />
     <Compile Include="CachedReflectionFieldGetter.cs" />
-    <Compile Include="Native\ClrDescriptor.cs" />
+    <Compile Include="Marshal\Delegates.cs" />
+    <Compile Include="Marshal\MarshalException.cs" />
+    <Compile Include="Marshal\NativeGetterWrapper.cs" />
+    <Compile Include="Marshal\NativeSetterWrapper.cs" />
+    <Compile Include="Native\NativeDescriptor.cs" />
     <Compile Include="Marshal.cs" />
     <Compile Include="Native\ClrConstructor.cs" />
     <Compile Include="Native\ClrConstructorWrapper.cs" />

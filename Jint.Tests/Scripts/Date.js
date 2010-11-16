@@ -35,3 +35,5 @@ assert(offsetHours < 0 ? 24 + offsetHours : offsetHours, new Date(Date.UTC(0, 0,
 
 assert(31, new Date(Date.UTC(2006, 0, 0)).getUTCDate());
 
+assert(true, new Date(0) == new Date(0));
+

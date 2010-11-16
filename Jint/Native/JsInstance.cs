@@ -17,6 +17,10 @@ namespace Jint.Native {
         public JsInstance() {
         }
 
+        public virtual JsInstance ToPrimitive(IGlobal global) {
+            return JsUndefined.Instance;
+        }
+
         public virtual bool ToBoolean() {
             return true;
         }

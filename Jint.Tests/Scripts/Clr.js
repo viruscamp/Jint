@@ -1,6 +1,10 @@
-﻿var a = new System.Collections.Generic.List{System.Int32}(); 
-a.Add(7); a.Add(3); a.Add(4);
+﻿// comparing clr and js
+assert(true, new Date(0) == new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
+assert(true, new Date(0) < new System.DateTime(1971, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
+assert(true, new Date(0) > new System.DateTime(1969, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 
+var a = new System.Collections.Generic.List{System.Int32}(); 
+a.Add(7); a.Add(3); a.Add(4);
 
 var d = System.DateTime.Now;
 assert(System.Convert.ToInt32(new Date().getFullYear()), d.Year);
@@ -59,3 +63,5 @@ hashtable.Add(1,"one");
 hashtable.Add(2,"two");
 hashtable.Add(3,"three");
 assert(3, Number(hashtable.Count));
+
+

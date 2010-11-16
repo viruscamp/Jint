@@ -8,6 +8,7 @@ using Jint.Native;
 using Jint.Debugger;
 using System.Security;
 using System.Runtime.Serialization;
+using Jint.Delegates;
 
 namespace Jint {
     [Serializable]
@@ -924,45 +925,97 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Equal:
-                    if (IsNullOrUndefined(left) || IsNullOrUndefined(right)) {
-                        Result = IsNullOrUndefined(left) && IsNullOrUndefined(right)
-                                     ? Result = Global.BooleanClass.True
-                                     : Result = Global.BooleanClass.False;
-                    }
-                    else {
-                        if (left == right) {
-                            Result = Global.BooleanClass.True;
+                    Func<JsInstance, JsInstance, JsBoolean> equals = null;
+                    equals = (JsInstance x, JsInstance y) => {
+                        if (x.IsClr && y.IsClr) {
+                            return Global.BooleanClass.New(x.Value.Equals(y.Value));
                         }
-                        else if (left.Class == JsNumber.TYPEOF || left.Class == JsBoolean.TYPEOF ||
-                            right.Class == JsNumber.TYPEOF || right.Class == JsBoolean.TYPEOF) {
-                            Result = Global.BooleanClass.New(left.ToNumber() == right.ToNumber());
+
+                        if (x.IsClr) {
+                            return equals(x.ToPrimitive(Global), y);
                         }
-                        else if (left.Class == JsString.TYPEOF || right.Class == JsString.TYPEOF) {
-                            Result = Global.BooleanClass.New(left.ToString() == right.ToString());
+
+                        if (y.IsClr) {
+                            return equals(x, y.ToPrimitive(Global));
+                        }
+
+                        if (x.Class == y.Class) { // if both are Objects but then only one is Clrs
+                            if (x == JsUndefined.Instance) {
+                                return Global.BooleanClass.True;
+                            }
+                            else if (x == JsNull.Instance) {
+                                return Global.BooleanClass.True;
+                            }
+                            else if (x.Class == JsNumber.TYPEOF) {
+                                if (x.ToNumber() == double.NaN) {
+                                    return Global.BooleanClass.False;
+                                }
+                                else if (y.ToNumber() == double.NaN) {
+                                    return Global.BooleanClass.False;
+                                }
+                                else if (x.ToNumber() == y.ToNumber()) {
+                                    return Global.BooleanClass.True;
+                                }
+                                else {
+                                    return Global.BooleanClass.False;
+                                }
+                            }
+                            else if (x.Class == JsString.TYPEOF) {
+                                return Global.BooleanClass.New(x.ToString() == y.ToString());
+                            }
+                            else if (x.Class == JsBoolean.TYPEOF) {
+                                return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
+                            }
+                            else if (x.Class == JsObject.TYPEOF) {
+                                return Global.BooleanClass.New(x == y);
+                            }
+                            else {
+                                return Global.BooleanClass.New(x.Value.Equals(y.Value));
+                            }
+                        }
+                        else if (x == JsNull.Instance && y == JsUndefined.Instance) {
+                            return Global.BooleanClass.True;
+                        }
+                        else if (x == JsUndefined.Instance && y == JsNull.Instance) {
+                            return Global.BooleanClass.True;
+                        }
+                        else if (x.Class == JsNumber.TYPEOF && y.Class == JsString.TYPEOF) {
+                            return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
+                        }
+                        else if (x.Class == JsString.TYPEOF && y.Class == JsNumber.TYPEOF) {
+                            return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
+                        }
+                        else if (x.Class == JsBoolean.TYPEOF || y.Class == JsBoolean.TYPEOF) {
+                            return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
+                        }
+                        else if (y.Class == JsObject.TYPEOF && (x.Class == JsString.TYPEOF || x.Class == JsNumber.TYPEOF)) {
+                            return equals(x, y.ToPrimitive(Global));
+                        }
+                        else if (x.Class == JsObject.TYPEOF && (y.Class == JsString.TYPEOF || y.Class == JsNumber.TYPEOF)) {
+                            return equals(x.ToPrimitive(Global), y);
                         }
                         else {
-                            Result = Global.BooleanClass.False;
+                            return Global.BooleanClass.False;
                         }
-                    }
+                    };
+
+                    Result = equals(left, right);
+
                     break;
 
                 case BinaryExpressionType.Greater:
-                    // Use the type of the left operand to make the comparison
                     Result = Global.BooleanClass.New(left.ToNumber() > right.ToNumber());
                     break;
 
                 case BinaryExpressionType.GreaterOrEqual:
-                    // Use the type of the left operand to make the comparison
                     Result = Global.BooleanClass.New(left.ToNumber() >= right.ToNumber());
                     break;
 
                 case BinaryExpressionType.Lesser:
-                    // Use the type of the left operand to make the comparison
                     Result = Global.BooleanClass.New(left.ToNumber() < right.ToNumber());
                     break;
 
                 case BinaryExpressionType.LesserOrEqual:
-                    // Use the type of the left operand to make the comparison
                     Result = Global.BooleanClass.New(left.ToNumber() <= right.ToNumber());
                     break;
 

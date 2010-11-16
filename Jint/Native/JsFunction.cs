@@ -108,5 +108,9 @@ namespace Jint.Native {
         public override bool ToBoolean() {
             return true;
         }
+
+        public override double ToNumber() {
+            return 1;
+        }
     }
 }

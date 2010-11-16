@@ -75,32 +75,6 @@ namespace Jint.Native {
             }
         }
 
-        public override bool ToBoolean() {
-            if (value == null)
-                return false;
-            if (value is string)
-                return !string.IsNullOrEmpty((string)value);
-            if (value is IConvertible)
-                return Convert.ToBoolean(value);
-            return true;
-        }
-
-        public override double ToNumber() {
-            if (value == null)
-                return 0;
-            if (value is IConvertible)
-                return Convert.ToDouble(value);
-            return double.NaN;
-        }
-
-        public override string ToString() {
-            if (value == null)
-                return null;
-            if (value is IConvertible)
-                return Convert.ToString(value);
-            return value.ToString();
-        }
-
         public const string TYPEOF = "clr";
 
         public override string Class {

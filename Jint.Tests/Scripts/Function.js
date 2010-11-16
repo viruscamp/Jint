@@ -41,8 +41,6 @@ var obj = { 'toString' : function() { return 'This is an object.'; } };
 assert('This is an object.', obj.toString());
 assert('This is an object.', obj.toString.apply());
 
-
-
 // functions stored as array elements
 var arr = [];
 arr[0] = function(x) { return x * x; };
@@ -79,6 +77,7 @@ var obj = {
             isfalse(isThis);
     } 
 }
+
 obj.a(obj, true);
 obj.a(this, false);
 

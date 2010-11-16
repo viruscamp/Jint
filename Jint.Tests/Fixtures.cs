@@ -1508,7 +1508,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void CheckingErrorsShouldNotThrow() {
+        public void CheckingErrorsShouldNotThrow() {            
             string errors;
             Assert.IsTrue(JintEngine.HasErrors("var s = @string?;", out errors));
         }

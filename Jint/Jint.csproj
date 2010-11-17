@@ -59,7 +59,7 @@
     <Compile Include="Native\ClrMethodDescriptor.cs" />
     <Compile Include="Native\ClrOverload.cs" />
     <Compile Include="Native\ILiteral.cs" />
-    <Compile Include="Native\ClrMethodWrapper.cs" />
+    <Compile Include="Native\NativeMethod.cs" />
     <Compile Include="Native\LinkedDescriptor.cs" />
     <Compile Include="PropertyBags\DictionaryPropertyBag.cs" />
     <Compile Include="PropertyBags\DoubleListPropertyBag.cs" />

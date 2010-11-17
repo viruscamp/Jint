@@ -5,6 +5,7 @@ using Jint.Native;
 using System.Reflection;
 using System.Reflection.Emit;
 using Jint.Marshal;
+using Jint.Delegates;
 
 namespace Jint
 {
@@ -31,22 +32,43 @@ namespace Jint
 
         IGlobal global;
 
+        /// <summary>
+        /// Constaructs a new marshaller object.
+        /// </summary>
+        /// <param name="global">A global object which can be used for constructing new JsObjects due marshalling.</param>
         public Marshaller(IGlobal global)
         {
             this.global = global;
         }
 
+        /// <summary>
+        /// Marshals a native value to a JsInstance
+        /// </summary>
+        /// <typeparam name="T">A type of a native value</typeparam>
+        /// <param name="value">A native value</param>
+        /// <returns>A marshalled JsInstance</returns>
         public JsInstance MarshalClrValue<T>(T value)
         {
             return global.WrapClr(value);
         }
 
-        
+        /// <summary>
+        /// Marshals a JsInstance to a native value.
+        /// </summary>
+        /// <typeparam name="T">A native object type</typeparam>
+        /// <param name="value">A JsInstance to marshal</param>
+        /// <returns>A converted native velue</returns>
         public T MarshalJsValue<T>(JsInstance value)
         {
             return (T)Convert.ChangeType(value.Value, typeof(T));
         }
 
+        /// <summary>
+        /// Gets a type of a native object represented by the current JsInstance.
+        /// If JsInstance is a pure JsObject than returns a native type of this object itself.
+        /// </summary>
+        /// <param name="value">JsInstance value</param>
+        /// <returns>A Type object</returns>
         public Type GetNativeType(JsInstance value)
         {
             if (value == null)
@@ -59,6 +81,13 @@ namespace Jint
             return value.GetType();
         }
 
+        /// <summary>
+        /// Converts a native method to a standard delegate.
+        /// </summary>
+        /// <param name="info">A method to wrap</param>
+        /// <param name="passGlobal">If this paramerter is true and the first argument of the constructor
+        /// is IGlobal, a wrapper delegate will pass a Global JS object in the first parameter.</param>
+        /// <returns>A wrapper delegate</returns>
         public JsMethodImpl WrapMethod(MethodInfo info, bool passGlobal)
         {
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
@@ -181,6 +210,13 @@ namespace Jint
             return (JsMethodImpl)jsWrapper.CreateDelegate(typeof(JsMethodImpl));
         }
 
+        /// <summary>
+        /// Converts a constructor to a standart delegate
+        /// </summary>
+        /// <param name="info">A constructor to wrap</param>
+        /// <param name="passGlobal">If this paramerter is true and the first argument of the constructor
+        /// is IGlobal, a wrapper delegate will pass a Global JS object in the first parameter.</param>
+        /// <returns>A wrapper delegate</returns>
         ConstructorImpl WrapConstructor(ConstructorInfo info,bool passGlobal)
         {
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
@@ -257,22 +293,54 @@ namespace Jint
 
         JsGetter GenGetProperty<T, V>(PropertyInfo prop)
         {
-            NativeGetter<T,V> func = (NativeGetter<T,V>) Delegate.CreateDelegate(typeof(NativeGetter<T,V>), prop.GetGetMethod());
-            return delegate(JsDictionaryObject that)
+            MethodInfo info = prop.GetGetMethod();
+
+            if (info.IsStatic)
             {
-                return MarshalClrValue<V>(func(MarshalJsValue<T>(that)));
-            };
+                StaticNativeGetter<V> func = (StaticNativeGetter<V>)Delegate.CreateDelegate(typeof(StaticNativeGetter<V>), info);
+                return delegate(JsDictionaryObject that)
+                {
+                    return MarshalClrValue<V>(func());
+                };
+            }
+            else
+            {
+                NativeGetter<T, V> func = (NativeGetter<T, V>)Delegate.CreateDelegate(typeof(NativeGetter<T, V>),null, info);
+                return delegate(JsDictionaryObject that)
+                {
+                    return MarshalClrValue<V>(func(MarshalJsValue<T>(that)));
+                };
+            }
         }
 
         JsSetter GetSetProperty<T, V>(PropertyInfo prop)
         {
-            NativeSetter<T, V> func = (NativeSetter<T, V>) Delegate.CreateDelegate(typeof(NativeSetter<T,V>), prop.GetSetMethod() );
-            return delegate(JsDictionaryObject that, JsInstance value)
+            MethodInfo info = prop.GetSetMethod();
+            
+            if (info.IsStatic)
             {
-                func(MarshalJsValue<T>(that), MarshalJsValue<V>(value));
-            };
+                StaticNativeSetter<V> func = (StaticNativeSetter<V>)Delegate.CreateDelegate(typeof(StaticNativeSetter<V>), info);
+                return delegate(JsDictionaryObject that, JsInstance value)
+                {
+                    func(MarshalJsValue<V>(value));
+                };
+            }
+            else
+            {
+                NativeSetter<T, V> func = (NativeSetter<T, V>)Delegate.CreateDelegate(typeof(NativeSetter<T, V>),null, info);
+                return delegate(JsDictionaryObject that, JsInstance value)
+                {
+                    func(MarshalJsValue<T>(that), MarshalJsValue<V>(value));
+                };
+            }
         }
 
+        /// <summary>
+        /// Marshals a native property to a descriptor
+        /// </summary>
+        /// <param name="prop">Property to marshal</param>
+        /// <param name="owner">Owner of the returned descriptor</param>
+        /// <returns>A descriptor</returns>
         public Descriptor MarshalPropertyInfo(PropertyInfo prop,JsDictionaryObject owner)
         {
             JsGetter getter;
@@ -310,16 +378,31 @@ namespace Jint
             return setter == null ? new NativeDescriptor(owner, prop.Name, getter) : new NativeDescriptor(owner, prop.Name, getter, setter);
         }
 
+        /// <summary>
+        /// Helper to wrap a field with getter
+        /// </summary>
+        /// <typeparam name="TThat">Type of the target object</typeparam>
+        /// <typeparam name="TVal">Type of the field value</typeparam>
+        /// <param name="field">FieldInfo</param>
+        /// <returns>A wrapper getter</returns>
         JsGetter GenGetField<TThat, TVal>(FieldInfo field)
         {
             return delegate(JsDictionaryObject that)
             {
                 return MarshalClrValue<TVal>(
-                    (TVal)field.GetValue(MarshalJsValue<TThat>( that ) )
+                    (TVal)field.GetValue(MarshalJsValue<TThat>(that))
                 );
             };
+
         }
 
+        /// <summary>
+        /// Helper function to wrap a field with setter
+        /// </summary>
+        /// <typeparam name="TThat">Type of the target object</typeparam>
+        /// <typeparam name="TVal">Type of the field value</typeparam>
+        /// <param name="field">FieldInfo</param>
+        /// <returns>A wrapper setter</returns>
         JsSetter GenSetField<TThat, TVal>(FieldInfo field)
         {
             return delegate(JsDictionaryObject that, JsInstance value)
@@ -329,6 +412,12 @@ namespace Jint
         }
 
 
+        /// <summary>
+        /// Marshals a native field to a JS Descriptor
+        /// </summary>
+        /// <param name="prop">Field info to marshal</param>
+        /// <param name="owner">Owner for the descriptor</param>
+        /// <returns>Descriptor</returns>
         public Descriptor MarshalFieldInfo(FieldInfo prop, JsDictionaryObject owner)
         {
             JsGetter getter;

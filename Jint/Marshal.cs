@@ -47,6 +47,18 @@ namespace Jint
             return (T)Convert.ChangeType(value.Value, typeof(T));
         }
 
+        public Type GetNativeType(JsInstance value)
+        {
+            if (value == null)
+                return null;
+
+            if (value is JsObject)
+            {
+                return ((JsObject)value).Value == null ? null : ((JsObject)value).Value.GetType();
+            }
+            return value.GetType();
+        }
+
         public JsMethodImpl WrapMethod(MethodInfo info, bool passGlobal)
         {
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());

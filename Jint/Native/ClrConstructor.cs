@@ -49,7 +49,7 @@ namespace Jint.Native
             foreach (var pair in members)
             {
                 this[pair.Key] = pair.Value.Count > 1 ?
-                    (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty) :
+                    (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
                     (JsFunction)new ClrMethodWrapper(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty);
             }
 

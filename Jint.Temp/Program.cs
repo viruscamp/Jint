@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jint;
 using Jint.Native;
+using System.Reflection;
 
 namespace Jint.Temp
 {
@@ -11,16 +12,20 @@ namespace Jint.Temp
     {
         static void Main(string[] args)
         {
-            var engine = new Jint.JintEngine();
-            engine.SetDebugMode(true);
-            engine.Run("1;");
-            var method = new ClrConstructorWrapper(typeof(TestObject).GetConstructor(Type.EmptyTypes), engine.visitor.Global.FunctionClass.PrototypeProperty, true );
-            method.Construct(new JsInstance[0],null,engine.visitor);
-
+            MethodInfo mi = Type.GetType("Jint.Temp.Bar`1").GetMethod("Fn");
+            return;
         }
     }
 
-    public class TestObject
+    public class Bar<T1>
+    {
+        public T2 Fn<T2,T3>(T1 a1, T2 a2)
+        {
+            return default(T2);
+        }
+    }
+
+    public class Baz
     {
         public void Foo()
         {

@@ -54,4 +54,8 @@ namespace Jint.Marshal
     /// <param name="value">A value of a property</param>
     public delegate void NativeSetter<TTarget, TVal>(TTarget that, TVal value);
 
+    public delegate void StaticNativeSetter<TVal>(TVal value);
+
+    public delegate TVal StaticNativeGetter<TVal>();
+
 }

@@ -50,11 +50,14 @@ namespace Jint.Native
             {
                 this[pair.Key] = pair.Value.Count > 1 ?
                     (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
-                    (JsFunction)new ClrMethodWrapper(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty);
+                    (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global);
             }
 
-            foreach (var info in type.GetProperties(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public))
-                ;
+            foreach (var info in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
+                DefineOwnProperty(info.Name, Global.Marshaller.MarshalPropertyInfo(info, this));
+
+            foreach (var info in type.GetFields(BindingFlags.Static | BindingFlags.Public))
+                DefineOwnProperty(info.Name, Global.Marshaller.MarshalFieldInfo(info, this));
 
             foreach (var info in type.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
                 properties.AddLast(global.Marshaller.MarshalPropertyInfo(info,this) );
@@ -67,7 +70,7 @@ namespace Jint.Native
         private IEnumerable<JsFunction> MapMethodInfo(IEnumerable<MethodInfo> list)
         {
             foreach (var item in list)
-                yield return new ClrMethodWrapper(item, Global.FunctionClass.PrototypeProperty, true);
+                yield return new NativeMethod(item, Global.FunctionClass.PrototypeProperty, true);
         }
 
 

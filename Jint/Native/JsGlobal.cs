@@ -91,6 +91,7 @@ namespace Jint.Native
             #endregion
 
             Marshaller = new Marshaller(this);
+            Marshaller.InitTypes();
 
         }
 
@@ -329,7 +330,7 @@ namespace Jint.Native
         }
 
         #endregion
-
+        [Obsolete]
         public JsObject Wrap(object value)
         {
             switch (Convert.GetTypeCode(value))

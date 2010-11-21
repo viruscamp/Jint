@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Jint.Marshal;
 using Jint.Delegates;
+using System.Text.RegularExpressions;
 
 namespace Jint
 {
@@ -30,7 +31,9 @@ namespace Jint
     public class Marshaller
     {
 
-        IGlobal global;
+        IGlobal m_global;
+        Dictionary<Type, ClrConstructor> m_typeCache = new Dictionary<Type,ClrConstructor>();
+        ClrConstructor m_typeType;
 
         /// <summary>
         /// Constaructs a new marshaller object.
@@ -38,7 +41,34 @@ namespace Jint
         /// <param name="global">A global object which can be used for constructing new JsObjects due marshalling.</param>
         public Marshaller(IGlobal global)
         {
-            this.global = global;
+            this.m_global = global;
+        }
+
+        public void InitTypes()
+        {
+            m_typeType = new ClrConstructor(typeof(Type), m_global);
+            m_typeCache[typeof(Type)] = m_typeType;
+
+            //TODO: replace a native contructors with apropriate js constructors
+            foreach (var t in new Type[] {
+                typeof(Int16),
+                typeof(Int32),
+                typeof(Int64),
+                typeof(UInt16),
+                typeof(UInt32),
+                typeof(UInt64),
+                typeof(Single),
+                typeof(Double), // NumberConstructor
+                typeof(Byte),
+                typeof(SByte)
+            })
+                m_typeCache[t] = new ClrConstructor(t, m_global, m_global.NumberClass.PrototypeProperty);
+
+            m_typeCache[typeof(String)] = new ClrConstructor(typeof(String), m_global, m_global.StringClass.PrototypeProperty);
+            m_typeCache[typeof(Char)] = new ClrConstructor(typeof(Char), m_global, m_global.StringClass.PrototypeProperty);
+            m_typeCache[typeof(Boolean)] = new ClrConstructor(typeof(Boolean), m_global, m_global.BooleanClass.PrototypeProperty);
+            m_typeCache[typeof(DateTime)] = new ClrConstructor(typeof(DateTime), m_global, m_global.DateClass.PrototypeProperty);
+            m_typeCache[typeof(Regex)] = new ClrConstructor(typeof(Regex), m_global, m_global.RegExpClass.PrototypeProperty);
         }
 
         /// <summary>
@@ -49,7 +79,36 @@ namespace Jint
         /// <returns>A marshalled JsInstance</returns>
         public JsInstance MarshalClrValue<T>(T value)
         {
-            return global.WrapClr(value);
+            return MarshalType(value.GetType()).Wrap(value);
+        }
+
+        public JsConstructor MarshalType(Type t)
+        {
+            ClrConstructor res;
+            if (m_typeCache.TryGetValue(t, out res))
+                return res;
+            return m_typeCache[t] = new ClrConstructor(t, m_global);
+        }
+
+        TElem[] MarshalJsArrayHelper<TElem>(JsObject value)
+        {
+            int len = (int)value["length"].ToNumber();
+            if (len < 0)
+                len = 0;
+
+            TElem[] res = new TElem[len];
+            for (int i = 0; i < len; i++)
+                res[i] = MarshalJsValue<TElem>(value[new JsNumber(i, JsUndefined.Instance)]);
+
+            return res;
+        }
+
+        Delegate MarshalJsFunctionHelper(JsFunction func,Type delegateType)
+        {
+
+            JsFunctionDelegate wrapper = new JsFunctionDelegate(m_global.Visitor, func, m_global.Visitor.CallTarget, delegateType);
+            return wrapper.GetDelegate();
+
         }
 
         /// <summary>
@@ -60,24 +119,50 @@ namespace Jint
         /// <returns>A converted native velue</returns>
         public T MarshalJsValue<T>(JsInstance value)
         {
-            return (T)Convert.ChangeType(value.Value, typeof(T));
+            if (typeof(T).IsArray)
+            {
+                if (m_global.ArrayClass.HasInstance(value as JsObject))
+                {
+                    
+                    
+                    
+                    
+                }
+                else
+                {
+                }
+                return default(T);
+            }
+            else if (typeof(Delegate).IsAssignableFrom(typeof(T)))
+            {
+                return default(T);
+            }
+            else
+            {
+                return (T)Convert.ChangeType(value.Value, typeof(T));
+            }
         }
 
         /// <summary>
         /// Gets a type of a native object represented by the current JsInstance.
         /// If JsInstance is a pure JsObject than returns a native type of this object itself.
         /// </summary>
+        /// <remarks>
+        /// If a value is a wrapper around native value (like String, Number or a marshaled native value)
+        /// this method returns a type of a stored value.
+        /// If a value is an js object (constructed with a pure js function) this method returns
+        /// a type of this value (for example JsArray, JsObject)
+        /// </remarks>
         /// <param name="value">JsInstance value</param>
         /// <returns>A Type object</returns>
-        public Type GetNativeType(JsInstance value)
+        public Type GetInstanceType(JsInstance value)
         {
-            if (value == null)
+            if (value == null || value == JsUndefined.Instance || value == JsNull.Instance )
                 return null;
 
-            if (value is JsObject)
-            {
-                return ((JsObject)value).Value == null ? null : ((JsObject)value).Value.GetType();
-            }
+            if (value is JsObject && ((JsObject)value).Value != null )
+                return ((JsObject)value).Value.GetType();
+
             return value.GetType();
         }
 
@@ -116,7 +201,7 @@ namespace Jint
 
                 code.Emit(OpCodes.Ldarg_1); // 'that' parameter
 
-                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("JsToClrValue").MakeGenericMethod(info.DeclaringType));
+                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(info.DeclaringType));
 
                 // check result
                 code.Emit(OpCodes.Dup); // remember converted result
@@ -128,13 +213,22 @@ namespace Jint
                 code.MarkLabel(lblWrong);
 
                 code.Emit(OpCodes.Ldstr, "The specified 'that' object is not acceptable for this method");
-                code.Emit(OpCodes.Newobj, typeof(Exception).GetConstructor(new Type[] { typeof(string) }));
+                code.Emit(OpCodes.Newobj, typeof(JintException).GetConstructor(new Type[] { typeof(string) }));
                 code.Emit(OpCodes.Throw);
 
                 code.MarkLabel(lblDesired);
 
                 // everything is ok
                 // we have a converted 'that' value in the stack now
+                // if that is a value type, we need to store it in a temporary value and pass it by reference
+
+                if (info.DeclaringType.IsValueType)
+                {
+                    //TODO: can't update a value type
+                    LocalBuilder tempLocal = code.DeclareLocal(info.DeclaringType);
+                    code.Emit(OpCodes.Stloc);
+                    code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
+                }
             }
 
             // if the first parameter is IGlobal and passGlobal is enabled
@@ -182,10 +276,27 @@ namespace Jint
                 code.MarkLabel(lblEnd);
 
                 // convert current parameter to a proper type
-                code.Emit(
-                    OpCodes.Call,
-                    typeof(Marshaller).GetMethod("JsToClrValue").MakeGenericMethod(parameter.ParameterType)
-                );
+                if (parameter.ParameterType.IsByRef)
+                {
+                    Type paramType = parameter.ParameterType.GetElementType();
+                    LocalBuilder tempLocal = code.DeclareLocal(paramType);
+                    // marshall
+                    code.Emit(
+                        OpCodes.Call,
+                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(paramType)
+                    );
+                    // store value in the temp variable
+                    code.Emit(OpCodes.Stloc, tempLocal.LocalIndex);
+                    // load a reference to the variable
+                    code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
+                }
+                else
+                {
+                    code.Emit(
+                        OpCodes.Call,
+                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(parameter.ParameterType)
+                    );
+                }
 
                 i++;
             }
@@ -193,10 +304,10 @@ namespace Jint
             // now we have an optional 'that' parameter followed by the sequence of converted arguments
             code.Emit(OpCodes.Call, info);
 
-            if (info.ReturnType != null)
+            if (info.ReturnType != typeof(void) )
             {
                 // convert a result into JsInstance
-                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("ClrToJsValue").MakeGenericMethod(info.ReturnType));
+                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(info.ReturnType));
             }
             else
             {
@@ -271,10 +382,27 @@ namespace Jint
                 code.MarkLabel(lblEnd);
 
                 // convert current parameter to a proper type
-                code.Emit(
-                    OpCodes.Call,
-                    typeof(Marshaller).GetMethod("JsToClrValue").MakeGenericMethod(parameter.ParameterType)
-                );
+                if (parameter.ParameterType.IsByRef)
+                {
+                    Type paramType = parameter.ParameterType.GetElementType();
+                    LocalBuilder tempLocal = code.DeclareLocal(paramType);
+                    // marshall
+                    code.Emit(
+                        OpCodes.Call,
+                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(paramType)
+                    );
+                    // store value in the temp variable
+                    code.Emit(OpCodes.Stloc, tempLocal.LocalIndex);
+                    // load a reference to the variable
+                    code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
+                }
+                else
+                {
+                    code.Emit(
+                        OpCodes.Call,
+                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(parameter.ParameterType)
+                    );
+                }
 
                 i++;
             }
@@ -291,7 +419,7 @@ namespace Jint
             return (ConstructorImpl)dm.CreateDelegate(typeof(ConstructorImpl));
         }
 
-        JsGetter GenGetProperty<T, V>(PropertyInfo prop)
+        public JsGetter GenGetProperty<T, V>(PropertyInfo prop)
         {
             MethodInfo info = prop.GetGetMethod();
 
@@ -305,15 +433,28 @@ namespace Jint
             }
             else
             {
-                NativeGetter<T, V> func = (NativeGetter<T, V>)Delegate.CreateDelegate(typeof(NativeGetter<T, V>),null, info);
-                return delegate(JsDictionaryObject that)
+                if (typeof(T).IsValueType)
                 {
-                    return MarshalClrValue<V>(func(MarshalJsValue<T>(that)));
-                };
+                    NativeGetterByRef<T, V> func = (NativeGetterByRef<T, V>)Delegate.CreateDelegate(typeof(NativeGetterByRef<T, V>), info);
+                    return delegate(JsDictionaryObject that)
+                    {
+                        // TODO: can't update a value type
+                        T inst = MarshalJsValue<T>(that);
+                        return MarshalClrValue<V>(func(ref inst));
+                    };
+                }
+                else
+                {
+                    NativeGetter<T, V> func = (NativeGetter<T, V>)Delegate.CreateDelegate(typeof(NativeGetter<T, V>), info);
+                    return delegate(JsDictionaryObject that)
+                    {
+                        return MarshalClrValue<V>(func(MarshalJsValue<T>(that)));
+                    };
+                }
             }
         }
 
-        JsSetter GetSetProperty<T, V>(PropertyInfo prop)
+        public JsSetter GenSetProperty<T, V>(PropertyInfo prop)
         {
             MethodInfo info = prop.GetSetMethod();
             
@@ -327,11 +468,24 @@ namespace Jint
             }
             else
             {
-                NativeSetter<T, V> func = (NativeSetter<T, V>)Delegate.CreateDelegate(typeof(NativeSetter<T, V>),null, info);
-                return delegate(JsDictionaryObject that, JsInstance value)
+                if (typeof(T).IsValueType)
                 {
-                    func(MarshalJsValue<T>(that), MarshalJsValue<V>(value));
-                };
+                    NativeSetterByRef<T, V> func = (NativeSetterByRef<T, V>)Delegate.CreateDelegate(typeof(NativeSetterByRef<T, V>), null, info);
+                    return delegate(JsDictionaryObject that, JsInstance value)
+                    {
+                        // TODO: method can't update a value type
+                        T inst = MarshalJsValue<T>(that);
+                        func(ref inst, MarshalJsValue<V>(value));
+                    };
+                }
+                else
+                {
+                    NativeSetter<T, V> func = (NativeSetter<T, V>)Delegate.CreateDelegate(typeof(NativeSetter<T, V>), null, info);
+                    return delegate(JsDictionaryObject that, JsInstance value)
+                    {
+                        func(MarshalJsValue<T>(that), MarshalJsValue<V>(value));
+                    };
+                }
             }
         }
 
@@ -367,7 +521,7 @@ namespace Jint
             if (prop.CanWrite)
             {
                 setter = (JsSetter) GetType()
-                    .GetMethod("GetSetProperty")
+                    .GetMethod("GenSetProperty")
                     .MakeGenericMethod(
                         prop.DeclaringType,
                         prop.PropertyType
@@ -385,7 +539,7 @@ namespace Jint
         /// <typeparam name="TVal">Type of the field value</typeparam>
         /// <param name="field">FieldInfo</param>
         /// <returns>A wrapper getter</returns>
-        JsGetter GenGetField<TThat, TVal>(FieldInfo field)
+        public JsGetter GenGetField<TThat, TVal>(FieldInfo field)
         {
             return delegate(JsDictionaryObject that)
             {
@@ -403,7 +557,7 @@ namespace Jint
         /// <typeparam name="TVal">Type of the field value</typeparam>
         /// <param name="field">FieldInfo</param>
         /// <returns>A wrapper setter</returns>
-        JsSetter GenSetField<TThat, TVal>(FieldInfo field)
+        public JsSetter GenSetField<TThat, TVal>(FieldInfo field)
         {
             return delegate(JsDictionaryObject that, JsInstance value)
             {
@@ -425,14 +579,14 @@ namespace Jint
 
 
             getter = (JsGetter)GetType()
-                    .GetMethod("GenGetProperty")
+                    .GetMethod("GenGetField")
                     .MakeGenericMethod(
                         prop.DeclaringType,
                         prop.FieldType
                     )
                     .Invoke(this, new object[] { prop });
             setter = (JsSetter)GetType()
-                    .GetMethod("GetSetProperty")
+                    .GetMethod("GenSetField")
                     .MakeGenericMethod(
                         prop.DeclaringType,
                         prop.FieldType

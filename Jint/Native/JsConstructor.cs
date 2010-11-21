@@ -35,5 +35,19 @@ namespace Jint.Native
         }
 
         public abstract void InitPrototype(IGlobal global);
+
+        /// <summary>
+        /// This method is used to wrap an native value with a js object of the specified type.
+        /// </summary>
+        /// <remarks>
+        /// This method creates a new apropriate js object and stores
+        /// </remarks>
+        /// <typeparam name="T">A type of a native value to wrap</typeparam>
+        /// <param name="value">A native value to wrap</param>
+        /// <returns>A js instance</returns>
+        public virtual JsInstance Wrap<T>(T value)
+        {
+            return new JsObject(value,PrototypeProperty);
+        }
     }
 }

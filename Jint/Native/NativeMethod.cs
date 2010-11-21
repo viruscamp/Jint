@@ -31,7 +31,7 @@ namespace Jint.Native
         }
 
         public NativeMethod(MethodInfo info, JsObject prototype, IGlobal global) :
-            this(prototype)
+            base(prototype)
         {
             if (info == null)
                 throw new ArgumentNullException("info");

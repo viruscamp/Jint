@@ -37,7 +37,7 @@ namespace Jint.Marshal
     public delegate void JsSetter(JsDictionaryObject that, JsInstance value);
 
     /// <summary>
-    /// A delegate representing a property getter
+    /// A delegate representing a property getter for a reference type
     /// </summary>
     /// <typeparam name="TTarget">A type of a target object</typeparam>
     /// <typeparam name="TVal">A type of a property</typeparam>
@@ -46,13 +46,31 @@ namespace Jint.Marshal
     public delegate TVal NativeGetter<TTarget, TVal>(TTarget that);
 
     /// <summary>
-    /// A delegate representing a property setter
+    /// A delegate representing a property getter for a value type
+    /// </summary>
+    /// <typeparam name="TTarget">A type of a target object</typeparam>
+    /// <typeparam name="TVal">A type of a property</typeparam>
+    /// <param name="that">A target object</param>
+    /// <returns>A value of a property</returns>
+    public delegate TVal NativeGetterByRef<TTarget, TVal>(ref TTarget that);
+
+    /// <summary>
+    /// A delegate representing a property setter for a reference types
     /// </summary>
     /// <typeparam name="TTarget">A type of a target object</typeparam>
     /// <typeparam name="TVal">A type of a property</typeparam>
     /// <param name="that">A target object</param>
     /// <param name="value">A value of a property</param>
     public delegate void NativeSetter<TTarget, TVal>(TTarget that, TVal value);
+
+    /// <summary>
+    /// A delegate representing a property setter for a value types
+    /// </summary>
+    /// <typeparam name="TTarget">A type of a target object</typeparam>
+    /// <typeparam name="TVal">A type of a property</typeparam>
+    /// <param name="that">A target object</param>
+    /// <param name="value">A value of a property</param>
+    public delegate void NativeSetterByRef<TTarget, TVal>(ref TTarget that, TVal value);
 
     public delegate void StaticNativeSetter<TVal>(TVal value);
 

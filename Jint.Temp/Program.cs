@@ -12,7 +12,12 @@ namespace Jint.Temp
     {
         static void Main(string[] args)
         {
-            MethodInfo mi = Type.GetType("Jint.Temp.Bar`1").GetMethod("Fn");
+            //ExecutionVisitor visitor = new ExecutionVisitor(Options.Strict | Options.Ecmascript3);
+
+            //ClrConstructor ctor = new ClrConstructor(typeof(Baz), visitor.Global);
+            //ctor.InitPrototype(visitor.Global);
+
+            
             return;
         }
     }
@@ -27,6 +32,9 @@ namespace Jint.Temp
 
     public class Baz
     {
+        public static T Arrays<T>() where T: new() {
+            return new T();
+        }
         public void Foo()
         {
         }

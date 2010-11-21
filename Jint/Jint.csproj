@@ -38,7 +38,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.TeamSystem.Data.UnitTesting, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -49,6 +52,7 @@
     <Compile Include="CachedTypeResolver.cs" />
     <Compile Include="CachedReflectionFieldGetter.cs" />
     <Compile Include="Marshal\Delegates.cs" />
+    <Compile Include="Marshal\JsFunctionDelegate.cs" />
     <Compile Include="Marshal\MarshalException.cs" />
     <Compile Include="Marshal\NativeGetterWrapper.cs" />
     <Compile Include="Marshal\NativeSetterWrapper.cs" />

@@ -12,14 +12,26 @@ namespace Jint.Temp
     {
         static void Main(string[] args)
         {
-            //ExecutionVisitor visitor = new ExecutionVisitor(Options.Strict | Options.Ecmascript3);
+            JintEngine engine = new JintEngine();
+            engine.Run("1;");
+            ExecutionVisitor visitor = engine.visitor;
 
-            //ClrConstructor ctor = new ClrConstructor(typeof(Baz), visitor.Global);
-            //ctor.InitPrototype(visitor.Global);
+            ClrConstructor ctor = new ClrConstructor(typeof(Baz), visitor.Global);
+            ctor.InitPrototype(visitor.Global);
+            ((JsObject)visitor.Global)["Baz"] = ctor;
 
+            object result = engine.Run("new Baz('hooray!');");
+
+            //JsInstance inst = ctor.Construct(new JsInstance[0], null, visitor);
             
             return;
         }
+    }
+
+    public struct DummyStruct
+    {
+        public int x;
+        public DateTime t;
     }
 
     public class Bar<T1>
@@ -32,10 +44,32 @@ namespace Jint.Temp
 
     public class Baz
     {
+        string m_name;
+        public Baz(string name)
+        {
+            m_name = name;
+        }
         public static T Arrays<T>() where T: new() {
             return new T();
         }
+
+        public static void UpdateObject<T>(T val)
+        {
+
+        }
+
+        public static void ByRefArg(ref DummyStruct i, ref Baz o, out int res)
+        {
+            res = default(int);
+            i.ToString();
+            o.Foo();
+            o.Zoo(i);
+        }
+
         public void Foo()
+        {
+        }
+        public virtual void Zoo(DummyStruct z)
         {
         }
         public int Foo(int a)

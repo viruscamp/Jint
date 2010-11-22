@@ -6,12 +6,10 @@ using System.Reflection;
 
 namespace Jint.Native
 {
-    class ClrOverload : JsFunction
+    public class ClrOverload : JsFunction
     {
 
-        Dictionary<string, JsMethodImpl> m_protoCache = new Dictionary<string, JsMethodImpl>();
-        Dictionary<MethodInfo, JsMethodImpl> m_reflectCache = new Dictionary<MethodInfo, JsMethodImpl>();
-        Marshaller m_marshaller;
+        
 
         class MethodMatch
         {
@@ -19,6 +17,9 @@ namespace Jint.Native
             public int weight;
             public Type[] parameters;
         }
+
+        Marshaller m_marshaller;
+        ClrOverloadBase<MethodInfo, JsMethodImpl> m_overloads;
 
         // a list of methods
         LinkedList<MethodInfo> m_methods = new LinkedList<MethodInfo>();
@@ -40,29 +41,48 @@ namespace Jint.Native
                 else if (! method.ContainsGenericParameters)
                     m_methods.AddLast(method);
             }
+
+            m_overloads = new ClrOverloadBase<MethodInfo, JsMethodImpl>(
+                m_marshaller,
+                new ClrOverloadBase<MethodInfo, JsMethodImpl>.GetMembersDelegate(this.GetMembers),
+                new ClrOverloadBase<MethodInfo, JsMethodImpl>.WrapMmemberDelegate(this.WrapMember)
+            );
         }
 
-        MethodInfo MatchMethod(Type[] args, Type[] genericArguments)
+        public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
-            LinkedList<MethodMatch> matches = new LinkedList<MethodMatch>();
+            JsMethodImpl impl = m_overloads.ResolveOverload(parameters, null);
+            if (impl == null)
+                throw new JintException("No matching overload found");
+            visitor.Return(impl(visitor.Global,that,parameters));
+            return that;
+        }
+
+        protected JsMethodImpl WrapMember(MethodInfo info)
+        {
+            return m_marshaller.WrapMethod(info,true);
+        }
+
+        protected IEnumerable<MethodInfo> GetMembers(Type[] genericArguments, int argCount)
+        {
             if (genericArguments != null && genericArguments.Length > 0)
             {
 
                 foreach (var item in m_generics)
                 {
-                    MethodMatch match = new MethodMatch() { weight = 0 };
                     // try specialize generics
-                    if (item.GetGenericArguments().Length == genericArguments.Length && item.GetParameters().Length == args.Length)
+                    if (item.GetGenericArguments().Length == genericArguments.Length && item.GetParameters().Length == argCount)
                     {
+                        MethodInfo m = null;
                         try
                         {
-                            match.method = item.MakeGenericMethod(genericArguments);
-                            match.parameters = Array.ConvertAll<ParameterInfo, Type>(match.method.GetParameters(), pi => pi.ParameterType);
-                            matches.AddLast(match);
+                            m = item.MakeGenericMethod(genericArguments);
                         }
                         catch
                         {
                         }
+                        if (m != null)
+                            yield return m;
                     }
                 }
             }
@@ -70,104 +90,10 @@ namespace Jint.Native
             foreach (var item in m_methods)
             {
                 ParameterInfo[] parameters = item.GetParameters();
-                if (parameters.Length != args.Length)
+                if (parameters.Length != argCount)
                     continue;
-                matches.AddLast( new MethodMatch() {
-                    weight = 0,
-                    parameters = Array.ConvertAll<ParameterInfo,Type>(parameters, pi => pi.ParameterType),
-                    method = item
-                });
-
+                yield return item;
             }
-
-            if (args != null)
-            {
-                for (int i = 0; i < args.Length; i++)
-                {
-                    Type t = args[i];
-                    for(var node = matches.First; node != null; ) {
-                        if (t != null)
-                        {
-                            if (t.Equals(node.Value.parameters[i]))
-                            {
-                                node.Value.weight += 1;
-                            }
-                            else if (!node.Value.parameters[i].IsAssignableFrom(t))
-                            {
-                                var old = node;
-                                node = node.Next;
-                                matches.Remove(old);
-                            }
-                        }
-                        else
-                        {
-                            // we can't assign undefined or null values to a value types
-                            if (node.Value.parameters[i].IsValueType)
-                            {
-                                var old = node;
-                                node = node.Next;
-                                matches.Remove(old);
-                            }
-                        }
-                        node = node.Next;
-                    }
-                }
-            }
-
-            MethodMatch best = null;
-
-            foreach (var match in matches)
-                best = best == null ? match : (best.weight < match.weight ? match : best);
-
-            return best.method;
-        }
-
-        string MakeKey(Type[] types,Type[] genericArguments )
-        {
-            return
-                "<"
-                + String.Join(
-                    ",",
-                    Array.ConvertAll<Type,string>(
-                        genericArguments ?? new Type[0],
-                        t => t == null ? "<null>" : t.FullName
-                    )
-                )
-                + ">"
-                + String.Join(
-                    ",",
-                    Array.ConvertAll<Type, String>(
-                        types ?? new Type[0],
-                        t => t.FullName
-                    )
-                );
-        }
-
-        JsMethodImpl ResolveOverload(JsInstance[] args, Type[] generics)
-        {
-            Type[] argTypes = Array.ConvertAll<JsInstance,Type>(args, x => m_marshaller.GetInstanceType(x));
-            string key = MakeKey(argTypes, generics);
-            JsMethodImpl method;
-            if (!m_protoCache.TryGetValue(key,out method))
-            {
-                MethodInfo info = MatchMethod(argTypes, generics);
-                
-                if (info != null && !m_reflectCache.TryGetValue(info,out method))
-                    m_reflectCache[info] = method = m_marshaller.WrapMethod(info, true);
-
-                m_protoCache[key] = method;
-            }
-
-            return method;
-        }
-
-        public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
-        {
-            JsMethodImpl impl = ResolveOverload(parameters, null);
-            if (impl == null)
-                throw new JintException("No matching overload found");
-            visitor.Return(impl(visitor.Global,that,parameters));
-            return that;
         }
     }
 }

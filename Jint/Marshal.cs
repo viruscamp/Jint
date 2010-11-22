@@ -33,6 +33,7 @@ namespace Jint
 
         IGlobal m_global;
         Dictionary<Type, ClrConstructor> m_typeCache = new Dictionary<Type,ClrConstructor>();
+        Dictionary<Type, Delegate> m_arrayMarshllers = new Dictionary<Type, Delegate>();
         ClrConstructor m_typeType;
 
         /// <summary>
@@ -103,10 +104,9 @@ namespace Jint
             return res;
         }
 
-        Delegate MarshalJsFunctionHelper(JsFunction func,Type delegateType)
+        object MarshalJsFunctionHelper(JsFunction func,Type delegateType)
         {
-
-            JsFunctionDelegate wrapper = new JsFunctionDelegate(m_global.Visitor, func, m_global.Visitor.CallTarget, delegateType);
+            JsFunctionDelegate wrapper = new JsFunctionDelegate(m_global.Visitor, func, JsNull.Instance , delegateType);
             return wrapper.GetDelegate();
 
         }
@@ -119,27 +119,48 @@ namespace Jint
         /// <returns>A converted native velue</returns>
         public T MarshalJsValue<T>(JsInstance value)
         {
-            if (typeof(T).IsArray)
+            if (value.Value is T)
             {
-                if (m_global.ArrayClass.HasInstance(value as JsObject))
-                {
-                    
-                    
-                    
-                    
-                }
-                else
-                {
-                }
-                return default(T);
-            }
-            else if (typeof(Delegate).IsAssignableFrom(typeof(T)))
-            {
-                return default(T);
+                return (T)value.Value;
             }
             else
             {
-                return (T)Convert.ChangeType(value.Value, typeof(T));
+                if (typeof(T).IsArray)
+                {
+                    if (value == null || value == JsUndefined.Instance || value == JsNull.Instance)
+                        return default(T);
+                    if (m_global.ArrayClass.HasInstance(value as JsObject))
+                    {
+                        Delegate marshller;
+                        if (!m_arrayMarshllers.TryGetValue(typeof(T), out marshller))
+                            m_arrayMarshllers[typeof(T)] = marshller = Delegate.CreateDelegate(
+                                typeof(Func<JsObject, T>),
+                                this,
+                                typeof(Marshaller)
+                                    .GetMethod("MarshalJsFunctionHelper")
+                                    .MakeGenericMethod(typeof(T).GetElementType())
+                            );
+
+                        return ((Func<JsObject, T>)marshller)(value as JsObject);
+                    }
+                    else
+                    {
+                        throw new JintException("Array is required");
+                    }
+                }
+                else if (typeof(Delegate).IsAssignableFrom(typeof(T)))
+                {
+                    if (value == null || value == JsUndefined.Instance || value == JsNull.Instance)
+                        return default(T);
+
+                    if (! (value is JsFunction) )
+                        throw new JintException("Can't convert a non function object to a delegate type");
+                    return (T)MarshalJsFunctionHelper(value as JsFunction, typeof(T));
+                }
+                else
+                {
+                    return (T)Convert.ChangeType(value.Value, typeof(T));
+                }
             }
         }
 
@@ -160,8 +181,8 @@ namespace Jint
             if (value == null || value == JsUndefined.Instance || value == JsNull.Instance )
                 return null;
 
-            if (value is JsObject && ((JsObject)value).Value != null )
-                return ((JsObject)value).Value.GetType();
+            if (value.Value != null )
+                return value.Value.GetType();
 
             return value.GetType();
         }
@@ -328,7 +349,7 @@ namespace Jint
         /// <param name="passGlobal">If this paramerter is true and the first argument of the constructor
         /// is IGlobal, a wrapper delegate will pass a Global JS object in the first parameter.</param>
         /// <returns>A wrapper delegate</returns>
-        ConstructorImpl WrapConstructor(ConstructorInfo info,bool passGlobal)
+        public ConstructorImpl WrapConstructor(ConstructorInfo info,bool passGlobal)
         {
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
 
@@ -345,7 +366,7 @@ namespace Jint
             }
 
             // argsCount = arguments.Length
-            code.Emit(OpCodes.Ldarg_2); // 'arguments' parameter
+            code.Emit(OpCodes.Ldarg_1); // 'arguments' parameter
             code.Emit(OpCodes.Ldlen);
 
             code.Emit(OpCodes.Stloc_0);
@@ -376,8 +397,7 @@ namespace Jint
                 // else
 
                 // push JsUndefined.Instance
-                code.Emit(OpCodes.Ldnull);
-                code.Emit(OpCodes.Ldfld, typeof(JsUndefined).GetField("Instance"));
+                code.Emit(OpCodes.Ldsfld, typeof(JsUndefined).GetField("Instance"));
 
                 code.MarkLabel(lblEnd);
 

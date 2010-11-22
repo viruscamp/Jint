@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using Jint.Marshal;
 
 namespace Jint.Native
 {
@@ -26,6 +27,9 @@ namespace Jint.Native
         Type reflectedType;
 
         LinkedList<Descriptor> m_properties = new LinkedList<Descriptor>();
+        ConstructorInfo[] m_constructors;
+        Marshaller m_marshaller;
+        ClrOverloadBase<ConstructorInfo, ConstructorImpl> m_overloads;
 
         public ClrConstructor(Type type, IGlobal global) :
             this(type, global, null)
@@ -38,7 +42,20 @@ namespace Jint.Native
             if (type == null)
                 throw new ArgumentNullException("type");
 
+            m_marshaller = global.Marshaller;
+
             reflectedType = type;
+
+            if (!type.IsAbstract)
+            {
+                m_constructors = type.GetConstructors();
+            }
+
+            m_overloads = new ClrOverloadBase<ConstructorInfo, ConstructorImpl>(
+                m_marshaller,
+                new ClrOverloadBase<ConstructorInfo, ConstructorImpl>.GetMembersDelegate(this.GetMembers),
+                new ClrOverloadBase<ConstructorInfo, ConstructorImpl>.WrapMmemberDelegate(this.WrapMember)
+            );
 
             // now we should find all static members and add them as a properties
 
@@ -117,6 +134,28 @@ namespace Jint.Native
                     (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
                     (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global);
             }
+        }
+
+        public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
+        {
+            if (that == null || that == JsUndefined.Instance || that == JsNull.Instance)
+                throw new JintException("A constructor '" + reflectedType.FullName + "' should be applied to the object");
+
+            ConstructorImpl impl = m_overloads.ResolveOverload(parameters, null);
+            if (impl == null)
+                throw new JintException("No matching overload found");
+            that.Value = impl(visitor.Global, parameters);
+            return that;
+        }
+
+        protected ConstructorImpl WrapMember(ConstructorInfo info)
+        {
+            return m_marshaller.WrapConstructor(info,true);
+        }
+
+        protected IEnumerable<ConstructorInfo> GetMembers(Type[] genericArguments, int argCount)
+        {
+            return Array.FindAll(m_constructors, con => con.GetParameters().Length == argCount);
         }
     }
 }

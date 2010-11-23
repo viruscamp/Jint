@@ -10,7 +10,7 @@ namespace Jint.Native
     /// <summary>
     /// Descriptor which get and set methods are implemented through delegates
     /// </summary>
-    class NativeDescriptor : Descriptor
+    public class NativeDescriptor : Descriptor
     {
         public NativeDescriptor(JsDictionaryObject owner, string name, JsGetter getter)
             : base(owner, name)

@@ -107,6 +107,8 @@ namespace Jint.Native
         // 15.2.4.3 and 15.2.4.4
         public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters)
         {
+            if (target.Value != null)
+                return Global.StringClass.New(target.Value.ToString());
             // constructor accesible via target.Prototype, or by itself if target is already prototype
             JsFunction constructor = target["constructor"] as JsFunction;
 

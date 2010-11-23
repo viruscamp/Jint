@@ -47,7 +47,10 @@ namespace Jint
 
         public void InitTypes()
         {
+            // we cant initize a m_typeType property since m_global.Marshller should be initialized
             m_typeType = new ClrConstructor(typeof(Type), m_global);
+            m_typeType.SetupNativeProperties(m_typeType);
+            
             m_typeCache[typeof(Type)] = m_typeType;
 
             //TODO: replace a native contructors with apropriate js constructors
@@ -63,13 +66,13 @@ namespace Jint
                 typeof(Byte),
                 typeof(SByte)
             })
-                m_typeCache[t] = new ClrConstructor(t, m_global, m_global.NumberClass.PrototypeProperty);
+                m_typeCache[t] = CreateConstructor(t,m_global.NumberClass.PrototypeProperty);
 
-            m_typeCache[typeof(String)] = new ClrConstructor(typeof(String), m_global, m_global.StringClass.PrototypeProperty);
-            m_typeCache[typeof(Char)] = new ClrConstructor(typeof(Char), m_global, m_global.StringClass.PrototypeProperty);
-            m_typeCache[typeof(Boolean)] = new ClrConstructor(typeof(Boolean), m_global, m_global.BooleanClass.PrototypeProperty);
-            m_typeCache[typeof(DateTime)] = new ClrConstructor(typeof(DateTime), m_global, m_global.DateClass.PrototypeProperty);
-            m_typeCache[typeof(Regex)] = new ClrConstructor(typeof(Regex), m_global, m_global.RegExpClass.PrototypeProperty);
+            m_typeCache[typeof(String)] = CreateConstructor(typeof(String), m_global.StringClass.PrototypeProperty);
+            m_typeCache[typeof(Char)] = CreateConstructor(typeof(Char), m_global.StringClass.PrototypeProperty);
+            m_typeCache[typeof(Boolean)] = CreateConstructor(typeof(Boolean), m_global.BooleanClass.PrototypeProperty);
+            m_typeCache[typeof(DateTime)] = CreateConstructor(typeof(DateTime), m_global.DateClass.PrototypeProperty);
+            m_typeCache[typeof(Regex)] = CreateConstructor(typeof(Regex), m_global.RegExpClass.PrototypeProperty);
         }
 
         /// <summary>
@@ -80,7 +83,17 @@ namespace Jint
         /// <returns>A marshalled JsInstance</returns>
         public JsInstance MarshalClrValue<T>(T value)
         {
-            return MarshalType(value.GetType()).Wrap(value);
+            if (value == null)
+                return JsNull.Instance;
+
+            if (value is Type)
+            {
+                return MarshalType(value as Type);
+            }
+            else
+            {
+                return MarshalType(typeof(T)).Wrap(value);
+            }
         }
 
         public JsConstructor MarshalType(Type t)
@@ -88,7 +101,26 @@ namespace Jint
             ClrConstructor res;
             if (m_typeCache.TryGetValue(t, out res))
                 return res;
-            return m_typeCache[t] = new ClrConstructor(t, m_global);
+            
+            return m_typeCache[t] = CreateConstructor(t);
+        }
+
+        ClrConstructor CreateConstructor(Type t)
+        {
+            ClrConstructor res;
+            res = new ClrConstructor(t, m_global);
+            res.InitPrototype(m_global);
+            m_typeType.SetupNativeProperties(res);
+            return res;
+        }
+
+        ClrConstructor CreateConstructor(Type t, JsObject prototypeProperty)
+        {
+            ClrConstructor res;
+            res = new ClrConstructor(t, m_global,prototypeProperty);
+            res.InitPrototype(m_global);
+            m_typeType.SetupNativeProperties(res);
+            return res;
         }
 
         TElem[] MarshalJsArrayHelper<TElem>(JsObject value)
@@ -164,6 +196,15 @@ namespace Jint
             }
         }
 
+        public object MarshalJsValueBoxed<T>(JsInstance value) where T : struct
+        {
+            if (value.Value is T)
+                return value.Value;
+            else
+                return null;
+        }
+
+
         /// <summary>
         /// Gets a type of a native object represented by the current JsInstance.
         /// If JsInstance is a pure JsObject than returns a native type of this object itself.
@@ -222,9 +263,11 @@ namespace Jint
 
                 code.Emit(OpCodes.Ldarg_1); // 'that' parameter
 
-                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(info.DeclaringType));
+                if (info.DeclaringType.IsValueType)
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(info.DeclaringType));
+                else
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(info.DeclaringType));
 
-                // check result
                 code.Emit(OpCodes.Dup); // remember converted result
                 code.Emit(OpCodes.Ldnull);
 
@@ -241,15 +284,10 @@ namespace Jint
 
                 // everything is ok
                 // we have a converted 'that' value in the stack now
-                // if that is a value type, we need to store it in a temporary value and pass it by reference
+                // if that is a value type, we need to unbox it
 
                 if (info.DeclaringType.IsValueType)
-                {
-                    //TODO: can't update a value type
-                    LocalBuilder tempLocal = code.DeclareLocal(info.DeclaringType);
-                    code.Emit(OpCodes.Stloc);
-                    code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
-                }
+                    code.Emit(OpCodes.Unbox, info.DeclaringType);
             }
 
             // if the first parameter is IGlobal and passGlobal is enabled
@@ -271,7 +309,7 @@ namespace Jint
             {
                 // push the global.Marshaller object
                 code.Emit(OpCodes.Ldarg_0);
-                code.EmitCall(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod(), null);
+                code.Emit(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod());
 
                 // if ( argsCount > i )
                 var lblDefaultValue = code.DefineLabel();
@@ -515,7 +553,7 @@ namespace Jint
         /// <param name="prop">Property to marshal</param>
         /// <param name="owner">Owner of the returned descriptor</param>
         /// <returns>A descriptor</returns>
-        public Descriptor MarshalPropertyInfo(PropertyInfo prop,JsDictionaryObject owner)
+        public NativeDescriptor MarshalPropertyInfo(PropertyInfo prop, JsDictionaryObject owner)
         {
             JsGetter getter;
             JsSetter setter = null;
@@ -549,7 +587,7 @@ namespace Jint
                     .Invoke(this, new object[] { prop });
             }
 
-            return setter == null ? new NativeDescriptor(owner, prop.Name, getter) : new NativeDescriptor(owner, prop.Name, getter, setter);
+            return setter == null ? new NativeDescriptor(owner, prop.Name, getter) { Enumerable = true } : new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
         }
 
         /// <summary>
@@ -592,7 +630,7 @@ namespace Jint
         /// <param name="prop">Field info to marshal</param>
         /// <param name="owner">Owner for the descriptor</param>
         /// <returns>Descriptor</returns>
-        public Descriptor MarshalFieldInfo(FieldInfo prop, JsDictionaryObject owner)
+        public NativeDescriptor MarshalFieldInfo(FieldInfo prop, JsDictionaryObject owner)
         {
             JsGetter getter;
             JsSetter setter;
@@ -613,7 +651,7 @@ namespace Jint
                     )
                     .Invoke(this, new object[] { prop });
 
-            return new NativeDescriptor(owner, prop.Name, getter, setter);
+            return new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
         }
     }
 }

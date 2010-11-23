@@ -26,7 +26,7 @@ namespace Jint.Native
     {
         Type reflectedType;
 
-        LinkedList<Descriptor> m_properties = new LinkedList<Descriptor>();
+        LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
         ConstructorInfo[] m_constructors;
         Marshaller m_marshaller;
         ClrOverloadBase<ConstructorInfo, ConstructorImpl> m_overloads;
@@ -45,6 +45,7 @@ namespace Jint.Native
             m_marshaller = global.Marshaller;
 
             reflectedType = type;
+            Name = type.FullName;
 
             if (!type.IsAbstract)
             {
@@ -56,6 +57,18 @@ namespace Jint.Native
                 new ClrOverloadBase<ConstructorInfo, ConstructorImpl>.GetMembersDelegate(this.GetMembers),
                 new ClrOverloadBase<ConstructorInfo, ConstructorImpl>.WrapMmemberDelegate(this.WrapMember)
             );
+
+            if (type.IsValueType)
+            {
+                m_overloads.DefineCustomOverload(
+                    new Type[0],
+                    new Type[0],
+                    (ConstructorImpl)Delegate.CreateDelegate(
+                        typeof(ConstructorImpl),
+                        typeof(ClrConstructor).GetMethod("CreateStruct", BindingFlags.NonPublic | BindingFlags.Static ).MakeGenericMethod(type)
+                    )
+                );
+            }
 
             // now we should find all static members and add them as a properties
 
@@ -70,9 +83,15 @@ namespace Jint.Native
 
             foreach (var pair in members)
             {
-                this[pair.Key] = pair.Value.Count > 1 ?
-                    (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
-                    (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global);
+                DefineOwnProperty(
+                    pair.Key,
+                    (
+                    pair.Value.Count > 1 ?
+                        (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
+                        (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global)
+                    ),
+                    PropertyAttributes.DontEnum
+                );
             }
 
             // find and add all static properties and fields
@@ -85,7 +104,7 @@ namespace Jint.Native
 
             // find all nested types
             foreach (var info in type.GetNestedTypes(BindingFlags.Public))
-                this[info.Name] = Global.Marshaller.MarshalClrValue(info);
+                DefineOwnProperty(info.Name,Global.Marshaller.MarshalClrValue(info),PropertyAttributes.DontEnum);
 
             // find all instance properties and fields
             foreach (var info in type.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
@@ -136,16 +155,46 @@ namespace Jint.Native
             }
         }
 
+        static object CreateStruct<T>(IGlobal global,JsInstance[] args) where T : struct
+        {
+            return new T();
+        }
+
         public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
             if (that == null || that == JsUndefined.Instance || that == JsNull.Instance)
                 throw new JintException("A constructor '" + reflectedType.FullName + "' should be applied to the object");
 
+            if (that.Value != null)
+                throw new JintException("Can't apply the constructor '" + reflectedType.FullName + "' to already initialized '" + that.Value.ToString() + "'");
+
             ConstructorImpl impl = m_overloads.ResolveOverload(parameters, null);
             if (impl == null)
                 throw new JintException("No matching overload found");
+
             that.Value = impl(visitor.Global, parameters);
+            
+            SetupNativeProperties(that);
             return that;
+        }
+
+        public void SetupNativeProperties(JsDictionaryObject target)
+        {
+            if (target == null || target == JsNull.Instance || target == JsUndefined.Instance )
+                throw new ArgumentException("A valid js object is required","target");
+            foreach (var prop in m_properties)
+                target.DefineOwnProperty(prop.Name,new NativeDescriptor(target, prop) );
+        }
+
+        public override JsInstance Wrap<T>(T value)
+        {
+            if (!reflectedType.IsAssignableFrom(typeof(T)))
+                throw new JintException("Attempt to wrap '" + typeof(T).FullName + "' with '" + reflectedType.FullName+ "'");
+            JsObject inst = Global.ObjectClass.New(PrototypeProperty);
+            inst.Value = value;
+            SetupNativeProperties(inst);
+
+            return inst;
         }
 
         protected ConstructorImpl WrapMember(ConstructorInfo info)

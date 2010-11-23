@@ -657,11 +657,13 @@ namespace Jint
             {
                 statement.Statement.Accept(this);
             }
-            catch (JsException jsException)
+            catch (Exception e)
             {
                 ExitScope();
 
                 EnterScope(new JsObject());
+
+                JsException jsException = e as JsException ?? new JsException( Global.StringClass.New( e.Message ) );
 
                 // handle thrown exception assignment to a local variable: catch(e)
                 if (statement.Catch.Identifier != null)
@@ -681,9 +683,14 @@ namespace Jint
                     JsObject catchScope = new JsObject();
                     EnterScope(catchScope);
 
-                    statement.Finally.Statement.Accept(this);
-
-                    ExitScope();
+                    try
+                    {
+                        statement.Finally.Statement.Accept(this);
+                    }
+                    finally
+                    {
+                        ExitScope();
+                    }
                 }
             }
 

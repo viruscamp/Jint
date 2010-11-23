@@ -101,7 +101,7 @@ namespace Jint.Native
             foreach (var match in matches)
                 best = best == null ? match : (best.weight < match.weight ? match : best);
 
-            return best.method;
+            return best == null ? null : best.method ;
         }
 
         protected string MakeKey(Type[] types, Type[] genericArguments)
@@ -123,6 +123,11 @@ namespace Jint.Native
                         t => t.FullName
                     )
                 );
+        }
+
+        public void DefineCustomOverload(Type[] args, Type[] generics, TImpl impl)
+        {
+            m_protoCache[MakeKey(args, generics)] = impl;
         }
 
         public TImpl ResolveOverload(JsInstance[] args, Type[] generics)

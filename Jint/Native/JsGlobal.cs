@@ -365,6 +365,10 @@ namespace Jint.Native
 
         public JsObject WrapClr(object value)
         {
+            // don't wrap a js objects
+            if (value is JsObject)
+                return (JsObject)value;
+
             if (value == null)
             {
                 return new JsClr(Visitor,null,JsNull.Instance);

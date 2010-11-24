@@ -29,7 +29,7 @@ namespace Jint.Native
         LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
         ConstructorInfo[] m_constructors;
         Marshaller m_marshaller;
-        ClrOverloadBase<ConstructorInfo, ConstructorImpl> m_overloads;
+        NativeOverloadImpl<ConstructorInfo, ConstructorImpl> m_overloads;
 
         public ClrConstructor(Type type, IGlobal global) :
             this(type, global, null)
@@ -52,10 +52,10 @@ namespace Jint.Native
                 m_constructors = type.GetConstructors();
             }
 
-            m_overloads = new ClrOverloadBase<ConstructorInfo, ConstructorImpl>(
+            m_overloads = new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>(
                 m_marshaller,
-                new ClrOverloadBase<ConstructorInfo, ConstructorImpl>.GetMembersDelegate(this.GetMembers),
-                new ClrOverloadBase<ConstructorInfo, ConstructorImpl>.WrapMmemberDelegate(this.WrapMember)
+                new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>.GetMembersDelegate(this.GetMembers),
+                new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>.WrapMmemberDelegate(this.WrapMember)
             );
 
             if (type.IsValueType)
@@ -87,7 +87,7 @@ namespace Jint.Native
                     pair.Key,
                     (
                     pair.Value.Count > 1 ?
-                        (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
+                        (JsFunction)new NativeMethodOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
                         (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global)
                     ),
                     PropertyAttributes.DontEnum
@@ -150,7 +150,7 @@ namespace Jint.Native
             foreach (var pair in members)
             {
                 proto[pair.Key] = pair.Value.Count > 1 ?
-                    (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
+                    (JsFunction)new NativeMethodOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
                     (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global);
             }
 

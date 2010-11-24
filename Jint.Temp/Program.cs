@@ -20,15 +20,14 @@ namespace Jint.Temp
 
             JsConstructor ctor = visitor.Global.Marshaller.MarshalType(typeof(Baz));
             ((JsObject)visitor.Global)["Baz"] = ctor;
-
-            int max = int.MaxValue;
+            ((JsObject)visitor.Global)["Int32"] = visitor.Global.Marshaller.MarshalType(typeof(Int32));
 
             engine.Run(@"
+System.Console.WriteLine('=========FEATURES==========');
 var test = new Baz();
 var val;
 System.Console.WriteLine('test.Name: {0}', test.Name);
 System.Console.WriteLine('test.CurrentValue: {0}', test.CurrentValue);
-
 
 System.Console.WriteLine('Update object using method');
 test.SetTimestamp(System.DateTime.Now);
@@ -47,7 +46,31 @@ System.Console.WriteLine('Is instance of Baz: {0}', test instanceof Baz ? 'yes' 
 System.Console.WriteLine('Is instance of Object: {0}', test instanceof Object ? 'yes' : 'no' );
 System.Console.WriteLine('Is instance of String: {0}', test instanceof String ? 'yes' : 'no' );
 
-System.Console.WriteLine('=========TYPE INFORMATION==========');
+System.Console.WriteLine('Constant field Int32.MaxValue: {0}', Int32.MaxValue);
+
+System.Console.WriteLine('========= INHERITANCE FROM A CLR TYPE ==========');
+function Foo(name,desc) {
+    Baz.call(this,name);
+
+    this.Description = desc;
+    this.SetTimestamp(System.DateTime.Now);
+}
+
+(function(){
+    var func = new Function();
+    func.prototype = Baz.prototype;
+    Foo.prototype = new func();
+    Foo.prototype.constructor = Foo;
+})();
+
+Foo.prototype.PrintInfo = function() {
+    System.Console.WriteLine('{0}: {1} ({2})', this.Name,this.Description,this.t);
+}
+
+var foo = new Foo('Gib','Mega mann');
+foo.PrintInfo();
+
+System.Console.WriteLine('========= TYPE INFORMATION ==========');
 //System.Console.WriteLine('[{1}] {0}', test.GetType().FullName, test.GetType().GUID);
 for(var prop in Baz) {
     try {
@@ -58,6 +81,8 @@ for(var prop in Baz) {
 
     System.Console.WriteLine('{0} = {1}',prop,val);
 }
+
+System.Console.WriteLine('========= PERFORMANCE ==========');
 ");
             int ticks = Environment.TickCount;
             engine.Run(@"

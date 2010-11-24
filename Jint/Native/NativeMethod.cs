@@ -22,7 +22,10 @@ namespace Jint.Native
                 throw new ArgumentNullException("impl");
             m_nativeMethod = nativeMethod;
             m_impl = impl;
-            Name = nativeMethod.Name;
+            if (nativeMethod != null)
+                Name = nativeMethod.Name;
+            else
+                Name = "";
         }
 
         public NativeMethod(JsMethodImpl impl, JsObject prototype) :

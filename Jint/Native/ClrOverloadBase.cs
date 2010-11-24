@@ -77,7 +77,7 @@ namespace Jint.Native
                             {
                                 // we can assing a js function to a delegate
                             }
-                            else if (!paramType.IsAssignableFrom(t))
+                            else if (!m_marshaller.IsAssignable(paramType,t))
                             {
                                 matches.Remove(node);
                             }

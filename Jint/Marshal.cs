@@ -36,6 +36,32 @@ namespace Jint
         Dictionary<Type, Delegate> m_arrayMarshllers = new Dictionary<Type, Delegate>();
         ClrConstructor m_typeType;
 
+        /* Assuming that Object supports IConvertable
+         *
+         */
+        static bool[,] IntegralTypeConvertions = {
+        //      Empty   Object  DBNull  Boolean Char    SByte   Byte    Int16   UInt16  Int32   UInt32  Int64   UInt64  Single  Double  Decimal DateTim -----   String
+/*Empty*/   {   false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  true    },
+/*Objec*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  true    },
+/*DBNul*/   {   false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  true    },
+/*Boole*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Char */   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  false,  false,  false,  true    },
+/*SByte*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Byte */   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Int16*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*UInt1*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Int32*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*UInt3*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Int64*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*UInt6*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Singl*/   {   false,  false,  false,  true,   false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Doubl*/   {   false,  false,  false,  true,   false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*Decim*/   {   false,  false,  false,  true,   false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  false,  true    },
+/*DateT*/   {   false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  true,   false,  true    },
+/*-----*/   {   false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false,  false   },
+/*Strin*/   {   false,  false,  false,  true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   true,   false,  true    }
+        };
+
         /// <summary>
         /// Constaructs a new marshaller object.
         /// </summary>
@@ -50,7 +76,7 @@ namespace Jint
             // we cant initize a m_typeType property since m_global.Marshller should be initialized
             m_typeType = new ClrConstructor(typeof(Type), m_global);
             m_typeType.SetupNativeProperties(m_typeType);
-            
+
             m_typeCache[typeof(Type)] = m_typeType;
 
             //TODO: replace a native contructors with apropriate js constructors
@@ -66,13 +92,14 @@ namespace Jint
                 typeof(Byte),
                 typeof(SByte)
             })
-                m_typeCache[t] = CreateConstructor(t,m_global.NumberClass.PrototypeProperty);
+                m_typeCache[t] = CreateConstructor(t, m_global.NumberClass.PrototypeProperty);
 
             m_typeCache[typeof(String)] = CreateConstructor(typeof(String), m_global.StringClass.PrototypeProperty);
             m_typeCache[typeof(Char)] = CreateConstructor(typeof(Char), m_global.StringClass.PrototypeProperty);
             m_typeCache[typeof(Boolean)] = CreateConstructor(typeof(Boolean), m_global.BooleanClass.PrototypeProperty);
             m_typeCache[typeof(DateTime)] = CreateConstructor(typeof(DateTime), m_global.DateClass.PrototypeProperty);
             m_typeCache[typeof(Regex)] = CreateConstructor(typeof(Regex), m_global.RegExpClass.PrototypeProperty);
+
         }
 
         /// <summary>
@@ -196,7 +223,7 @@ namespace Jint
             }
         }
 
-        public object MarshalJsValueBoxed<T>(JsInstance value) where T : struct
+        public object MarshalJsValueBoxed<T>(JsInstance value)
         {
             if (value.Value is T)
                 return value.Value;
@@ -492,19 +519,54 @@ namespace Jint
 
                 if (prop.DeclaringType.IsValueType)
                 {
-                    code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
-                    code.Emit(OpCodes.Stloc_0);
-                    code.Emit(OpCodes.Ldloca, 0);
+                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
+                    code.Emit(OpCodes.Unbox,prop.DeclaringType);
+                    //code.Emit(OpCodes.Stloc,temp);
+                    //code.Emit(OpCodes.Ldloca,temp);
                 }
                 else
                 {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
                 }
             }
-
-            code.Emit(OpCodes.Call, info);
+            code.Emit(OpCodes.Callvirt, info);
             code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(prop.PropertyType));
+
+            code.Emit(OpCodes.Ret);
+
+            return (JsGetter)dm.CreateDelegate(typeof(JsGetter), this);
+        }
+
+        public JsGetter WrapGetField(FieldInfo field)
+        {
+            DynamicMethod dm = new DynamicMethod("dynamicFieldGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsDictionaryObject) }, typeof(Marshaller));
+            var code = dm.GetILGenerator();
+
+            code.Emit(OpCodes.Ldarg_0);
+
+            if (!field.IsStatic)
+            {
+                code.Emit(OpCodes.Dup);
+                code.Emit(OpCodes.Ldarg_1);
+
+                if (field.DeclaringType.IsValueType)
+                {
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(field.DeclaringType));
+                    code.Emit(OpCodes.Unbox, field.DeclaringType);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(field.DeclaringType));
+                }
+                code.Emit(OpCodes.Ldfld, field);
+            }
+            else
+            {
+                code.Emit(OpCodes.Ldsfld, field);
+            }
+
+            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(field.FieldType));
 
             code.Emit(OpCodes.Ret);
 
@@ -525,10 +587,11 @@ namespace Jint
 
                 if (prop.DeclaringType.IsValueType)
                 {
-                    code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
-                    code.Emit(OpCodes.Stloc_0);
-                    code.Emit(OpCodes.Ldloca, 0);
+                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
+                    code.Emit(OpCodes.Unbox, prop.DeclaringType);
+                    //code.Emit(OpCodes.Stloc, temp);
+                    //code.Emit(OpCodes.Ldloca, temp);
                 }
                 else
                 {
@@ -540,7 +603,46 @@ namespace Jint
             code.Emit(OpCodes.Ldarg_2);
             code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.PropertyType));
 
-            code.Emit(OpCodes.Call, info);
+            code.Emit(OpCodes.Callvirt, info);
+
+            code.Emit(OpCodes.Ret);
+
+            return (JsSetter)dm.CreateDelegate(typeof(JsSetter), this);
+        }
+
+        public JsSetter WrapSetField(FieldInfo field)
+        {
+            DynamicMethod dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsDictionaryObject), typeof(JsInstance) }, typeof(Marshaller));
+
+            var code = dm.GetILGenerator();
+
+            if (!field.IsStatic)
+            {
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_1);
+
+                if (field.DeclaringType.IsValueType)
+                {
+                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(field.DeclaringType));
+                    code.Emit(OpCodes.Unbox, field.DeclaringType);
+                    //code.Emit(OpCodes.Stloc, temp);
+                    //code.Emit(OpCodes.Ldloca, temp);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(field.DeclaringType));
+                }
+            }
+
+            code.Emit(OpCodes.Ldarg_0);
+            code.Emit(OpCodes.Ldarg_2);
+            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(field.FieldType));
+
+            if (field.IsStatic)
+                code.Emit(OpCodes.Stsfld, field);
+            else
+                code.Emit(OpCodes.Stfld, field);
 
             code.Emit(OpCodes.Ret);
 
@@ -579,40 +681,6 @@ namespace Jint
         }
 
         /// <summary>
-        /// Helper to wrap a field with getter
-        /// </summary>
-        /// <typeparam name="TThat">Type of the target object</typeparam>
-        /// <typeparam name="TVal">Type of the field value</typeparam>
-        /// <param name="field">FieldInfo</param>
-        /// <returns>A wrapper getter</returns>
-        public JsGetter GenGetField<TThat, TVal>(FieldInfo field)
-        {
-            return delegate(JsDictionaryObject that)
-            {
-                return MarshalClrValue<TVal>(
-                    (TVal)field.GetValue(MarshalJsValue<TThat>(that))
-                );
-            };
-
-        }
-
-        /// <summary>
-        /// Helper function to wrap a field with setter
-        /// </summary>
-        /// <typeparam name="TThat">Type of the target object</typeparam>
-        /// <typeparam name="TVal">Type of the field value</typeparam>
-        /// <param name="field">FieldInfo</param>
-        /// <returns>A wrapper setter</returns>
-        public JsSetter GenSetField<TThat, TVal>(FieldInfo field)
-        {
-            return delegate(JsDictionaryObject that, JsInstance value)
-            {
-                field.SetValue(MarshalJsValue<TThat>(that), MarshalJsValue<TVal>(value));
-            };
-        }
-
-
-        /// <summary>
         /// Marshals a native field to a JS Descriptor
         /// </summary>
         /// <param name="prop">Field info to marshal</param>
@@ -623,23 +691,26 @@ namespace Jint
             JsGetter getter;
             JsSetter setter;
 
-
-            getter = (JsGetter)GetType()
-                    .GetMethod("GenGetField")
-                    .MakeGenericMethod(
-                        prop.DeclaringType,
-                        prop.FieldType
-                    )
-                    .Invoke(this, new object[] { prop });
-            setter = (JsSetter)GetType()
-                    .GetMethod("GenSetField")
-                    .MakeGenericMethod(
-                        prop.DeclaringType,
-                        prop.FieldType
-                    )
-                    .Invoke(this, new object[] { prop });
+            if (prop.IsLiteral)
+            {
+                var value = prop.GetValue(null);
+                getter = delegate(JsDictionaryObject that) {
+                    return MarshalClrValue<object>(value);
+                };
+                setter = delegate(JsDictionaryObject that, JsInstance v) { };
+            }
+            else
+            {
+                getter = (JsGetter)WrapGetField(prop);
+                setter = (JsSetter)WrapSetField(prop);
+            }
 
             return new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
+        }
+
+        public bool IsAssignable(Type target, Type source)
+        {
+            return IntegralTypeConvertions[(int)Type.GetTypeCode(source), (int)Type.GetTypeCode(target)] || target.IsAssignableFrom(source);
         }
     }
 }

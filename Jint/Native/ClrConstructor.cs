@@ -172,7 +172,12 @@ namespace Jint.Native
 
             ConstructorImpl impl = m_overloads.ResolveOverload(parameters, null);
             if (impl == null)
-                throw new JintException("No matching overload found");
+                throw new JintException(
+                    String.Format("No matching overload found {0}({1})",
+                        reflectedType.FullName,
+                        String.Join(",",Array.ConvertAll<JsInstance,string>(parameters, p => p.ToString()))
+                    )
+                );
 
             that.Value = impl(visitor.Global, parameters);
             

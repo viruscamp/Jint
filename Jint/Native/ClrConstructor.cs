@@ -153,6 +153,8 @@ namespace Jint.Native
                     (JsFunction)new ClrOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
                     (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global);
             }
+
+            proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString",new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
         }
 
         static object CreateStruct<T>(IGlobal global,JsInstance[] args) where T : struct

@@ -244,7 +244,7 @@ namespace Jint
 
             code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
 
-            if (info.ReturnType != null)
+            if (!info.ReturnType.Equals(typeof(void)) )
             {
                 // push the global.Marshaller object
                 // for the future use
@@ -329,8 +329,7 @@ namespace Jint
                 // else
 
                 // push JsUndefined.Instance
-                code.Emit(OpCodes.Ldnull);
-                code.Emit(OpCodes.Ldfld, typeof(JsUndefined).GetField("Instance"));
+                code.Emit(OpCodes.Ldsfld, typeof(JsUndefined).GetField("Instance"));
 
                 code.MarkLabel(lblEnd);
 
@@ -363,7 +362,7 @@ namespace Jint
             // now we have an optional 'that' parameter followed by the sequence of converted arguments
             code.Emit(OpCodes.Call, info);
 
-            if (info.ReturnType != typeof(void) )
+            if (!info.ReturnType.Equals( typeof(void) ) )
             {
                 // convert a result into JsInstance
                 code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(info.ReturnType));
@@ -477,74 +476,75 @@ namespace Jint
             return (ConstructorImpl)dm.CreateDelegate(typeof(ConstructorImpl));
         }
 
-        public JsGetter GenGetProperty<T, V>(PropertyInfo prop)
+        public JsGetter WrapGetProperty(PropertyInfo prop)
         {
+            DynamicMethod dm = new DynamicMethod("dynamicPropertyGetter", typeof(JsInstance) , new Type[] { typeof(Marshaller), typeof(JsDictionaryObject) }, typeof(Marshaller) );
             MethodInfo info = prop.GetGetMethod();
 
-            if (info.IsStatic)
+            var code = dm.GetILGenerator();
+
+            code.Emit(OpCodes.Ldarg_0);
+
+            if (!info.IsStatic)
             {
-                StaticNativeGetter<V> func = (StaticNativeGetter<V>)Delegate.CreateDelegate(typeof(StaticNativeGetter<V>), info);
-                return delegate(JsDictionaryObject that)
+                code.Emit(OpCodes.Dup);
+                code.Emit(OpCodes.Ldarg_1);
+
+                if (prop.DeclaringType.IsValueType)
                 {
-                    return MarshalClrValue<V>(func());
-                };
-            }
-            else
-            {
-                if (typeof(T).IsValueType)
-                {
-                    NativeGetterByRef<T, V> func = (NativeGetterByRef<T, V>)Delegate.CreateDelegate(typeof(NativeGetterByRef<T, V>), info);
-                    return delegate(JsDictionaryObject that)
-                    {
-                        // TODO: can't update a value type
-                        T inst = MarshalJsValue<T>(that);
-                        return MarshalClrValue<V>(func(ref inst));
-                    };
+                    code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
+                    code.Emit(OpCodes.Stloc_0);
+                    code.Emit(OpCodes.Ldloca, 0);
                 }
                 else
                 {
-                    NativeGetter<T, V> func = (NativeGetter<T, V>)Delegate.CreateDelegate(typeof(NativeGetter<T, V>), info);
-                    return delegate(JsDictionaryObject that)
-                    {
-                        return MarshalClrValue<V>(func(MarshalJsValue<T>(that)));
-                    };
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
                 }
             }
+
+            code.Emit(OpCodes.Call, info);
+            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(prop.PropertyType));
+
+            code.Emit(OpCodes.Ret);
+
+            return (JsGetter)dm.CreateDelegate(typeof(JsGetter), this);
         }
 
-        public JsSetter GenSetProperty<T, V>(PropertyInfo prop)
+        public JsSetter WrapSetProperty(PropertyInfo prop)
         {
+            DynamicMethod dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsDictionaryObject), typeof(JsInstance) },typeof(Marshaller));
             MethodInfo info = prop.GetSetMethod();
-            
-            if (info.IsStatic)
+
+            var code = dm.GetILGenerator();
+
+            if (!info.IsStatic)
             {
-                StaticNativeSetter<V> func = (StaticNativeSetter<V>)Delegate.CreateDelegate(typeof(StaticNativeSetter<V>), info);
-                return delegate(JsDictionaryObject that, JsInstance value)
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_1);
+
+                if (prop.DeclaringType.IsValueType)
                 {
-                    func(MarshalJsValue<V>(value));
-                };
-            }
-            else
-            {
-                if (typeof(T).IsValueType)
-                {
-                    NativeSetterByRef<T, V> func = (NativeSetterByRef<T, V>)Delegate.CreateDelegate(typeof(NativeSetterByRef<T, V>), null, info);
-                    return delegate(JsDictionaryObject that, JsInstance value)
-                    {
-                        // TODO: method can't update a value type
-                        T inst = MarshalJsValue<T>(that);
-                        func(ref inst, MarshalJsValue<V>(value));
-                    };
+                    code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
+                    code.Emit(OpCodes.Stloc_0);
+                    code.Emit(OpCodes.Ldloca, 0);
                 }
                 else
                 {
-                    NativeSetter<T, V> func = (NativeSetter<T, V>)Delegate.CreateDelegate(typeof(NativeSetter<T, V>), null, info);
-                    return delegate(JsDictionaryObject that, JsInstance value)
-                    {
-                        func(MarshalJsValue<T>(that), MarshalJsValue<V>(value));
-                    };
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
                 }
             }
+
+            code.Emit(OpCodes.Ldarg_0);
+            code.Emit(OpCodes.Ldarg_2);
+            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.PropertyType));
+
+            code.Emit(OpCodes.Call, info);
+
+            code.Emit(OpCodes.Ret);
+
+            return (JsSetter)dm.CreateDelegate(typeof(JsSetter), this);
         }
 
         /// <summary>
@@ -560,13 +560,7 @@ namespace Jint
 
             if (prop.CanRead)
             {
-                getter = (JsGetter) GetType()
-                    .GetMethod("GenGetProperty")
-                    .MakeGenericMethod(
-                        prop.DeclaringType,
-                        prop.PropertyType
-                    )
-                    .Invoke(this, new object[] { prop });
+                getter = WrapGetProperty(prop);
             }
             else
             {
@@ -578,13 +572,7 @@ namespace Jint
 
             if (prop.CanWrite)
             {
-                setter = (JsSetter) GetType()
-                    .GetMethod("GenSetProperty")
-                    .MakeGenericMethod(
-                        prop.DeclaringType,
-                        prop.PropertyType
-                    )
-                    .Invoke(this, new object[] { prop });
+                setter = (JsSetter)WrapSetProperty(prop);
             }
 
             return setter == null ? new NativeDescriptor(owner, prop.Name, getter) { Enumerable = true } : new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };

@@ -54,13 +54,10 @@
     <Compile Include="Marshal\Delegates.cs" />
     <Compile Include="Marshal\JsFunctionDelegate.cs" />
     <Compile Include="Marshal\MarshalException.cs" />
-    <Compile Include="Marshal\NativeGetterWrapper.cs" />
-    <Compile Include="Marshal\NativeSetterWrapper.cs" />
     <Compile Include="Native\ClrOverloadBase.cs" />
     <Compile Include="Native\NativeDescriptor.cs" />
     <Compile Include="Marshal.cs" />
     <Compile Include="Native\ClrConstructor.cs" />
-    <Compile Include="Native\ClrConstructorWrapper.cs" />
     <Compile Include="Native\ClrMethodDescriptor.cs" />
     <Compile Include="Native\ClrOverload.cs" />
     <Compile Include="Native\ILiteral.cs" />

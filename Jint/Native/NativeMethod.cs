@@ -22,6 +22,7 @@ namespace Jint.Native
                 throw new ArgumentNullException("impl");
             m_nativeMethod = nativeMethod;
             m_impl = impl;
+            Name = nativeMethod.Name;
         }
 
         public NativeMethod(JsMethodImpl impl, JsObject prototype) :
@@ -40,9 +41,10 @@ namespace Jint.Native
 
             m_nativeMethod = info;
             m_impl = global.Marshaller.WrapMethod(info, true);
+            Name = info.Name;
         }
 
-        MethodInfo GetWrappedMethod()
+        public MethodInfo GetWrappedMethod()
         {
             return m_nativeMethod;
         }

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Jint.Native
 {
-    public class ClrOverloadBase<TMemberInfo, TImpl>
+    public class NativeOverloadImpl<TMemberInfo, TImpl>
         where TMemberInfo : MethodBase
         where TImpl : class
     {
@@ -26,7 +26,7 @@ namespace Jint.Native
             public Type[] parameters;
         }
 
-        public ClrOverloadBase(Marshaller marshaller, GetMembersDelegate getMembers, WrapMmemberDelegate wrapMember)
+        public NativeOverloadImpl(Marshaller marshaller, GetMembersDelegate getMembers, WrapMmemberDelegate wrapMember)
         {
             if (marshaller == null)
                 throw new ArgumentNullException("marshaller");

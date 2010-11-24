@@ -693,9 +693,14 @@ namespace Jint
 
             if (prop.IsLiteral)
             {
-                var value = prop.GetValue(null);
+                JsInstance value = null; // this demand initization should prevent a stack overflow while reflecting types
                 getter = delegate(JsDictionaryObject that) {
-                    return MarshalClrValue<object>(value);
+                    if (value == null)
+                        value = (JsInstance)typeof(Marshaller)
+                            .GetMethod("MarshalClrValue")
+                            .MakeGenericMethod(prop.FieldType)
+                            .Invoke(this, new object[] { prop.GetValue(null) });
+                    return value;
                 };
                 setter = delegate(JsDictionaryObject that, JsInstance v) { };
             }
@@ -710,7 +715,9 @@ namespace Jint
 
         public bool IsAssignable(Type target, Type source)
         {
-            return IntegralTypeConvertions[(int)Type.GetTypeCode(source), (int)Type.GetTypeCode(target)] || target.IsAssignableFrom(source);
+            return
+                (typeof(IConvertible).IsAssignableFrom(source) && IntegralTypeConvertions[(int)Type.GetTypeCode(source), (int)Type.GetTypeCode(target)])
+                || target.IsAssignableFrom(source);
         }
     }
 }

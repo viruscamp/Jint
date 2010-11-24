@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Jint.Native
 {
-    public class ClrOverload : JsFunction
+    public class NativeMethodOverload : JsFunction
     {
 
         
@@ -19,7 +19,7 @@ namespace Jint.Native
         }
 
         Marshaller m_marshaller;
-        ClrOverloadBase<MethodInfo, JsMethodImpl> m_overloads;
+        NativeOverloadImpl<MethodInfo, JsMethodImpl> m_overloads;
 
         // a list of methods
         LinkedList<MethodInfo> m_methods = new LinkedList<MethodInfo>();
@@ -27,7 +27,7 @@ namespace Jint.Native
         // a list of generics
         LinkedList<MethodInfo> m_generics = new LinkedList<MethodInfo>();
 
-        public ClrOverload(ICollection<MethodInfo> methods , JsObject prototype, IGlobal global)
+        public NativeMethodOverload(ICollection<MethodInfo> methods , JsObject prototype, IGlobal global)
             : base(prototype)
         {
             if (global == null)
@@ -42,10 +42,10 @@ namespace Jint.Native
                     m_methods.AddLast(method);
             }
 
-            m_overloads = new ClrOverloadBase<MethodInfo, JsMethodImpl>(
+            m_overloads = new NativeOverloadImpl<MethodInfo, JsMethodImpl>(
                 m_marshaller,
-                new ClrOverloadBase<MethodInfo, JsMethodImpl>.GetMembersDelegate(this.GetMembers),
-                new ClrOverloadBase<MethodInfo, JsMethodImpl>.WrapMmemberDelegate(this.WrapMember)
+                new NativeOverloadImpl<MethodInfo, JsMethodImpl>.GetMembersDelegate(this.GetMembers),
+                new NativeOverloadImpl<MethodInfo, JsMethodImpl>.WrapMmemberDelegate(this.WrapMember)
             );
         }
 

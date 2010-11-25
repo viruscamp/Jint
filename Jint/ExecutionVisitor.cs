@@ -529,21 +529,23 @@ namespace Jint {
         public void Visit(SwitchStatement statement) {
             CurrentStatement = statement.Expression;
 
-            //statement.Expression.Accept(this);
-            //JsInstance caseValue = Result;
-
             bool found = false;
             foreach (var clause in statement.CaseClauses) {
                 CurrentStatement = clause.Expression;
 
-                //clause.Expression.Accept(this);
-
-                new BinaryExpression(BinaryExpressionType.Equal, (Expression)statement.Expression, clause.Expression).Accept(this);
-
-                if (Result.ToBoolean()) {
+                if (found) {
+                    // jumping from one case to the next one
                     clause.Statements.Accept(this);
+                } else {
+                    new BinaryExpression(BinaryExpressionType.Equal, (Expression)statement.Expression, clause.Expression).Accept(this);
+                    if(Result.ToBoolean()) {
+                        clause.Statements.Accept(this);
+                        found = true;
+                    }
+                }
 
-                    found = true;
+                if (breakStatement != null) {
+                    breakStatement = null;
                     break;
                 }
             }
@@ -574,8 +576,6 @@ namespace Jint {
 
                 EnterScope(new JsObject());
 
-                JsException jsException = e as JsException ?? new JsException( Global.StringClass.New( e.Message ) );
-
                 // handle thrown exception assignment to a local variable: catch(e)
                 if (statement.Catch.Identifier != null) {
                     // if catch is called, Result contains the thrown value
@@ -591,12 +591,10 @@ namespace Jint {
                     JsObject catchScope = new JsObject();
                     EnterScope(catchScope);
 
-                    try
-                    {
+                    try {
                         statement.Finally.Statement.Accept(this);
                     }
-                    finally
-                    {
+                    finally {
                         ExitScope();
                     }
                 }
@@ -699,8 +697,6 @@ namespace Jint {
                 }
 
                 Result = function.Construct(parameters, null, this);
-                if (function is JsArrayConstructor) {
-                else {
 
                 return;
             }
@@ -1350,7 +1346,7 @@ namespace Jint {
                         PropertyInfo pi = propertyGetter.GetValue(target.Value, "Item", parameters);
 
                         if (pi != null) {
-                            SetResult( Global.WrapClr(pi.GetValue(target.Value, parameters)), target);
+                            SetResult(Global.WrapClr(pi.GetValue(target.Value, parameters)), target);
                             return;
                         }
                         else {
@@ -1364,7 +1360,7 @@ namespace Jint {
                             FieldInfo fi = fieldGetter.GetValue(target.Value, Result.ToString());
 
                             if (fi != null) {
-                                SetResult( Global.WrapClr(fi.GetValue(target.Value)),target );
+                                SetResult(Global.WrapClr(fi.GetValue(target.Value)), target);
                                 return;
                             }
                             else {
@@ -1379,10 +1375,10 @@ namespace Jint {
             }
 
             if (target.Class == JsString.TYPEOF) {
-                SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()),target );
+                SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
             }
             else {
-                SetResult(target[Result],target);
+                SetResult(target[Result], target);
             }
         }
 
@@ -1400,7 +1396,7 @@ namespace Jint {
             }
 
             #region Evaluates parameters
-            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];            
+            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
 
 
             if (methodCall.Arguments.Count > 0) {

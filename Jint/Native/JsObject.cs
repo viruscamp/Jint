@@ -15,9 +15,10 @@ namespace Jint.Native {
 
         public JsObject(JsFunction constructor)
             : base(constructor.PrototypeProperty) {
+        }
+
         public JsObject(JsObject prototype)
             : base(prototype) {
-
         }
 
         public const string TYPEOF = "Object";
@@ -65,7 +66,7 @@ namespace Jint.Native {
                 default:
                     break;
             }
-            
+
             return JsUndefined.Instance;
         }
 

@@ -17,7 +17,7 @@ namespace Jint.Native {
         public JsScope Scope { get; set; }
 
         public JsFunction(IGlobal global, Statement statement)
-            : this(global.FunctionClass.PrototypeProperty)
+            : this(global.FunctionClass.PrototypeProperty) {
             Statement = statement;
         }
 
@@ -57,10 +57,9 @@ namespace Jint.Native {
         }
 
         //13.2.2
-        public virtual JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor)
-        {
+        public virtual JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor) {
             var instance = visitor.Global.ObjectClass.New(PrototypeProperty);
-            visitor.ExecuteFunction(this,instance,parameters);
+            visitor.ExecuteFunction(this, instance, parameters);
 
             return (visitor.Result as JsObject ?? instance);
         }

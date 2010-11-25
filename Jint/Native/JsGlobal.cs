@@ -86,6 +86,9 @@ namespace Jint.Native {
             this["encodeURIComponent"] = new JsFunctionWrapper(EncodeURIComponent, FunctionClass.PrototypeProperty);
             #endregion
 
+            Marshaller = new Marshaller(this);
+            Marshaller.InitTypes();
+
         }
 
         #region Global Functions
@@ -107,6 +110,7 @@ namespace Jint.Native {
         public JsNumberConstructor NumberClass { get; private set; }
         public JsRegExpConstructor RegExpClass { get; private set; }
         public JsStringConstructor StringClass { get; private set; }
+        public Marshaller Marshaller { get; private set; }
 
         /// <summary>
         /// 15.1.2.1
@@ -289,7 +293,7 @@ namespace Jint.Native {
         }
 
         #endregion
-
+        [Obsolete]
         public JsObject Wrap(object value) {
             switch (Convert.GetTypeCode(value)) {
                 case TypeCode.Boolean:
@@ -322,6 +326,10 @@ namespace Jint.Native {
 
         public JsObject WrapClr(object value) {
             if (value == null) {
+            // don't wrap a js objects
+            if (value is JsObject)
+                return (JsObject)value;
+
                 return new JsClr(Visitor, null, JsNull.Instance);
             }
 

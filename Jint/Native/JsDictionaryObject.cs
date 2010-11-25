@@ -147,7 +147,7 @@ namespace Jint.Native {
             }
             set {
                 Descriptor d = GetDescriptor(index);
-                if (d == null || d.Owner != this)
+                if (d == null || ( d.Owner != this && d.DescriptorType == DescriptorType.Value ) )
                     DefineOwnProperty(index, new ValueDescriptor(this, index, value));
                 else
                     d.Set(this, value);

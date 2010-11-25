@@ -62,6 +62,7 @@ var myDog = {
 };
 assert('Spot The Alpha Dog', myDog.displayFullName()); 
 assert('Woof!', myDog.bark()); // Woof!
+assert('Woof!', myDog["bark"]()); // same as previous, indexer should set CallTarget
 
 
 var f=Function.apply(null,["x", "y", "return x*y;"]);

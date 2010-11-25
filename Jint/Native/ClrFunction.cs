@@ -6,6 +6,9 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Jint.Native {
+    /// <summary>
+    /// Wraps native function, i.e. this parameter from the js calling context will be ommited
+    /// </summary>
     [Serializable]
     public class ClrFunction : JsFunction {
         public Delegate Delegate { get; set; }

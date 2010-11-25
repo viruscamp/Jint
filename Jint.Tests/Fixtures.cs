@@ -201,6 +201,29 @@ namespace Jint.Tests {
         }
 
         [TestMethod]
+        public void SwitchShouldFallBackWhenNoBreak() {
+            Test(@"
+                var result = 0;
+                var input = 'a';
+                switch(input) {
+                     case 'a':
+                     case 'b':
+                         result = 2;
+                         break;
+                      case 'c':
+                          result = 3;
+                         break;
+                      case 'd':
+                           result = 4;
+                           break;
+                      default:
+                           break;
+                }
+                assert(2, result);
+            ");
+        }
+
+        [TestMethod]
         public void ShouldHandleVariableDeclaration() {
             Assert.AreEqual(null, new JintEngine().Run("var i; return i;"));
             Assert.AreEqual(1d, new JintEngine().Run("var i = 1; return i;"));
@@ -947,7 +970,7 @@ var fakeButton = new Test.FakeButton();");
                 try {
                     jint.Run(program);
                     string result = sw.ToString();
-                    if(result.Contains("FAILED")){
+                    if (result.Contains("FAILED")) {
                         Assert.Fail(result);
                     }
                 }
@@ -1508,7 +1531,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void CheckingErrorsShouldNotThrow() {            
+        public void CheckingErrorsShouldNotThrow() {
             string errors;
             Assert.IsTrue(JintEngine.HasErrors("var s = @string?;", out errors));
         }

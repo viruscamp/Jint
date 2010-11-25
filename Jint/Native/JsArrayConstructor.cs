@@ -35,17 +35,18 @@ namespace Jint.Native {
             Prototype.DefineOwnProperty("lastIndexOf", global.FunctionClass.New<JsObject>(LastIndexOfImpl, 1), PropertyAttributes.DontEnum);
         }
 
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor)
-        {
+
+        public JsArray New() {
+            JsArray array = new JsArray(PrototypeProperty);
+            //array.DefineOwnProperty("constructor", new ValueDescriptor(this) { Enumerable = false });
+            return array;
+        }
+
+        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor) {
             var instance = visitor.Global.ArrayClass.New();
             visitor.ExecuteFunction(this, instance, parameters);
 
             return (visitor.Result as JsObject ?? instance);
-        }
-
-            JsArray array = new JsArray(PrototypeProperty);
-            //array.DefineOwnProperty("constructor", new ValueDescriptor(this) { Enumerable = false });
-            return array;
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {

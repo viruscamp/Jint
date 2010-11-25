@@ -15,9 +15,6 @@ namespace Jint.Native {
 
         public JsObject(JsFunction constructor)
             : base(constructor.PrototypeProperty) {
-            throw new Exception("Warning, this is a deprecated constructor");
-        }
-
         public JsObject(JsObject prototype)
             : base(prototype) {
 
@@ -29,6 +26,7 @@ namespace Jint.Native {
             get { return TYPEOF; }
         }
 
+        // TODO: make ability to store a multiple native instances
         protected object value;
 
         public override object Value {

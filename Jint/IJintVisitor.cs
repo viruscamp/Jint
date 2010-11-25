@@ -53,6 +53,7 @@ namespace Jint.Expressions {
         bool DebugMode { get; }
 
         JsInstance Result { get; set; }
+        JsDictionaryObject CallTarget { get; }
 
         IGlobal Global { get; }
 

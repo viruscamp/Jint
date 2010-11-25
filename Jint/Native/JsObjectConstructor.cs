@@ -46,6 +46,19 @@ namespace Jint.Native {
         }
 
         /// <summary>
+        /// Creates new JsObject, sets a [[Prototype]] to the Prototype parameter and a 'constructor' property to the specified function.
+        /// </summary>
+        /// <param name="constructor">JsFunction which is used as a constructor</param>
+        /// <param name="Prototype">JsObjetc which is used as a prototype</param>
+        /// <returns>new object</returns>
+        public JsObject New(JsFunction constructor, JsObject Prototype)
+        {
+            JsObject obj = new JsObject(this.PrototypeProperty);
+            obj.DefineOwnProperty(CONSTRUCTOR, new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
+            return obj;
+        }
+
+        /// <summary>
         /// Creates a new object which holds a specified value
         /// </summary>
         /// <param name="value">Value to store in the new object</param>
@@ -56,6 +69,11 @@ namespace Jint.Native {
 
         public JsObject New() {
             return New((object)null);
+        }
+
+        public JsObject New(JsObject prototype)
+        {
+            return new JsObject(prototype);
         }
 
         /// <summary>

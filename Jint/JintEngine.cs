@@ -28,7 +28,7 @@ namespace Jint.Delegates {
 namespace Jint {
     [Serializable]
     public class JintEngine {
-        protected ExecutionVisitor visitor;
+        public ExecutionVisitor visitor;
 
         [System.Diagnostics.DebuggerStepThrough]
         public JintEngine()

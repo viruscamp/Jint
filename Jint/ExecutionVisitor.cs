@@ -482,15 +482,6 @@ namespace Jint {
             f.Name = functionDeclaration.Name;
             f.Scope = CurrentScope; // copy current scope hierarchy
 
-            // TODO: cleanup
-            // add a return undefined; statement at the end of each method
-            /* BlockStatement block = (BlockStatement)f.Statement;
-            if (block.Statements.Count == 0)
-            {
-                block.Statements.AddLast(new ReturnStatement(new ValueExpression(JsUndefined.TYPEOF)));
-            }
-             */
-
             f.Arguments = functionDeclaration.Parameters;
             if (HasOption(Options.Strict)) {
                 foreach (string arg in f.Arguments) {
@@ -583,6 +574,8 @@ namespace Jint {
 
                 EnterScope(new JsObject());
 
+                JsException jsException = e as JsException ?? new JsException( Global.StringClass.New( e.Message ) );
+
                 // handle thrown exception assignment to a local variable: catch(e)
                 if (statement.Catch.Identifier != null) {
                     // if catch is called, Result contains the thrown value
@@ -598,9 +591,14 @@ namespace Jint {
                     JsObject catchScope = new JsObject();
                     EnterScope(catchScope);
 
-                    statement.Finally.Statement.Accept(this);
-
-                    ExitScope();
+                    try
+                    {
+                        statement.Finally.Statement.Accept(this);
+                    }
+                    finally
+                    {
+                        ExitScope();
+                    }
                 }
             }
 
@@ -700,18 +698,9 @@ namespace Jint {
                     parameters[i] = Result;
                 }
 
-                // TODO: implement construct method inside the JsFunction
-                // Calls the constructor on a brand new object
-                JsObject instance;
+                Result = function.Construct(parameters, null, this);
                 if (function is JsArrayConstructor) {
-                    instance = new JsArray(function.PrototypeProperty);
-                }
                 else {
-                    instance = new JsObject(function.PrototypeProperty);
-                }
-
-                // Once 'new' is called, the result is the new instance, given by the Execute() method on the proper constructor
-                ExecuteFunction(function, instance, parameters);
 
                 return;
             }
@@ -1352,7 +1341,7 @@ namespace Jint {
 
                 try {
                     if (target.Value.GetType().IsArray) {
-                        Result = Global.ObjectClass.New(((Array)target.Value).GetValue((int)Result.ToNumber()));
+                        SetResult(Global.ObjectClass.New(((Array)target.Value).GetValue((int)Result.ToNumber())), target);
                         return;
                     }
                     else {
@@ -1361,21 +1350,21 @@ namespace Jint {
                         PropertyInfo pi = propertyGetter.GetValue(target.Value, "Item", parameters);
 
                         if (pi != null) {
-                            Result = Global.WrapClr(pi.GetValue(target.Value, parameters));
+                            SetResult( Global.WrapClr(pi.GetValue(target.Value, parameters)), target);
                             return;
                         }
                         else {
                             pi = propertyGetter.GetValue(target.Value, Result.ToString());
 
                             if (pi != null) {
-                                Result = Global.WrapClr(pi.GetValue(target.Value, null));
+                                SetResult(Global.WrapClr(pi.GetValue(target.Value, null)), target);
                                 return;
                             }
 
                             FieldInfo fi = fieldGetter.GetValue(target.Value, Result.ToString());
 
                             if (fi != null) {
-                                Result = Global.WrapClr(fi.GetValue(target.Value));
+                                SetResult( Global.WrapClr(fi.GetValue(target.Value)),target );
                                 return;
                             }
                             else {
@@ -1390,10 +1379,10 @@ namespace Jint {
             }
 
             if (target.Class == JsString.TYPEOF) {
-                Result = Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString());
+                SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()),target );
             }
             else {
-                Result = target[Result];
+                SetResult(target[Result],target);
             }
         }
 
@@ -1411,8 +1400,7 @@ namespace Jint {
             }
 
             #region Evaluates parameters
-            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
-            Type[] types = new Type[methodCall.Arguments.Count];
+            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];            
 
 
             if (methodCall.Arguments.Count > 0) {
@@ -1582,6 +1570,7 @@ namespace Jint {
             return Global.HasOption(options);
         }
 
+        //TODO: remove CallFunction from a visitor
         /// <summary>
         /// 
         /// </summary>

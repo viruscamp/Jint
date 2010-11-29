@@ -32,7 +32,20 @@ namespace Jint.Native {
             get { return false; }
         }
 
+        /// <summary>
+        /// Gets a value stored in the descriptor.
+        /// </summary>
+        /// <param name="that">A target object. This has a meaning in case of descriptors which helds an accessors,
+        /// in value descriptors this parameter is ignored.</param>
+        /// <returns>A value stored in the descriptor</returns>
         public abstract JsInstance Get(JsDictionaryObject that);
+
+        /// <summary>
+        /// Sets a value.
+        /// </summary>
+        /// <param name="that">A target object. This has a meaning in case of descriptors which helds an accessors,
+        /// in value descriptors this parameter is ignored.</param>
+        /// <param name="value">A new value which should be stored in the descriptor.</param>
         public abstract void Set(JsDictionaryObject that, JsInstance value);
 
         internal abstract DescriptorType DescriptorType { get; }
@@ -44,7 +57,7 @@ namespace Jint.Native {
         /// <param name="obj"></param>
         /// <returns></returns>
         internal static Descriptor ToPropertyDesciptor(IGlobal global, JsDictionaryObject owner, string name, JsInstance jsInstance) {
-            if (jsInstance.Class != JsObject.TYPEOF) {
+            if (jsInstance.Class != JsInstance.CLASS_OBJECT) {
                 throw new JsException(global.TypeErrorClass.New("The target object has to be an instance of an object"));
             }
 

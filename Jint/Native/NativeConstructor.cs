@@ -12,7 +12,7 @@ namespace Jint.Native
     /// <remarks>
     /// <pre>
     /// When applied to the object, it fills a special slot with new clr object and defines
-    /// new properties according to the netive fields and properties.
+    /// new properties according to the native fields and properties.
     /// </pre>
     /// <pre>
     /// Instance methods are derived through prototype.
@@ -22,7 +22,7 @@ namespace Jint.Native
     /// </pre>
     /// <pre>Generics? hm...</pre>
     /// </remarks>
-    public class ClrConstructor: JsConstructor
+    public class NativeConstructor: JsConstructor
     {
         Type reflectedType;
 
@@ -30,13 +30,14 @@ namespace Jint.Native
         ConstructorInfo[] m_constructors;
         Marshaller m_marshaller;
         NativeOverloadImpl<ConstructorInfo, ConstructorImpl> m_overloads;
+        bool m_isGeneric; // is this type a generic definition
 
-        public ClrConstructor(Type type, IGlobal global) :
+        public NativeConstructor(Type type, IGlobal global) :
             this(type, global, null)
         {
         }
 
-        public ClrConstructor(Type type, IGlobal global, JsObject PrototypePrototype) :
+        public NativeConstructor(Type type, IGlobal global, JsObject PrototypePrototype) :
             base(global)
         {
             if (type == null)
@@ -47,10 +48,14 @@ namespace Jint.Native
             reflectedType = type;
             Name = type.FullName;
 
+            m_isGeneric = type.IsGenericTypeDefinition;
+
             if (!type.IsAbstract)
             {
                 m_constructors = type.GetConstructors();
             }
+
+            DefineOwnProperty(PROTOTYPE, PrototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this,PrototypePrototype), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
 
             m_overloads = new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>(
                 m_marshaller,
@@ -58,6 +63,7 @@ namespace Jint.Native
                 new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>.WrapMmemberDelegate(this.WrapMember)
             );
 
+            // if this is a value type, define a default constructor
             if (type.IsValueType)
             {
                 m_overloads.DefineCustomOverload(
@@ -65,13 +71,14 @@ namespace Jint.Native
                     new Type[0],
                     (ConstructorImpl)Delegate.CreateDelegate(
                         typeof(ConstructorImpl),
-                        typeof(ClrConstructor).GetMethod("CreateStruct", BindingFlags.NonPublic | BindingFlags.Static ).MakeGenericMethod(type)
+                        typeof(NativeConstructor).GetMethod("CreateStruct", BindingFlags.NonPublic | BindingFlags.Static ).MakeGenericMethod(type)
                     )
                 );
             }
 
             // now we should find all static members and add them as a properties
 
+            // members are grouped by their names
             Dictionary< string, LinkedList<MethodInfo> > members = new Dictionary<string,LinkedList<MethodInfo>>();
 
             foreach (var info in type.GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public))
@@ -81,16 +88,18 @@ namespace Jint.Native
                 members[info.Name].AddLast(info);
             }
 
+            // add the members to the object
             foreach (var pair in members)
             {
                 DefineOwnProperty(
                     pair.Key,
                     (
                     pair.Value.Count > 1 ?
+                        // if we have overloaded methods
                         (JsFunction)new NativeMethodOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
+                        // if we have only one method
                         (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global)
-                    ),
-                    PropertyAttributes.DontEnum
+                    )
                 );
             }
 
@@ -98,9 +107,17 @@ namespace Jint.Native
             foreach (var info in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
                 DefineOwnProperty(info.Name, Global.Marshaller.MarshalPropertyInfo(info, this));
             
-
             foreach (var info in type.GetFields(BindingFlags.Static | BindingFlags.Public))
                 DefineOwnProperty(info.Name, Global.Marshaller.MarshalFieldInfo(info, this));
+
+            if (type.IsEnum)
+            {
+                string[] names = Enum.GetNames(type);
+                object[] values = (object[])Enum.GetValues(type);
+
+                for (int i = 0; i < names.Length; i++)
+                    DefineOwnProperty(names[i], Global.ObjectClass.New(values[i], PrototypeProperty));
+            }
 
             // find all nested types
             foreach (var info in type.GetNestedTypes(BindingFlags.Public))
@@ -118,7 +135,7 @@ namespace Jint.Native
             foreach (var info in type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) )
                 m_properties.AddLast(global.Marshaller.MarshalFieldInfo(info,this));
 
-            DefineOwnProperty(PROTOTYPE, PrototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this,PrototypePrototype), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            
 
         }
 
@@ -157,14 +174,29 @@ namespace Jint.Native
             proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString",new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
         }
 
+        /// <summary>
+        /// A helper which conforms a ConstrutorImpl signature and used as a default constructor for the value types
+        /// </summary>
+        /// <typeparam name="T">A value type</typeparam>
+        /// <param name="global">global object</param>
+        /// <param name="args">Constructor args, ignored</param>
+        /// <returns>A new boxed value objec of type T</returns>
         static object CreateStruct<T>(IGlobal global,JsInstance[] args) where T : struct
         {
             return new T();
         }
 
+
+        /// <summary>
+        /// Peforms a construction of a CLR instance inside the specified 
+        /// </summary>
+        /// <param name="visitor"></param>
+        /// <param name="that"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
-            if (that == null || that == JsUndefined.Instance || that == JsNull.Instance)
+            if (that == null || that == JsUndefined.Instance || that == JsNull.Instance || that is JsGlobal)
                 throw new JintException("A constructor '" + reflectedType.FullName + "' should be applied to the object");
 
             if (that.Value != null)
@@ -211,7 +243,25 @@ namespace Jint.Native
 
         protected IEnumerable<ConstructorInfo> GetMembers(Type[] genericArguments, int argCount)
         {
-            return Array.FindAll(m_constructors, con => con.GetParameters().Length == argCount);
+            if (!m_isGeneric)
+            {
+                if (m_constructors == null)
+                    return new ConstructorInfo[0];
+
+                return Array.FindAll(m_constructors, con => con.GetParameters().Length == argCount);
+            }
+            else
+            {
+                if (genericArguments != null && reflectedType.GetGenericArguments().Length == genericArguments.Length)
+                {
+                    Type specialized = reflectedType.MakeGenericType(genericArguments);
+                    return Array.FindAll(specialized.GetConstructors(), con => con.GetParameters().Length == argCount);
+                }
+                else
+                {
+                    return new ConstructorInfo[0];
+                }
+            }
         }
     }
 }

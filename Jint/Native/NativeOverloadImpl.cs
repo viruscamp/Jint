@@ -5,6 +5,11 @@ using System.Reflection;
 
 namespace Jint.Native
 {
+    /// <summary>
+    /// This class is used in the overload implementation for the NativeConstructor and NativeOverloadImplementation
+    /// </summary>
+    /// <typeparam name="TMemberInfo">A Member info type</typeparam>
+    /// <typeparam name="TImpl">An implementation details type</typeparam>
     public class NativeOverloadImpl<TMemberInfo, TImpl>
         where TMemberInfo : MethodBase
         where TImpl : class

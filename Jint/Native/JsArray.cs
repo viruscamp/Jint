@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Jint.Marshal;
 
 namespace Jint.Native {
     [Serializable]
@@ -186,6 +187,7 @@ namespace Jint.Native {
 
         #region array specific methods
 
+        [RawJsMethod]
         public JsArray concat(IGlobal global, JsInstance[] args) {
             var newData = new SortedList<int, JsInstance>(m_data);
             int offset = length;
@@ -242,20 +244,30 @@ namespace Jint.Native {
             return String.Join(",", values);
         }
 
+        IEnumerable<string> baseGetKeys()
+        {
+            return base.GetKeys();
+        }
+
         public override IEnumerable<string> GetKeys() {
             var keys = m_data.Keys;
             for (int i = 0; i < keys.Count; i++)
                 yield return keys[i].ToString();
 
-            foreach (var key in base.GetKeys())
+            foreach (var key in baseGetKeys()) 
                 yield return key;
+        }
+
+        IEnumerable<JsInstance> baseGetValues()
+        {
+            return base.GetValues();
         }
 
         public override IEnumerable<JsInstance> GetValues() {
             var vals = m_data.Values;
             for (int i = 0; i < vals.Count; i++)
                 yield return vals[i];
-            foreach (var val in base.GetValues())
+            foreach (var val in baseGetValues())
                 yield return val;
         }
 
@@ -277,12 +289,5 @@ namespace Jint.Native {
         public override bool Equals(object obj) {
             return this == obj;
         }
-
-        public const string TYPEOF = "object";
-
-        public override string Class {
-            get { return TYPEOF; }
-        }
-
     }
 }

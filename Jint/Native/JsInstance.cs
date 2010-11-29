@@ -46,11 +46,29 @@ namespace Jint.Native {
         }
 
         public override int GetHashCode() {
-            return Value.GetHashCode();
+            return Value != null ? Value.GetHashCode() : base.GetHashCode();
         }
+
+        public const string CLASS_OBJECT = "object";
+        public const string CLASS_NUMBER = "number";
+        public const string CLASS_STRING = "string";
+        public const string CLASS_BOOLEAN = "boolean";
+        public const string CLASS_FUNCTION = "function";
+        public const string CLASS_UNDEFINED = "undefined";
 
         public abstract string Class { get; }
 
+        /// <summary>
+        /// This is a shortcut to a function call by name.
+        /// </summary>
+        /// <remarks>
+        /// Since this method requires a visitor it's not a very usefull, so this method is deprecated.
+        /// </remarks>
+        /// <param name="visitor"></param>
+        /// <param name="function"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        [Obsolete("will be removed in the 1.2 version",true)]
         public virtual object Call(IJintVisitor visitor, string function, params JsInstance[] parameters) {
             if (function == "toString")
                 return visitor.Global.StringClass.New(ToString());

@@ -1108,9 +1108,9 @@ var fakeButton = new Test.FakeButton();");
             .SetDebugMode(true)
             .SetParameter("a", values);
 
-            Assert.AreEqual(3, jint.Run("return a[1];"));
+            Assert.AreEqual(3, jint.Run("a[1];"));
             jint.Run("a[1] = 4");
-            Assert.AreEqual(4, jint.Run("return a[1];"));
+            Assert.AreEqual(4, jint.Run("a[1];"));
             Assert.AreEqual(4, values[1]);
 
         }

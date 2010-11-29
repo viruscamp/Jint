@@ -57,7 +57,7 @@ namespace Jint.Native {
         }
 
         //13.2.2
-        public virtual JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor) {
+        public virtual JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
             var instance = visitor.Global.ObjectClass.New(PrototypeProperty);
             visitor.ExecuteFunction(this, instance, parameters);
 

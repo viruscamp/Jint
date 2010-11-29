@@ -182,10 +182,10 @@ namespace Jint.Native {
         public JsInstance ConcatImpl(JsDictionaryObject target, JsInstance[] parameters) {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(target.Call(Global.Visitor, "toString").ToString());
+            sb.Append(target.ToString());
 
             for (int i = 0; i < parameters.Length; i++) {
-                sb.Append(parameters[i].Call(Global.Visitor, "toString").ToString());
+                sb.Append(parameters[i].ToString());
             }
 
             return Global.StringClass.New(sb.ToString());
@@ -197,7 +197,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <returns></returns>
         public JsInstance IndexOfImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            string source = target.Call(Global.Visitor, "toString").ToString();
+            string source = target.ToString();
             string searchString = parameters[0].ToString();
             int position = parameters.Length > 1 ? (int)parameters[1].ToNumber() : 0;
 
@@ -223,7 +223,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <returns></returns>
         public JsInstance LastIndexOfImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            string source = target.Call(Global.Visitor, "toString").ToString();
+            string source = target.ToString();
             string searchString = parameters[0].ToString();
             int position = parameters.Length > 1 ? (int)parameters[1].ToNumber() : source.Length;
 
@@ -410,7 +410,7 @@ namespace Jint.Native {
         /// <returns></returns>
         public JsInstance SplitImpl(JsDictionaryObject target, JsInstance[] parameters) {
             JsObject A = Global.ArrayClass.New();
-            string S = target.Call(Global.Visitor, "toString").ToString();
+            string S = target.ToString();
 
             if (parameters.Length == 0 || parameters[0] == JsUndefined.Instance) {
                 A["0"] = Global.StringClass.New(S);
@@ -442,7 +442,7 @@ namespace Jint.Native {
         /// <param name="parameters"></param>
         /// <returns></returns>
         public JsInstance SubstringImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            string str = target.Call(Global.Visitor, "toString").ToString();
+            string str = target.ToString();
             int start = 0, end = str.Length;
 
             if (parameters.Length > 0 && !double.IsNaN(parameters[0].ToNumber())) {
@@ -461,7 +461,7 @@ namespace Jint.Native {
         }
 
         public JsInstance SubstrImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            string str = target.Call(Global.Visitor, "toString").ToString();
+            string str = target.ToString();
             int start = 0, end = str.Length;
 
             if (parameters.Length > 0 && !double.IsNaN(parameters[0].ToNumber())) {
@@ -516,7 +516,7 @@ namespace Jint.Native {
         /// <param name="parameters"></param>
         /// <returns></returns>
         public JsInstance ToLocaleUpperCaseImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            string str = target.Call(Global.Visitor, "toString").ToString();
+            string str = target.ToString();
             return Global.StringClass.New(str.ToUpper());
         }
 
@@ -526,7 +526,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <returns></returns>
         public JsInstance LengthImpl(JsDictionaryObject target) {
-            string str = target.Call(Global.Visitor, "toString").ToString();
+            string str = target.ToString();
             return Global.NumberClass.New(str.Length);
         }
 

@@ -9,8 +9,6 @@ namespace Jint.Native
     public class NativeMethodOverload : JsFunction
     {
 
-        
-
         class MethodMatch
         {
             public MethodInfo method;

@@ -5,6 +5,10 @@ using System.Text;
 namespace Jint.Native {
     [Serializable]
     public class JsObject : JsDictionaryObject {
+
+        public JsFunction indexerGetter;
+        public JsFunction indexerSetter;
+        
         public JsObject() {
         }
 
@@ -13,21 +17,14 @@ namespace Jint.Native {
             this.value = value;
         }
 
-        public JsObject(JsFunction constructor)
-            : base(constructor.PrototypeProperty) {
-        }
-
         public JsObject(JsObject prototype)
             : base(prototype) {
         }
 
-        public const string TYPEOF = "Object";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_OBJECT; }
         }
 
-        // TODO: make ability to store a multiple native instances
         protected object value;
 
         public override object Value {
@@ -39,6 +36,7 @@ namespace Jint.Native {
             return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this);
         }
 
+        #region primitive operations
         public override JsInstance ToPrimitive(IGlobal global) {
             switch (Convert.GetTypeCode(value)) {
                 case TypeCode.Boolean:
@@ -155,5 +153,6 @@ namespace Jint.Native {
 
             return value.ToString();
         }
+        #endregion
     }
 }

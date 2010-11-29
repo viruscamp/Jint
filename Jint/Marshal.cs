@@ -32,9 +32,9 @@ namespace Jint
     {
 
         IGlobal m_global;
-        Dictionary<Type, ClrConstructor> m_typeCache = new Dictionary<Type,ClrConstructor>();
+        Dictionary<Type, NativeConstructor> m_typeCache = new Dictionary<Type,NativeConstructor>();
         Dictionary<Type, Delegate> m_arrayMarshllers = new Dictionary<Type, Delegate>();
-        ClrConstructor m_typeType;
+        NativeConstructor m_typeType;
 
         /* Assuming that Object supports IConvertable
          *
@@ -74,7 +74,7 @@ namespace Jint
         public void InitTypes()
         {
             // we cant initize a m_typeType property since m_global.Marshller should be initialized
-            m_typeType = new ClrConstructor(typeof(Type), m_global);
+            m_typeType = new NativeConstructor(typeof(Type), m_global);
             m_typeType.SetupNativeProperties(m_typeType);
 
             m_typeCache[typeof(Type)] = m_typeType;
@@ -119,32 +119,34 @@ namespace Jint
             }
             else
             {
+                // we can't use a value.GetType(), becouse we can get a type which we can't reflect,
+                // for example a RuntimeType instead a Type.
                 return MarshalType(typeof(T)).Wrap(value);
             }
         }
 
         public JsConstructor MarshalType(Type t)
         {
-            ClrConstructor res;
+            NativeConstructor res;
             if (m_typeCache.TryGetValue(t, out res))
                 return res;
             
             return m_typeCache[t] = CreateConstructor(t);
         }
 
-        ClrConstructor CreateConstructor(Type t)
+        NativeConstructor CreateConstructor(Type t)
         {
-            ClrConstructor res;
-            res = new ClrConstructor(t, m_global);
+            NativeConstructor res;
+            res = new NativeConstructor(t, m_global);
             res.InitPrototype(m_global);
             m_typeType.SetupNativeProperties(res);
             return res;
         }
 
-        ClrConstructor CreateConstructor(Type t, JsObject prototypeProperty)
+        NativeConstructor CreateConstructor(Type t, JsObject prototypeProperty)
         {
-            ClrConstructor res;
-            res = new ClrConstructor(t, m_global,prototypeProperty);
+            NativeConstructor res;
+            res = new NativeConstructor(t, m_global,prototypeProperty);
             res.InitPrototype(m_global);
             m_typeType.SetupNativeProperties(res);
             return res;
@@ -223,6 +225,16 @@ namespace Jint
             }
         }
 
+        /// <summary>
+        /// This is a temporary solution... Used when calling a members on value types.
+        /// </summary>
+        /// <remarks>
+        /// This method used to get a reference to the boxed value type, then a reference is
+        /// unboxed to managed pointer and then is used as the first argument in a method call.
+        /// </remarks>
+        /// <typeparam name="T">Type of value type, which we desire to get</typeparam>
+        /// <param name="value">A js value which should be marshalled</param>
+        /// <returns>A reference to a boxed value</returns>
         public object MarshalJsValueBoxed<T>(JsInstance value)
         {
             if (value.Value is T)
@@ -234,7 +246,7 @@ namespace Jint
 
         /// <summary>
         /// Gets a type of a native object represented by the current JsInstance.
-        /// If JsInstance is a pure JsObject than returns a native type of this object itself.
+        /// If JsInstance is a pure JsObject than returns a type of js object itself.
         /// </summary>
         /// <remarks>
         /// If a value is a wrapper around native value (like String, Number or a marshaled native value)
@@ -647,6 +659,22 @@ namespace Jint
             code.Emit(OpCodes.Ret);
 
             return (JsSetter)dm.CreateDelegate(typeof(JsSetter), this);
+        }
+
+        public JsIndexerGetter WrapIndexerGetter(MethodInfo getMethod)
+        {
+            DynamicMethod dm = new DynamicMethod("dynamicIndexerGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
+
+            ILGenerator code = dm.GetILGenerator();
+
+            if (!getMethod.IsStatic)
+            {
+
+            }
+
+            code.Emit(OpCodes.Ret);
+
+            return (JsIndexerGetter)dm.CreateDelegate(typeof(JsIndexerGetter), this);
         }
 
         /// <summary>

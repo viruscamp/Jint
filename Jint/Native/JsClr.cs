@@ -97,13 +97,14 @@ namespace Jint.Native {
             }
         }
 
+        //TODO: replace this method, with normal marshalling
         /// <summary>
         /// Converts a JsInstance object to its CLR equivalence
         /// </summary>
         /// <param name="parameter">The object to convert</param>
         /// <returns>A CLR object</returns>
         public static object ConvertParameter(JsInstance parameter) {
-            if (parameter.Class != JsFunction.TYPEOF && parameter.Class != JsArray.TYPEOF) {
+            if (parameter.Class != JsFunction.TYPEOF && ! ( parameter is JsArray ) && !( parameter is JsDate )) {
                 return parameter.Value;
             }
 

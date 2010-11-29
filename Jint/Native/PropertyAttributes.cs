@@ -28,14 +28,6 @@ namespace Jint.Native {
         /// Attempts to delete the property will be ignored. See the description of the
         /// delete operator in section 11.4.1.
         /// </summary>
-        DontDelete = 4,
-
-        /// <summary>
-        /// Internal properties have no name and are not directly accessible via the property
-        /// accessor operators. How these properties are accessed is implementation specific.
-        /// How and when some of these properties are used is specified by the language
-        /// specification.        
-        /// </summary>
-        Internal = 8
+        DontDelete = 4
     }
 }

@@ -317,6 +317,7 @@ namespace Jint.Native {
 
         }
 
+        [Obsolete("will be removed in 1.2",true)]
         public override object Call(IJintVisitor visitor, string function, params JsInstance[] parameters) {
             visitor.ExecuteFunction(this[function] as JsFunction, this, parameters);
             return visitor.Returned;

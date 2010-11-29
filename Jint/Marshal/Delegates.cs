@@ -23,7 +23,7 @@ namespace Jint.Marshal
     public delegate object ConstructorImpl(IGlobal global, JsInstance[] parameters);
 
     /// <summary>
-    /// A wrapper around native property getter
+    /// A wrapper around native property getter.
     /// </summary>
     /// <param name="that">A target object</param>
     /// <returns>A value of a property</returns>
@@ -37,43 +37,19 @@ namespace Jint.Marshal
     public delegate void JsSetter(JsDictionaryObject that, JsInstance value);
 
     /// <summary>
-    /// A delegate representing a property getter for a reference type
+    /// A wrapper around native indexer getter
     /// </summary>
-    /// <typeparam name="TTarget">A type of a target object</typeparam>
-    /// <typeparam name="TVal">A type of a property</typeparam>
-    /// <param name="that">A target object</param>
-    /// <returns>A value of a property</returns>
-    public delegate TVal NativeGetter<TTarget, TVal>(TTarget that);
+    /// <param name="that">A target js object</param>
+    /// <param name="index">index</param>
+    /// <returns>A value at the specified index</returns>
+    public delegate JsInstance JsIndexerGetter(JsInstance that, JsInstance index);
 
     /// <summary>
-    /// A delegate representing a property getter for a value type
+    /// A wrapper around native indexer setter
     /// </summary>
-    /// <typeparam name="TTarget">A type of a target object</typeparam>
-    /// <typeparam name="TVal">A type of a property</typeparam>
-    /// <param name="that">A target object</param>
-    /// <returns>A value of a property</returns>
-    public delegate TVal NativeGetterByRef<TTarget, TVal>(ref TTarget that);
-
-    /// <summary>
-    /// A delegate representing a property setter for a reference types
-    /// </summary>
-    /// <typeparam name="TTarget">A type of a target object</typeparam>
-    /// <typeparam name="TVal">A type of a property</typeparam>
-    /// <param name="that">A target object</param>
-    /// <param name="value">A value of a property</param>
-    public delegate void NativeSetter<TTarget, TVal>(TTarget that, TVal value);
-
-    /// <summary>
-    /// A delegate representing a property setter for a value types
-    /// </summary>
-    /// <typeparam name="TTarget">A type of a target object</typeparam>
-    /// <typeparam name="TVal">A type of a property</typeparam>
-    /// <param name="that">A target object</param>
-    /// <param name="value">A value of a property</param>
-    public delegate void NativeSetterByRef<TTarget, TVal>(ref TTarget that, TVal value);
-
-    public delegate void StaticNativeSetter<TVal>(TVal value);
-
-    public delegate TVal StaticNativeGetter<TVal>();
+    /// <param name="that">A target js object</param>
+    /// <param name="index">index</param>
+    /// <param name="value">A value which should be set at the specified index</param>
+    public delegate void JsIndexerSetter(JsInstance that, JsInstance index,JsInstance value);
 
 }

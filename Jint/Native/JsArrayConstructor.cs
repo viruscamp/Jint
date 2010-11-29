@@ -42,7 +42,7 @@ namespace Jint.Native {
             return array;
         }
 
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor) {
+        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
             var instance = visitor.Global.ArrayClass.New();
             visitor.ExecuteFunction(this, instance, parameters);
 
@@ -177,7 +177,7 @@ namespace Jint.Native {
                 r = new StringBuilder(string.Empty);
             }
             else {
-                r = new StringBuilder(element0.Call(Global.Visitor, "toString").ToString());
+                r = new StringBuilder(element0.ToString());
             }
 
             var length = target["length"].ToNumber();
@@ -186,7 +186,7 @@ namespace Jint.Native {
                 r.Append(separator);
                 JsInstance element = target[k.ToString()];
                 if (element != JsUndefined.Instance && element != JsNull.Instance)
-                    r.Append(element.Call(Global.Visitor, "toString").ToString());
+                    r.Append(element.ToString());
             }
             return Global.StringClass.New(r.ToString());
         }

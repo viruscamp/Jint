@@ -67,6 +67,11 @@ namespace Jint.Native {
             return new JsObject(value, this.PrototypeProperty);
         }
 
+        public JsObject New(object value, JsObject prototype)
+        {
+            return new JsObject(value, prototype);
+        }
+
         public JsObject New() {
             return New((object)null);
         }
@@ -123,7 +128,7 @@ namespace Jint.Native {
 
         // 15.2.4.6
         public JsInstance IsPrototypeOfImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            if (target.Class != JsObject.TYPEOF) {
+            if (target.Class != JsInstance.CLASS_OBJECT) {
                 return Global.BooleanClass.False;
             }
 
@@ -155,14 +160,14 @@ namespace Jint.Native {
         /// </summary>
         /// <returns></returns>
         public JsInstance GetPrototypeOfImpl(JsInstance[] parameters) {
-            if (parameters[0].Class != JsObject.TYPEOF)
+            if (parameters[0].Class != JsInstance.CLASS_OBJECT)
                 throw new JsException(Global.TypeErrorClass.New());
             // TODO: read 15.2.3.2 and implement
             return JsNull.Instance;
         }
 
         public override string ToString() {
-            return JsObject.TYPEOF;
+            return JsInstance.CLASS_OBJECT;
         }
 
         /// <summary>

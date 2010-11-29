@@ -896,7 +896,7 @@ namespace Jint.Native {
                 if (parameters[i] == JsUndefined.Instance  // undefined
                     || (parameters[i].Class == JsNumber.TYPEOF && double.IsNaN(parameters[i].ToNumber())) // NaN
                     || (parameters[i].Class == JsNumber.TYPEOF && double.IsInfinity(parameters[i].ToNumber())) // Infinity
-                    || parameters[i].Class == JsObject.TYPEOF
+                    //|| parameters[i].Class == JsInstance.CLASS_OBJECT // don't accept objects ???!
                     ) {
                     return Global.NaN;
                 }

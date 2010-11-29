@@ -6,7 +6,6 @@ using Jint.Native;
 
 namespace Jint {
     class CachedMethodInvoker : IMethodInvoker {
-    // TODO: Useing reflections is EXTREMELY slow
         private readonly ExecutionVisitor _visitor;
 
         readonly Dictionary<string, Dictionary<string, MethodInfo>> _cache = new Dictionary<string, Dictionary<string, MethodInfo>>();

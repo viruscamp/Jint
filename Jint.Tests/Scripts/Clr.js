@@ -1,5 +1,5 @@
 ﻿// comparing clr and js
-assert(true, new Date(0) == new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
+assert(true, new Date(0) != new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 assert(true, new Date(0) < new System.DateTime(1971, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 assert(true, new Date(0) > new System.DateTime(1969, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 

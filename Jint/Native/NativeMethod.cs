@@ -4,6 +4,7 @@ using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 using Jint.Marshal;
+using Jint.Expressions;
 
 namespace Jint.Native
 {
@@ -58,7 +59,7 @@ namespace Jint.Native
             return that;
         }
 
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, ExecutionVisitor visitor)
+        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
         {
             throw new JintException("This method can't be used as a constructor");
         }

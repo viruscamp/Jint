@@ -951,7 +951,7 @@ namespace Jint {
                             else if (x.Class == JsBoolean.TYPEOF) {
                                 return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
                             }
-                            else if (x.Class == JsObject.TYPEOF) {
+                            else if (x.Class == JsInstance.CLASS_OBJECT) {
                                 return Global.BooleanClass.New(x == y);
                             }
                             else {
@@ -973,10 +973,10 @@ namespace Jint {
                         else if (x.Class == JsBoolean.TYPEOF || y.Class == JsBoolean.TYPEOF) {
                             return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
                         }
-                        else if (y.Class == JsObject.TYPEOF && (x.Class == JsString.TYPEOF || x.Class == JsNumber.TYPEOF)) {
+                        else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsNumber.TYPEOF)) {
                             return equals(x, y.ToPrimitive(Global));
                         }
-                        else if (x.Class == JsObject.TYPEOF && (y.Class == JsString.TYPEOF || y.Class == JsNumber.TYPEOF)) {
+                        else if (x.Class == JsInstance.CLASS_OBJECT && (y.Class == JsString.TYPEOF || y.Class == JsNumber.TYPEOF)) {
                             return equals(x.ToPrimitive(Global), y);
                         }
                         else {
@@ -1523,7 +1523,8 @@ namespace Jint {
                     new LinkedDescriptor(
                         functionScope,
                         function.Arguments[i],
-                        args.GetDescriptor(i.ToString())
+                        args.GetDescriptor(i.ToString()),
+                        args
                     )
                 );
 

@@ -552,6 +552,11 @@ namespace Jint {
 
             if (!found) {
                 statement.DefaultStatements.Accept(this);
+
+                // handle break statements in default case by clearing it
+                if (breakStatement != null) {
+                    breakStatement = null;
+                }
             }
         }
 

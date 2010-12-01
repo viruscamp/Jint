@@ -8,6 +8,7 @@ using Jint.Expressions;
 
 namespace Jint.Native {
     [Serializable]
+    // TODO: obsolete
     public sealed class JsClr : JsObject {
         private IGlobal global;
         private IPropertyGetter propertyGetter;
@@ -17,9 +18,9 @@ namespace Jint.Native {
         public JsClr(IJintVisitor visitor, JsObject prototype)
             : base(prototype) {
             this.global = visitor.Global;
-            this.propertyGetter = visitor.PropertyGetter;
+            /*this.propertyGetter = visitor.PropertyGetter;
             this.methodGetter = visitor.MethodGetter;
-            this.fieldGetter = visitor.FieldGetter;
+            this.fieldGetter = visitor.FieldGetter;*/
             value = null;
 
         }

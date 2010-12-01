@@ -14,11 +14,11 @@ namespace Jint {
     [Serializable]
     public class ExecutionVisitor : IStatementVisitor, IJintVisitor, IDeserializationCallback {
         struct ResultInfo {
-            // When the last result is a base object
             public JsDictionaryObject baseObject;
             public JsInstance result;
         }
 
+        /*
         [NonSerialized]
         protected internal IFieldGetter fieldGetter;
         [NonSerialized]
@@ -28,6 +28,7 @@ namespace Jint {
         [NonSerialized]
         protected internal IConstructorInvoker constructorInvoker;
         [NonSerialized]
+        */
         protected internal ITypeResolver typeResolver;
 
         public IGlobal Global { get; private set; }
@@ -90,11 +91,15 @@ namespace Jint {
         }
 
         public ExecutionVisitor(Options options) {
+            /* TODO: cleanup
             methodInvoker = new CachedMethodInvoker(this);
             propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
             constructorInvoker = new CachedConstructorInvoker(methodInvoker);
-            typeResolver = new CachedTypeResolver();
+            
             fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
+            */
+
+            typeResolver = new CachedTypeResolver();
 
             Global = new JsGlobal(this, options);
             GlobalScope = new JsScope(Global as JsObject);
@@ -646,9 +651,9 @@ namespace Jint {
 
             // don't even try if there is a generic type specifier
 
-            if (expression.Generics.Count == 0) {
+            //if (expression.Generics.Count == 0) {
                 expression.Expression.Accept(this);
-            }
+            //}
 
             if (Result != null && Result.Class == JsFunction.TYPEOF) {
                 JsFunction function = (JsFunction)Result;
@@ -1366,6 +1371,7 @@ namespace Jint {
                 return;
             }
 
+            /* TODO: clenup
             // Search for .NET property or method
             if (callTarget != null && callTarget.IsClr && callTarget.Value != null) {
                 EnsureClrAllowed();
@@ -1424,7 +1430,7 @@ namespace Jint {
 
                     throw new JintException("Invalid property name: " + propertyName);
                 }
-            }
+            } */
 
             if (Result == null && typeFullname.Length > 0) {
                 typeFullname.Append('.').Append(propertyName);
@@ -1467,8 +1473,8 @@ namespace Jint {
 
 
             // Search for .NET property or method
-            // TODO: migrate Clr handling to JsScope or to the object
-            if (CurrentScope.IsClr && CurrentScope.Value != null) {
+            // TODO: cleanup
+            /*if (CurrentScope.IsClr && CurrentScope.Value != null) {
                 EnsureClrAllowed();
 
                 var propertyInfo = propertyGetter.GetValue(CurrentScope.Value, propertyName);
@@ -1486,7 +1492,7 @@ namespace Jint {
                 // Not a property, then must be a method
                 Result = new JsClrMethodInfo(propertyName);
                 return;
-            }
+            }*/
 
             JsInstance result = null;
             if (CurrentScope.TryGetProperty(propertyName, out result)) {
@@ -1564,15 +1570,19 @@ namespace Jint {
         #region IDeserializationCallback Members
 
         public void OnDeserialization(object sender) {
+            /*
             this.methodInvoker = new CachedMethodInvoker(this);
             this.propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
             this.constructorInvoker = new CachedConstructorInvoker(methodInvoker);
-            this.typeResolver = new CachedTypeResolver();
+            
             this.fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
+            */
+            this.typeResolver = new CachedTypeResolver();
         }
 
         #endregion
 
+        /* TODO: cleanup
         #region IJintVisitor Members
 
         public IPropertyGetter PropertyGetter {
@@ -1588,5 +1598,6 @@ namespace Jint {
         }
 
         #endregion
+        */
     }
 }

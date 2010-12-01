@@ -677,6 +677,22 @@ namespace Jint
             return (JsIndexerGetter)dm.CreateDelegate(typeof(JsIndexerGetter), this);
         }
 
+        public JsIndexerSetter WrapIndexerSetter(MethodInfo getMethod)
+        {
+            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
+
+            ILGenerator code = dm.GetILGenerator();
+
+            if (!getMethod.IsStatic)
+            {
+
+            }
+
+            code.Emit(OpCodes.Ret);
+
+            return (JsIndexerSetter)dm.CreateDelegate(typeof(JsIndexerSetter), this);
+        }
+
         /// <summary>
         /// Marshals a native property to a descriptor
         /// </summary>

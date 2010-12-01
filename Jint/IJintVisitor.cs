@@ -46,9 +46,11 @@ namespace Jint.Expressions {
     }
 
     public interface IJintVisitor {
+        /* TODO: cleanup
         IPropertyGetter PropertyGetter { get; }
         IMethodInvoker MethodGetter { get; }
         IFieldGetter FieldGetter { get; }
+        */ 
 
         bool DebugMode { get; }
 

@@ -112,12 +112,13 @@ namespace Jint.Native
 
             if (type.IsEnum)
             {
-                /*string[] names = Enum.GetNames(type);
-                object[] values = (object[])Enum.GetValues(type);
+                string[] names = Enum.GetNames(type);
+                object[] values = new object[names.Length];
+                Enum.GetValues(type).CopyTo(values,0);
 
                 for (int i = 0; i < names.Length; i++)
                     DefineOwnProperty(names[i], Global.ObjectClass.New(values[i], PrototypeProperty));
-                */
+                
             }
 
             // find all nested types

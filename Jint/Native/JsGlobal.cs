@@ -325,52 +325,7 @@ namespace Jint.Native {
         }
 
         public JsObject WrapClr(object value) {
-            if (value == null) {
-            // don't wrap a js objects
-            if (value is JsObject)
-                return (JsObject)value;
-
-                return new JsClr(Visitor, null, JsNull.Instance);
-            }
-
-            JsObject proto;
-
-            switch (Convert.GetTypeCode(value)) {
-                case TypeCode.Boolean:
-                    proto = BooleanClass.PrototypeProperty;
-                    break;
-                case TypeCode.Char:
-                case TypeCode.String:
-                    proto = StringClass.PrototypeProperty;
-                    break;
-                case TypeCode.DateTime:
-                    proto = DateClass.PrototypeProperty;
-                    break;
-                case TypeCode.Byte:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    proto = NumberClass.PrototypeProperty;
-                    break;
-                case TypeCode.Object:
-                case TypeCode.DBNull:
-                case TypeCode.Empty:
-                default:
-                    if (value is System.Collections.IEnumerable)
-                        proto = ArrayClass.PrototypeProperty;
-                    else
-                        proto = ObjectClass.PrototypeProperty;
-                    break;
-            }
-
-            return new JsClr(Visitor, value, proto);
+            return (JsObject)Marshaller.MarshalClrValue<object>(value);
         }
 
         public bool HasOption(Options options) {

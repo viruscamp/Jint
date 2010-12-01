@@ -269,7 +269,7 @@ namespace Jint {
                 visitor.Step -= OnStep;
             }
 
-            return visitor.Result == null ? null : unwrap ? JsClr.ConvertParameter(visitor.Result) : visitor.Result;
+            return visitor.Result == null ? null : unwrap ? visitor.Global.Marshaller.MarshalJsValue<object>( visitor.Result) : visitor.Result;
         }
 
         #region Debugger
@@ -379,8 +379,8 @@ namespace Jint {
         }
 
         public object CallFunction(JsFunction function, params object[] args) {
-            visitor.ExecuteFunction(function, null, JsClr.ConvertParametersBack(visitor, args));
-            return JsClr.ConvertParameter(visitor.Returned);
+            visitor.ExecuteFunction(function, null, Array.ConvertAll<object,JsInstance>( args, x => visitor.Global.Marshaller.MarshalClrValue<object>(x) ));
+            return visitor.Global.Marshaller.MarshalJsValue<object>(visitor.Returned);
         }
 
         public JintEngine SetFunction(string name, Delegate function) {

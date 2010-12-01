@@ -121,7 +121,7 @@ namespace Jint
             {
                 // we can't use a value.GetType(), becouse we can get a type which we can't reflect,
                 // for example a RuntimeType instead a Type.
-                return MarshalType(typeof(T)).Wrap(value);
+                return MarshalType(value.GetType()).Wrap(value);
             }
         }
 

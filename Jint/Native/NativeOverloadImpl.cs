@@ -125,7 +125,7 @@ namespace Jint.Native
                     ",",
                     Array.ConvertAll<Type, String>(
                         types ?? new Type[0],
-                        t => t.FullName
+                        t => t == null ? "<null>" : t.FullName
                     )
                 );
         }

@@ -112,11 +112,12 @@ namespace Jint.Native
 
             if (type.IsEnum)
             {
-                string[] names = Enum.GetNames(type);
+                /*string[] names = Enum.GetNames(type);
                 object[] values = (object[])Enum.GetValues(type);
 
                 for (int i = 0; i < names.Length; i++)
                     DefineOwnProperty(names[i], Global.ObjectClass.New(values[i], PrototypeProperty));
+                */
             }
 
             // find all nested types
@@ -227,7 +228,7 @@ namespace Jint.Native
 
         public override JsInstance Wrap<T>(T value)
         {
-            if (!reflectedType.IsAssignableFrom(typeof(T)))
+            if (!reflectedType.IsAssignableFrom(value.GetType()))
                 throw new JintException("Attempt to wrap '" + typeof(T).FullName + "' with '" + reflectedType.FullName+ "'");
             JsObject inst = Global.ObjectClass.New(PrototypeProperty);
             inst.Value = value;

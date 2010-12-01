@@ -243,27 +243,7 @@ namespace Jint {
                 // calculate index expression
                 indexer.Index.Accept(this);
 
-                // The left member might be a CLR instance
-                if (baseObject.IsClr) {
-                    if (baseObject.Value.GetType().IsArray) {
-                        Array array = (Array)baseObject.Value;
-                        array.SetValue(Convert.ChangeType(value.Value, array.GetType().GetElementType()), (int)Result.ToNumber());
-                        return;
-                    }
-                    else // Search custom indexer
-                    {
-                        // Converts to CLR objects
-                        var parameters = JsClr.ConvertParameters(Result, value);
-
-                        PropertyInfo pi = propertyGetter.GetValue(baseObject.Value, "Item", parameters);
-
-                        if (pi != null) {
-                            pi.GetSetMethod().Invoke(baseObject.Value, parameters);
-                            Result = Global.ObjectClass.New(baseObject.Value);
-                            return;
-                        }
-                    }
-                }
+                //TODO: custom indexer
 
                 propertyName = Result.Value.ToString();
             }
@@ -571,10 +551,15 @@ namespace Jint {
             try {
                 statement.Statement.Accept(this);
             }
-            catch (JsException jsException) {
+            catch (Exception e) {
                 ExitScope();
 
                 EnterScope(new JsObject());
+
+                JsException jsException = e as JsException;
+
+                if (jsException == null)
+                    jsException = new JsException(Global.ErrorClass.New(e.Message));
 
                 // handle thrown exception assignment to a local variable: catch(e)
                 if (statement.Catch.Identifier != null) {
@@ -657,26 +642,6 @@ namespace Jint {
 
         public void Visit(NewExpression expression) {
 
-
-            //int scopes = Scopes.Count;
-
-            //foreach (var property in expression.Identifiers)
-            //{
-            //    property.Accept(this);
-
-            //    if (Result == null)
-            //    {
-            //        break;
-            //    }
-
-            //    EnterScope((JsDictionaryObject)Result);
-            //}
-
-            //while (scopes < Scopes.Count)
-            //{
-            //    ExitScope();
-            //}
-
             Result = null;
 
             // don't even try if there is a generic type specifier
@@ -687,6 +652,27 @@ namespace Jint {
 
             if (Result != null && Result.Class == JsFunction.TYPEOF) {
                 JsFunction function = (JsFunction)Result;
+                Type[] genericParameters = null;
+
+                if (expression.Generics.Count > 0)
+                {
+                    genericParameters = new Type[expression.Generics.Count];
+
+                    try
+                    {
+                        int i = 0;
+                        foreach (Expression generic in expression.Generics)
+                        {
+                            generic.Accept(this);
+                            genericParameters[i] = Global.Marshaller.MarshalJsValue<Type>(Result);
+                            i++;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new JintException("A type parameter is required", e);
+                    }
+                }
 
                 // Process parameters
                 JsInstance[] parameters = new JsInstance[expression.Arguments.Count];
@@ -699,126 +685,6 @@ namespace Jint {
                 Result = function.Construct(parameters, null, this);
 
                 return;
-            }
-
-            if (Result != null && Result.IsClr && Result.Value is Type) {
-                Type type = (Type)Result.Value;
-
-                var tempTypeFullname = typeFullname;
-
-                var parameters = new object[expression.Arguments.Count];
-
-                for (int i = 0; i < expression.Arguments.Count; i++) {
-                    typeFullname = new StringBuilder();
-                    expression.Arguments[i].Accept(this);
-                    parameters[i] = JsClr.ConvertParameter(Result);
-                }
-
-                typeFullname = tempTypeFullname;
-
-                var constructor = constructorInvoker.Invoke(type, parameters);
-
-                if (constructor == null) {
-                    // Struct don't reflect their default constructor
-                    if (type.IsValueType) {
-                        PermissionSet.PermitOnly();
-
-                        try {
-                            Result = Global.WrapClr(Activator.CreateInstance(type));
-                        }
-                        finally {
-                            CodeAccessPermission.RevertPermitOnly();
-                        }
-                    }
-                    else {
-                        throw new JintException("Matching constructor not found for: " + type.Name);
-                    }
-                }
-                else {
-
-                    PermissionSet.PermitOnly();
-
-                    try {
-                        Result = Global.WrapClr(constructor.Invoke(parameters));
-                    }
-                    finally {
-                        CodeAccessPermission.RevertPermitOnly();
-                    }
-                }
-            }
-
-            // Try to get identifiers as a CLR type
-            if (Result == null) {
-                EnsureClrAllowed();
-
-                // Process parameters
-                object[] parameters = new object[expression.Arguments.Count];
-
-                for (int i = 0; i < expression.Arguments.Count; i++) {
-                    typeFullname = new StringBuilder();
-                    expression.Arguments[i].Accept(this);
-                    parameters[i] = JsClr.ConvertParameter(Result);
-                }
-
-                expression.Expression.Accept(this);
-
-                var typeBuilder = new StringBuilder(typeFullname.ToString());
-
-                if (expression.Generics.Count > 0) {
-                    List<string> types = new List<string>();
-                    foreach (Expression generic in expression.Generics) {
-                        typeFullname = new StringBuilder();
-                        generic.Accept(this);
-
-                        if (!(Result.Value is Type)) {
-                            throw new JintException("Invalid generic type");
-                        }
-
-                        types.Add(Result.Value.ToString());
-                    }
-
-                    typeBuilder.Append("`").Append(types.Count);
-                    typeBuilder.Append("[");
-                    typeBuilder.Append(String.Join(",", types.ToArray()));
-                    typeBuilder.Append("]");
-                }
-
-                var type = typeResolver.ResolveType(typeBuilder.ToString());
-
-                if (type == null) {
-                    throw new JintException("Unknown type: " + typeBuilder);
-                }
-
-                typeFullname = new StringBuilder();
-
-                var constructor = constructorInvoker.Invoke(type, parameters);
-
-                if (constructor == null) {
-                    // Struct don't reflect their default constructor
-                    if (type.IsValueType) {
-                        PermissionSet.PermitOnly();
-
-                        try {
-                            Result = Global.WrapClr(Activator.CreateInstance(type));
-                        }
-                        finally {
-                            CodeAccessPermission.RevertPermitOnly();
-                        }
-                    }
-                    else {
-                        throw new JintException("Matching constructor not found for: " + typeBuilder);
-                    }
-                }
-                else {
-                    PermissionSet.PermitOnly();
-
-                    try {
-                        Result = Global.WrapClr(constructor.Invoke(parameters));
-                    }
-                    finally {
-                        CodeAccessPermission.RevertPermitOnly();
-                    }
-                }
             }
         }
 
@@ -1330,49 +1196,8 @@ namespace Jint {
 
             indexer.Index.Accept(this);
 
-            if (target.IsClr) {
+            if (target.IsClr)
                 EnsureClrAllowed();
-
-                PermissionSet.PermitOnly();
-
-                try {
-                    if (target.Value.GetType().IsArray) {
-                        SetResult(Global.ObjectClass.New(((Array)target.Value).GetValue((int)Result.ToNumber())), target);
-                        return;
-                    }
-                    else {
-                        var parameters = JsClr.ConvertParameters(Result);
-
-                        PropertyInfo pi = propertyGetter.GetValue(target.Value, "Item", parameters);
-
-                        if (pi != null) {
-                            SetResult(Global.WrapClr(pi.GetValue(target.Value, parameters)), target);
-                            return;
-                        }
-                        else {
-                            pi = propertyGetter.GetValue(target.Value, Result.ToString());
-
-                            if (pi != null) {
-                                SetResult(Global.WrapClr(pi.GetValue(target.Value, null)), target);
-                                return;
-                            }
-
-                            FieldInfo fi = fieldGetter.GetValue(target.Value, Result.ToString());
-
-                            if (fi != null) {
-                                SetResult(Global.WrapClr(fi.GetValue(target.Value)), target);
-                                return;
-                            }
-                            else {
-                                throw new JintException("Index not found: " + Result.ToString());
-                            }
-                        }
-                    }
-                }
-                finally {
-                    CodeAccessPermission.RevertPermitOnly();
-                }
-            }
 
             if (target.Class == JsString.TYPEOF) {
                 SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
@@ -1439,64 +1264,6 @@ namespace Jint {
                 Result = returnInstance;
                 return;
             }
-
-            if (target.Class == JsClrMethodInfo.TYPEOF) {
-                // Fallback to CLR methods
-                object result = null;
-
-                EnsureClrAllowed();
-
-                #region Converts parameters
-                object[] clrParameters = JsClr.ConvertParameters(parameters);
-                #endregion
-
-                JsClrMethodInfo clrMethod = (JsClrMethodInfo)target;
-                try {
-
-                    List<Type> generics = new List<Type>();
-                    if (methodCall.Generics.Count > 0) {
-                        foreach (Expression generic in methodCall.Generics) {
-                            generic.Accept(this);
-
-                            if (!(Result.Value is Type)) {
-                                PermissionSet.PermitOnly();
-                                throw new JintException("Invalid type in generics specifier");
-                            }
-
-                            generics.Add((Type)Result.Value);
-                        }
-                    }
-
-                    MethodInfo methodInfo = methodInvoker.Invoke(that.Value, clrMethod.Value.ToString(), clrParameters, generics.ToArray());
-
-                    PermissionSet.PermitOnly();
-
-                    if (methodInfo == null) {
-                        throw new JintException("Method not found with specified arguments: " + clrMethod.Value.ToString());
-                    }
-
-                    try {
-                        result = methodInfo.Invoke(that.Value, clrParameters);
-                    }
-                    catch (Exception e) {
-                        if (e.InnerException is JsException) {
-                            throw e.InnerException;
-                        }
-
-                        throw;
-                    }
-                }
-                catch (TargetInvocationException e) {
-                    // Extract SecurityExpression if thrown
-                    throw e.InnerException;
-                }
-                finally {
-                    CodeAccessPermission.RevertPermitOnly();
-                }
-
-                Result = Global.WrapClr(result);
-            }
-
         }
 
         public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters) {

@@ -802,7 +802,8 @@ namespace Jint {
                             else if (x == JsNull.Instance) {
                                 return Global.BooleanClass.True;
                             }
-                            else if (x.Class == JsNumber.TYPEOF) {
+                            else if (x.Class == JsInstance.CLASS_NUMBER)
+                            {
                                 if (x.ToNumber() == double.NaN) {
                                     return Global.BooleanClass.False;
                                 }
@@ -835,19 +836,19 @@ namespace Jint {
                         else if (x == JsUndefined.Instance && y == JsNull.Instance) {
                             return Global.BooleanClass.True;
                         }
-                        else if (x.Class == JsNumber.TYPEOF && y.Class == JsString.TYPEOF) {
+                        else if (x.Class == JsInstance.CLASS_NUMBER && y.Class == JsString.TYPEOF) {
                             return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
                         }
-                        else if (x.Class == JsString.TYPEOF && y.Class == JsNumber.TYPEOF) {
+                        else if (x.Class == JsString.TYPEOF && y.Class == JsInstance.CLASS_NUMBER) {
                             return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
                         }
                         else if (x.Class == JsBoolean.TYPEOF || y.Class == JsBoolean.TYPEOF) {
                             return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
                         }
-                        else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsNumber.TYPEOF)) {
+                        else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsInstance.CLASS_NUMBER)) {
                             return equals(x, y.ToPrimitive(Global));
                         }
-                        else if (x.Class == JsInstance.CLASS_OBJECT && (y.Class == JsString.TYPEOF || y.Class == JsNumber.TYPEOF)) {
+                        else if (x.Class == JsInstance.CLASS_OBJECT && (y.Class == JsString.TYPEOF || y.Class == JsInstance.CLASS_NUMBER)) {
                             return equals(x.ToPrimitive(Global), y);
                         }
                         else {
@@ -950,7 +951,7 @@ namespace Jint {
                     else if (left.Class == JsNull.TYPEOF) {
                         Result = Global.BooleanClass.True;
                     }
-                    else if (left.Class == JsNumber.TYPEOF) {
+                    else if (left.Class == JsInstance.CLASS_NUMBER) {
                         if (left == Global.NumberClass["NaN"] || right == Global.NumberClass["NaN"]) {
                             Result = Global.BooleanClass.False;
                         }

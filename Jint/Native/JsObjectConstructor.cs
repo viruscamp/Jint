@@ -53,7 +53,7 @@ namespace Jint.Native {
         /// <returns>new object</returns>
         public JsObject New(JsFunction constructor, JsObject Prototype)
         {
-            JsObject obj = new JsObject(this.PrototypeProperty);
+            JsObject obj = new JsObject(Prototype);
             obj.DefineOwnProperty(CONSTRUCTOR, new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
             return obj;
         }
@@ -88,7 +88,7 @@ namespace Jint.Native {
             if (parameters.Length > 0) {
                 switch (parameters[0].Class) {
                     case JsString.TYPEOF: return Global.StringClass.New(parameters[0].ToString());
-                    case JsNumber.TYPEOF: return Global.NumberClass.New(parameters[0].ToNumber());
+                    case JsInstance.CLASS_NUMBER: return Global.NumberClass.New(parameters[0].ToNumber());
                     case JsBoolean.TYPEOF: return Global.BooleanClass.New(parameters[0].ToBoolean());
                     default:
                         return parameters[0];

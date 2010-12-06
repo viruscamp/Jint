@@ -222,19 +222,44 @@ namespace Jint.Native
             if (that.Value != null)
                 throw new JintException("Can't apply the constructor '" + reflectedType.FullName + "' to already initialized '" + that.Value.ToString() + "'");
 
+            that.Value = CreateInstance(visitor, parameters);
+            SetupNativeProperties(that);
+            return that;
+        }
+
+        /// <summary>
+        /// Creates a new native object and wraps it with a JsObject.
+        /// </summary>
+        /// <remarks>
+        /// This method is overloaded to delegate a container creation to the one method.
+        /// </remarks>
+        /// <param name="parameters">a constructor arguments</param>
+        /// <param name="genericArgs">Ignored since this class represents a non-generic types</param>
+        /// <param name="visitor">Execution visitor</param>
+        /// <returns>A newly created js object</returns>
+        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, Jint.Expressions.IJintVisitor visitor)
+        {
+            return (JsObject)Wrap( CreateInstance( visitor, parameters ) );
+        }
+        
+        /// <summary>
+        /// Finds a best matched constructor and uses it to create a native object instance
+        /// </summary>
+        /// <param name="visitor">Execution visitor</param>
+        /// <param name="parameters">Parameters for a constructor</param>
+        /// <returns>A newly created native object</returns>
+        object CreateInstance(Jint.Expressions.IJintVisitor visitor, JsInstance[] parameters)
+        {
             ConstructorImpl impl = m_overloads.ResolveOverload(parameters, null);
             if (impl == null)
                 throw new JintException(
                     String.Format("No matching overload found {0}({1})",
                         reflectedType.FullName,
-                        String.Join(",",Array.ConvertAll<JsInstance,string>(parameters, p => p.ToString()))
+                        String.Join(",", Array.ConvertAll<JsInstance, string>(parameters, p => p.ToString()))
                     )
                 );
 
-            that.Value = impl(visitor.Global, parameters);
-            
-            SetupNativeProperties(that);
-            return that;
+            return impl(visitor.Global, parameters);
         }
 
         public void SetupNativeProperties(JsDictionaryObject target)

@@ -48,10 +48,8 @@ namespace Jint.Native {
             return value;
         }
 
-        public const string TYPEOF = "number";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_NUMBER; }
         }
     }
 }

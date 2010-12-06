@@ -20,26 +20,25 @@ namespace Jint.Native {
                 if (value is DateTime)
                     this.value = (DateTime)value;
                 else if (value is double)
-                    this.value = new DateTime((double)value);
+                    this.value = JsDateConstructor.CreateDateTime((double)value);
             }
         }
 
         public JsDate(JsObject prototype)
             : base(prototype) {
-            value = 0;
+                value = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        public JsDate(DateTime date, JsObject prototype)
-            : this((date.ToUniversalTime().Ticks - OFFSET_1970) / TICKSFACTOR, prototype) {
+        public JsDate(DateTime date, JsObject prototype): base(prototype) {
+            value = date;
         }
 
         public JsDate(double value, JsObject prototype)
-            : base(prototype) {
-            this.value = value;
+            : this(JsDateConstructor.CreateDateTime(value), prototype) {
         }
 
         public override double ToNumber() {
-            return value;
+            return DateToDouble(value);
         }
 
         public static string FORMAT = "ddd, dd MMM yyyy HH':'mm':'ss 'GMT'zzz";
@@ -52,16 +51,15 @@ namespace Jint.Native {
         }
 
         public override string ToString() {
-            return JsDateConstructor.CreateDateTime(value).ToLocalTime().ToString(FORMAT, CultureInfo.InvariantCulture);
+            return value.ToLocalTime().ToString(FORMAT, CultureInfo.InvariantCulture);
         }
 
         public override object ToObject() {
-            return JsDateConstructor.CreateDateTime(value);
+            return value;
         }
-        public const string TYPEOF = "object";
 
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_OBJECT; }
         }
     }
 }

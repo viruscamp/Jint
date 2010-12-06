@@ -27,6 +27,8 @@ namespace Jint.Native
         Type reflectedType;
 
         LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
+        NativeIndexer m_indexer;
+
         ConstructorInfo[] m_constructors;
         Marshaller m_marshaller;
         NativeOverloadImpl<ConstructorInfo, ConstructorImpl> m_overloads;
@@ -126,18 +128,34 @@ namespace Jint.Native
                 DefineOwnProperty(info.Name,Global.Marshaller.MarshalClrValue(info),PropertyAttributes.DontEnum);
 
             // find all instance properties and fields
+            LinkedList<MethodInfo> getMethods = new LinkedList<MethodInfo>();
+            LinkedList<MethodInfo> setMethods = new LinkedList<MethodInfo>();
             foreach (var info in type.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
             {
                 ParameterInfo[] indexerParams = info.GetIndexParameters();
                 if (indexerParams == null || indexerParams.Length == 0)
                     m_properties.AddLast(global.Marshaller.MarshalPropertyInfo(info, this));
-                //TODO: Add indexers support
+                else if (info.Name == "Item" && indexerParams.Length == 1)
+                {
+                    if (info.CanRead)
+                        getMethods.AddLast(info.GetGetMethod());
+                    if (info.CanWrite)
+                        setMethods.AddLast(info.GetSetMethod());
+                }
+            }
+
+            if (getMethods.Count > 0 || setMethods.Count > 0)
+            {
+                MethodInfo[] getters = new MethodInfo[getMethods.Count];
+                getMethods.CopyTo(getters,0);
+                MethodInfo[] setters = new MethodInfo[setMethods.Count];
+                setMethods.CopyTo(setters, 0);
+
+                m_indexer = new NativeIndexer(m_marshaller, getters, setters);
             }
 
             foreach (var info in type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) )
                 m_properties.AddLast(global.Marshaller.MarshalFieldInfo(info,this));
-
-            
 
         }
 

@@ -83,9 +83,9 @@ namespace Jint.Native {
                 if (global.BooleanClass.HasInstance(this))
                     return JsBoolean.TYPEOF;
                 if (global.DateClass.HasInstance(this))
-                    return JsDate.TYPEOF;
+                    return JsInstance.CLASS_OBJECT;
                 if (global.NumberClass.HasInstance(this))
-                    return JsNumber.TYPEOF;
+                    return JsInstance.CLASS_NUMBER;
                 if (global.StringClass.HasInstance(this))
                     return JsString.TYPEOF;
                 return TYPEOF;

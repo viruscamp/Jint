@@ -1,7 +1,15 @@
 ﻿// comparing clr and js
-assert(true, new Date(0) != new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
+
+// we can't compare a date time objects for an equality
+assert(false, new Date(0) == new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
+
 assert(true, new Date(0) < new System.DateTime(1971, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 assert(true, new Date(0) > new System.DateTime(1969, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
+
+// marshalled datetime objects should be an instance of Date class
+assert(true, System.DateTime.Now instanceof Date);
+// constructed datetime objects should be an instance of Date class
+assert(true, new System.DateTime(1969, 1, 1, 0, 0, 0, System.DateTimeKind.Utc) instanceof Date);
 
 var a = new System.Collections.Generic.List{System.Int32}(); 
 a.Add(7); a.Add(3); a.Add(4);

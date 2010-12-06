@@ -94,14 +94,20 @@ namespace Jint.Native {
             return new JsDate(value, this.PrototypeProperty);
         }
 
+        public JsDate New(DateTime value, JsObject prototype)
+        {
+            return new JsDate(value, prototype);
+        }
+
         public JsDate Construct(JsInstance[] parameters) {
             JsDate result = null;
 
             if (parameters.Length == 1) {
-                if ((parameters[0].Class == JsNumber.TYPEOF || parameters[0].Class == JsDate.TYPEOF) && double.IsNaN(parameters[0].ToNumber())) {
+                if ((parameters[0].Class == JsInstance.CLASS_NUMBER || parameters[0].Class == JsInstance.CLASS_OBJECT) && double.IsNaN(parameters[0].ToNumber())) {
                     result = New(double.NaN);
                 }
-                else if (parameters[0].Class == JsNumber.TYPEOF) {
+                else if (parameters[0].Class == JsInstance.CLASS_NUMBER)
+                {
                     result = New(parameters[0].ToNumber());
                 }
                 else {
@@ -894,8 +900,8 @@ namespace Jint.Native {
         public JsInstance UTCImpl(JsInstance[] parameters) {
             for (int i = 0; i < parameters.Length; i++) {
                 if (parameters[i] == JsUndefined.Instance  // undefined
-                    || (parameters[i].Class == JsNumber.TYPEOF && double.IsNaN(parameters[i].ToNumber())) // NaN
-                    || (parameters[i].Class == JsNumber.TYPEOF && double.IsInfinity(parameters[i].ToNumber())) // Infinity
+                    || (parameters[i].Class == JsInstance.CLASS_NUMBER && double.IsNaN(parameters[i].ToNumber())) // NaN
+                    || (parameters[i].Class == JsInstance.CLASS_NUMBER && double.IsInfinity(parameters[i].ToNumber())) // Infinity
                     //|| parameters[i].Class == JsInstance.CLASS_OBJECT // don't accept objects ???!
                     ) {
                     return Global.NaN;

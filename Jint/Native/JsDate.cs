@@ -10,14 +10,17 @@ namespace Jint.Native {
         static internal long OFFSET_1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
         static internal int TICKSFACTOR = 10000;
 
-        private double value;
+        private DateTime value;
 
         public override object Value {
             get {
                 return value;
             }
             set {
-                this.value = (double)value;
+                if (value is DateTime)
+                    this.value = (DateTime)value;
+                else if (value is double)
+                    this.value = new DateTime((double)value);
             }
         }
 

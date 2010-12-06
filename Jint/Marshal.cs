@@ -663,30 +663,123 @@ namespace Jint
 
         public JsIndexerGetter WrapIndexerGetter(MethodInfo getMethod)
         {
-            DynamicMethod dm = new DynamicMethod("dynamicIndexerGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
+            if (getMethod == null)
+                throw new ArgumentNullException("getMethod");
+            if (getMethod.GetParameters().Length != 1 || getMethod.ReturnType.Equals(typeof(void)))
+                throw new ArgumentException("Invalid getter", "getMethod");
+
+            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance) });
 
             ILGenerator code = dm.GetILGenerator();
 
+            code.Emit(OpCodes.Ldarg_0);
+
             if (!getMethod.IsStatic)
             {
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_1);
 
+                if (getMethod.DeclaringType.IsValueType)
+                {
+                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(getMethod.DeclaringType));
+                    code.Emit(OpCodes.Unbox, getMethod.DeclaringType);
+                    //code.Emit(OpCodes.Stloc, temp);
+                    //code.Emit(OpCodes.Ldloca, temp);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(getMethod.DeclaringType));
+                }
             }
+
+            {
+                var param = getMethod.GetParameters()[0];
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_1);
+
+                if (param.ParameterType.IsByRef)
+                {
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(param.ParameterType));
+                    code.Emit(OpCodes.Unbox, param.ParameterType);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(param.ParameterType));
+                }
+            }
+
+            code.Emit(OpCodes.Callvirt, getMethod);
+            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(getMethod.ReturnType));
 
             code.Emit(OpCodes.Ret);
 
             return (JsIndexerGetter)dm.CreateDelegate(typeof(JsIndexerGetter), this);
         }
 
-        public JsIndexerSetter WrapIndexerSetter(MethodInfo getMethod)
+        public JsIndexerSetter WrapIndexerSetter(MethodInfo setMethod)
         {
+            if (setMethod == null)
+                throw new ArgumentNullException("getMethod");
+            if (!(setMethod.GetParameters().Length == 2 && setMethod.ReturnType.Equals(typeof(void))))
+                throw new ArgumentException("Invalid getter", "getMethod");
+
             DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
 
             ILGenerator code = dm.GetILGenerator();
 
-            if (!getMethod.IsStatic)
+            if (!setMethod.IsStatic)
             {
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_1);
 
+                if (setMethod.DeclaringType.IsValueType)
+                {
+                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(setMethod.DeclaringType));
+                    code.Emit(OpCodes.Unbox, setMethod.DeclaringType);
+                    //code.Emit(OpCodes.Stloc, temp);
+                    //code.Emit(OpCodes.Ldloca, temp);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(setMethod.DeclaringType));
+                }
             }
+
+            {
+                var param = setMethod.GetParameters()[0];
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_1);
+
+                if (param.ParameterType.IsByRef)
+                {
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(param.ParameterType));
+                    code.Emit(OpCodes.Unbox, param.ParameterType);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(param.ParameterType));
+                }
+            }
+
+            {
+                var param = setMethod.GetParameters()[1];
+                code.Emit(OpCodes.Ldarg_0);
+                code.Emit(OpCodes.Ldarg_2);
+
+                if (param.ParameterType.IsByRef)
+                {
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(param.ParameterType));
+                    code.Emit(OpCodes.Unbox, param.ParameterType);
+                }
+                else
+                {
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(param.ParameterType));
+                }
+            }
+
+            code.Emit(OpCodes.Callvirt, setMethod);
 
             code.Emit(OpCodes.Ret);
 

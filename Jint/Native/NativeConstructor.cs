@@ -231,7 +231,7 @@ namespace Jint.Native
         /// Creates a new native object and wraps it with a JsObject.
         /// </summary>
         /// <remarks>
-        /// This method is overloaded to delegate a container creation to the one method.
+        /// This method is overriden to delegate a container creation to the <see cref="Wrap"/> method.
         /// </remarks>
         /// <param name="parameters">a constructor arguments</param>
         /// <param name="genericArgs">Ignored since this class represents a non-generic types</param>

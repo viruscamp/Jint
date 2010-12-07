@@ -115,12 +115,22 @@ namespace Jint
 
             if (value is Type)
             {
-                return MarshalType(value as Type);
+                Type t = value as Type;
+                if (t.IsGenericTypeDefinition)
+                {
+                    // Generic defenitions aren't types is the meaning of js
+                    // but they are instances of System.Type
+                    var res = new NativeGeneric(t, m_typeType.PrototypeProperty);
+                    m_typeType.SetupNativeProperties(res);
+                    return res;
+                }
+                else
+                {
+                    return MarshalType(value as Type);
+                }
             }
             else
             {
-                // we can't use a value.GetType(), becouse we can get a type which we can't reflect,
-                // for example a RuntimeType instead a Type.
                 return MarshalType(value.GetType()).Wrap(value);
             }
         }
@@ -136,6 +146,7 @@ namespace Jint
 
         NativeConstructor CreateConstructor(Type t)
         {
+            // TODO: Move this code to NativeTypeConstructor.Wrap
             NativeConstructor res;
             res = new NativeConstructor(t, m_global);
             res.InitPrototype(m_global);

@@ -56,5 +56,12 @@ namespace Jint.Native {
         public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
             return Global.StringClass.New(target["name"] + ": " + target["message"]);
         }
+
+        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
+        {
+            return parameters != null && parameters.Length > 0 ?
+                visitor.Global.ErrorClass.New( parameters[0].ToString() ) :
+                visitor.Global.ErrorClass.New( );
+        }
     }
 }

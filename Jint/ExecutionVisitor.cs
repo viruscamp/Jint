@@ -310,9 +310,9 @@ namespace Jint {
         }
 
         public void Visit(DoWhileStatement statement) {
-            JsObject scope = new JsObject();
+            /*JsObject scope = new JsObject();
             EnterScope(scope);
-            try {
+            try {*/
                 do {
                     statement.Statement.Accept(this);
 
@@ -330,10 +330,10 @@ namespace Jint {
                     statement.Condition.Accept(this);
 
                 } while (Result.ToBoolean());
-            }
+            /*}
             finally {
                 ExitScope();
-            }
+            }*/
         }
 
         public void Visit(EmptyStatement statement) {
@@ -623,9 +623,9 @@ namespace Jint {
         }
 
         public void Visit(WhileStatement statement) {
-            JsObject scope = new JsObject();
+            /*JsObject scope = new JsObject();
             EnterScope(scope);
-            try {
+            try {*/
                 statement.Condition.Accept(this);
 
                 while (Result.ToBoolean()) {
@@ -643,10 +643,10 @@ namespace Jint {
 
                     statement.Condition.Accept(this);
                 }
-            }
+            /*}
             finally {
                 ExitScope();
-            }
+            }*/
         }
 
         public void Visit(NewExpression expression) {

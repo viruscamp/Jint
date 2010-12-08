@@ -222,7 +222,7 @@ namespace Jint {
             }
             catch (JsException e) {
                 string message = e.Message;
-                if (e.Value.Class == JsError.TYPEOF)
+                if (e.Value is JsError)
                     message = ((JsError)e.Value).Value.ToString();
                 StringBuilder stackTrace = new StringBuilder();
                 string source = String.Empty;

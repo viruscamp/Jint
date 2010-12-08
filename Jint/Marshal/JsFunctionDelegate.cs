@@ -11,10 +11,10 @@ namespace Jint.Marshal
     class JsFunctionDelegate
     {
         Delegate m_impl;
-        IJintVisitor m_visitor;
-        JsFunction m_function;
-        JsDictionaryObject m_that;
-        Marshaller m_marshaller;
+        public IJintVisitor m_visitor;
+        public JsFunction m_function;
+        public JsDictionaryObject m_that;
+        public Marshaller m_marshaller;
         Type m_delegateType;
 
         public JsFunctionDelegate(IJintVisitor visitor, JsFunction function, JsDictionaryObject that,Type delegateType)
@@ -43,7 +43,7 @@ namespace Jint.Marshal
             ParameterInfo[] parameters = method.GetParameters();
             Type[] delegateParameters = new Type[parameters.Length + 1];
             
-            for (int i = 1; i < parameters.Length; i++)
+            for (int i = 1; i <= parameters.Length; i++)
                 delegateParameters[i] = parameters[i - 1].ParameterType;
             delegateParameters[0] = typeof(JsFunctionDelegate);
 
@@ -71,8 +71,10 @@ namespace Jint.Marshal
 
             // load a marshller
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld,typeof(JsFunctionDelegate).GetField("m_marshaller"));
+            code.Emit(OpCodes.Ldfld,typeof(JsFunctionDelegate).GetField("m_marshaller"));//,BindingFlags.NonPublic|BindingFlags.Instance));
             code.Emit(OpCodes.Stloc_1);
+
+            code.EmitWriteLine("pre args");
 
             for (int i = 1; i <= parameters.Length; i++)
             {
@@ -117,17 +119,17 @@ namespace Jint.Marshal
             // m_visitor.ExecuteFunction(m_function,m_that,arguments)
 
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_visitor"));
+            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_visitor"));//, BindingFlags.NonPublic | BindingFlags.Instance));
 
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_function"));
+            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_function"));//, BindingFlags.NonPublic | BindingFlags.Instance));
 
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_that"));
+            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_that"));//, BindingFlags.NonPublic | BindingFlags.Instance));
 
-            code.Emit(OpCodes.Ldloc_0);
+            code.Emit(OpCodes.Ldloc_0); //params
 
-            code.Emit(OpCodes.Call, typeof(IJintVisitor).GetMethod("ExecuteFunction"));
+            code.Emit(OpCodes.Callvirt, typeof(IJintVisitor).GetMethod("ExecuteFunction"));
 
             code.Emit(OpCodes.Pop);
 

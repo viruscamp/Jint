@@ -6,7 +6,7 @@ namespace Jint.Native {
     [Serializable]
     public class JsObject : JsDictionaryObject {
 
-        public NativeIndexer Indexer { get; set; }
+        public INativeIndexer Indexer { get; set; }
         
         public JsObject() {
         }

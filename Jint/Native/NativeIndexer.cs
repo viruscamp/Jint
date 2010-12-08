@@ -9,7 +9,7 @@ namespace Jint.Native
     /// <summary>
     /// Represent a set of native overloads to set and get values using indexers.
     /// </summary>
-    public class NativeIndexer
+    public class NativeIndexer : INativeIndexer
     {
         NativeOverloadImpl<MethodInfo, JsIndexerGetter> m_getOverload;
         NativeOverloadImpl<MethodInfo, JsIndexerSetter> m_setOverload;

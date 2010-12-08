@@ -679,7 +679,7 @@ namespace Jint
             if (getMethod.GetParameters().Length != 1 || getMethod.ReturnType.Equals(typeof(void)))
                 throw new ArgumentException("Invalid getter", "getMethod");
 
-            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance) });
+            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
 
             ILGenerator code = dm.GetILGenerator();
 
@@ -707,7 +707,7 @@ namespace Jint
             {
                 var param = getMethod.GetParameters()[0];
                 code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_1);
+                code.Emit(OpCodes.Ldarg_2);
 
                 if (param.ParameterType.IsByRef)
                 {
@@ -735,7 +735,7 @@ namespace Jint
             if (!(setMethod.GetParameters().Length == 2 && setMethod.ReturnType.Equals(typeof(void))))
                 throw new ArgumentException("Invalid getter", "getMethod");
 
-            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
+            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(void), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance), typeof(JsInstance) });
 
             ILGenerator code = dm.GetILGenerator();
 
@@ -761,7 +761,7 @@ namespace Jint
             {
                 var param = setMethod.GetParameters()[0];
                 code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_1);
+                code.Emit(OpCodes.Ldarg_2);
 
                 if (param.ParameterType.IsByRef)
                 {
@@ -777,7 +777,7 @@ namespace Jint
             {
                 var param = setMethod.GetParameters()[1];
                 code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_2);
+                code.Emit(OpCodes.Ldarg_3);
 
                 if (param.ParameterType.IsByRef)
                 {

@@ -105,7 +105,8 @@ namespace Jint.Native {
         /// <param name="parameter">The object to convert</param>
         /// <returns>A CLR object</returns>
         public static object ConvertParameter(JsInstance parameter) {
-            if (parameter.Class != JsFunction.TYPEOF && ! ( parameter is JsArray ) && !( parameter is JsDate )) {
+            if (parameter.Class != JsInstance.CLASS_FUNCTION && !(parameter is JsArray) && !(parameter is JsDate))
+            {
                 return parameter.Value;
             }
 
@@ -128,7 +129,7 @@ namespace Jint.Native {
                     return parameter.Value;
                 case "Array":
                 case "Object":
-                    if (parameter.Class == JsFunction.TYPEOF)
+                    if (parameter.Class == JsInstance.CLASS_FUNCTION)
                         return parameter;
                     var array = new object[((JsObject)parameter).Length];
                     foreach (KeyValuePair<string, JsInstance> key in (JsObject)parameter) {

@@ -24,15 +24,18 @@ namespace Jint.Native
             m_nativeMethod = nativeMethod;
             m_impl = impl;
             if (nativeMethod != null)
+            {
                 Name = nativeMethod.Name;
-            else
-                Name = "";
+                foreach (var item in nativeMethod.GetParameters())
+                    Arguments.Add(item.Name);
+            }
         }
 
         public NativeMethod(JsMethodImpl impl, JsObject prototype) :
             this(impl,null,prototype)
         {
-
+            foreach (var item in impl.Method.GetParameters())
+                Arguments.Add(item.Name);
         }
 
         public NativeMethod(MethodInfo info, JsObject prototype, IGlobal global) :
@@ -46,6 +49,9 @@ namespace Jint.Native
             m_nativeMethod = info;
             m_impl = global.Marshaller.WrapMethod(info, true);
             Name = info.Name;
+
+            foreach (var item in info.GetParameters())
+                Arguments.Add(item.Name);
         }
 
         public MethodInfo GetWrappedMethod()
@@ -62,6 +68,11 @@ namespace Jint.Native
         public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
         {
             throw new JintException("This method can't be used as a constructor");
+        }
+
+        public override string GetBody()
+        {
+            return "[native code]";
         }
     }
     

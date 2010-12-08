@@ -103,7 +103,7 @@ namespace Jint.Native {
             // constructor accesible via target.Prototype, or by itself if target is already prototype
             JsFunction constructor = target["constructor"] as JsFunction;
 
-            if (target.Class == JsFunction.TYPEOF)
+            if (target.Class == JsInstance.CLASS_FUNCTION)
                 return Global.StringClass.New(String.Concat("[object Function]"));
 
             if (constructor == null) {
@@ -163,11 +163,7 @@ namespace Jint.Native {
             if (parameters[0].Class != JsInstance.CLASS_OBJECT)
                 throw new JsException(Global.TypeErrorClass.New());
             // TODO: read 15.2.3.2 and implement
-            return JsNull.Instance;
-        }
-
-        public override string ToString() {
-            return JsInstance.CLASS_OBJECT;
+            return ((parameters[0] as JsObject ?? JsUndefined.Instance)[JsFunction.CONSTRUCTOR] as JsObject ?? JsUndefined.Instance)[JsFunction.PROTOTYPE];
         }
 
         /// <summary>

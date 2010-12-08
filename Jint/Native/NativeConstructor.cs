@@ -34,6 +34,7 @@ namespace Jint.Native
         NativeOverloadImpl<ConstructorInfo, ConstructorImpl> m_overloads;
         bool m_isGeneric; // is this type a generic definition
 
+        // TODO: native constructors should have an own prototype rather then the function prototype
         public NativeConstructor(Type type, IGlobal global) :
             this(type, global, null)
         {

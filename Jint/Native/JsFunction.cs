@@ -39,6 +39,18 @@ namespace Jint.Native {
             Statement = new EmptyStatement();
         }
 
+        public override int Length
+        {
+            get
+            {
+                return Arguments.Count;
+            }
+            set
+            {
+                ;
+            }
+        }
+
         public JsObject PrototypeProperty {
             get {
                 return this[PROTOTYPE] as JsObject;
@@ -79,18 +91,21 @@ namespace Jint.Native {
             throw new JintException("This method can't be called as a generic");
         }
 
-        public const string TYPEOF = "function";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_FUNCTION; }
         }
 
         public override string ToSource() {
-            return String.Concat("(function ", String.IsNullOrEmpty(Name) ? "anonymous" : Name, "() { ... })");
+            return String.Format("function {0} ( {1} ) {{ {2} }}", Name, String.Join(", ", Arguments.ToArray()), GetBody());
         }
 
-        public override string ToString() {
-            return TYPEOF;
+        public virtual string GetBody() {
+            return "/* js code */";
+        }
+
+        public override string ToString()
+        {
+            return ToSource();
         }
 
         public override bool ToBoolean() {

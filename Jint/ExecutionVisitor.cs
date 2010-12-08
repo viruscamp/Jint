@@ -219,6 +219,8 @@ namespace Jint {
                 throw new JintException("The left member of an assignment must be a member");
             }
 
+            EnsureIdentifierIsDefined(value);
+
             JsDictionaryObject baseObject;
 
             if (left.Previous != null) {
@@ -241,6 +243,12 @@ namespace Jint {
 
             if (left.Member is Identifier) {
                 propertyName = ((Identifier)left.Member).Text;
+
+                // Assigning function Name
+                if (value.Class == JsFunction.TYPEOF)
+                    ((JsFunction)value).Name = propertyName;
+
+                Result = baseObject[propertyName] = value;
             }
             else {
                 Indexer indexer = left.Member as Indexer;
@@ -248,18 +256,22 @@ namespace Jint {
                 // calculate index expression
                 indexer.Index.Accept(this);
 
-                //TODO: custom indexer
+                if (baseObject is JsObject)
+                {
+                    JsObject target = baseObject as JsObject;
+                    if (target.Indexer != null)
+                    {
+                        target.Indexer.set(target, Result, value);
+                        Result = value;
+                        return;
+                    }
+                }
 
-                propertyName = Result.Value.ToString();
+                // Assigning function Name
+                if (value.Class == JsFunction.TYPEOF)
+                    ((JsFunction)value).Name = Result.Value.ToString();
+                Result = baseObject[Result] = value;
             }
-
-            EnsureIdentifierIsDefined(value);
-
-            // Assigning function Name
-            if (value.Class == JsFunction.TYPEOF)
-                ((JsFunction)value).Name = propertyName;
-
-            Result = baseObject[propertyName] = value;
         }
 
         public void Visit(CommaOperatorStatement statement) {
@@ -651,33 +663,37 @@ namespace Jint {
 
             // don't even try if there is a generic type specifier
 
-            //if (expression.Generics.Count == 0) {
-                expression.Expression.Accept(this);
-            //}
+            expression.Expression.Accept(this);
 
-            if (Result != null && Result.Class == JsFunction.TYPEOF) {
-                JsFunction function = (JsFunction)Result;
-                Type[] genericParameters = null;
+            if (typeFullname.Length > 0 && Result == JsUndefined.Instance && expression.Generics.Count > 0)
+            {
+                string typeName = typeFullname.ToString();
+                typeFullname = new StringBuilder();
 
-                if (expression.Generics.Count > 0)
+                var genericParameters = new Type[expression.Generics.Count];
+
+                try
                 {
-                    genericParameters = new Type[expression.Generics.Count];
-
-                    try
+                    int i = 0;
+                    foreach (Expression generic in expression.Generics)
                     {
-                        int i = 0;
-                        foreach (Expression generic in expression.Generics)
-                        {
-                            generic.Accept(this);
-                            genericParameters[i] = Global.Marshaller.MarshalJsValue<Type>(Result);
-                            i++;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new JintException("A type parameter is required", e);
+                        generic.Accept(this);
+                        genericParameters[i] = Global.Marshaller.MarshalJsValue<Type>(Result);
+                        i++;
                     }
                 }
+                catch (Exception e)
+                {
+                    throw new JintException("A type parameter is required", e);
+                }
+
+                typeName += "`" + genericParameters.Length;
+                Result = Global.Marshaller.MarshalClrValue<Type>(typeResolver.ResolveType(typeName).MakeGenericType(genericParameters));
+            }
+
+            if (Result != null && Result is JsFunction) {
+                JsFunction function = (JsFunction)Result;
+                Type[] genericParameters = null;
 
                 // Process parameters
                 JsInstance[] parameters = new JsInstance[expression.Arguments.Count];
@@ -1198,7 +1214,7 @@ namespace Jint {
         public void Visit(Indexer indexer) {
             EnsureIdentifierIsDefined(Result);
 
-            JsDictionaryObject target = (JsDictionaryObject)Result;
+            JsObject target = (JsObject)Result;
 
             indexer.Index.Accept(this);
 
@@ -1209,7 +1225,10 @@ namespace Jint {
                 SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
             }
             else {
-                SetResult(target[Result], target);
+                if (target.Indexer != null)
+                    SetResult(target.Indexer.get(target, Result), target);
+                else
+                    SetResult(target[Result], target);
             }
         }
 

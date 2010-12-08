@@ -918,9 +918,10 @@ var fakeButton = new Test.FakeButton();");
             .SetFunction("print", new Action<string>(System.Console.WriteLine))
             .SetParameter("foo", null);
 
+            // strict equlity ecma 262.3 11.9.6 x === y: If type of (x) is null return true.
             jint.Run(@"
                 assert(true, foo == null);
-                assert(false, foo === null);
+                assert(true, foo === null);
             ");
         }
 

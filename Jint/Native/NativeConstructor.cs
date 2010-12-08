@@ -27,7 +27,7 @@ namespace Jint.Native
         Type reflectedType;
 
         LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
-        NativeIndexer m_indexer;
+        INativeIndexer m_indexer;
 
         ConstructorInfo[] m_constructors;
         Marshaller m_marshaller;
@@ -85,8 +85,11 @@ namespace Jint.Native
 
             foreach (var info in type.GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public))
             {
+                if (info.ReturnType.IsByRef)
+                    continue;
                 if (!members.ContainsKey(info.Name))
                     members[info.Name] = new LinkedList<MethodInfo>();
+                
                 members[info.Name].AddLast(info);
             }
 
@@ -154,6 +157,14 @@ namespace Jint.Native
                 m_indexer = new NativeIndexer(m_marshaller, getters, setters);
             }
 
+            if (reflectedType.IsArray)
+            {
+                m_indexer = (INativeIndexer)typeof(NativeArrayIndexer<>)
+                    .MakeGenericType(reflectedType.GetElementType())
+                    .GetConstructor(new Type[]{typeof(Marshaller)})
+                    .Invoke(new object[]{m_marshaller});
+            }
+
             foreach (var info in type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) )
                 m_properties.AddLast(global.Marshaller.MarshalFieldInfo(info,this));
 
@@ -179,8 +190,12 @@ namespace Jint.Native
 
             foreach (var info in reflectedType.GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
             {
+                if (info.ReturnType.IsByRef)
+                    continue;
+
                 if (! members.ContainsKey(info.Name))
                     members[info.Name] = new LinkedList<MethodInfo>();
+                
                 members[info.Name].AddLast(info);
             }
 
@@ -224,6 +239,7 @@ namespace Jint.Native
 
             that.Value = CreateInstance(visitor, parameters);
             SetupNativeProperties(that);
+            ((JsObject)that).Indexer = m_indexer;
             return that;
         }
 
@@ -276,6 +292,7 @@ namespace Jint.Native
                 throw new JintException("Attempt to wrap '" + typeof(T).FullName + "' with '" + reflectedType.FullName+ "'");
             JsObject inst = Global.ObjectClass.New(PrototypeProperty);
             inst.Value = value;
+            inst.Indexer = m_indexer;
             SetupNativeProperties(inst);
 
             return inst;

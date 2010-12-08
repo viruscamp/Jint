@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Marshal;
 using System.Reflection;
+using Jint.Expressions;
 
 namespace Jint.Native
 {
@@ -32,6 +33,12 @@ namespace Jint.Native
                 throw new ArgumentNullException("global");
             m_marshaller = global.Marshaller;
 
+            foreach (MethodInfo info in methods)
+            {
+                Name = info.Name;
+                break;
+            }
+
             foreach (var method in methods)
             {
                 if (method.IsGenericMethodDefinition)
@@ -47,13 +54,23 @@ namespace Jint.Native
             );
         }
 
-        public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
+        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
-            JsMethodImpl impl = m_overloads.ResolveOverload(parameters, null);
-            if (impl == null)
-                throw new JintException("No matching overload found");
-            visitor.Return(impl(visitor.Global,that,parameters));
-            return that;
+            return Execute(visitor, that, parameters, null);
+        }
+
+        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters, Type[] genericArguments)
+        {
+            if (m_generics.Count == 0 && (genericArguments != null && genericArguments.Length > 0))
+                return base.Execute(visitor, that, parameters, genericArguments);
+            else
+            {
+                JsMethodImpl impl = m_overloads.ResolveOverload(parameters, genericArguments);
+                if (impl == null)
+                    throw new JintException(String.Format("No matching overload found {0}<{1}>", Name, genericArguments));
+                visitor.Return(impl(visitor.Global, that, parameters));
+                return that;
+            }
         }
 
         protected JsMethodImpl WrapMember(MethodInfo info)

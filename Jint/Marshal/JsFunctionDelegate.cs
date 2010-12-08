@@ -74,7 +74,7 @@ namespace Jint.Marshal
             code.Emit(OpCodes.Ldfld,typeof(JsFunctionDelegate).GetField("m_marshaller"));//,BindingFlags.NonPublic|BindingFlags.Instance));
             code.Emit(OpCodes.Stloc_1);
 
-            code.EmitWriteLine("pre args");
+            //code.EmitWriteLine("pre args");
 
             for (int i = 1; i <= parameters.Length; i++)
             {
@@ -131,14 +131,11 @@ namespace Jint.Marshal
 
             code.Emit(OpCodes.Callvirt, typeof(IJintVisitor).GetMethod("ExecuteFunction"));
 
-            code.Emit(OpCodes.Pop);
-
-            
 
             // foreach out parameter, marshal it back
-            for (int i = 1; i < parameters.Length; i++)
+            for (int i = 1; i <= parameters.Length; i++)
             {
-                ParameterInfo param = parameters[i];
+                ParameterInfo param = parameters[i-1];
                 Type paramType = param.ParameterType.GetElementType();
                 if (param.IsOut)
                 {
@@ -168,7 +165,7 @@ namespace Jint.Marshal
                 code.Emit(OpCodes.Call, typeof(IJintVisitor).GetProperty("Returned").GetGetMethod());
                 code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(method.ReturnType));
             }
-
+            
             code.Emit(OpCodes.Ret);
 
             return m_impl = dm.CreateDelegate(m_delegateType,this);

@@ -120,7 +120,7 @@ namespace Jint
                 {
                     // Generic defenitions aren't types is the meaning of js
                     // but they are instances of System.Type
-                    var res = new NativeGeneric(t, m_typeType.PrototypeProperty);
+                    var res = new NativeGenericType(t, m_typeType.PrototypeProperty);
                     m_typeType.SetupNativeProperties(res);
                     return res;
                 }
@@ -287,6 +287,11 @@ namespace Jint
         /// <returns>A wrapper delegate</returns>
         public JsMethodImpl WrapMethod(MethodInfo info, bool passGlobal)
         {
+            if (info == null)
+                throw new ArgumentNullException("info");
+            if (info.ContainsGenericParameters)
+                throw new InvalidOperationException("Can't wrap an unclosed generic");
+
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
 
             DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(JsInstance), new Type[] { typeof(IGlobal), typeof(JsInstance), typeof(JsInstance[]) }, this.GetType());
@@ -544,7 +549,7 @@ namespace Jint
                 {
                     //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
                     code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
-                    code.Emit(OpCodes.Unbox,prop.DeclaringType);
+                    code.Emit(OpCodes.Unbox, prop.DeclaringType);
                     //code.Emit(OpCodes.Stloc,temp);
                     //code.Emit(OpCodes.Ldloca,temp);
                 }
@@ -552,9 +557,15 @@ namespace Jint
                 {
                     code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
                 }
+                code.Emit(OpCodes.Callvirt, info);
             }
-            code.Emit(OpCodes.Callvirt, info);
-            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(prop.PropertyType));
+            else
+            {
+                // static methods should be invoked with OpCodes.Call
+                code.Emit(OpCodes.Call, info);
+            }
+            
+            code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(prop.PropertyType));
 
             code.Emit(OpCodes.Ret);
 
@@ -589,7 +600,7 @@ namespace Jint
                 code.Emit(OpCodes.Ldsfld, field);
             }
 
-            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(field.FieldType));
+            code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(field.FieldType));
 
             code.Emit(OpCodes.Ret);
 
@@ -611,7 +622,7 @@ namespace Jint
                 if (prop.DeclaringType.IsValueType)
                 {
                     //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
                     code.Emit(OpCodes.Unbox, prop.DeclaringType);
                     //code.Emit(OpCodes.Stloc, temp);
                     //code.Emit(OpCodes.Ldloca, temp);
@@ -626,7 +637,10 @@ namespace Jint
             code.Emit(OpCodes.Ldarg_2);
             code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.PropertyType));
 
-            code.Emit(OpCodes.Callvirt, info);
+            if (info.IsStatic)
+                code.Emit(OpCodes.Call, info);
+            else
+                code.Emit(OpCodes.Callvirt, info);
 
             code.Emit(OpCodes.Ret);
 
@@ -693,14 +707,14 @@ namespace Jint
                 if (getMethod.DeclaringType.IsValueType)
                 {
                     //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(getMethod.DeclaringType));
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(getMethod.DeclaringType));
                     code.Emit(OpCodes.Unbox, getMethod.DeclaringType);
                     //code.Emit(OpCodes.Stloc, temp);
                     //code.Emit(OpCodes.Ldloca, temp);
                 }
                 else
                 {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(getMethod.DeclaringType));
+                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(getMethod.DeclaringType));
                 }
             }
 
@@ -720,7 +734,11 @@ namespace Jint
                 }
             }
 
-            code.Emit(OpCodes.Callvirt, getMethod);
+            if (getMethod.IsStatic)
+                code.Emit(OpCodes.Call, getMethod);
+            else
+                code.Emit(OpCodes.Callvirt, getMethod);
+
             code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(getMethod.ReturnType));
 
             code.Emit(OpCodes.Ret);
@@ -790,7 +808,10 @@ namespace Jint
                 }
             }
 
-            code.Emit(OpCodes.Callvirt, setMethod);
+            if (setMethod.IsStatic)
+                code.Emit(OpCodes.Call, setMethod);
+            else
+                code.Emit(OpCodes.Callvirt, setMethod);
 
             code.Emit(OpCodes.Ret);
 

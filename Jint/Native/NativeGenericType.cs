@@ -7,11 +7,11 @@ namespace Jint.Native
     /// <summary>
     /// This class is used to reflect a native generic.
     /// </summary>
-    class NativeGeneric: JsObject
+    class NativeGenericType: JsObject
     {
         Type m_reflectedType;
 
-        public NativeGeneric(Type reflectedType, JsObject prototype)
+        public NativeGenericType(Type reflectedType, JsObject prototype)
             : base(prototype)
         {
             if (reflectedType == null)

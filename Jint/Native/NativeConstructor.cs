@@ -95,18 +95,7 @@ namespace Jint.Native
 
             // add the members to the object
             foreach (var pair in members)
-            {
-                DefineOwnProperty(
-                    pair.Key,
-                    (
-                    pair.Value.Count > 1 ?
-                        // if we have overloaded methods
-                        (JsFunction)new NativeMethodOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
-                        // if we have only one method
-                        (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global)
-                    )
-                );
-            }
+                DefineOwnProperty( pair.Key, ReflectOverload(pair.Value) );
 
             // find and add all static properties and fields
             foreach (var info in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
@@ -170,6 +159,27 @@ namespace Jint.Native
 
         }
 
+        JsFunction ReflectOverload(ICollection<MethodInfo> methods)
+        {
+            if (methods.Count == 0)
+                throw new ArgumentException("At least one method is required", "methods");
+
+            if (methods.Count == 1)
+            {
+                foreach (MethodInfo info in methods)
+                    if (info.ContainsGenericParameters)
+                        return new NativeMethodOverload(methods, Global.FunctionClass.PrototypeProperty, Global);
+                    else
+                        return new NativeMethod(info, Global.FunctionClass.PrototypeProperty, Global);
+            }
+            else
+            {
+                return new NativeMethodOverload(methods, Global.FunctionClass.PrototypeProperty, Global);
+            }
+            // we should never come here
+            throw new ApplicationException("Unexpected error");
+        }
+
         public override object Value
         {
             get
@@ -200,11 +210,7 @@ namespace Jint.Native
             }
 
             foreach (var pair in members)
-            {
-                proto[pair.Key] = pair.Value.Count > 1 ?
-                    (JsFunction)new NativeMethodOverload(pair.Value, Global.FunctionClass.PrototypeProperty, Global) :
-                    (JsFunction)new NativeMethod(pair.Value.First.Value, Global.FunctionClass.PrototypeProperty, Global);
-            }
+                proto[pair.Key] = ReflectOverload(pair.Value);
 
             proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString",new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
         }

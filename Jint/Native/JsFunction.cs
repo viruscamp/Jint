@@ -74,6 +74,11 @@ namespace Jint.Native {
             return that;
         }
 
+        public virtual JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters, Type[] genericArguments)
+        {
+            throw new JintException("This method can't be called as a generic");
+        }
+
         public const string TYPEOF = "function";
 
         public override string Class {

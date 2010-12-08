@@ -1245,6 +1245,28 @@ namespace Jint {
                 }
             }
 
+            Type[] genericParameters = null;
+
+            if (methodCall.Generics.Count > 0)
+            {
+                genericParameters = new Type[methodCall.Generics.Count];
+
+                try
+                {
+                    int i = 0;
+                    foreach (Expression generic in methodCall.Generics)
+                    {
+                        generic.Accept(this);
+                        genericParameters[i] = Global.Marshaller.MarshalJsValue<Type>(Result);
+                        i++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new JintException("A type parameter is required", e);
+                }
+            }
+
             #region Evaluates parameters
             JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
 
@@ -1280,7 +1302,7 @@ namespace Jint {
 
                 returnInstance = JsUndefined.Instance;
 
-                ExecuteFunction(function, that, parameters);
+                ExecuteFunction(function, that, parameters, genericParameters);
 
                 if (DebugMode) {
                     CallStack.Pop();
@@ -1291,7 +1313,12 @@ namespace Jint {
             }
         }
 
-        public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters) {
+        public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters)
+        {
+            ExecuteFunction(function, that, parameters, null);
+        }
+
+        public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters, Type[] genericParameters) {
             if (function == null) {
                 return;
             }
@@ -1339,7 +1366,10 @@ namespace Jint {
             try {
                 PermissionSet.PermitOnly();
 
-                Result = function.Execute(this, that, parameters);
+                if (genericParameters != null && genericParameters.Length > 0)
+                    Result = function.Execute(this, that, parameters, genericParameters);
+                else
+                    Result = function.Execute(this, that, parameters);
 
                 // Resets the return flag
                 if (exit) {

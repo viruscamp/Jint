@@ -6,6 +6,7 @@ assert(false, new Date(0) == new System.DateTime(1970, 1, 1, 0, 0, 0, System.Dat
 assert(true, new Date(0) < new System.DateTime(1971, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 assert(true, new Date(0) > new System.DateTime(1969, 1, 1, 0, 0, 0, System.DateTimeKind.Utc));
 
+var d = System.DateTime.Now;
 // marshalled datetime objects should be an instance of Date class
 assert(true, System.DateTime.Now instanceof Date);
 // constructed datetime objects should be an instance of Date class

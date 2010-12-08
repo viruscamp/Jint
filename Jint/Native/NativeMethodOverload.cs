@@ -110,5 +110,10 @@ namespace Jint.Native
                 yield return item;
             }
         }
+
+        public override string GetBody()
+        {
+            return "[native overload]";
+        }
     }
 }

@@ -11,10 +11,10 @@ namespace Jint.Marshal
     class JsFunctionDelegate
     {
         Delegate m_impl;
-        public IJintVisitor m_visitor;
-        public JsFunction m_function;
-        public JsDictionaryObject m_that;
-        public Marshaller m_marshaller;
+        IJintVisitor m_visitor;
+        JsFunction m_function;
+        JsDictionaryObject m_that;
+        Marshaller m_marshaller;
         Type m_delegateType;
 
         public JsFunctionDelegate(IJintVisitor visitor, JsFunction function, JsDictionaryObject that,Type delegateType)
@@ -71,7 +71,7 @@ namespace Jint.Marshal
 
             // load a marshller
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld,typeof(JsFunctionDelegate).GetField("m_marshaller"));//,BindingFlags.NonPublic|BindingFlags.Instance));
+            code.Emit(OpCodes.Ldfld,typeof(JsFunctionDelegate).GetField("m_marshaller",BindingFlags.NonPublic|BindingFlags.Instance));
             code.Emit(OpCodes.Stloc_1);
 
             //code.EmitWriteLine("pre args");
@@ -119,13 +119,13 @@ namespace Jint.Marshal
             // m_visitor.ExecuteFunction(m_function,m_that,arguments)
 
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_visitor"));//, BindingFlags.NonPublic | BindingFlags.Instance));
+            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_visitor", BindingFlags.NonPublic | BindingFlags.Instance));
 
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_function"));//, BindingFlags.NonPublic | BindingFlags.Instance));
+            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_function", BindingFlags.NonPublic | BindingFlags.Instance));
 
             code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_that"));//, BindingFlags.NonPublic | BindingFlags.Instance));
+            code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_that", BindingFlags.NonPublic | BindingFlags.Instance));
 
             code.Emit(OpCodes.Ldloc_0); //params
 
@@ -161,7 +161,7 @@ namespace Jint.Marshal
             {
                 code.Emit(OpCodes.Ldloc_1);
                 code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_visitor"));
+                code.Emit(OpCodes.Ldfld, typeof(JsFunctionDelegate).GetField("m_visitor", BindingFlags.NonPublic | BindingFlags.Instance));
                 code.Emit(OpCodes.Call, typeof(IJintVisitor).GetProperty("Returned").GetGetMethod());
                 code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(method.ReturnType));
             }

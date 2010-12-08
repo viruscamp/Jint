@@ -91,14 +91,6 @@ namespace Jint {
         }
 
         public ExecutionVisitor(Options options) {
-            /* TODO: cleanup
-            methodInvoker = new CachedMethodInvoker(this);
-            propertyGetter = new CachedReflectionPropertyGetter(methodInvoker);
-            constructorInvoker = new CachedConstructorInvoker(methodInvoker);
-            
-            fieldGetter = new CachedReflectionFieldGetter(methodInvoker);
-            */
-
             typeResolver = new CachedTypeResolver();
 
             Global = new JsGlobal(this, options);
@@ -245,8 +237,8 @@ namespace Jint {
                 propertyName = ((Identifier)left.Member).Text;
 
                 // Assigning function Name
-                if (value.Class == JsFunction.TYPEOF)
-                    ((JsFunction)value).Name = propertyName;
+                //if (value.Class == JsInstance.CLASS_FUNCTION)
+                //    ((JsFunction)value).Name = propertyName;
 
                 Result = baseObject[propertyName] = value;
             }
@@ -268,8 +260,8 @@ namespace Jint {
                 }
 
                 // Assigning function Name
-                if (value.Class == JsFunction.TYPEOF)
-                    ((JsFunction)value).Name = Result.Value.ToString();
+                //if (value.Class == JsInstance.CLASS_FUNCTION)
+                //    ((JsFunction)value).Name = Result.Value.ToString();
                 Result = baseObject[Result] = value;
             }
         }
@@ -1281,7 +1273,8 @@ namespace Jint {
             }
             #endregion
 
-            if (target.Class == JsFunction.TYPEOF) {
+            if (target.Class == JsInstance.CLASS_FUNCTION)
+            {
                 JsFunction function = (JsFunction)target;
 
                 if (DebugMode) {
@@ -1421,67 +1414,6 @@ namespace Jint {
                 return;
             }
 
-            /* TODO: clenup
-            // Search for .NET property or method
-            if (callTarget != null && callTarget.IsClr && callTarget.Value != null) {
-                EnsureClrAllowed();
-
-                // enum ?
-                var type = callTarget.Value as Type;
-                if (type != null && type.IsEnum) {
-                    SetResult(Global.WrapClr(Enum.Parse(type, propertyName)), callTarget);
-                    return;
-                }
-
-                var propertyInfo = propertyGetter.GetValue(callTarget.Value, propertyName);
-                if (propertyInfo != null) {
-                    SetResult(Global.WrapClr(propertyInfo.GetValue(callTarget.Value, null)), callTarget);
-                    return;
-                }
-
-
-                var fieldInfo = fieldGetter.GetValue(callTarget.Value, propertyName);
-                if (fieldInfo != null) {
-                    SetResult(Global.WrapClr(fieldInfo.GetValue(callTarget.Value)), callTarget);
-                    return;
-                }
-
-                // Not a property, then must be a method
-                SetResult(new JsClrMethodInfo(propertyName), callTarget);
-                return;
-
-                throw new JintException("Invalid property name: " + propertyName);
-            }
-
-
-            // Search for a static CLR call
-            if (Result == null && typeFullname.Length > 0) {
-                Type type = typeResolver.ResolveType(typeFullname.ToString());
-
-                if (type != null) {
-                    typeFullname = new StringBuilder();
-                    EnsureClrAllowed();
-
-                    var propertyInfo = propertyGetter.GetValue(type, propertyName);
-                    if (propertyInfo != null) {
-                        SetResult(Global.WrapClr(propertyInfo.GetValue(type, null)), callTarget);
-                        return;
-                    }
-
-                    var fieldInfo = fieldGetter.GetValue(type, propertyName);
-                    if (fieldInfo != null) {
-                        SetResult(Global.WrapClr(fieldInfo.GetValue(type)), callTarget);
-                        return;
-                    }
-
-                    // Not a property, then must be a method
-                    SetResult(new JsClrMethodInfo(propertyName), callTarget);
-                    return;
-
-                    throw new JintException("Invalid property name: " + propertyName);
-                }
-            } */
-
             if (Result == null && typeFullname.Length > 0) {
                 typeFullname.Append('.').Append(propertyName);
             }
@@ -1520,29 +1452,6 @@ namespace Jint {
             Result = null;
 
             string propertyName = lastIdentifier = expression.Text;
-
-
-            // Search for .NET property or method
-            // TODO: cleanup
-            /*if (CurrentScope.IsClr && CurrentScope.Value != null) {
-                EnsureClrAllowed();
-
-                var propertyInfo = propertyGetter.GetValue(CurrentScope.Value, propertyName);
-                if (propertyInfo != null) {
-                    Result = Global.WrapClr(propertyInfo.GetValue(CurrentScope.Value, null));
-                    return;
-                }
-
-                var fieldInfo = fieldGetter.GetValue(CurrentScope.Value, propertyName);
-                if (fieldInfo != null) {
-                    Result = Global.WrapClr(fieldInfo.GetValue(CurrentScope.Value));
-                    return;
-                }
-
-                // Not a property, then must be a method
-                Result = new JsClrMethodInfo(propertyName);
-                return;
-            }*/
 
             JsInstance result = null;
             if (CurrentScope.TryGetProperty(propertyName, out result)) {
@@ -1632,22 +1541,5 @@ namespace Jint {
 
         #endregion
 
-        /* TODO: cleanup
-        #region IJintVisitor Members
-
-        public IPropertyGetter PropertyGetter {
-            get { return propertyGetter; }
-        }
-
-        public IMethodInvoker MethodGetter {
-            get { return methodInvoker; }
-        }
-
-        public IFieldGetter FieldGetter {
-            get { return fieldGetter; }
-        }
-
-        #endregion
-        */
     }
 }

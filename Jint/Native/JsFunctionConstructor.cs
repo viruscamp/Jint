@@ -5,7 +5,6 @@ using Jint.Expressions;
 using Jint.Delegates;
 
 namespace Jint.Native {
-    // TODO: what about function scopes
     [Serializable]
     public class JsFunctionConstructor : JsConstructor {
 

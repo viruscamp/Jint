@@ -67,6 +67,45 @@ Foo.prototype.PrintInfo = function() {
 var foo = new Foo('Gib','Mega mann');
 foo.PrintInfo();
 
+System.Console.WriteLine('========= DUMP OBJECT ==========');
+
+function ___StandAlone() {}
+
+for (var prop in foo){
+    try {
+        val = foo[prop];
+    } catch(err) {
+        val = 'Exception: ' + err.toString();
+    }
+    System.Console.WriteLine('{0} = {1}',prop,val.toString());
+}
+
+System.Console.WriteLine('========= DUMP PROTOTYPE ==========');
+
+foo = Foo.prototype;
+
+for (var prop in foo){
+    try {
+        val = foo[prop];
+    } catch(err) {
+        val = 'Exception: ' + err.toString();
+    }
+    System.Console.WriteLine('{0} = {1}',prop,val.toString());
+}
+
+System.Console.WriteLine('========= DUMP OBJECT PROTOTYPE ==========');
+
+foo = Object.prototype;
+
+for (var prop in foo){
+    try {
+        val = foo[prop];
+    } catch(err) {
+        val = 'Exception: ' + err.toString();
+    }
+    System.Console.WriteLine('{0} = {1}',prop,val.toString());
+}
+
 System.Console.WriteLine('========= TYPE INFORMATION ==========');
 //System.Console.WriteLine('[{1}] {0}', test.GetType().FullName, test.GetType().GUID);
 for(var prop in Baz) {
@@ -92,15 +131,6 @@ System.Console.WriteLine('========= PERFORMANCE ==========');
             
             ticks = Environment.TickCount;
             engine.Run(@"
-            var temp;
-            for (var i = 0; i < 100000; i++)
-                temp = new Jint.Temp.Baz('hi');
-            ");
-
-            Console.WriteLine("\toriginal {0} ms", Environment.TickCount - ticks);
-
-            ticks = Environment.TickCount;
-            engine.Run(@"
             var temp = new Baz();
             var val = ToInt32(20);
             System.Console.WriteLine('Debug: {0} + {1} = {2}', '10', val, temp.Foo('10',val));
@@ -121,30 +151,12 @@ System.Console.WriteLine('========= PERFORMANCE ==========');
 
             ticks = Environment.TickCount;
             engine.Run(@"
-            var temp = new Jint.Temp.Baz();
-            for (var i = 0; i < 100000; i++)
-                temp.Foo();
-            ");
-
-            Console.WriteLine("\toriginal {0} ms", Environment.TickCount - ticks);
-
-            ticks = Environment.TickCount;
-            engine.Run(@"
             var temp = new Baz();
             for (var i = 0; i < 100000; i++)
                 temp.CurrentValue;
             ");
 
             Console.WriteLine("get property {0} ms", Environment.TickCount - ticks);
-
-            ticks = Environment.TickCount;
-            engine.Run(@"
-            var temp = new Jint.Temp.Baz();
-            for (var i = 0; i < 100000; i++)
-                temp.CurrentValue;
-            ");
-
-            Console.WriteLine("\toriginal {0} ms", Environment.TickCount - ticks);
 
             ticks = Environment.TickCount;
             engine.Run(@"
@@ -157,12 +169,11 @@ System.Console.WriteLine('========= PERFORMANCE ==========');
 
             ticks = Environment.TickCount;
             engine.Run(@"
-            var temp = new Jint.Temp.Baz();
             for (var i = 0; i < 100000; i++)
-                temp.t;
+                /**/1;
             ");
 
-            Console.WriteLine("\toriginal {0} ms", Environment.TickCount - ticks);
+            Console.WriteLine("empty loop {0} ms", Environment.TickCount - ticks);
 
             //JsInstance inst = ctor.Construct(new JsInstance[0], null, visitor);
 

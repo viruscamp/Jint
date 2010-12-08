@@ -23,7 +23,7 @@ namespace Jint.Native {
         public override void InitPrototype(IGlobal global) {
             var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsInstance>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsInstance>(ToStringImpl,1), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toExponential", global.FunctionClass.New<JsNumber>(ToExponentialImpl), PropertyAttributes.DontEnum);

@@ -34,6 +34,14 @@ namespace Jint.Native {
             return false;
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override bool ToBoolean() {
             return StringToBoolean(value);
         }

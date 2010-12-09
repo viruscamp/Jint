@@ -37,6 +37,14 @@ namespace Jint.Native {
             : this(JsDateConstructor.CreateDateTime(value), prototype) {
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override double ToNumber() {
             return DateToDouble(value);
         }

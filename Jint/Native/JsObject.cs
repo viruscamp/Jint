@@ -20,6 +20,15 @@ namespace Jint.Native {
             : base(prototype) {
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                // if this instance holds a native value
+                return Value != null;
+            }
+        }
+
         public override string Class {
             get { return CLASS_OBJECT; }
         }

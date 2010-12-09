@@ -28,6 +28,14 @@ namespace Jint.Native {
             value = num;
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public static bool NumberToBoolean(double value) {
             return value != 0;
         }

@@ -81,7 +81,7 @@ namespace Jint.Native {
         public override string Class {
             get {
                 if (global.BooleanClass.HasInstance(this))
-                    return JsBoolean.TYPEOF;
+                    return JsInstance.CLASS_BOOLEAN;
                 if (global.DateClass.HasInstance(this))
                     return JsInstance.CLASS_OBJECT;
                 if (global.NumberClass.HasInstance(this))

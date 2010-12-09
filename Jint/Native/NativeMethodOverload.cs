@@ -54,6 +54,14 @@ namespace Jint.Native
             );
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
             return Execute(visitor, that, parameters, null);

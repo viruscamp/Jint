@@ -19,6 +19,14 @@ namespace Jint.Native {
             }
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override Descriptor GetDescriptor(string index) {
             return null;
         }

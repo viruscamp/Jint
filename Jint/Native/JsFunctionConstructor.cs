@@ -113,7 +113,7 @@ namespace Jint.Native {
         }
 
         public JsInstance ToString2(JsDictionaryObject target, JsInstance[] parameters) {
-            return Global.StringClass.New(target.ToString());
+            return Global.StringClass.New(target.ToSource());
         }
     }
 }

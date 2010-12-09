@@ -106,13 +106,13 @@ namespace Jint.Native {
             if (target.Class == JsInstance.CLASS_FUNCTION)
                 return Global.StringClass.New(String.Concat("[object Function]"));
 
-            if (constructor == null) {
+            if (constructor == null || constructor.Name == null)
+            {
                 return Global.StringClass.New(String.Concat("[object Object]"));
             }
             else {
                 return Global.StringClass.New(String.Concat("[object ", constructor.Name, "]"));
             }
-
 
         }
 

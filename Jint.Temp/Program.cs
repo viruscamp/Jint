@@ -21,13 +21,19 @@ namespace Jint.Temp {
 
             engine.SetFunction("nested", new Action(delegate() {
                 engine.Run(@"
-var temp = 'hello';
+temp = 'hello';
 ");
             }));
 
             engine.Run(@"
-nested();
-System.Console.WriteLine(typeof temp);
+var o = {};
+o.func = function() {
+    var t = 1;
+    var res = t == null ? 'ok' : 'nok';
+    System.Console.WriteLine(res);
+};
+
+o.func();
 ");
 
             

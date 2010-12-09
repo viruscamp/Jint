@@ -76,6 +76,14 @@ namespace Jint.Native {
             return (visitor.Result as JsObject ?? instance);
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override object Value {
             get { return null; }
             set { }

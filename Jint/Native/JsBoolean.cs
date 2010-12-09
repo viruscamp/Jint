@@ -7,6 +7,7 @@ namespace Jint.Native {
     public sealed class JsBoolean : JsObject, ILiteral {
         private bool value;
 
+
         public override object Value {
             get { return value; }
         }
@@ -21,10 +22,16 @@ namespace Jint.Native {
             value = boolean;
         }
 
-        public const string TYPEOF = "boolean";
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_BOOLEAN; }
         }
 
         public override bool ToBoolean() {

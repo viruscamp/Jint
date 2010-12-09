@@ -8,6 +8,14 @@ namespace Jint.Native {
     public class JsError : JsObject {
         private string message { get { return this["message"].ToString(); } set { this["message"] = global.StringClass.New(value); } }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override object Value {
             get {
                 return message;

@@ -89,7 +89,7 @@ namespace Jint.Native {
                 switch (parameters[0].Class) {
                     case JsString.TYPEOF: return Global.StringClass.New(parameters[0].ToString());
                     case JsInstance.CLASS_NUMBER: return Global.NumberClass.New(parameters[0].ToNumber());
-                    case JsBoolean.TYPEOF: return Global.BooleanClass.New(parameters[0].ToBoolean());
+                    case JsInstance.CLASS_BOOLEAN: return Global.BooleanClass.New(parameters[0].ToBoolean());
                     default:
                         return parameters[0];
                 }
@@ -162,7 +162,6 @@ namespace Jint.Native {
         public JsInstance GetPrototypeOfImpl(JsInstance[] parameters) {
             if (parameters[0].Class != JsInstance.CLASS_OBJECT)
                 throw new JsException(Global.TypeErrorClass.New());
-            // TODO: read 15.2.3.2 and implement
             return ((parameters[0] as JsObject ?? JsUndefined.Instance)[JsFunction.CONSTRUCTOR] as JsObject ?? JsUndefined.Instance)[JsFunction.PROTOTYPE];
         }
 

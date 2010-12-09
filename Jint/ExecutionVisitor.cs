@@ -54,12 +54,6 @@ namespace Jint {
         private StringBuilder typeFullname = new StringBuilder();
         private string lastIdentifier = String.Empty;
 
-        /// <summary>
-        /// Use to keep the previous evaluated member to call the method on (e.g., myArray/.push/()). When
-        /// evaluating the MethodCall, the latest Result is a JsFunction, and myArray is lost. Here it will be 
-        /// in callTarget
-        /// </summary>
-
         ResultInfo lastResult;
         Stack<ResultInfo> stackResults = new Stack<ResultInfo>();
 
@@ -603,6 +597,7 @@ namespace Jint {
             if (statement.Expression != null) {
                 statement.Expression.Accept(this);
                 if (statement.Global) {
+                    throw new InvalidOperationException("Cant declare a global variable");
                     // todo: where is it from? 
                 }
                 else {
@@ -828,7 +823,7 @@ namespace Jint {
                             else if (x.Class == JsString.TYPEOF) {
                                 return Global.BooleanClass.New(x.ToString() == y.ToString());
                             }
-                            else if (x.Class == JsBoolean.TYPEOF) {
+                            else if (x.Class == JsInstance.CLASS_BOOLEAN) {
                                 return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
                             }
                             else if (x.Class == JsInstance.CLASS_OBJECT) {
@@ -850,7 +845,8 @@ namespace Jint {
                         else if (x.Class == JsString.TYPEOF && y.Class == JsInstance.CLASS_NUMBER) {
                             return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
                         }
-                        else if (x.Class == JsBoolean.TYPEOF || y.Class == JsBoolean.TYPEOF) {
+                        else if (x.Class == JsInstance.CLASS_BOOLEAN || y.Class == JsInstance.CLASS_BOOLEAN)
+                        {
                             return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
                         }
                         else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsInstance.CLASS_NUMBER)) {
@@ -972,7 +968,8 @@ namespace Jint {
                     else if (left.Class == JsString.TYPEOF) {
                         Result = Global.BooleanClass.New(left.ToString() == right.ToString());
                     }
-                    else if (left.Class == JsBoolean.TYPEOF) {
+                    else if (left.Class == JsInstance.CLASS_BOOLEAN)
+                    {
                         Result = Global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
                     }
                     else if (left == right) {

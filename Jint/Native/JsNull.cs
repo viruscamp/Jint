@@ -11,6 +11,14 @@ namespace Jint.Native {
         public JsNull() {
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public const string TYPEOF = "object";
 
         public override string Class {

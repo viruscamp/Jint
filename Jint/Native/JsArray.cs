@@ -20,6 +20,14 @@ namespace Jint.Native {
             length = len;
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override bool ToBoolean() {
             return Length > 0;
         }

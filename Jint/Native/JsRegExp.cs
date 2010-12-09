@@ -49,6 +49,14 @@ namespace Jint.Native {
             get { return options; }
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override object Value {
             get {
                 return null;

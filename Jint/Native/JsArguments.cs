@@ -39,6 +39,14 @@ namespace Jint.Native {
         private int length;
         private IGlobal global;
 
+        public override bool IsClr
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override bool ToBoolean() {
             return false;
         }

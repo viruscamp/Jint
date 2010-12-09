@@ -54,6 +54,14 @@ namespace Jint.Native
                 Arguments.Add(item.Name);
         }
 
+        public override bool IsClr
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public MethodInfo GetWrappedMethod()
         {
             return m_nativeMethod;

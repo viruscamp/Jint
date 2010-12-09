@@ -67,7 +67,7 @@ namespace Jint.Native {
 
         public override string ToSource() {
             /// TODO: subsitute escape sequences
-            return "'" + ToString() + "'";
+            return value == null ? "null" : "'" + ToString() + "'";
         }
 
         public override string ToString() {

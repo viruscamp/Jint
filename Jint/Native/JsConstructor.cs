@@ -46,5 +46,10 @@ namespace Jint.Native {
         {
             return new JsObject(value,PrototypeProperty);
         }
+
+        public override string GetBody()
+        {
+            return "[native ctor]";
+        }
     }
 }

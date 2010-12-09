@@ -36,7 +36,8 @@ namespace Jint.Native {
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
-            if (that == null) {
+            if (that == null || (that as IGlobal) == visitor.Global)
+            {
                 visitor.Return(parameters.Length > 0 ? New(parameters[0].ToString()) : New());
             }
             else {

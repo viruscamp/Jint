@@ -648,11 +648,9 @@ namespace Jint {
 
             Result = null;
 
-            // don't even try if there is a generic type specifier
-
             expression.Expression.Accept(this);
 
-            if (typeFullname.Length > 0 && Result == JsUndefined.Instance && expression.Generics.Count > 0)
+            if (Result == JsUndefined.Instance && typeFullname.Length > 0 && expression.Generics.Count > 0)
             {
                 string typeName = typeFullname.ToString();
                 typeFullname = new StringBuilder();
@@ -680,8 +678,7 @@ namespace Jint {
 
             if (Result != null && Result is JsFunction) {
                 JsFunction function = (JsFunction)Result;
-                Type[] genericParameters = null;
-
+                
                 // Process parameters
                 JsInstance[] parameters = new JsInstance[expression.Arguments.Count];
 
@@ -718,6 +715,104 @@ namespace Jint {
         public static bool IsNullOrUndefined(JsInstance o) {
             return (o == JsUndefined.Instance) || (o == JsNull.Instance) || (o.IsClr && o.Value == null);
         }
+
+        public JsBoolean Compare(JsInstance x, JsInstance y)
+        {
+            if (x.IsClr && y.IsClr)
+            {
+                return Global.BooleanClass.New(x.Value.Equals(y.Value));
+            }
+
+            if (x.IsClr)
+            {
+                return Compare(x.ToPrimitive(Global), y);
+            }
+
+            if (y.IsClr)
+            {
+                return Compare(x, y.ToPrimitive(Global));
+            }
+
+            if (x.Class == y.Class)
+            { // if both are Objects but then only one is Clrs
+                if (x == JsUndefined.Instance)
+                {
+                    return Global.BooleanClass.True;
+                }
+                else if (x == JsNull.Instance)
+                {
+                    return Global.BooleanClass.True;
+                }
+                else if (x.Class == JsInstance.CLASS_NUMBER)
+                {
+                    if (x.ToNumber() == double.NaN)
+                    {
+                        return Global.BooleanClass.False;
+                    }
+                    else if (y.ToNumber() == double.NaN)
+                    {
+                        return Global.BooleanClass.False;
+                    }
+                    else if (x.ToNumber() == y.ToNumber())
+                    {
+                        return Global.BooleanClass.True;
+                    }
+                    else
+                    {
+                        return Global.BooleanClass.False;
+                    }
+                }
+                else if (x.Class == JsString.TYPEOF)
+                {
+                    return Global.BooleanClass.New(x.ToString() == y.ToString());
+                }
+                else if (x.Class == JsInstance.CLASS_BOOLEAN)
+                {
+                    return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
+                }
+                else if (x.Class == JsInstance.CLASS_OBJECT)
+                {
+                    return Global.BooleanClass.New(x == y);
+                }
+                else
+                {
+                    return Global.BooleanClass.New(x.Value.Equals(y.Value));
+                }
+            }
+            else if (x == JsNull.Instance && y == JsUndefined.Instance)
+            {
+                return Global.BooleanClass.True;
+            }
+            else if (x == JsUndefined.Instance && y == JsNull.Instance)
+            {
+                return Global.BooleanClass.True;
+            }
+            else if (x.Class == JsInstance.CLASS_NUMBER && y.Class == JsString.TYPEOF)
+            {
+                return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
+            }
+            else if (x.Class == JsString.TYPEOF && y.Class == JsInstance.CLASS_NUMBER)
+            {
+                return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
+            }
+            else if (x.Class == JsInstance.CLASS_BOOLEAN || y.Class == JsInstance.CLASS_BOOLEAN)
+            {
+                return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
+            }
+            else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsInstance.CLASS_NUMBER))
+            {
+                return Compare(x, y.ToPrimitive(Global));
+            }
+            else if (x.Class == JsInstance.CLASS_OBJECT && (y.Class == JsString.TYPEOF || y.Class == JsInstance.CLASS_NUMBER))
+            {
+                return Compare(x.ToPrimitive(Global), y);
+            }
+            else
+            {
+                return Global.BooleanClass.False;
+            }
+        }
+        
 
         public void Visit(BinaryExpression expression) {
             // Evaluates the left expression and saves the value
@@ -784,83 +879,7 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Equal:
-                    Func<JsInstance, JsInstance, JsBoolean> equals = null;
-                    equals = (JsInstance x, JsInstance y) => {
-                        if (x.IsClr && y.IsClr) {
-                            return Global.BooleanClass.New(x.Value.Equals(y.Value));
-                        }
-
-                        if (x.IsClr) {
-                            return equals(x.ToPrimitive(Global), y);
-                        }
-
-                        if (y.IsClr) {
-                            return equals(x, y.ToPrimitive(Global));
-                        }
-
-                        if (x.Class == y.Class) { // if both are Objects but then only one is Clrs
-                            if (x == JsUndefined.Instance) {
-                                return Global.BooleanClass.True;
-                            }
-                            else if (x == JsNull.Instance) {
-                                return Global.BooleanClass.True;
-                            }
-                            else if (x.Class == JsInstance.CLASS_NUMBER)
-                            {
-                                if (x.ToNumber() == double.NaN) {
-                                    return Global.BooleanClass.False;
-                                }
-                                else if (y.ToNumber() == double.NaN) {
-                                    return Global.BooleanClass.False;
-                                }
-                                else if (x.ToNumber() == y.ToNumber()) {
-                                    return Global.BooleanClass.True;
-                                }
-                                else {
-                                    return Global.BooleanClass.False;
-                                }
-                            }
-                            else if (x.Class == JsString.TYPEOF) {
-                                return Global.BooleanClass.New(x.ToString() == y.ToString());
-                            }
-                            else if (x.Class == JsInstance.CLASS_BOOLEAN) {
-                                return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
-                            }
-                            else if (x.Class == JsInstance.CLASS_OBJECT) {
-                                return Global.BooleanClass.New(x == y);
-                            }
-                            else {
-                                return Global.BooleanClass.New(x.Value.Equals(y.Value));
-                            }
-                        }
-                        else if (x == JsNull.Instance && y == JsUndefined.Instance) {
-                            return Global.BooleanClass.True;
-                        }
-                        else if (x == JsUndefined.Instance && y == JsNull.Instance) {
-                            return Global.BooleanClass.True;
-                        }
-                        else if (x.Class == JsInstance.CLASS_NUMBER && y.Class == JsString.TYPEOF) {
-                            return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
-                        }
-                        else if (x.Class == JsString.TYPEOF && y.Class == JsInstance.CLASS_NUMBER) {
-                            return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
-                        }
-                        else if (x.Class == JsInstance.CLASS_BOOLEAN || y.Class == JsInstance.CLASS_BOOLEAN)
-                        {
-                            return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
-                        }
-                        else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsInstance.CLASS_NUMBER)) {
-                            return equals(x, y.ToPrimitive(Global));
-                        }
-                        else if (x.Class == JsInstance.CLASS_OBJECT && (y.Class == JsString.TYPEOF || y.Class == JsInstance.CLASS_NUMBER)) {
-                            return equals(x.ToPrimitive(Global), y);
-                        }
-                        else {
-                            return Global.BooleanClass.False;
-                        }
-                    };
-
-                    Result = equals(left, right);
+                    Result = Compare(left, right);
 
                     break;
 
@@ -898,21 +917,8 @@ namespace Jint {
 
                 case BinaryExpressionType.NotEqual:
 
-                    if (left == JsUndefined.Instance && right == JsUndefined.Instance || left == JsNull.Instance && right == JsNull.Instance) {
-                        Result = Global.BooleanClass.False;
-                    }
-                    else {
-                        if (left == JsUndefined.Instance && right != JsUndefined.Instance || left == JsNull.Instance && right != JsNull.Instance) {
-                            Result = Global.BooleanClass.True;
-                        }
-                        else
-                            if (left != JsUndefined.Instance && right == JsUndefined.Instance || left != JsNull.Instance && right == JsNull.Instance) {
-                                Result = Global.BooleanClass.True;
-                            }
-                            else {
-                                Result = Global.BooleanClass.New(!left.Value.Equals(right.Value));
-                            }
-                    }
+                    Result = Global.BooleanClass.New(!Compare(left, right).ToBoolean());
+
                     break;
 
                 case BinaryExpressionType.Plus:
@@ -1348,7 +1354,7 @@ namespace Jint {
             if (that != null)
                 functionScope.DefineOwnProperty(JsScope.THIS, that);
             else
-                functionScope.DefineOwnProperty(JsScope.THIS, Global as JsObject);
+                functionScope.DefineOwnProperty(JsScope.THIS, that = Global as JsObject);
 
             // enter activation object
             EnterScope(functionScope);

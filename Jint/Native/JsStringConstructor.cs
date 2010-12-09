@@ -53,7 +53,8 @@ namespace Jint.Native {
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
-            if (that == null) {
+            if (that == null || (that as IGlobal) == visitor.Global)
+            {
                 // 15.5.1 - When String is called as a function rather than as a constructor, it performs a type conversion.
                 if (parameters.Length > 0) {
                     return visitor.Return(Global.StringClass.New(parameters[0].ToString()));

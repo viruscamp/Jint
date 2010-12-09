@@ -39,7 +39,8 @@ namespace Jint.Native {
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
-            if (that == null) {
+            if (that == null || (that as IGlobal) == visitor.Global)
+            {
                 // 15.7.1 - When Number is called as a function rather than as a constructor, it performs a type conversion.
                 if (parameters.Length > 0) {
                     return visitor.Return(New(parameters[0].ToNumber()));
@@ -57,7 +58,7 @@ namespace Jint.Native {
                     that.Value = 0;
                 }
 
-                visitor.Return(that);
+                return visitor.Return(that);
             }
 
             return that;

@@ -37,6 +37,7 @@ namespace Jint.Native {
             : base(prototype) {
             Arguments = new List<string>();
             Statement = new EmptyStatement();
+            DefineOwnProperty(PROTOTYPE, JsNull.Instance, PropertyAttributes.DontEnum);
         }
 
         public override int Length

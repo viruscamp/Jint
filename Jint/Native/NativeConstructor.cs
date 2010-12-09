@@ -238,7 +238,7 @@ namespace Jint.Native
         /// <returns></returns>
         public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
-            if (that == null || that == JsUndefined.Instance || that == JsNull.Instance || that is JsGlobal)
+            if (that == null || that == JsUndefined.Instance || that == JsNull.Instance || (that as IGlobal) == visitor.Global)
                 throw new JintException("A constructor '" + reflectedType.FullName + "' should be applied to the object");
 
             if (that.Value != null)

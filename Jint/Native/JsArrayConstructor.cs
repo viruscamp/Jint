@@ -43,21 +43,17 @@ namespace Jint.Native {
         }
 
         public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
-            var instance = visitor.Global.ArrayClass.New();
-            visitor.ExecuteFunction(this, instance, parameters);
+            JsArray array = New();
 
-            return (visitor.Result as JsObject ?? instance);
+            for (int i = 0; i < parameters.Length; i++)
+                array.put(i, parameters[i]); // fast versin since it avoids a type conversion
+
+            return array;
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
-            if (that == null) {
-                JsArray array = Global.ArrayClass.New();
-
-                for (int i = 0; i < parameters.Length; i++) {
-                    array[i.ToString()] = parameters[i];
-                }
-
-                visitor.Return(array);
+            if (that == null || (that as IGlobal) == visitor.Global ) {
+                return visitor.Return(Construct(parameters,null,visitor));
             }
             else {
                 // When called as part of a new expression, it is a constructor: it initialises the newly created object.
@@ -65,10 +61,8 @@ namespace Jint.Native {
                     that[i.ToString()] = parameters[i];
                 }
 
-                visitor.Return(that);
+                return visitor.Return(that);
             }
-
-            return that;
         }
 
         /// <summary>

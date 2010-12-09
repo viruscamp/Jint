@@ -36,7 +36,8 @@ namespace Jint.Native {
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
             // e.g., var foo = Boolean(true);
-            if (that == null) {
+            if (that == null || (that as IGlobal) == visitor.Global)
+            {
                 visitor.Return(parameters.Length > 0 ? new JsBoolean(parameters[0].ToBoolean(), PrototypeProperty) : new JsBoolean(PrototypeProperty));
             }
             else // e.g., var foo = new Boolean(true);

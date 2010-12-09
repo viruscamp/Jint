@@ -92,24 +92,32 @@ namespace Jint.Native {
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+            return visitor.Return( Construct(parameters,null,visitor) );
+        }
+
+        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
+        {
             JsFunction instance = New();
 
             instance.Arguments = new List<string>();
 
-            for (int i = 0; i < parameters.Length - 1; i++) {
+            for (int i = 0; i < parameters.Length - 1; i++)
+            {
                 string arg = parameters[i].ToString();
 
-                foreach (string a in arg.Split(',')) {
+                foreach (string a in arg.Split(','))
+                {
                     instance.Arguments.Add(a.Trim());
                 }
             }
 
-            if (parameters.Length >= 1) {
+            if (parameters.Length >= 1)
+            {
                 Program p = JintEngine.Compile(parameters[parameters.Length - 1].Value.ToString(), visitor.DebugMode);
                 instance.Statement = new BlockStatement() { Statements = p.Statements };
             }
 
-            return visitor.Return(instance);
+            return instance;
         }
 
         public JsInstance ToString2(JsDictionaryObject target, JsInstance[] parameters) {

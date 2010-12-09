@@ -55,3 +55,7 @@ assert('[object Number]', Object.prototype.toString.apply(1));
 assert('[object Object]', Object.prototype.toString.apply(new Object()));
 assert('[object RegExp]', Object.prototype.toString.apply(/x/));
 assert('[object String]', Object.prototype.toString.apply('foo'));
+
+var opts = Object.prototype.toString;
+assert('[object Object]',opts.call(undefined)); // call on the undefined should pass global, this is used by some ajax libraries
+assert('[object Object]',opts());

@@ -171,7 +171,8 @@ namespace Jint.Native {
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
             JsDate result = Construct(parameters);
 
-            if (that == null) {
+            if (that == null || (that as IGlobal) == visitor.Global)
+            {
                 return visitor.Return(ToStringImpl(result, JsInstance.EMPTY));
             }
 

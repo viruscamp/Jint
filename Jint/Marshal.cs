@@ -34,7 +34,7 @@ namespace Jint
         IGlobal m_global;
         Dictionary<Type, NativeConstructor> m_typeCache = new Dictionary<Type,NativeConstructor>();
         Dictionary<Type, Delegate> m_arrayMarshllers = new Dictionary<Type, Delegate>();
-        NativeConstructor m_typeType;
+        NativeTypeConstructor m_typeType;
 
         /* Assuming that Object supports IConvertable
          *
@@ -74,8 +74,7 @@ namespace Jint
         public void InitTypes()
         {
             // we cant initize a m_typeType property since m_global.Marshller should be initialized
-            m_typeType = new NativeConstructor(typeof(Type), m_global);
-            m_typeType.SetupNativeProperties(m_typeType);
+            m_typeType = NativeTypeConstructor.CreateNativeTypeConstructor(m_global);
 
             m_typeCache[typeof(Type)] = m_typeType;
 
@@ -147,20 +146,23 @@ namespace Jint
         NativeConstructor CreateConstructor(Type t)
         {
             // TODO: Move this code to NativeTypeConstructor.Wrap
-            NativeConstructor res;
+            /* NativeConstructor res;
             res = new NativeConstructor(t, m_global);
             res.InitPrototype(m_global);
             m_typeType.SetupNativeProperties(res);
             return res;
+            */
+            return (NativeConstructor)m_typeType.Wrap(t);
         }
 
-        NativeConstructor CreateConstructor(Type t, JsObject prototypeProperty)
+        NativeConstructor CreateConstructor(Type t, JsObject prototypePropertyPrototype)
         {
-            NativeConstructor res;
+            /* NativeConstructor res;
             res = new NativeConstructor(t, m_global,prototypeProperty);
             res.InitPrototype(m_global);
             m_typeType.SetupNativeProperties(res);
-            return res;
+            return res; */
+            return (NativeConstructor)m_typeType.WrapSpecialType(t, prototypePropertyPrototype);
         }
 
         TElem[] MarshalJsArrayHelper<TElem>(JsObject value)
@@ -229,8 +231,13 @@ namespace Jint
                         throw new JintException("Can't convert a non function object to a delegate type");
                     return (T)MarshalJsFunctionHelper(value as JsFunction, typeof(T));
                 }
+                else if (value != JsNull.Instance && value != JsUndefined.Instance && value is T)
+                {
+                    return (T)(object)value;
+                }
                 else
                 {
+                    // JsNull and JsUndefined will fall here and become a nulls
                     return (T)Convert.ChangeType(value.Value, typeof(T));
                 }
             }
@@ -415,7 +422,10 @@ namespace Jint
             }
 
             // now we have an optional 'that' parameter followed by the sequence of converted arguments
-            code.Emit(OpCodes.Call, info);
+            if (!info.IsStatic)
+                code.Emit(OpCodes.Callvirt, info);
+            else
+                code.Emit(OpCodes.Call, info);
 
             if (!info.ReturnType.Equals( typeof(void) ) )
             {

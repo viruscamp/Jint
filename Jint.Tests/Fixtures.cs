@@ -203,26 +203,32 @@ namespace Jint.Tests {
         [TestMethod]
         public void SwitchShouldFallBackWhenNoBreak() {
             Test(@"
-                var result = 0;
-                var input = 'a';
-                switch(input) {
-                     case 'a':
-                     case 'b':
-                         result = 2;
-                         break;
-                      case 'c':
-                          result = 3;
-                         break;
-                      case 'd':
-                           result = 4;
-                           break;
-                      default:
-                           break;
+                function doSwitch(input) {
+                    var result = 0;
+                    switch(input) {
+                         case 'a':
+                         case 'b':
+                             result = 2;
+                             break;
+                          case 'c':
+                              result = 3;
+                             break;
+                          case 'd':
+                               result = 4;
+                               break;
+                          default:
+                               break;
+                    }
+                    return result;
                 }
-                assert(2, result);
+
+                assert(2, doSwitch('a'));
+                assert(0, doSwitch('z'));
+                assert(2, doSwitch('b'));
+                assert(3, doSwitch('c'));
+                assert(4, doSwitch('d'));
             ");
         }
-
         [TestMethod]
         public void ShouldHandleVariableDeclaration() {
             Assert.AreEqual(null, new JintEngine().Run("var i; return i;"));

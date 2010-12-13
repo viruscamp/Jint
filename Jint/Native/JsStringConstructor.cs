@@ -285,7 +285,7 @@ namespace Jint.Native {
                     regexp["lastIndex"] = Global.NumberClass.New(0);
                 }
 
-                if (replaceValue.Class == JsInstance.CLASS_FUNCTION)
+                if (replaceValue is JsFunction)
                 {
                     string ret = ((JsRegExp)parameters[0]).Regex.Replace(source, delegate(Match m) {
                         List<JsInstance> replaceParameters = new List<JsInstance>();
@@ -334,7 +334,7 @@ namespace Jint.Native {
                 string search = searchValue.ToString();
                 int index = source.IndexOf(search);
                 if (index != -1) {
-                    if (replaceValue.Class == JsInstance.CLASS_FUNCTION)
+                    if (replaceValue is JsFunction)
                     {
                         List<JsInstance> replaceParameters = new List<JsInstance>();
                         replaceParameters.Add(Global.StringClass.New(search));

@@ -101,7 +101,7 @@ namespace Jint.Native {
         }
 
         public override string Class {
-            get { return CLASS_FUNCTION; }
+            get { return CLASS_OBJECT; }
         }
 
         public override string ToSource() {

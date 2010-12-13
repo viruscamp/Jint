@@ -89,18 +89,15 @@ namespace Jint.Native {
             }
 
             if (obj.TryGetProperty("get", out result)) {
-                if (result.Class != JsInstance.CLASS_FUNCTION) {
+                if (!(result is JsFunction))
                     throw new JsException(global.TypeErrorClass.New("The getter has to be a function"));
-                }
 
                 ((PropertyDescriptor)desc).GetFunction = (JsFunction)result;
             }
 
             if (obj.TryGetProperty("set", out result)) {
-                if (result.Class != JsInstance.CLASS_FUNCTION)
-                {
+                if (!(result is JsFunction))
                     throw new JsException(global.TypeErrorClass.New("The setter has to be a function"));
-                }
 
                 ((PropertyDescriptor)desc).SetFunction = (JsFunction)result;
             }

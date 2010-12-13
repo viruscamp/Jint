@@ -103,7 +103,8 @@ namespace Jint.Native {
             // constructor accesible via target.Prototype, or by itself if target is already prototype
             JsFunction constructor = target["constructor"] as JsFunction;
 
-            if (target.Class == JsInstance.CLASS_FUNCTION)
+            // TODO: rewrite
+            if (target is JsFunction)
                 return Global.StringClass.New(String.Concat("[object Function]"));
 
             if (constructor == null || constructor.Name == null)

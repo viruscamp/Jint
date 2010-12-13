@@ -49,12 +49,17 @@ namespace Jint.Native {
             return Value != null ? Value.GetHashCode() : base.GetHashCode();
         }
 
+        public const string CLASS_NULL = "null";
         public const string CLASS_OBJECT = "object";
         public const string CLASS_NUMBER = "number";
         public const string CLASS_STRING = "string";
         public const string CLASS_BOOLEAN = "boolean";
-        public const string CLASS_FUNCTION = "function";
         public const string CLASS_UNDEFINED = "undefined";
+
+        /// <summary>
+        /// Result of the typeof operator for functions
+        /// </summary>
+        public const string TYPEOF_FUNCTION = "function";
 
         public abstract string Class { get; }
 

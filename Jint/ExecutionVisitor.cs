@@ -770,7 +770,7 @@ namespace Jint {
                 {
                     return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
                 }
-                else if (x.Class == JsInstance.CLASS_OBJECT)
+                else if (x.Class == JsInstance.CLASS_OBJECT )
                 {
                     return Global.BooleanClass.New(x == y);
                 }
@@ -955,10 +955,10 @@ namespace Jint {
                     if (left.Class != right.Class) {
                         Result = Global.BooleanClass.False;
                     }
-                    else if (left.Class == JsUndefined.TYPEOF) {
+                    else if (left.Class == JsInstance.CLASS_UNDEFINED) {
                         Result = Global.BooleanClass.True;
                     }
-                    else if (left.Class == JsNull.TYPEOF) {
+                    else if (left.Class == JsInstance.CLASS_NULL) {
                         Result = Global.BooleanClass.True;
                     }
                     else if (left.Class == JsInstance.CLASS_NUMBER) {
@@ -1043,7 +1043,19 @@ namespace Jint {
                         Result = Global.StringClass.New(JsUndefined.Instance.Class);
                     }
                     else {
-                        Result = Global.StringClass.New(Result.Class.ToLower());
+                        // is object has an embed [[Call]] implementation, then return "fucntion" ecma262.3 11.4.3
+                        if (Result is JsFunction)
+                        {
+                            Result = Global.StringClass.New(JsInstance.TYPEOF_FUNCTION);
+                        }
+                        else if (Result is JsNull)
+                        {
+                            Result = Global.StringClass.New(JsInstance.CLASS_OBJECT);
+                        }
+                        else
+                        {
+                            Result = Global.StringClass.New(Result.Class.ToLower());
+                        }
                     }
 
                     break;
@@ -1276,7 +1288,7 @@ namespace Jint {
             }
             #endregion
 
-            if (target.Class == JsInstance.CLASS_FUNCTION)
+            if (target is JsFunction)
             {
                 JsFunction function = (JsFunction)target;
 

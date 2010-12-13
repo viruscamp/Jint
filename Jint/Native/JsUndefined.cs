@@ -31,10 +31,8 @@ namespace Jint.Native {
             return null;
         }
 
-        public new const string TYPEOF = "undefined";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_UNDEFINED; }
         }
 
         public override string ToString() {

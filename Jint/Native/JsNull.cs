@@ -19,10 +19,16 @@ namespace Jint.Native {
             }
         }
 
-        public const string TYPEOF = "object";
+        public override string Type
+        {
+            get
+            {
+                return TYPE_NULL;
+            }
+        }
 
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_OBJECT; }
         }
 
         public override int Length {

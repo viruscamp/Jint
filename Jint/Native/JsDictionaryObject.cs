@@ -176,7 +176,7 @@ namespace Jint.Native {
         }
 
         public void DefineOwnProperty(string key, JsInstance value) {
-            if (value != null && value.Class == Descriptor.TYPEOF) {
+            if (value is Descriptor) {
                 DefineOwnProperty(key, (Descriptor)value);
             }
             else {

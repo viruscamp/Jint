@@ -115,10 +115,13 @@ namespace Jint.Native {
             }
         }
 
-        public static readonly string TYPEOF = "descriptor";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_DESCRIPTOR; }
+        }
+
+        public override string Type
+        {
+            get { return TYPE_DESCRIPTOR; }
         }
     }
 }

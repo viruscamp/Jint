@@ -74,10 +74,16 @@ namespace Jint.Native {
             return value.ToString();
         }
 
-        public const string TYPEOF = "string";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_STRING; }
+        }
+
+        public override string Type
+        {
+            get
+            {
+                return TYPE_STRING;
+            }
         }
 
         public override int GetHashCode() {

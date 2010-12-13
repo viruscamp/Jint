@@ -71,10 +71,8 @@ namespace Jint.Native {
             return "/" + pattern.ToString() + "/" + (IsGlobal ? "g" : String.Empty) + (IsIgnoreCase ? "i" : String.Empty) + (IsMultiline ? "m" : String.Empty);
         }
 
-        public const string TYPEOF = "regexp";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_REGEXP; }
         }
     }
 }

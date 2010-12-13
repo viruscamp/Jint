@@ -28,6 +28,17 @@ namespace Jint.Native {
             }
         }
 
+        /// <summary>
+        /// 15.4.2
+        /// </summary>
+        public override string Class
+        {
+            get
+            {
+                return CLASS_ARRAY;
+            }
+        }
+
         public override bool ToBoolean() {
             return Length > 0;
         }

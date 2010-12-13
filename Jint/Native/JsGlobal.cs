@@ -91,6 +91,14 @@ namespace Jint.Native {
 
         }
 
+        public override string Class
+        {
+            get
+            {
+                return CLASS_GLOBAL;
+            }
+        }
+
         #region Global Functions
 
         public JsObjectConstructor ObjectClass { get; private set; }
@@ -116,7 +124,7 @@ namespace Jint.Native {
         /// 15.1.2.1
         /// </summary>
         public JsInstance Eval(JsInstance[] arguments) {
-            if (JsString.TYPEOF != arguments[0].Class) {
+            if (JsInstance.CLASS_STRING != arguments[0].Class) {
                 return arguments[0];
             }
 

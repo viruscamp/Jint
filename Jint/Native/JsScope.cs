@@ -54,10 +54,13 @@ namespace Jint.Native {
             this.bag = bag;
         }
 
-        public const string TYPEOF = "scope";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_SCOPE; }
+        }
+
+        public override string Type
+        {
+            get { return TYPE_OBJECT; }
         }
 
         public JsScope Global {
@@ -139,11 +142,21 @@ namespace Jint.Native {
         public override IEnumerable<string> GetKeys() {
             if (bag != null) {
                 foreach (var key in bag.GetKeys())
-                    if (base.GetDescriptor(key) == null)
+                    if (baseGetDescriptor(key) == null)
                         yield return key;
             }
-            foreach (var key in base.GetKeys())
+            foreach (var key in baseGetKeys())
                 yield return key;
+        }
+
+        private Descriptor baseGetDescriptor(string key)
+        {
+            return base.GetDescriptor(key);
+        }
+
+        private IEnumerable<string> baseGetKeys()
+        {
+            return base.GetKeys();
         }
 
         public override IEnumerable<JsInstance> GetValues() {

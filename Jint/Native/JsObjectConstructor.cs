@@ -87,7 +87,7 @@ namespace Jint.Native {
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
             if (parameters.Length > 0) {
                 switch (parameters[0].Class) {
-                    case JsString.TYPEOF: return Global.StringClass.New(parameters[0].ToString());
+                    case JsInstance.CLASS_STRING: return Global.StringClass.New(parameters[0].ToString());
                     case JsInstance.CLASS_NUMBER: return Global.NumberClass.New(parameters[0].ToNumber());
                     case JsInstance.CLASS_BOOLEAN: return Global.BooleanClass.New(parameters[0].ToBoolean());
                     default:
@@ -100,21 +100,7 @@ namespace Jint.Native {
 
         // 15.2.4.3 and 15.2.4.4
         public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            // constructor accesible via target.Prototype, or by itself if target is already prototype
-            JsFunction constructor = target["constructor"] as JsFunction;
-
-            // TODO: rewrite
-            if (target is JsFunction)
-                return Global.StringClass.New(String.Concat("[object Function]"));
-
-            if (constructor == null || constructor.Name == null)
-            {
-                return Global.StringClass.New(String.Concat("[object Object]"));
-            }
-            else {
-                return Global.StringClass.New(String.Concat("[object ", constructor.Name, "]"));
-            }
-
+            return Global.StringClass.New(String.Concat("[object ", target.Class, "]"));
         }
 
         // 15.2.4.4

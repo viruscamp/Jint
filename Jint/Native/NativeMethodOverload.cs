@@ -10,13 +10,6 @@ namespace Jint.Native
     public class NativeMethodOverload : JsFunction
     {
 
-        class MethodMatch
-        {
-            public MethodInfo method;
-            public int weight;
-            public Type[] parameters;
-        }
-
         Marshaller m_marshaller;
         NativeOverloadImpl<MethodInfo, JsMethodImpl> m_overloads;
 

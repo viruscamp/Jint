@@ -32,7 +32,15 @@ namespace Jint.Native {
         }
 
         public override string Class {
-            get { return CLASS_UNDEFINED; }
+            get { return CLASS_OBJECT; }
+        }
+
+        public override string Type
+        {
+            get
+            {
+                return TYPE_UNDEFINED;
+            }
         }
 
         public override string ToString() {

@@ -34,10 +34,8 @@ namespace Jint.Native {
             this.message = message;
         }
 
-        public const string TYPEOF = "object";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_ERROR; }
         }
 
         public override string ToString() {

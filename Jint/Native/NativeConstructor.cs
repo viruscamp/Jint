@@ -36,12 +36,17 @@ namespace Jint.Native
 
         // TODO: native constructors should have an own prototype rather then the function prototype
         public NativeConstructor(Type type, IGlobal global) :
-            this(type, global, null)
+            this(type, global, null,global.FunctionClass.PrototypeProperty)
         {
         }
 
         public NativeConstructor(Type type, IGlobal global, JsObject PrototypePrototype) :
-            base(global)
+            this(type, global, PrototypePrototype, global.FunctionClass.PrototypeProperty)
+        {
+        }
+
+        public NativeConstructor(Type type, IGlobal global, JsObject PrototypePrototype, JsObject prototype) :
+            base(global,prototype)
         {
             if (type == null)
                 throw new ArgumentNullException("type");

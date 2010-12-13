@@ -1544,6 +1544,20 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void ShouldHandleBadEnums()
+        {
+            Test(@"
+                assert('Name', Jint.Tests.FooEnum.Name.toString());
+                assert('GetType', Jint.Tests.FooEnum.GetType.toString());
+                assert('IsEnum', Jint.Tests.FooEnum.IsEnum.toString());
+                assert('System', Jint.Tests.FooEnum.System.toString());
+
+                // still can access hidden Type properties
+                assert('FooEnum',Jint.Tests.FooEnum.get_Name());
+            ");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(JintException))]
         public void RunningInvalidScriptSourceShouldThrow() {
             new JintEngine().Run("var s = @string?;");
@@ -1553,6 +1567,14 @@ var fakeButton = new Test.FakeButton();");
     public struct Size {
         public int Width;
         public int Height;
+    }
+
+    public enum FooEnum
+    {
+        Name = 1,
+        GetType = 2,
+        IsEnum = 3,
+        System = 4
     }
 
     public class Box {

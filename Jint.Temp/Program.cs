@@ -20,8 +20,7 @@ namespace Jint.Temp {
             ((JsObject)visitor.Global)["Int32"] = visitor.Global.Marshaller.MarshalType(typeof(Int32));
 
             engine.Run(@"
-if (null == 1)
-    System.Console.WriteLine('nok');
+System.Console.WriteLine('{0}',Jint.Temp.InfoType.Name);
 ");
 
             
@@ -188,6 +187,13 @@ System.Console.WriteLine('========= PERFORMANCE ==========');
             
             return;
         }
+    }
+
+    public enum InfoType
+    {
+        Type = 1,
+        Name = 2,
+        Description = 3
     }
 
     public struct DummyStruct

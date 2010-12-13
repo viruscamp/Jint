@@ -248,7 +248,7 @@ namespace Jint.Native {
         /// <param name="parameters"></param>
         /// <returns></returns>
         public JsInstance MatchFunc(JsDictionaryObject target, JsInstance[] parameters) {
-            JsRegExp regexp = parameters[0].Class == JsString.TYPEOF
+            JsRegExp regexp = parameters[0].Class == JsInstance.CLASS_STRING
                 ? Global.RegExpClass.New(parameters[0].ToString(), false, false, false)
                 : (JsRegExp)parameters[0];
 
@@ -276,7 +276,7 @@ namespace Jint.Native {
             string source = target.ToString();
 
             JsFunction function = replaceValue as JsFunction;
-            if (searchValue.Class == JsRegExp.TYPEOF) {
+            if (searchValue.Class == JsInstance.CLASS_REGEXP) {
                 int count = ((JsRegExp)parameters[0]).IsGlobal ? int.MaxValue : 1;
                 var regexp = ((JsRegExp)parameters[0]);
                 int lastIndex = regexp.IsGlobal ? 0 : Math.Max(0, (int)regexp["lastIndex"].ToNumber() - 1);
@@ -367,7 +367,7 @@ namespace Jint.Native {
         /// <returns></returns>
         public JsInstance SearchImpl(JsDictionaryObject target, JsInstance[] parameters) {
             // Converts the parameters to a regex
-            if (parameters[0].Class == JsString.TYPEOF) {
+            if (parameters[0].Class == JsInstance.CLASS_STRING) {
                 parameters[0] = Global.RegExpClass.New(parameters[0].ToString(), false, false, false);
             }
 
@@ -424,7 +424,7 @@ namespace Jint.Native {
             int s = S.Length;
             string[] result;
 
-            if (separator.Class == JsRegExp.TYPEOF) {
+            if (separator.Class == JsInstance.CLASS_REGEXP) {
                 result = ((JsRegExp)parameters[0]).Regex.Split(S, limit);
             }
             else {

@@ -60,8 +60,6 @@ namespace Jint.Native {
 
                 return visitor.Return(that);
             }
-
-            return that;
         }
 
         public JsInstance ToLocaleStringImpl(JsNumber target, JsInstance[] parameters) {

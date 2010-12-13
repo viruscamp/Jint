@@ -733,7 +733,7 @@ namespace Jint {
                 return Compare(x, y.ToPrimitive(Global));
             }
 
-            if (x.Class == y.Class)
+            if (x.Type == y.Type)
             { // if both are Objects but then only one is Clrs
                 if (x == JsUndefined.Instance)
                 {
@@ -743,7 +743,7 @@ namespace Jint {
                 {
                     return Global.BooleanClass.True;
                 }
-                else if (x.Class == JsInstance.CLASS_NUMBER)
+                else if (x.Type == JsInstance.TYPE_NUMBER)
                 {
                     if (x.ToNumber() == double.NaN)
                     {
@@ -762,15 +762,15 @@ namespace Jint {
                         return Global.BooleanClass.False;
                     }
                 }
-                else if (x.Class == JsString.TYPEOF)
+                else if (x.Type == JsInstance.TYPE_STRING)
                 {
                     return Global.BooleanClass.New(x.ToString() == y.ToString());
                 }
-                else if (x.Class == JsInstance.CLASS_BOOLEAN)
+                else if (x.Type == JsInstance.TYPE_BOOLEAN)
                 {
                     return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
                 }
-                else if (x.Class == JsInstance.CLASS_OBJECT )
+                else if (x.Type == JsInstance.TYPE_OBJECT )
                 {
                     return Global.BooleanClass.New(x == y);
                 }
@@ -787,23 +787,23 @@ namespace Jint {
             {
                 return Global.BooleanClass.True;
             }
-            else if (x.Class == JsInstance.CLASS_NUMBER && y.Class == JsString.TYPEOF)
+            else if (x.Type == JsInstance.TYPE_NUMBER && y.Type == JsInstance.TYPE_STRING)
             {
                 return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
             }
-            else if (x.Class == JsString.TYPEOF && y.Class == JsInstance.CLASS_NUMBER)
+            else if (x.Type == JsInstance.TYPE_STRING && y.Type == JsInstance.TYPE_NUMBER)
             {
                 return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
             }
-            else if (x.Class == JsInstance.CLASS_BOOLEAN || y.Class == JsInstance.CLASS_BOOLEAN)
+            else if (x.Type == JsInstance.TYPE_BOOLEAN || y.Type == JsInstance.TYPE_BOOLEAN)
             {
                 return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
             }
-            else if (y.Class == JsInstance.CLASS_OBJECT && (x.Class == JsString.TYPEOF || x.Class == JsInstance.CLASS_NUMBER))
+            else if (y.Type == JsInstance.TYPE_OBJECT && (x.Type == JsInstance.TYPE_STRING || x.Type == JsInstance.TYPE_NUMBER))
             {
                 return Compare(x, y.ToPrimitive(Global));
             }
-            else if (x.Class == JsInstance.CLASS_OBJECT && (y.Class == JsString.TYPEOF || y.Class == JsInstance.CLASS_NUMBER))
+            else if (x.Type == JsInstance.TYPE_OBJECT && (y.Type == JsInstance.TYPE_STRING || y.Type == JsInstance.TYPE_NUMBER))
             {
                 return Compare(x.ToPrimitive(Global), y);
             }
@@ -922,7 +922,8 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Plus:
-                    if (left.Class == JsString.TYPEOF || right.Class == JsString.TYPEOF) {
+                    if (left.Class == JsInstance.CLASS_STRING || right.Class == JsInstance.CLASS_STRING)
+                    {
                         Result = Global.StringClass.New(String.Concat(left.ToString(), right.ToString()));
                     }
                     else {
@@ -952,16 +953,18 @@ namespace Jint {
 
                 case BinaryExpressionType.Same:
                     // 11.9.6 The Strict Equality Comparison Algorithm
-                    if (left.Class != right.Class) {
+                    if (left.Type != right.Type)
+                    {
                         Result = Global.BooleanClass.False;
                     }
-                    else if (left.Class == JsInstance.CLASS_UNDEFINED) {
+                    else if (left is JsUndefined) {
                         Result = Global.BooleanClass.True;
                     }
-                    else if (left.Class == JsInstance.CLASS_NULL) {
+                    else if (left is JsNull) {
                         Result = Global.BooleanClass.True;
                     }
-                    else if (left.Class == JsInstance.CLASS_NUMBER) {
+                    else if (left.Type == JsInstance.TYPE_NUMBER)
+                    {
                         if (left == Global.NumberClass["NaN"] || right == Global.NumberClass["NaN"]) {
                             Result = Global.BooleanClass.False;
                         }
@@ -971,10 +974,11 @@ namespace Jint {
                         else
                             Result = Global.BooleanClass.False;
                     }
-                    else if (left.Class == JsString.TYPEOF) {
+                    else if (left.Type == JsInstance.TYPE_STRING)
+                    {
                         Result = Global.BooleanClass.New(left.ToString() == right.ToString());
                     }
-                    else if (left.Class == JsInstance.CLASS_BOOLEAN)
+                    else if (left.Type == JsInstance.TYPE_BOOLEAN)
                     {
                         Result = Global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
                     }
@@ -1039,24 +1043,14 @@ namespace Jint {
 
                     expression.Expression.Accept(this);
 
-                    if (Result == null) {
-                        Result = Global.StringClass.New(JsUndefined.Instance.Class);
-                    }
-                    else {
-                        // is object has an embed [[Call]] implementation, then return "fucntion" ecma262.3 11.4.3
-                        if (Result is JsFunction)
-                        {
-                            Result = Global.StringClass.New(JsInstance.TYPEOF_FUNCTION);
-                        }
-                        else if (Result is JsNull)
-                        {
-                            Result = Global.StringClass.New(JsInstance.CLASS_OBJECT);
-                        }
-                        else
-                        {
-                            Result = Global.StringClass.New(Result.Class.ToLower());
-                        }
-                    }
+                    if (Result == null)
+                        Result = Global.StringClass.New(JsUndefined.Instance.Type);
+                    else if (Result is JsNull)
+                        Result = Global.StringClass.New(JsInstance.TYPE_OBJECT);
+                    else if (Result is JsFunction)
+                        Result = Global.StringClass.New(JsInstance.TYPEOF_FUNCTION);
+                    else
+                        Result = Global.StringClass.New(Result.Type);
 
                     break;
 
@@ -1148,7 +1142,7 @@ namespace Jint {
                     try {
                         ((JsDictionaryObject)value).Delete(propertyName);
                     }
-                    catch (JintException e) {
+                    catch (JintException) {
                         throw new JsException(Global.TypeErrorClass.New());
                     }
                     Result = value;
@@ -1228,7 +1222,7 @@ namespace Jint {
             if (target.IsClr)
                 EnsureClrAllowed();
 
-            if (target.Class == JsString.TYPEOF) {
+            if (target.Class == JsInstance.CLASS_STRING) {
                 SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
             }
             else {

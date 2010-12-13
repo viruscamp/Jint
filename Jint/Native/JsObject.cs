@@ -33,6 +33,11 @@ namespace Jint.Native {
             get { return CLASS_OBJECT; }
         }
 
+        public override string Type
+        {
+            get { return TYPE_OBJECT; }
+        }
+
         protected object value;
 
         public override object Value {

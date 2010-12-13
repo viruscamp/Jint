@@ -19,21 +19,9 @@ namespace Jint.Temp {
             ((JsObject)visitor.Global)["Baz"] = ctor;
             ((JsObject)visitor.Global)["Int32"] = visitor.Global.Marshaller.MarshalType(typeof(Int32));
 
-            engine.SetFunction("nested", new Action(delegate() {
-                engine.Run(@"
-temp = 'hello';
-");
-            }));
-
             engine.Run(@"
-var o = {};
-o.func = function() {
-    var t = 1;
-    var res = t == null ? 'ok' : 'nok';
-    System.Console.WriteLine(res);
-};
-
-o.func();
+if (null == 1)
+    System.Console.WriteLine('nok');
 ");
 
             

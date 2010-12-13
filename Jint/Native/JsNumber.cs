@@ -59,5 +59,13 @@ namespace Jint.Native {
         public override string Class {
             get { return CLASS_NUMBER; }
         }
+
+        public override string Type
+        {
+            get
+            {
+                return TYPE_NUMBER;
+            }
+        }
     }
 }

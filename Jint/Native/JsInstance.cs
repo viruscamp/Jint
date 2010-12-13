@@ -49,19 +49,45 @@ namespace Jint.Native {
             return Value != null ? Value.GetHashCode() : base.GetHashCode();
         }
 
-        public const string CLASS_NULL = "null";
-        public const string CLASS_OBJECT = "object";
-        public const string CLASS_NUMBER = "number";
-        public const string CLASS_STRING = "string";
-        public const string CLASS_BOOLEAN = "boolean";
-        public const string CLASS_UNDEFINED = "undefined";
+        public const string TYPE_OBJECT = "object";
+        public const string TYPE_BOOLEAN = "boolean";
+        public const string TYPE_STRING = "string";
+        public const string TYPE_NUMBER = "number";
+        public const string TYPE_UNDEFINED = "undefined";
+        public const string TYPE_NULL = "null";
+
+        public const string TYPE_DESCRIPTOR = "descriptor";
+
+        public const string TYPEOF_FUNCTION = "function"; // used only in typeof operator!!!
+
+        // embed classes ecma262.3 15
+        
+        public const string CLASS_NUMBER = "Number";
+        public const string CLASS_STRING = "String";
+        public const string CLASS_BOOLEAN = "Boolean";
+
+        public const string CLASS_OBJECT = "Object";
+        public const string CLASS_FUNCTION = "Function";
+        public const string CLASS_ARRAY = "Array";
+        public const string CLASS_REGEXP = "RegExp";
+        public const string CLASS_DATE = "Date";
+        public const string CLASS_ERROR = "Error";
+
+        public const string CLASS_ARGUMENTS = "Arguments";
+        public const string CLASS_GLOBAL = "Global";
+        public const string CLASS_DESCRIPTOR = "Descriptor";
+        public const string CLASS_SCOPE = "Scope";
 
         /// <summary>
-        /// Result of the typeof operator for functions
+        /// Class of an object, don't confuse with type of an object.
         /// </summary>
-        public const string TYPEOF_FUNCTION = "function";
-
+        /// <remarks>There are only six object types in the ecma262.3: Undefined, Null, Boolean, String, Number, Object</remarks>
         public abstract string Class { get; }
+
+        /// <summary>
+        /// A type of a JsObject
+        /// </summary>
+        public abstract string Type { get; }
 
         /// <summary>
         /// This is a shortcut to a function call by name.

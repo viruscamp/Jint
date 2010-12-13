@@ -87,7 +87,7 @@ namespace Jint.Native {
                 if (global.NumberClass.HasInstance(this))
                     return JsInstance.CLASS_NUMBER;
                 if (global.StringClass.HasInstance(this))
-                    return JsString.TYPEOF;
+                    return JsInstance.CLASS_STRING;
                 return TYPEOF;
             }
         }

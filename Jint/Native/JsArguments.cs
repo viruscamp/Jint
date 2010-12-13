@@ -67,10 +67,8 @@ namespace Jint.Native {
             }
         }
 
-        public const string TYPEOF = "Arguments";
-
         public override string Class {
-            get { return TYPEOF; }
+            get { return CLASS_ARGUMENTS; }
         }
 
         public JsInstance GetLength(JsArguments target) {

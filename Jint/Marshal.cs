@@ -112,6 +112,9 @@ namespace Jint
             if (value == null)
                 return JsNull.Instance;
 
+            if (value is JsInstance)
+                return value as JsInstance;
+
             if (value is Type)
             {
                 Type t = value as Type;

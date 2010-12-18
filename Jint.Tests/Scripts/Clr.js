@@ -46,6 +46,13 @@ assert(System.Convert.ToInt32(3), a[0]);
 assert(System.Convert.ToInt32(4), a[1]);
 assert(System.Convert.ToInt32(7), a[2]);
 
+var map = new System.Collections.Generic.Dictionary{System.String,System.String}();
+map["cat"] = "Tom";
+
+var catName;
+assert(true,map.TryGetValue("cat",catName));
+assert("Tom",catName);
+
 // IEnumerable
 
 var sum = 0;

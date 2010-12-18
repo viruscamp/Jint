@@ -30,6 +30,17 @@ namespace Jint
     /// </remarks>
     public class Marshaller
     {
+        struct MarshalledParameter
+        {
+            public LocalBuilder tempLocal;
+            public int index;
+
+            public MarshalledParameter(LocalBuilder temp, int index)
+            {
+                tempLocal = temp;
+                this.index = index;
+            }
+        };
 
         IGlobal m_global;
         Dictionary<Type, NativeConstructor> m_typeCache = new Dictionary<Type,NativeConstructor>();
@@ -303,19 +314,25 @@ namespace Jint
                 throw new InvalidOperationException("Can't wrap an unclosed generic");
 
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
+            LinkedList<MarshalledParameter> outParams = new LinkedList<MarshalledParameter>();
 
             DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(JsInstance), new Type[] { typeof(IGlobal), typeof(JsInstance), typeof(JsInstance[]) }, this.GetType());
             var code = jsWrapper.GetILGenerator();
 
             code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
+            code.DeclareLocal(typeof(Marshaller));
+
+            code.Emit(OpCodes.Ldarg_0);
+            code.Emit(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod());
 
             if (!info.ReturnType.Equals(typeof(void)) )
             {
                 // push the global.Marshaller object
                 // for the future use
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod());
+                code.Emit(OpCodes.Dup);
             }
+
+            code.Emit(OpCodes.Stloc_1);
 
             if (!info.IsStatic)
             {
@@ -323,8 +340,7 @@ namespace Jint
                 var lblWrong = code.DefineLabel();
 
                 // push the global.Marshaller object
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod());
+                code.Emit(OpCodes.Ldloc_1);
 
                 code.Emit(OpCodes.Ldarg_1); // 'that' parameter
 
@@ -373,8 +389,7 @@ namespace Jint
             foreach (var parameter in parameters)
             {
                 // push the global.Marshaller object
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod());
+                code.Emit(OpCodes.Ldloc_1);
 
                 // if ( argsCount > i )
                 var lblDefaultValue = code.DefineLabel();
@@ -412,6 +427,9 @@ namespace Jint
                     code.Emit(OpCodes.Stloc, tempLocal.LocalIndex);
                     // load a reference to the variable
                     code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
+
+                    if (parameter.IsOut)
+                        outParams.AddLast(new MarshalledParameter(tempLocal,i));
                 }
                 else
                 {
@@ -429,6 +447,29 @@ namespace Jint
                 code.Emit(OpCodes.Callvirt, info);
             else
                 code.Emit(OpCodes.Call, info);
+
+            // unmarshal out parameters
+            foreach( var param in outParams)
+            {
+                // if (argcount > i)
+                var lblEnd = code.DefineLabel();
+
+                code.Emit(OpCodes.Ldloc_0);
+                code.Emit(OpCodes.Ldc_I4, param.index);
+                code.Emit(OpCodes.Ble, lblEnd);
+
+                // set arguments[i] = marshaller.MarshalClrValue(tempLocal);
+                code.Emit(OpCodes.Ldarg_2);
+                code.Emit(OpCodes.Ldc_I4, param.index);
+
+                code.Emit(OpCodes.Ldloc_1);
+                code.Emit(OpCodes.Ldloc, param.tempLocal);
+                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(param.tempLocal.LocalType));
+                
+                code.Emit(OpCodes.Stelem, typeof(JsInstance));
+
+                code.MarkLabel(lblEnd);
+            }
 
             if (!info.ReturnType.Equals( typeof(void) ) )
             {

@@ -1276,7 +1276,6 @@ namespace Jint {
             #region Evaluates parameters
             JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
 
-
             if (methodCall.Arguments.Count > 0) {
 
                 for (int j = 0; j < methodCall.Arguments.Count; j++) {
@@ -1309,7 +1308,18 @@ namespace Jint {
 
                 returnInstance = JsUndefined.Instance;
 
+                JsInstance[] original = new JsInstance[parameters.Length];
+                parameters.CopyTo(original, 0);
+
                 ExecuteFunction(function, that, parameters, genericParameters);
+
+                for(int i=0;i<original.Length;i++)
+                    if (original[i] != parameters[i]) {
+                        if (methodCall.Arguments[i] is MemberExpression && ((MemberExpression)methodCall.Arguments[i]).Member is IAssignable)
+                            Assign((MemberExpression)methodCall.Arguments[i], parameters[i]);
+                        else if ( methodCall.Arguments[i] is Identifier)
+                            Assign(new MemberExpression(methodCall.Arguments[i], null),parameters[i]);
+                    }
 
                 if (DebugMode) {
                     CallStack.Pop();

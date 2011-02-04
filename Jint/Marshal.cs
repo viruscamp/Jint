@@ -299,6 +299,8 @@ namespace Jint
             return value.GetType();
         }
 
+        #region wrappers
+
         /// <summary>
         /// Converts a native method to a standard delegate.
         /// </summary>
@@ -935,6 +937,8 @@ namespace Jint
 
             return new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
         }
+
+        #endregion
 
         public bool IsAssignable(Type target, Type source)
         {

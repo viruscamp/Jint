@@ -33,7 +33,7 @@ namespace Jint.Native {
                     clrParameters[i] = parameters[i].Value;
                 }
                 else {
-                    clrParameters[i] = JsClr.ConvertParameter(parameters[i]);
+                    clrParameters[i] = visitor.Global.Marshaller.MarshalJsValue<object>(parameters[i]);
                 }
             }
 

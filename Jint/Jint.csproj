@@ -46,14 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachedConstructorInvoker.cs" />
-    <Compile Include="CachedMethodInvoker.cs" />
-    <Compile Include="CachedReflectionPropertyGetter.cs" />
     <Compile Include="CachedTypeResolver.cs" />
-    <Compile Include="CachedReflectionFieldGetter.cs" />
     <Compile Include="Marshal\Delegates.cs" />
     <Compile Include="Marshal\JsFunctionDelegate.cs" />
     <Compile Include="Marshal\RawJsMethodAttribute.cs" />
+    <Compile Include="Native\ClrFunction.cs" />
     <Compile Include="Native\INativeIndexer.cs" />
     <Compile Include="Native\NativeArrayIndexer.cs" />
     <Compile Include="Native\NativeIndexer.cs" />
@@ -61,7 +58,6 @@
     <Compile Include="Native\NativeDescriptor.cs" />
     <Compile Include="Marshal.cs" />
     <Compile Include="Native\NativeConstructor.cs" />
-    <Compile Include="Native\ClrMethodDescriptor.cs" />
     <Compile Include="Native\NativeMethodOverload.cs" />
     <Compile Include="Native\ILiteral.cs" />
     <Compile Include="Native\NativeMethod.cs" />
@@ -72,11 +68,9 @@
     <Compile Include="Parser\ES3Parser.cs" />
     <Compile Include="PropertyBags\DictionaryPropertyBag.cs" />
     <Compile Include="PropertyBags\DoubleListPropertyBag.cs" />
-    <Compile Include="IFieldGetter.cs" />
     <Compile Include="Debugger\BreakPoint.cs" />
     <Compile Include="Debugger\DebugInformation.cs" />
     <Compile Include="Debugger\SourceCodeDescriptor.cs" />
-    <Compile Include="DelegateWrapper.cs" />
     <Compile Include="Expressions\IFunctionDeclaration.cs" />
     <Compile Include="Expressions\IGenericExpression.cs" />
     <Compile Include="Expressions\WithStatement.cs" />
@@ -84,8 +78,6 @@
     <Compile Include="IConstructorInvoker.cs" />
     <Compile Include="PropertyBags\HashedPropertyBag.cs" />
     <Compile Include="PropertyBags\IPropertyBag.cs" />
-    <Compile Include="Native\ClrFieldDescriptor.cs" />
-    <Compile Include="Native\ClrPropertyDescriptor.cs" />
     <Compile Include="Native\IGlobal.cs" />
     <Compile Include="Native\JsApplyFunction.cs" />
     <Compile Include="Native\Descriptor.cs" />
@@ -124,10 +116,8 @@
     <Compile Include="Native\JsNull.cs" />
     <Compile Include="Native\JsObjectConstructor.cs" />
     <Compile Include="Expressions\RegexpExpression.cs" />
-    <Compile Include="Native\CallProxyFunction.cs" />
     <Compile Include="Native\JsInstance.cs" />
     <Compile Include="Native\JsUndefined.cs" />
-    <Compile Include="Native\JsClr.cs" />
     <Compile Include="Native\JsRegExp.cs" />
     <Compile Include="Native\JsMathConstructor.cs" />
     <Compile Include="Native\JsBoolean.cs" />
@@ -138,14 +128,11 @@
     <Compile Include="Native\JsDate.cs" />
     <Compile Include="Native\JsObject.cs" />
     <Compile Include="Expressions\JsonExpression.cs" />
-    <Compile Include="Native\ClrFunction.cs" />
     <Compile Include="Expressions\FunctionExpression.cs" />
     <Compile Include="Native\JsFunction.cs" />
     <Compile Include="Expressions\MemberExpression.cs" />
     <Compile Include="Expressions\NewExpression.cs" />
     <Compile Include="Expressions\MethodCall.cs" />
-    <Compile Include="IMethodInvoker.cs" />
-    <Compile Include="IPropertyGetter.cs" />
     <Compile Include="ITypeResolver.cs" />
     <Compile Include="JintEngine.cs" />
     <Compile Include="Expressions\BinaryExpression.cs" />
@@ -182,7 +169,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBags\MiniCachedPropertyBag.cs" />
     <Compile Include="PropertyBags\ScopedPropertyBag.cs" />
-    <Compile Include="ReflectionPropertyGetter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -49,6 +49,7 @@
     <Compile Include="CachedTypeResolver.cs" />
     <Compile Include="Marshal\Delegates.cs" />
     <Compile Include="Marshal\JsFunctionDelegate.cs" />
+    <Compile Include="Marshal\ProxyHelper.cs" />
     <Compile Include="Marshal\RawJsMethodAttribute.cs" />
     <Compile Include="Native\ClrFunction.cs" />
     <Compile Include="Native\INativeIndexer.cs" />

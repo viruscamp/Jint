@@ -13,6 +13,13 @@ namespace Jint.Native
             DefineOwnProperty(PROTOTYPE, typePrototype);
         }
 
+        /// <summary>
+        /// A static fuction for creating a constructor for <c>System.Type</c>
+        /// </summary>
+        /// <remarks>It also creates and initializes [[prototype]] and 'prototype' property to
+        /// the same function object.</remarks>
+        /// <param name="global">Global object</param>
+        /// <returns>A js constructor function</returns>
         public static NativeTypeConstructor CreateNativeTypeConstructor(IGlobal global)
         {
             if (global == null)

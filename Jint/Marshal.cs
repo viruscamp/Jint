@@ -11,36 +11,17 @@ using System.Text.RegularExpressions;
 namespace Jint
 {
     /// <summary>
-    /// Marshals clr objects to js objects and back
+    /// Marshals clr objects to js objects and back. It can marshal types, delegates and other types of objects.
     /// </summary>
     /// <remarks>
     /// <pre>
-    ///     Automaticly discovers a prototype of a clr object, and caches this information.
-    /// </pre>
-    /// <pre>
-    ///     Also discovers an object constructors, and creates an appropriate constructor function.
-    /// </pre>
-    /// <pre>
-    ///     A native clr function can be a generic and may have some overloads, all this members
-    ///     with a same name are transformed to a single function object.
-    /// </pre>
-    /// <pre>
-    ///     A clr types are marshalled to functions. Js functions marshaled to the delegates
+    /// Marshaller holds a reference to a global object which is used to get a prototype while marshalling from
+    /// clr to js. Futhermore a marshaller is to be accessible while running a script, therefore it strictly
+    /// linked to the global object which defines a runtime environment for the script.
     /// </pre>
     /// </remarks>
     public class Marshaller
     {
-        struct MarshalledParameter
-        {
-            public LocalBuilder tempLocal;
-            public int index;
-
-            public MarshalledParameter(LocalBuilder temp, int index)
-            {
-                tempLocal = temp;
-                this.index = index;
-            }
-        };
 
         IGlobal m_global;
         Dictionary<Type, NativeConstructor> m_typeCache = new Dictionary<Type,NativeConstructor>();
@@ -76,7 +57,7 @@ namespace Jint
         /// <summary>
         /// Constaructs a new marshaller object.
         /// </summary>
-        /// <param name="global">A global object which can be used for constructing new JsObjects due marshalling.</param>
+        /// <param name="global">A global object which can be used for constructing new JsObjects while marshalling.</param>
         public Marshaller(IGlobal global)
         {
             this.m_global = global;
@@ -131,7 +112,7 @@ namespace Jint
                 Type t = value as Type;
                 if (t.IsGenericTypeDefinition)
                 {
-                    // Generic defenitions aren't types is the meaning of js
+                    // Generic defenitions aren't types in the meaning of js
                     // but they are instances of System.Type
                     var res = new NativeGenericType(t, m_typeType.PrototypeProperty);
                     m_typeType.SetupNativeProperties(res);
@@ -169,6 +150,17 @@ namespace Jint
             return (NativeConstructor)m_typeType.Wrap(t);
         }
 
+        /// <summary>
+        /// Creates a constructor for a native type and sets its 'prototype' property to
+        /// the object derived from a <paramref name="prototypePropertyPrototype"/>.
+        /// </summary>
+        /// <remarks>
+        /// For example native strings should be derived from <c>'String'</c> class i.e. they should
+        /// contain a <c>String.prototype</c> object in theirs prototype chain.
+        /// </remarks>
+        /// <param name="t"></param>
+        /// <param name="prototypePropertyPrototype"></param>
+        /// <returns></returns>
         NativeConstructor CreateConstructor(Type t, JsObject prototypePropertyPrototype)
         {
             /* NativeConstructor res;
@@ -310,184 +302,7 @@ namespace Jint
         /// <returns>A wrapper delegate</returns>
         public JsMethodImpl WrapMethod(MethodInfo info, bool passGlobal)
         {
-            if (info == null)
-                throw new ArgumentNullException("info");
-            if (info.ContainsGenericParameters)
-                throw new InvalidOperationException("Can't wrap an unclosed generic");
-
-            LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
-            LinkedList<MarshalledParameter> outParams = new LinkedList<MarshalledParameter>();
-
-            DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(JsInstance), new Type[] { typeof(IGlobal), typeof(JsInstance), typeof(JsInstance[]) }, this.GetType());
-            var code = jsWrapper.GetILGenerator();
-
-            code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
-            code.DeclareLocal(typeof(Marshaller));
-
-            code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod());
-
-            if (!info.ReturnType.Equals(typeof(void)) )
-            {
-                // push the global.Marshaller object
-                // for the future use
-                code.Emit(OpCodes.Dup);
-            }
-
-            code.Emit(OpCodes.Stloc_1);
-
-            if (!info.IsStatic)
-            {
-                var lblDesired = code.DefineLabel();
-                var lblWrong = code.DefineLabel();
-
-                // push the global.Marshaller object
-                code.Emit(OpCodes.Ldloc_1);
-
-                code.Emit(OpCodes.Ldarg_1); // 'that' parameter
-
-                if (info.DeclaringType.IsValueType)
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(info.DeclaringType));
-                else
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(info.DeclaringType));
-
-                code.Emit(OpCodes.Dup); // remember converted result
-                code.Emit(OpCodes.Ldnull);
-
-                code.Emit(OpCodes.Beq, lblWrong);
-                code.Emit(OpCodes.Br, lblDesired);
-
-                code.MarkLabel(lblWrong);
-
-                code.Emit(OpCodes.Ldstr, "The specified 'that' object is not acceptable for this method");
-                code.Emit(OpCodes.Newobj, typeof(JintException).GetConstructor(new Type[] { typeof(string) }));
-                code.Emit(OpCodes.Throw);
-
-                code.MarkLabel(lblDesired);
-
-                // everything is ok
-                // we have a converted 'that' value in the stack now
-                // if that is a value type, we need to unbox it
-
-                if (info.DeclaringType.IsValueType)
-                    code.Emit(OpCodes.Unbox, info.DeclaringType);
-            }
-
-            // if the first parameter is IGlobal and passGlobal is enabled
-            if (passGlobal && parameters.First != null && typeof(IGlobal).IsAssignableFrom(parameters.First.Value.ParameterType))
-            {
-                parameters.RemoveFirst();
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Isinst, typeof(IGlobal));
-            }
-
-            // argsCount = arguments.Length
-            code.Emit(OpCodes.Ldarg_2); // 'arguments' parameter
-            code.Emit(OpCodes.Ldlen);
-
-            code.Emit(OpCodes.Stloc_0);
-
-            int i = 0;
-            foreach (var parameter in parameters)
-            {
-                // push the global.Marshaller object
-                code.Emit(OpCodes.Ldloc_1);
-
-                // if ( argsCount > i )
-                var lblDefaultValue = code.DefineLabel();
-                var lblEnd = code.DefineLabel();
-
-                code.Emit(OpCodes.Ldloc_0);
-                code.Emit(OpCodes.Ldc_I4, i);
-                code.Emit(OpCodes.Ble, lblDefaultValue);
-
-                // push arguments[i]
-                code.Emit(OpCodes.Ldarg_2);
-                code.Emit(OpCodes.Ldc_I4, i);
-                code.Emit(OpCodes.Ldelem, typeof(JsInstance));
-
-                code.Emit(OpCodes.Br, lblEnd);
-                code.MarkLabel(lblDefaultValue);
-                // else
-
-                // push JsUndefined.Instance
-                code.Emit(OpCodes.Ldsfld, typeof(JsUndefined).GetField("Instance"));
-
-                code.MarkLabel(lblEnd);
-
-                // convert current parameter to a proper type
-                if (parameter.ParameterType.IsByRef)
-                {
-                    Type paramType = parameter.ParameterType.GetElementType();
-                    LocalBuilder tempLocal = code.DeclareLocal(paramType);
-                    // marshall
-                    code.Emit(
-                        OpCodes.Call,
-                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(paramType)
-                    );
-                    // store value in the temp variable
-                    code.Emit(OpCodes.Stloc, tempLocal.LocalIndex);
-                    // load a reference to the variable
-                    code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
-
-                    if (parameter.IsOut)
-                        outParams.AddLast(new MarshalledParameter(tempLocal,i));
-                }
-                else
-                {
-                    code.Emit(
-                        OpCodes.Call,
-                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(parameter.ParameterType)
-                    );
-                }
-
-                i++;
-            }
-
-            // now we have an optional 'that' parameter followed by the sequence of converted arguments
-            if (!info.IsStatic)
-                code.Emit(OpCodes.Callvirt, info);
-            else
-                code.Emit(OpCodes.Call, info);
-
-            // unmarshal out parameters
-            foreach( var param in outParams)
-            {
-                // if (argcount > i)
-                var lblEnd = code.DefineLabel();
-
-                code.Emit(OpCodes.Ldloc_0);
-                code.Emit(OpCodes.Ldc_I4, param.index);
-                code.Emit(OpCodes.Ble, lblEnd);
-
-                // set arguments[i] = marshaller.MarshalClrValue(tempLocal);
-                code.Emit(OpCodes.Ldarg_2);
-                code.Emit(OpCodes.Ldc_I4, param.index);
-
-                code.Emit(OpCodes.Ldloc_1);
-                code.Emit(OpCodes.Ldloc, param.tempLocal);
-                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(param.tempLocal.LocalType));
-                
-                code.Emit(OpCodes.Stelem, typeof(JsInstance));
-
-                code.MarkLabel(lblEnd);
-            }
-
-            if (!info.ReturnType.Equals( typeof(void) ) )
-            {
-                // convert a result into JsInstance
-                code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(info.ReturnType));
-            }
-            else
-            {
-                // push JsUndefined.Instance
-                code.Emit(OpCodes.Ldnull);
-                code.Emit(OpCodes.Ldfld, typeof(JsUndefined).GetField("Instance"));
-            }
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsMethodImpl)jsWrapper.CreateDelegate(typeof(JsMethodImpl));
+            return ProxyHelper.Default.WrapMethod(info, passGlobal);
         }
 
         /// <summary>
@@ -497,381 +312,32 @@ namespace Jint
         /// <param name="passGlobal">If this paramerter is true and the first argument of the constructor
         /// is IGlobal, a wrapper delegate will pass a Global JS object in the first parameter.</param>
         /// <returns>A wrapper delegate</returns>
-        public ConstructorImpl WrapConstructor(ConstructorInfo info,bool passGlobal)
-        {
-            LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
-
-            DynamicMethod dm = new DynamicMethod("clrConstructor", typeof(object), new Type[] { typeof(IGlobal), typeof(JsInstance[]) }, this.GetType());
-            var code = dm.GetILGenerator();
-
-            code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
-
-            if (passGlobal && parameters.First != null && typeof(IGlobal).IsAssignableFrom(parameters.First.Value.ParameterType))
-            {
-                parameters.RemoveFirst();
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Isinst, typeof(IGlobal));
-            }
-
-            // argsCount = arguments.Length
-            code.Emit(OpCodes.Ldarg_1); // 'arguments' parameter
-            code.Emit(OpCodes.Ldlen);
-
-            code.Emit(OpCodes.Stloc_0);
-
-            int i = 0;
-            foreach (var parameter in parameters)
-            {
-
-                // push the global.Marshaller object
-                code.Emit(OpCodes.Ldarg_0);
-                code.EmitCall(OpCodes.Call, typeof(IGlobal).GetProperty("Marshaller").GetGetMethod(), null);
-
-                // if ( argsCount > i )
-                var lblDefaultValue = code.DefineLabel();
-                var lblEnd = code.DefineLabel();
-
-                code.Emit(OpCodes.Ldloc_0);
-                code.Emit(OpCodes.Ldc_I4, i);
-                code.Emit(OpCodes.Ble, lblDefaultValue);
-
-                // push arguments[i]
-                code.Emit(OpCodes.Ldarg_1);
-                code.Emit(OpCodes.Ldc_I4, i);
-                code.Emit(OpCodes.Ldelem, typeof(JsInstance));
-
-                code.Emit(OpCodes.Br, lblEnd);
-                code.MarkLabel(lblDefaultValue);
-                // else
-
-                // push JsUndefined.Instance
-                code.Emit(OpCodes.Ldsfld, typeof(JsUndefined).GetField("Instance"));
-
-                code.MarkLabel(lblEnd);
-
-                // convert current parameter to a proper type
-                if (parameter.ParameterType.IsByRef)
-                {
-                    Type paramType = parameter.ParameterType.GetElementType();
-                    LocalBuilder tempLocal = code.DeclareLocal(paramType);
-                    // marshall
-                    code.Emit(
-                        OpCodes.Call,
-                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(paramType)
-                    );
-                    // store value in the temp variable
-                    code.Emit(OpCodes.Stloc, tempLocal.LocalIndex);
-                    // load a reference to the variable
-                    code.Emit(OpCodes.Ldloca, tempLocal.LocalIndex);
-                }
-                else
-                {
-                    code.Emit(
-                        OpCodes.Call,
-                        typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(parameter.ParameterType)
-                    );
-                }
-
-                i++;
-            }
-
-            // now we have a sequence of converted arguments
-
-            code.Emit(OpCodes.Newobj, info);
-
-            if (info.DeclaringType.IsValueType)
-                code.Emit(OpCodes.Box, info.DeclaringType);
-
-            code.Emit(OpCodes.Ret);
-
-            return (ConstructorImpl)dm.CreateDelegate(typeof(ConstructorImpl));
+        public ConstructorImpl WrapConstructor(ConstructorInfo info, bool passGlobal) {
+            return ProxyHelper.Default.WrapConstructor(info, passGlobal);
         }
 
-        public JsGetter WrapGetProperty(PropertyInfo prop)
-        {
-            DynamicMethod dm = new DynamicMethod("dynamicPropertyGetter", typeof(JsInstance) , new Type[] { typeof(Marshaller), typeof(JsDictionaryObject) }, typeof(Marshaller) );
-            MethodInfo info = prop.GetGetMethod();
-
-            var code = dm.GetILGenerator();
-
-            code.Emit(OpCodes.Ldarg_0);
-
-            if (!info.IsStatic)
-            {
-                code.Emit(OpCodes.Dup);
-                code.Emit(OpCodes.Ldarg_1);
-
-                if (prop.DeclaringType.IsValueType)
-                {
-                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
-                    code.Emit(OpCodes.Unbox, prop.DeclaringType);
-                    //code.Emit(OpCodes.Stloc,temp);
-                    //code.Emit(OpCodes.Ldloca,temp);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
-                }
-                code.Emit(OpCodes.Callvirt, info);
-            }
-            else
-            {
-                // static methods should be invoked with OpCodes.Call
-                code.Emit(OpCodes.Call, info);
-            }
-            
-            code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(prop.PropertyType));
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsGetter)dm.CreateDelegate(typeof(JsGetter), this);
+        public JsGetter WrapGetProperty(PropertyInfo prop) {
+            return ProxyHelper.Default.WrapGetProperty(prop,this);
         }
 
-        public JsGetter WrapGetField(FieldInfo field)
-        {
-            DynamicMethod dm = new DynamicMethod("dynamicFieldGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsDictionaryObject) }, typeof(Marshaller));
-            var code = dm.GetILGenerator();
-
-            code.Emit(OpCodes.Ldarg_0);
-
-            if (!field.IsStatic)
-            {
-                code.Emit(OpCodes.Dup);
-                code.Emit(OpCodes.Ldarg_1);
-
-                if (field.DeclaringType.IsValueType)
-                {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(field.DeclaringType));
-                    code.Emit(OpCodes.Unbox, field.DeclaringType);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(field.DeclaringType));
-                }
-                code.Emit(OpCodes.Ldfld, field);
-            }
-            else
-            {
-                code.Emit(OpCodes.Ldsfld, field);
-            }
-
-            code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(field.FieldType));
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsGetter)dm.CreateDelegate(typeof(JsGetter), this);
+        public JsGetter WrapGetField(FieldInfo field) {
+            return ProxyHelper.Default.WrapGetField(field,this);
         }
 
-        public JsSetter WrapSetProperty(PropertyInfo prop)
-        {
-            DynamicMethod dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsDictionaryObject), typeof(JsInstance) },typeof(Marshaller));
-            MethodInfo info = prop.GetSetMethod();
-
-            var code = dm.GetILGenerator();
-
-            if (!info.IsStatic)
-            {
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_1);
-
-                if (prop.DeclaringType.IsValueType)
-                {
-                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(prop.DeclaringType));
-                    code.Emit(OpCodes.Unbox, prop.DeclaringType);
-                    //code.Emit(OpCodes.Stloc, temp);
-                    //code.Emit(OpCodes.Ldloca, temp);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.DeclaringType));
-                }
-            }
-
-            code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldarg_2);
-            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(prop.PropertyType));
-
-            if (info.IsStatic)
-                code.Emit(OpCodes.Call, info);
-            else
-                code.Emit(OpCodes.Callvirt, info);
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsSetter)dm.CreateDelegate(typeof(JsSetter), this);
+        public JsSetter WrapSetProperty(PropertyInfo prop) {
+            return ProxyHelper.Default.WrapSetProperty(prop, this);
         }
 
-        public JsSetter WrapSetField(FieldInfo field)
-        {
-            DynamicMethod dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsDictionaryObject), typeof(JsInstance) }, typeof(Marshaller));
-
-            var code = dm.GetILGenerator();
-
-            if (!field.IsStatic)
-            {
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_1);
-
-                if (field.DeclaringType.IsValueType)
-                {
-                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(field.DeclaringType));
-                    code.Emit(OpCodes.Unbox, field.DeclaringType);
-                    //code.Emit(OpCodes.Stloc, temp);
-                    //code.Emit(OpCodes.Ldloca, temp);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(field.DeclaringType));
-                }
-            }
-
-            code.Emit(OpCodes.Ldarg_0);
-            code.Emit(OpCodes.Ldarg_2);
-            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(field.FieldType));
-
-            if (field.IsStatic)
-                code.Emit(OpCodes.Stsfld, field);
-            else
-                code.Emit(OpCodes.Stfld, field);
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsSetter)dm.CreateDelegate(typeof(JsSetter), this);
+        public JsSetter WrapSetField(FieldInfo field) {
+            return ProxyHelper.Default.WrapSetField(field, this);
         }
 
-        public JsIndexerGetter WrapIndexerGetter(MethodInfo getMethod)
-        {
-            if (getMethod == null)
-                throw new ArgumentNullException("getMethod");
-            if (getMethod.GetParameters().Length != 1 || getMethod.ReturnType.Equals(typeof(void)))
-                throw new ArgumentException("Invalid getter", "getMethod");
-
-            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) });
-
-            ILGenerator code = dm.GetILGenerator();
-
-            code.Emit(OpCodes.Ldarg_0);
-
-            if (!getMethod.IsStatic)
-            {
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_1);
-
-                if (getMethod.DeclaringType.IsValueType)
-                {
-                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(getMethod.DeclaringType));
-                    code.Emit(OpCodes.Unbox, getMethod.DeclaringType);
-                    //code.Emit(OpCodes.Stloc, temp);
-                    //code.Emit(OpCodes.Ldloca, temp);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(getMethod.DeclaringType));
-                }
-            }
-
-            {
-                var param = getMethod.GetParameters()[0];
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_2);
-
-                if (param.ParameterType.IsByRef)
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(param.ParameterType));
-                    code.Emit(OpCodes.Unbox, param.ParameterType);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(param.ParameterType));
-                }
-            }
-
-            if (getMethod.IsStatic)
-                code.Emit(OpCodes.Call, getMethod);
-            else
-                code.Emit(OpCodes.Callvirt, getMethod);
-
-            code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(getMethod.ReturnType));
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsIndexerGetter)dm.CreateDelegate(typeof(JsIndexerGetter), this);
+        public JsIndexerGetter WrapIndexerGetter(MethodInfo getMethod) {
+            return ProxyHelper.Default.WrapIndexerGetter(getMethod, this);
         }
 
-        public JsIndexerSetter WrapIndexerSetter(MethodInfo setMethod)
-        {
-            if (setMethod == null)
-                throw new ArgumentNullException("getMethod");
-            if (!(setMethod.GetParameters().Length == 2 && setMethod.ReturnType.Equals(typeof(void))))
-                throw new ArgumentException("Invalid getter", "getMethod");
-
-            DynamicMethod dm = new DynamicMethod("dynamicIndexerSetter", typeof(void), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance), typeof(JsInstance) });
-
-            ILGenerator code = dm.GetILGenerator();
-
-            if (!setMethod.IsStatic)
-            {
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_1);
-
-                if (setMethod.DeclaringType.IsValueType)
-                {
-                    //LocalBuilder temp = code.DeclareLocal(prop.DeclaringType);
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(setMethod.DeclaringType));
-                    code.Emit(OpCodes.Unbox, setMethod.DeclaringType);
-                    //code.Emit(OpCodes.Stloc, temp);
-                    //code.Emit(OpCodes.Ldloca, temp);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Callvirt, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(setMethod.DeclaringType));
-                }
-            }
-
-            {
-                var param = setMethod.GetParameters()[0];
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_2);
-
-                if (param.ParameterType.IsByRef)
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(param.ParameterType));
-                    code.Emit(OpCodes.Unbox, param.ParameterType);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(param.ParameterType));
-                }
-            }
-
-            {
-                var param = setMethod.GetParameters()[1];
-                code.Emit(OpCodes.Ldarg_0);
-                code.Emit(OpCodes.Ldarg_3);
-
-                if (param.ParameterType.IsByRef)
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValueBoxed").MakeGenericMethod(param.ParameterType));
-                    code.Emit(OpCodes.Unbox, param.ParameterType);
-                }
-                else
-                {
-                    code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(param.ParameterType));
-                }
-            }
-
-            if (setMethod.IsStatic)
-                code.Emit(OpCodes.Call, setMethod);
-            else
-                code.Emit(OpCodes.Callvirt, setMethod);
-
-            code.Emit(OpCodes.Ret);
-
-            return (JsIndexerSetter)dm.CreateDelegate(typeof(JsIndexerSetter), this);
+        public JsIndexerSetter WrapIndexerSetter(MethodInfo setMethod) {
+            return ProxyHelper.Default.WrapIndexerSetter(setMethod, this);
         }
 
         /// <summary>

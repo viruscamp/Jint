@@ -10,7 +10,7 @@ namespace Jint.Temp {
     class Program {
         static void Main(string[] args) {
 
-            JintEngine eng;
+            /*JintEngine eng;
 
             int t = Environment.TickCount;
             for (int i =0; i < 1000; i++)
@@ -18,20 +18,19 @@ namespace Jint.Temp {
             System.Console.WriteLine("time: {0} ms", Environment.TickCount - t);
             System.Console.ReadKey();
 
-            return;
+            return;*/
 
             JintEngine engine = new JintEngine();
             engine.DisableSecurity();
             engine.Run("1;");
-            ExecutionVisitor visitor = engine.visitor;
-            Marshaller marshal = visitor.Global.Marshaller;
+            Marshaller marshal = engine.Global.Marshaller;
 
-            JsConstructor ctor = visitor.Global.Marshaller.MarshalType(typeof(Baz));
-            ((JsObject)visitor.Global)["Baz"] = ctor;
-            ((JsObject)visitor.Global)["Int32"] = visitor.Global.Marshaller.MarshalType(typeof(Int32));
+            JsConstructor ctor = engine.Global.Marshaller.MarshalType(typeof(Baz));
+            ((JsObject)engine.Global)["Baz"] = ctor;
+            ((JsObject)engine.Global)["Int32"] = engine.Global.Marshaller.MarshalType(typeof(Int32));
 
             JsObject o = new JsObject();
-            o["abc"] = new JsString("sure",engine.visitor.Global.StringClass); 
+            o["abc"] = new JsString("sure",engine.Global.StringClass.PrototypeProperty); 
             engine.SetParameter("o", o );
 
             engine.Run(@"

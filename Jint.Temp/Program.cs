@@ -10,11 +10,13 @@ namespace Jint.Temp {
     class Program {
         static void Main(string[] args) {
 
-            JintEngine eng = new JintEngine();
-            JsObject j2 = new JsObject();
-            j2["ala"] = new JsString("ma kota", eng.visitor.Global.StringClass);
-            eng.SetParameter("j2", j2);
-            eng.Run("System.Console.WriteLine('j2 is {0}', j2.ala);");
+            JintEngine eng;
+
+            int t = Environment.TickCount;
+            for (int i =0; i < 1000; i++)
+                eng = new JintEngine();
+            System.Console.WriteLine("time: {0} ms", Environment.TickCount - t);
+            System.Console.ReadKey();
 
             return;
 
@@ -28,12 +30,12 @@ namespace Jint.Temp {
             ((JsObject)visitor.Global)["Baz"] = ctor;
             ((JsObject)visitor.Global)["Int32"] = visitor.Global.Marshaller.MarshalType(typeof(Int32));
 
-            JsObject t = new JsObject();
-            t["abc"] = new JsString("sure",engine.visitor.Global.StringClass); 
-            engine.SetParameter("t", t );
+            JsObject o = new JsObject();
+            o["abc"] = new JsString("sure",engine.visitor.Global.StringClass); 
+            engine.SetParameter("o", o );
 
             engine.Run(@"
-System.Console.WriteLine('{0}',t.abc);
+System.Console.WriteLine('{0}',o.abc);
 System.Console.WriteLine('{0}',Jint.Temp.InfoType.Name);
 ");
 

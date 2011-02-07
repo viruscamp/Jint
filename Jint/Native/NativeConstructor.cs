@@ -10,17 +10,8 @@ namespace Jint.Native
     /// A constructor function that reflects a native clr type to the js runtime.
     /// </summary>
     /// <remarks>
-    /// <pre>
-    /// When applied to the object, it fills a special slot with new clr object and defines
-    /// new properties according to the native fields and properties.
-    /// </pre>
-    /// <pre>
-    /// Instance methods are derived through prototype.
-    /// </pre>
-    /// <pre>
-    /// Static methods, properties and fields are defined as properties of the constructor.
-    /// </pre>
-    /// <pre>Generics? hm...</pre>
+    /// This class doesn't used to wrap open generics, since open generics can't be
+    /// used to create instances they are not considered as functions (constructors).
     /// </remarks>
     public class NativeConstructor: JsConstructor
     {
@@ -32,7 +23,6 @@ namespace Jint.Native
         ConstructorInfo[] m_constructors;
         Marshaller m_marshaller;
         NativeOverloadImpl<ConstructorInfo, ConstructorImpl> m_overloads;
-        bool m_isGeneric; // is this type a generic definition
 
         // TODO: native constructors should have an own prototype rather then the function prototype
         public NativeConstructor(Type type, IGlobal global) :
@@ -51,12 +41,13 @@ namespace Jint.Native
             if (type == null)
                 throw new ArgumentNullException("type");
 
+            if (type.IsGenericType && type.ContainsGenericParameters)
+                throw new InvalidOperationException("A native constructor can't be built against an open generic");
+
             m_marshaller = global.Marshaller;
 
             reflectedType = type;
             Name = type.FullName;
-
-            m_isGeneric = type.IsGenericTypeDefinition;
 
             if (!type.IsAbstract)
             {
@@ -315,27 +306,12 @@ namespace Jint.Native
             return m_marshaller.WrapConstructor(info,true);
         }
 
-        protected IEnumerable<ConstructorInfo> GetMembers(Type[] genericArguments, int argCount)
-        {
-            if (!m_isGeneric)
-            {
-                if (m_constructors == null)
-                    return new ConstructorInfo[0];
+        protected IEnumerable<ConstructorInfo> GetMembers(Type[] genericArguments, int argCount) {
+            if (m_constructors == null)
+                return new ConstructorInfo[0];
 
-                return Array.FindAll(m_constructors, con => con.GetParameters().Length == argCount);
-            }
-            else
-            {
-                if (genericArguments != null && reflectedType.GetGenericArguments().Length == genericArguments.Length)
-                {
-                    Type specialized = reflectedType.MakeGenericType(genericArguments);
-                    return Array.FindAll(specialized.GetConstructors(), con => con.GetParameters().Length == argCount);
-                }
-                else
-                {
-                    return new ConstructorInfo[0];
-                }
-            }
+            return Array.FindAll(m_constructors, con => con.GetParameters().Length == argCount);
+
         }
     }
 }

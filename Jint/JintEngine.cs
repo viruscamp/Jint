@@ -28,7 +28,7 @@ namespace Jint.Delegates {
 namespace Jint {
     [Serializable]
     public class JintEngine {
-        public ExecutionVisitor visitor;
+        protected ExecutionVisitor visitor;
 
         [System.Diagnostics.DebuggerStepThrough]
         public JintEngine()
@@ -61,6 +61,13 @@ namespace Jint {
             global["ToUInt64"] = visitor.Global.FunctionClass.New(new Func<object, UInt64>(Convert.ToUInt64));
 
             BreakPoints = new List<BreakPoint>();
+        }
+
+        /// <summary>
+        /// A global object associated with this engine instance
+        /// </summary>
+        public IGlobal Global {
+            get { return visitor.Global; }
         }
 
         /// <summary>

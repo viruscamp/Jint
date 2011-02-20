@@ -49,3 +49,26 @@ catch (e) {
 }
 
 assert(false, error);
+
+// no catch statement
+var c = false;
+try {
+    var f = false;
+    try {
+        throw "error";
+        
+        // should not reach this code
+        assert(true, false);
+    }
+    finally {
+        f = true;
+    }
+    // should not reach this code
+    assert(true, false);
+    assert(true, f);
+}
+catch (e) {
+    c = true;
+}
+
+assert(true, c);

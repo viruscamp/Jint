@@ -323,6 +323,8 @@ namespace Jint {
 
                     statement.Condition.Accept(this);
 
+                    EnsureIdentifierIsDefined(Result);
+
                 } while (Result.ToBoolean());
             /*}
             finally {
@@ -434,6 +436,9 @@ namespace Jint {
                 statement.ConditionExpression.Accept(this);
             else
                 Result = Global.BooleanClass.New(true);
+
+            EnsureIdentifierIsDefined(Result);
+
             while (Result.ToBoolean()) {
                 statement.Statement.Accept(this);
 
@@ -483,6 +488,9 @@ namespace Jint {
 
         public void Visit(IfStatement statement) {
             statement.Expression.Accept(this);
+            
+            EnsureIdentifierIsDefined(Result);
+            
             if (Result.ToBoolean()) {
                 statement.Then.Accept(this);
             }
@@ -632,6 +640,8 @@ namespace Jint {
             try {*/
                 statement.Condition.Accept(this);
 
+                EnsureIdentifierIsDefined(Result);
+
                 while (Result.ToBoolean()) {
                     statement.Statement.Accept(this);
 
@@ -710,6 +720,8 @@ namespace Jint {
             var left = Result;
 
             Result = null;
+
+            EnsureIdentifierIsDefined(left);
 
             if (left.ToBoolean()) {
                 // Evaluates the middle expression

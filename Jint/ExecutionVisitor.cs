@@ -569,13 +569,17 @@ namespace Jint {
                 if (jsException == null)
                     jsException = new JsException(Global.ErrorClass.New(e.Message));
 
-                // handle thrown exception assignment to a local variable: catch(e)
-                if (statement.Catch.Identifier != null) {
-                    // if catch is called, Result contains the thrown value
-                    Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), jsException.Value);
-                }
+                // there might be no catch statement defined
+                if (statement.Catch != null) {
+                    
+                    // handle thrown exception assignment to a local variable: catch(e)
+                    if (statement.Catch.Identifier != null) {
+                        // if catch is called, Result contains the thrown value
+                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), jsException.Value);
+                    }
 
-                statement.Catch.Statement.Accept(this);
+                    statement.Catch.Statement.Accept(this);
+                }
             }
             finally {
                 ExitScope();

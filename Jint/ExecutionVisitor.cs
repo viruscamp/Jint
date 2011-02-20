@@ -1302,8 +1302,7 @@ namespace Jint {
             }
             #endregion
 
-            if (target is JsFunction)
-            {
+            if (target is JsFunction) {
                 JsFunction function = (JsFunction)target;
 
                 if (DebugMode) {
@@ -1329,12 +1328,12 @@ namespace Jint {
 
                 ExecuteFunction(function, that, parameters, genericParameters);
 
-                for(int i=0;i<original.Length;i++)
+                for (int i = 0; i < original.Length; i++)
                     if (original[i] != parameters[i]) {
                         if (methodCall.Arguments[i] is MemberExpression && ((MemberExpression)methodCall.Arguments[i]).Member is IAssignable)
                             Assign((MemberExpression)methodCall.Arguments[i], parameters[i]);
-                        else if ( methodCall.Arguments[i] is Identifier)
-                            Assign(new MemberExpression(methodCall.Arguments[i], null),parameters[i]);
+                        else if (methodCall.Arguments[i] is Identifier)
+                            Assign(new MemberExpression(methodCall.Arguments[i], null), parameters[i]);
                     }
 
                 if (DebugMode) {
@@ -1344,6 +1343,10 @@ namespace Jint {
                 Result = returnInstance;
                 return;
             }
+            else {
+                throw new JsException(Global.ErrorClass.New("Function expected."));
+            }
+
         }
 
         public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters)

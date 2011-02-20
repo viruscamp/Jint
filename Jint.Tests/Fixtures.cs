@@ -27,6 +27,7 @@ namespace Jint.Tests {
             JintEngine jint = new JintEngine()
                 //.SetDebugMode(true)
                 .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
+                .SetFunction("fail", new Action<string>(Assert.Fail))
                 .SetFunction("istrue", new Action<bool>(Assert.IsTrue))
                 .SetFunction("isfalse", new Action<bool>(Assert.IsFalse))
                 // .SetFunction("alert", new Func<string, System.Windows.Forms.DialogResult>(System.Windows.Forms.MessageBox.Show))
@@ -1562,6 +1563,34 @@ var fakeButton = new Test.FakeButton();");
         public void RunningInvalidScriptSourceShouldThrow() {
             new JintEngine().Run("var s = @string?;");
         }
+
+        [TestMethod]
+        public void UseOfUndefinedVariableShouldThrowAnException() {
+            Test(@"
+                try {
+                    if(abc) {
+                    }
+                    fail('should have thrown an Error');
+                }
+                catch (e) {
+                    return;
+                }
+                fail('should have caught an Error');
+
+                try {
+                    do{
+                    } while(abc);
+
+                fail('should have thrown an Error');
+                }
+                catch (e) {
+                    return;
+                }
+                fail('should have caught an Error');
+
+            ");
+        }
+
     }
 
     public struct Size {

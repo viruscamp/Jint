@@ -16,6 +16,7 @@ namespace Jint.Shell {
 
             jint.SetFunction("print", new Action<object>(s => { Console.ForegroundColor = ConsoleColor.Blue; Console.Write(s); Console.ResetColor(); }));
             jint.SetFunction("import", new Action<string>(s => { Assembly.LoadWithPartialName(s); }));
+            jint.DisableSecurity();
 
             while (true) {
                 Console.Write("jint > ");

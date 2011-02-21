@@ -72,3 +72,23 @@ catch (e) {
 }
 
 assert(true, c);
+
+// no catch statement should not eat inner exceptions
+
+var catch1 = false, catch2 = false;
+try {
+    try {
+        throw "error";
+    }
+    finally {
+        catch1 = true;
+    }
+}
+catch (e) {
+    // should be catching the outer throw which was not caught
+    catch2 = true;
+}
+
+assert(catch1, true);
+assert(catch2, true);
+

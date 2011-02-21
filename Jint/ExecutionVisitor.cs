@@ -579,7 +579,6 @@ namespace Jint {
 
                 // there might be no catch statement defined
                 if (statement.Catch != null) {
-                    
                     // handle thrown exception assignment to a local variable: catch(e)
                     if (statement.Catch.Identifier != null) {
                         // if catch is called, Result contains the thrown value
@@ -587,6 +586,9 @@ namespace Jint {
                     }
 
                     statement.Catch.Statement.Accept(this);
+                }
+                else {
+                    throw e;
                 }
             }
             finally {

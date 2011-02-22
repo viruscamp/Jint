@@ -89,6 +89,30 @@ catch (e) {
     catch2 = true;
 }
 
+// nested try/catch/finally
 assert(catch1, true);
 assert(catch2, true);
 
+var catch3 = 0;
+var finally1 = 0;
+try {
+    throw "error";
+}
+catch (e1) {
+    catch3++;
+    try {
+        throw "error";
+    }
+    catch (e2) {
+        catch3++;
+    }
+    finally {
+        finally1++;
+    }
+}
+finally {
+    finally1++;
+}
+
+assert(2, catch3);
+assert(2, finally1);

@@ -562,33 +562,28 @@ namespace Jint {
         }
 
         public void Visit(TryStatement statement) {
-            EnterScope(new JsObject());
+            EnterScope(new JsObject()); // ExitScope is called in Finally
 
             try {
                 statement.Statement.Accept(this);
             }
-            catch (Exception e) {
-                ExitScope();
-
-                EnterScope(new JsObject());
-
-                JsException jsException = e as JsException;
-
-                if (jsException == null)
-                    jsException = new JsException(Global.ErrorClass.New(e.Message));
-
+            catch (JsException e) {
                 // there might be no catch statement defined
                 if (statement.Catch != null) {
+                    // there is another exitscope called in Finally
+                    ExitScope();
+                    EnterScope(new JsObject());
+
                     // handle thrown exception assignment to a local variable: catch(e)
                     if (statement.Catch.Identifier != null) {
                         // if catch is called, Result contains the thrown value
-                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), jsException.Value);
+                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), e.Value);
                     }
 
                     statement.Catch.Statement.Accept(this);
                 }
                 else {
-                    throw e;
+                    throw;
                 }
             }
             finally {

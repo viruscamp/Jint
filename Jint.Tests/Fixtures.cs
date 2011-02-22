@@ -342,6 +342,22 @@ namespace Jint.Tests {
         }
 
         [TestMethod]
+        [ExpectedException(typeof(System.Security.SecurityException))]
+        public void SecurityExceptionsShouldNotBeCaught() {
+            const string script = @"
+                try {
+                    var sb = new System.Text.StringBuilder();
+                    fail('should not have reached this code');
+                } 
+                catch (e) {
+                    fail('should not have reached this code');
+                }                
+            ";
+            var engine = new JintEngine { AllowClr = false };
+            engine.Run(script);
+        }
+
+        [TestMethod]
         public void ShouldHandleStaticMethods() {
             const string script = @"
                 var a = System.Int32.Parse('1');

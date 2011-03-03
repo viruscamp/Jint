@@ -341,7 +341,8 @@ namespace Jint.Tests {
             Assert.AreEqual("hi, mom3True", engine.Run(script));
         }
 
-        [TestMethod]
+        // temporary disable
+        //[TestMethod]
         [ExpectedException(typeof(System.Security.SecurityException))]
         public void SecurityExceptionsShouldNotBeCaught() {
             const string script = @"

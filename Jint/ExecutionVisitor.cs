@@ -567,17 +567,22 @@ namespace Jint {
             try {
                 statement.Statement.Accept(this);
             }
-            catch (JsException e) {
+            catch (Exception e) {
                 // there might be no catch statement defined
                 if (statement.Catch != null) {
                     // there is another exitscope called in Finally
                     ExitScope();
                     EnterScope(new JsObject());
 
+                    JsException jsException = e as JsException;
+
+                    if (jsException == null)
+                        jsException = new JsException(Global.ErrorClass.New(e.Message));
+
                     // handle thrown exception assignment to a local variable: catch(e)
                     if (statement.Catch.Identifier != null) {
                         // if catch is called, Result contains the thrown value
-                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), e.Value);
+                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), jsException.Value);
                     }
 
                     statement.Catch.Statement.Accept(this);
@@ -1257,7 +1262,7 @@ namespace Jint {
 
             if (target == JsUndefined.Instance || Result == null) {
                 if (!String.IsNullOrEmpty(lastIdentifier)) {
-                    throw new JsException(Global.TypeErrorClass.New("Method isn't defined: " + lastIdentifier));
+ 
                 }
                 else {
                     throw new JsException(Global.TypeErrorClass.New("Method isn't defined"));

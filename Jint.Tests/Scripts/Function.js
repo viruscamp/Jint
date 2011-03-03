@@ -117,4 +117,4 @@ function bar() {
 
 bar();
 assert(foo,'foo');
-
+assert(false,bar==null);

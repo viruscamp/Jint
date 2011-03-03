@@ -351,7 +351,7 @@ namespace Jint
             JsGetter getter;
             JsSetter setter = null;
 
-            if (prop.CanRead)
+            if (prop.CanRead && prop.GetGetMethod() != null)
             {
                 getter = WrapGetProperty(prop);
             }
@@ -363,7 +363,7 @@ namespace Jint
                 };
             }
 
-            if (prop.CanWrite)
+            if (prop.CanWrite && prop.GetSetMethod() != null)
             {
                 setter = (JsSetter)WrapSetProperty(prop);
             }

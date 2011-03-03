@@ -177,6 +177,12 @@ namespace Jint.Native
             throw new ApplicationException("Unexpected error");
         }
 
+        public override bool IsClr {
+            get {
+                return true;
+            }
+        }
+
         public override object Value
         {
             get

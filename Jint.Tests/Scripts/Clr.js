@@ -80,4 +80,10 @@ hashtable.Add(2,"two");
 hashtable.Add(3,"three");
 assert(3, Number(hashtable.Count));
 
-
+// compare
+assert(false, Hashtable == null);
+assert(true, Hashtable != null);
+assert(false, hashtable == null);
+assert(true, hashtable != null);
+assert(false, hashtable.Add == null);
+assert(true, hashtable.Add != null);

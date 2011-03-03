@@ -56,6 +56,7 @@ namespace Jint.Native {
                     return global.BooleanClass.New((bool)Value);
                 case TypeCode.Char:
                 case TypeCode.String:
+                case TypeCode.Object:
                     return global.StringClass.New(Value.ToString());
                 case TypeCode.DateTime:
                     return global.DateClass.New((DateTime)Value);
@@ -71,7 +72,6 @@ namespace Jint.Native {
                 case TypeCode.Double:
                 case TypeCode.Single:
                     return global.NumberClass.New(Convert.ToDouble(Value));
-                case TypeCode.Object:
                 case TypeCode.DBNull:
                 case TypeCode.Empty:
                 default:

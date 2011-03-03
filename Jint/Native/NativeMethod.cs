@@ -82,6 +82,10 @@ namespace Jint.Native
         {
             return "[native code]";
         }
+
+        public override JsInstance ToPrimitive(IGlobal global) {
+            return global.StringClass.New( ToString() );
+        }
     }
     
 }

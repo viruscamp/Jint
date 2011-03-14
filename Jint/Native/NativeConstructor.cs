@@ -96,10 +96,10 @@ namespace Jint.Native
 
             // find and add all static properties and fields
             foreach (var info in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
-                DefineOwnProperty(info.Name, Global.Marshaller.MarshalPropertyInfo(info, this));
+                DefineOwnProperty(Global.Marshaller.MarshalPropertyInfo(info, this));
             
             foreach (var info in type.GetFields(BindingFlags.Static | BindingFlags.Public))
-                DefineOwnProperty(info.Name, Global.Marshaller.MarshalFieldInfo(info, this));
+                DefineOwnProperty(Global.Marshaller.MarshalFieldInfo(info, this));
 
             if (type.IsEnum)
             {
@@ -292,7 +292,7 @@ namespace Jint.Native
             if (target == null || target == JsNull.Instance || target == JsUndefined.Instance )
                 throw new ArgumentException("A valid js object is required","target");
             foreach (var prop in m_properties)
-                target.DefineOwnProperty(prop.Name,new NativeDescriptor(target, prop) );
+                target.DefineOwnProperty(new NativeDescriptor(target, prop) );
         }
 
         public override JsInstance Wrap<T>(T value)

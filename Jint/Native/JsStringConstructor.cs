@@ -40,7 +40,7 @@ namespace Jint.Native {
             Prototype.DefineOwnProperty("slice", global.FunctionClass.New<JsDictionaryObject>(SliceImpl, 2), PropertyAttributes.DontEnum);
 
             #region Properties
-            Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsDictionaryObject>(global, Prototype, "length", LengthImpl));
+            Prototype.DefineOwnProperty(new PropertyDescriptor<JsDictionaryObject>(global, Prototype, "length", LengthImpl));
             #endregion
         }
 

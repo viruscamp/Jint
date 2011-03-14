@@ -68,7 +68,7 @@ namespace Jint.Native {
             }
         }
 
-        public override void DefineOwnProperty(string key, Descriptor value) {
+        public override void DefineOwnProperty(Descriptor value) {
 
         }
 

@@ -41,7 +41,7 @@ namespace Jint.Native {
         /// <returns>new object</returns>
         public JsObject New(JsFunction constructor) {
             JsObject obj = new JsObject(this.PrototypeProperty);
-            obj.DefineOwnProperty(CONSTRUCTOR, new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
+            obj.DefineOwnProperty(new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
             return obj;
         }
 
@@ -54,7 +54,7 @@ namespace Jint.Native {
         public JsObject New(JsFunction constructor, JsObject Prototype)
         {
             JsObject obj = new JsObject(Prototype);
-            obj.DefineOwnProperty(CONSTRUCTOR, new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
+            obj.DefineOwnProperty(new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
             return obj;
         }
 
@@ -167,7 +167,7 @@ namespace Jint.Native {
             string name = parameters[1].ToString();
             Descriptor desc = Descriptor.ToPropertyDesciptor(Global, (JsDictionaryObject)instance, name, parameters[2]);
 
-            ((JsDictionaryObject)instance).DefineOwnProperty(name, desc);
+            ((JsDictionaryObject)instance).DefineOwnProperty(desc);
 
             return instance;
         }

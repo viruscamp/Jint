@@ -1375,16 +1375,23 @@ namespace Jint {
             JsScope functionScope = new JsScope(function.Scope ?? GlobalScope);
 
             for (int i = 0; i < function.Arguments.Count; i++)
-                functionScope.DefineOwnProperty(
-                    function.Arguments[i],
-                    new LinkedDescriptor(
-                        functionScope,
-                        function.Arguments[i],
-                        args.GetDescriptor(i.ToString()),
-                        args
-                    )
-                );
-
+                if (i < parameters.Length) 
+                    functionScope.DefineOwnProperty(
+                        new LinkedDescriptor(
+                            functionScope,
+                            function.Arguments[i],
+                            args.GetDescriptor(i.ToString()),
+                            args
+                        )
+                    );
+                else
+                    functionScope.DefineOwnProperty(
+                        new ValueDescriptor(
+                            functionScope,
+                            function.Arguments[i],
+                            JsUndefined.Instance
+                        )
+                    );
 
             // define arguments variable
             if (HasOption(Options.Strict))
@@ -1473,7 +1480,7 @@ namespace Jint {
             switch (expression.Mode) {
                 case PropertyExpressionType.Data:
                     expression.Expression.Accept(this);
-                    Result = new ValueDescriptor(target, expression.Name, Result);
+                    target.DefineOwnProperty(new ValueDescriptor(target, expression.Name, Result) );
                     break;
                 case PropertyExpressionType.Get:
                 case PropertyExpressionType.Set:
@@ -1486,7 +1493,7 @@ namespace Jint {
                         expression.SetExpression.Accept(this);
                         set = (JsFunction)Result;
                     }
-                    Result = new PropertyDescriptor(Global, target, expression.Name) { GetFunction = get, SetFunction = set, Enumerable = true };
+                    target.DefineOwnProperty(new PropertyDescriptor(Global, target, expression.Name) { GetFunction = get, SetFunction = set, Enumerable = true });
                     break;
                 default:
                     break;
@@ -1498,9 +1505,15 @@ namespace Jint {
 
             string propertyName = lastIdentifier = expression.Text;
 
-            JsInstance result = null;
-            if (CurrentScope.TryGetProperty(propertyName, out result)) {
-                Result = result;
+            Descriptor result = null;
+            if (CurrentScope.TryGetDescriptor(propertyName, out result)) {
+                if (!result.isReference)
+                    Result = result.Get(CurrentScope);
+                else {
+                    LinkedDescriptor r = result as LinkedDescriptor;
+                    SetResult(r.Get(CurrentScope), r.targetObject);
+                }
+
                 if (Result != null)
                     return;
             }
@@ -1531,7 +1544,6 @@ namespace Jint {
             foreach (var item in json.Values) {
                 Result = instance;
                 item.Value.Accept(this);
-                instance.DefineOwnProperty(item.Key, Result);
             }
 
             Result = instance;

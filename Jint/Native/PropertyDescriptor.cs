@@ -17,6 +17,20 @@ namespace Jint.Native {
         public JsFunction GetFunction { get; set; }
         public JsFunction SetFunction { get; set; }
 
+        public override bool isReference {
+            get { return false; }
+        }
+
+        public override Descriptor Clone() {
+            return new PropertyDescriptor(global, Owner, Name) {
+                Enumerable = this.Enumerable,
+                Configurable = this.Configurable,
+                Writable = this.Writable,
+                GetFunction = this.GetFunction,
+                SetFunction = this.SetFunction
+            };
+        }
+
         public override JsInstance Get(JsDictionaryObject that) {
             //JsDictionaryObject that = global.Visitor.CallTarget;
             global.Visitor.ExecuteFunction(GetFunction, that, JsInstance.EMPTY);

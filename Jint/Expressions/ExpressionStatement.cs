@@ -15,6 +15,5 @@ namespace Jint.Expressions {
         public override void Accept(IStatementVisitor visitor) {
             visitor.Visit(this);
         }
-
     }
 }

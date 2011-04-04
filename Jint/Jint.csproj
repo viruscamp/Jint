@@ -45,8 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CachedTypeResolver.cs" />
+    <Compile Include="Expressions\CustomWalkerPosition.cs" />
+    <Compile Include="Expressions\IWalkable.cs" />
+    <Compile Include="Expressions\StatementWalker.cs" />
+    <Compile Include="Expressions\StatementWalkerPosition.cs" />
     <Compile Include="Marshal\Delegates.cs" />
     <Compile Include="Marshal\JsFunctionDelegate.cs" />
+    <Compile Include="Marshal\JsPropertyAttribute.cs" />
     <Compile Include="Marshal\ProxyHelper.cs" />
     <Compile Include="Marshal\RawJsMethodAttribute.cs" />
     <Compile Include="Native\ClrFunction.cs" />

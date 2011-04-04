@@ -54,20 +54,18 @@ namespace Jint.Native {
 
         public override JsInstance this[string index] {
             get {
-                try {
-                    return get(Convert.ToInt32(index));
-                }
-                catch (FormatException) {
+                int i;
+                if (Int32.TryParse(index, out i))
+                    return get(i);
+                else
                     return base[index];
-                }
             }
             set {
-                try {
-                    put(Convert.ToInt32(index), value);
-                }
-                catch (FormatException) {
+                int i;
+                if (Int32.TryParse(index,out i))
+                    put(i,value);
+                else
                     base[index] = value;
-                }
             }
         }
 
@@ -235,6 +233,7 @@ namespace Jint.Native {
             return new JsArray(newData, offset, global.ArrayClass.PrototypeProperty);
         }
 
+        [RawJsMethod]
         public JsString join(IGlobal global, JsInstance separator) {
             if (length == 0)
                 return global.StringClass.New();

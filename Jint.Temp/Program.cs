@@ -7,19 +7,33 @@ using Jint.Native;
 using System.Reflection;
 
 namespace Jint.Temp {
+    public class MyClass
+    {
+        public string Description { get; set; }
+        public int Status { get; set; }
+
+        public MyClass(string description, int status)
+        {
+            this.Description = description;
+            this.Status = status;
+        }
+    }
+
     class Program {
-        static void Main(string[] args) {
+        static void Main2(string[] args)
+        {
+            
+            List<MyClass>myClasses = new List<MyClass>();
+            myClasses.Add(new MyClass("Some text",2));
+            myClasses.Add(new MyClass("More text", 1));
 
-            /*JintEngine eng;
+            var jintEngine = new JintEngine();
+            jintEngine.SetParameter("myClasses", myClasses);
 
-            int t = Environment.TickCount;
-            for (int i =0; i < 1000; i++)
-                eng = new JintEngine();
-            System.Console.WriteLine("time: {0} ms", Environment.TickCount - t);
+            Console.WriteLine("Result: {0}", jintEngine.Run("return myClasses[0].Description"));
             System.Console.ReadKey();
-
-            return;*/
-
+        }
+        static void Main(string[] args) {
             JintEngine engine = new JintEngine();
             engine.DisableSecurity();
             engine.Run("1;");

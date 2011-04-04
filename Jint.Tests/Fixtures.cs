@@ -1087,9 +1087,11 @@ var fakeButton = new Test.FakeButton();");
                 assert(true, true);
             }
             try{
-                function test2(eval){}
-                //should not execute the next statement
-                assert(true, false);
+                (function() {
+                    function test2(eval){}
+                    //should not execute the next statement
+                    assert(true, false);
+                })();
             }
             catch(e){
                 assert(true, true);
@@ -1108,8 +1110,10 @@ var fakeButton = new Test.FakeButton();");
                 assert(true, false);
             }
             try{
-                function test2(eval){}
-                assert(true, true);
+                (function() {
+                    function test2(eval){}
+                    assert(true, true);
+                })();
             }
             catch(e){
                 assert(true, false);

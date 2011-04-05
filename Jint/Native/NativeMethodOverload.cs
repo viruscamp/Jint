@@ -55,6 +55,15 @@ namespace Jint.Native
             }
         }
 
+        public override object Value {
+            get {
+                return true;
+            }
+            set {
+                ;
+            }
+        }
+
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
         {
             return Execute(visitor, that, parameters, null);

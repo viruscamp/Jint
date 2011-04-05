@@ -11,24 +11,13 @@ using System.Runtime.Serialization;
 using Jint.Delegates;
 
 namespace Jint {
-    [Serializable]
-    public class ExecutionVisitor : IStatementVisitor, IJintVisitor, IDeserializationCallback {
+
+    public class ExecutionVisitor : IStatementVisitor, IJintVisitor{
         struct ResultInfo {
             public JsDictionaryObject baseObject;
             public JsInstance result;
         }
 
-        /*
-        [NonSerialized]
-        protected internal IFieldGetter fieldGetter;
-        [NonSerialized]
-        protected internal IPropertyGetter propertyGetter;
-        [NonSerialized]
-        protected internal IMethodInvoker methodInvoker;
-        [NonSerialized]
-        protected internal IConstructorInvoker constructorInvoker;
-        [NonSerialized]
-        */
         protected internal ITypeResolver typeResolver;
 
         public IGlobal Global { get; private set; }
@@ -50,7 +39,7 @@ namespace Jint {
         public JsInstance Returned { get { return returnInstance; } }
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
-        [NonSerialized]
+        
         private StringBuilder typeFullname = new StringBuilder();
         private string lastIdentifier = String.Empty;
 
@@ -77,21 +66,30 @@ namespace Jint {
             lastResult.baseObject = baseObject;
         }
 
-        void SaveResult() {
-            stackResults.Push(lastResult);
-        }
-        void RestoreResult() {
-            lastResult = stackResults.Pop();
-        }
-
         public ExecutionVisitor(Options options) {
-            typeResolver = new CachedTypeResolver();
+            typeResolver = CachedTypeResolver.Default;
 
             Global = new JsGlobal(this, options);
             GlobalScope = new JsScope(Global as JsObject);
 
             EnterScope(GlobalScope);
 
+            CallStack = new Stack<string>();
+        }
+
+        public ExecutionVisitor(IGlobal GlobalObject, JsScope Scope) {
+            if (GlobalObject == null)
+                throw new ArgumentNullException("GlobalObject");
+            if (Scope == null)
+                throw new ArgumentNullException("Scope");
+
+            typeResolver = CachedTypeResolver.Default;
+
+            Global = GlobalObject;
+            GlobalScope = Scope.Global;
+            MaxRecursions = 500;
+
+            EnterScope(Scope);
             CallStack = new Stack<string>();
         }
 
@@ -1205,6 +1203,7 @@ namespace Jint {
         }
 
         public void Visit(Statement expression) {
+            // fallback for an unsupported expression
             throw new NotImplementedException();
         }
 
@@ -1434,16 +1433,6 @@ namespace Jint {
             return Global.HasOption(options);
         }
 
-        //TODO: remove CallFunction from a visitor
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="function">Function to exectue</param>
-        /// <param name="that">Object to call the function on</param>
-        /// <param name="parameters">Parameters of the execution</param>
-        public void CallFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters) {
-            function.Statement.Accept(this);
-        }
 
         public void Visit(PropertyExpression expression) {
             // save base of current expression

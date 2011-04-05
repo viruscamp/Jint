@@ -34,9 +34,11 @@ namespace Jint.Marshal {
 
         public static ProxyHelper Default {
             get {
-                if (m_default == null)
-                    m_default = new ProxyHelper();
-                return m_default;
+                lock (typeof(ProxyHelper)) {
+                    if (m_default == null)
+                        m_default = new ProxyHelper();
+                    return m_default;
+                }
             }
         }
 

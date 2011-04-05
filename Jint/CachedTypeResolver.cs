@@ -6,19 +6,30 @@ using System.Threading;
 
 namespace Jint {
     public class CachedTypeResolver : ITypeResolver {
-        static Dictionary<string, Type> _Cache = new Dictionary<string, Type>();
-        static ReaderWriterLock rwl = new ReaderWriterLock();
+        Dictionary<string, Type> m_cache = new Dictionary<string, Type>();
+        ReaderWriterLock m_lock = new ReaderWriterLock();
+        static CachedTypeResolver m_default;
+
+        public static CachedTypeResolver Default {
+            get {
+                lock (typeof(CachedTypeResolver)) {
+                    if (m_default == null)
+                        m_default = new CachedTypeResolver();
+                    return m_default;
+                }
+            }
+        }
 
         public Type ResolveType(string fullname) {
-            rwl.AcquireReaderLock(Timeout.Infinite);
+            m_lock.AcquireReaderLock(Timeout.Infinite);
 
             try {
-                if (_Cache.ContainsKey(fullname)) {
-                    return _Cache[fullname];
+                if (m_cache.ContainsKey(fullname)) {
+                    return m_cache[fullname];
                 }
             }
             finally {
-                rwl.ReleaseReaderLock();
+                m_lock.ReleaseReaderLock();
             }
 
             Type type = null;
@@ -30,14 +41,14 @@ namespace Jint {
                 }
             }
 
-            rwl.AcquireWriterLock(Timeout.Infinite);
+            m_lock.AcquireWriterLock(Timeout.Infinite);
 
             try {
-                _Cache.Add(fullname, type);
+                m_cache.Add(fullname, type);
                 return type;
             }
             finally {
-                rwl.ReleaseWriterLock();
+                m_lock.ReleaseWriterLock();
             }
         }
     }

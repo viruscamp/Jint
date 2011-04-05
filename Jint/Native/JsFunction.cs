@@ -91,7 +91,7 @@ namespace Jint.Native {
         }
 
         public virtual JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
-            visitor.CallFunction(this, that, parameters);
+            Statement.Accept((IStatementVisitor)visitor);
             return that;
         }
 

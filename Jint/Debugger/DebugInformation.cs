@@ -9,6 +9,6 @@ namespace Jint.Debugger {
     public class DebugInformation : EventArgs {
         public Stack<string> CallStack { get; set; }
         public Statement CurrentStatement { get; set; }
-        public JsDictionaryObject Locals { get; set; }
+        public JsObjectBase Locals { get; set; }
     }
 }

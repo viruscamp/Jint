@@ -5,7 +5,7 @@ using Jint.Expressions;
 
 namespace Jint.Native {
     [Serializable]
-    public class JsComparer : IComparer<JsInstance> {
+    public class JsComparer : IComparer<IJsInstance> {
         public IJintVisitor Visitor { get; set; }
         public JsFunction Function { get; set; }
 
@@ -14,7 +14,7 @@ namespace Jint.Native {
             Function = function;
         }
 
-        public int Compare(JsInstance x, JsInstance y) {
+        public int Compare(IJsInstance x, IJsInstance y) {
             Visitor.Result = Function;
             new MethodCall(new List<Expression>() { new ValueExpression(x, TypeCode.Object), new ValueExpression(y, TypeCode.Object) }).Accept((IStatementVisitor)Visitor);
             return Math.Sign(Visitor.Result.ToNumber());

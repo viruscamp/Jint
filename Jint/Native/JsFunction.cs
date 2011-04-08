@@ -70,7 +70,7 @@ namespace Jint.Native {
         }
 
         //13.2.2
-        public virtual JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
+        public virtual JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
             var instance = visitor.Global.ObjectClass.New(PrototypeProperty);
             visitor.ExecuteFunction(this, instance, parameters);
 
@@ -90,12 +90,12 @@ namespace Jint.Native {
             set { }
         }
 
-        public virtual JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public virtual IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             Statement.Accept((IStatementVisitor)visitor);
             return that;
         }
 
-        public virtual JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters, Type[] genericArguments)
+        public virtual IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters, Type[] genericArguments)
         {
             throw new JintException("This method can't be called as a generic");
         }

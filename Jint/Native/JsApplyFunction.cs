@@ -15,30 +15,30 @@ namespace Jint.Native {
             DefineOwnProperty("length", constructor.Global.NumberClass.New(2), PropertyAttributes.ReadOnly);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             JsFunction function = that as JsFunction;
 
             if (function == null) {
                 throw new ArgumentException("the target of call() must be a function");
             }
-            JsDictionaryObject _this;
-            JsInstance[] _parameters;
+            JsObjectBase _this;
+            IJsInstance[] _parameters;
             if (parameters.Length >= 1 && parameters[0] != JsUndefined.Instance && parameters[0] != JsNull.Instance)
-                _this = parameters[0] as JsDictionaryObject;
+                _this = parameters[0] as JsObjectBase;
             else
-                _this = visitor.Global as JsDictionaryObject;
+                _this = visitor.Global as JsObjectBase;
 
             if (parameters.Length >= 2 && parameters[1] != JsNull.Instance) {
                 JsObject arguments = parameters[1] as JsObject;
                 if (arguments == null)
                     throw new JsException(visitor.Global.TypeErrorClass.New("second argument must be an array"));
-                _parameters = new JsInstance[arguments.Length];
+                _parameters = new IJsInstance[arguments.Length];
                 for (int i = 0; i < arguments.Length; i++) {
                     _parameters[i] = arguments[i.ToString()];
                 }
             }
             else {
-                _parameters = JsInstance.EMPTY;
+                _parameters = IJsInstance.EMPTY;
             }
 
 

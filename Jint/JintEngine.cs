@@ -30,12 +30,12 @@ namespace Jint {
     public class JintEngine {
         protected ExecutionVisitor visitor;
 
-        [System.Diagnostics.DebuggerStepThrough]
+        //[System.Diagnostics.DebuggerStepThrough]
         public JintEngine()
             : this(Options.Ecmascript5 | Options.Strict) {
         }
 
-        [System.Diagnostics.DebuggerStepThrough]
+        //[System.Diagnostics.DebuggerStepThrough]
         public JintEngine(Options options) {
             visitor = new ExecutionVisitor(options);
             AllowClr = true;
@@ -386,7 +386,7 @@ namespace Jint {
         }
 
         public object CallFunction(JsFunction function, params object[] args) {
-            visitor.ExecuteFunction(function, null, Array.ConvertAll<object,JsInstance>( args, x => visitor.Global.Marshaller.MarshalClrValue<object>(x) ));
+            visitor.ExecuteFunction(function, null, Array.ConvertAll<object,IJsInstance>( args, x => visitor.Global.Marshaller.MarshalClrValue<object>(x) ));
             return visitor.Global.Marshaller.MarshalJsValue<object>(visitor.Returned);
         }
 

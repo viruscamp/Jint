@@ -404,14 +404,14 @@ bar');
             Test(script);
         }
 
-        private static JsString GiveMeJavascript(JsNumber number, JsInstance instance) {
+        private static JsString GiveMeJavascript(JsNumber number, IJsInstance instance) {
             return new JsString(number + instance.ToString(), JsNull.Instance);
         }
 
         [TestMethod]
         public void ShouldNotWrapJsInstancesIfExpected() {
             var engine = new JintEngine()
-            .SetFunction("evaluate", new Func<JsNumber, JsInstance, JsString>(GiveMeJavascript));
+            .SetFunction("evaluate", new Func<JsNumber, IJsInstance, JsString>(GiveMeJavascript));
 
             const string script = @"
                 var r = evaluate(3, [1,2]);

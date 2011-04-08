@@ -64,7 +64,7 @@ namespace Jint.Marshal {
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
             LinkedList<MarshalledParameter> outParams = new LinkedList<MarshalledParameter>();
 
-            DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(JsInstance), new Type[] { typeof(IGlobal), typeof(JsInstance), typeof(JsInstance[]) }, this.GetType());
+            DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(IJsInstance), new Type[] { typeof(IGlobal), typeof(IJsInstance), typeof(IJsInstance[]) }, this.GetType());
             var code = jsWrapper.GetILGenerator();
 
             code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
@@ -146,7 +146,7 @@ namespace Jint.Marshal {
                 // push arguments[i]
                 code.Emit(OpCodes.Ldarg_2);
                 code.Emit(OpCodes.Ldc_I4, i);
-                code.Emit(OpCodes.Ldelem, typeof(JsInstance));
+                code.Emit(OpCodes.Ldelem, typeof(IJsInstance));
 
                 code.Emit(OpCodes.Br, lblEnd);
                 code.MarkLabel(lblDefaultValue);
@@ -206,7 +206,7 @@ namespace Jint.Marshal {
                 code.Emit(OpCodes.Ldloc, param.tempLocal);
                 code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(param.tempLocal.LocalType));
 
-                code.Emit(OpCodes.Stelem, typeof(JsInstance));
+                code.Emit(OpCodes.Stelem, typeof(IJsInstance));
 
                 code.MarkLabel(lblEnd);
             }
@@ -248,7 +248,7 @@ namespace Jint.Marshal {
 
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
 
-            DynamicMethod dm = new DynamicMethod("clrConstructor", typeof(object), new Type[] { typeof(IGlobal), typeof(JsInstance[]) }, this.GetType());
+            DynamicMethod dm = new DynamicMethod("clrConstructor", typeof(object), new Type[] { typeof(IGlobal), typeof(IJsInstance[]) }, this.GetType());
             var code = dm.GetILGenerator();
 
             code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
@@ -283,7 +283,7 @@ namespace Jint.Marshal {
                 // push arguments[i]
                 code.Emit(OpCodes.Ldarg_1);
                 code.Emit(OpCodes.Ldc_I4, i);
-                code.Emit(OpCodes.Ldelem, typeof(JsInstance));
+                code.Emit(OpCodes.Ldelem, typeof(IJsInstance));
 
                 code.Emit(OpCodes.Br, lblEnd);
                 code.MarkLabel(lblDefaultValue);
@@ -345,7 +345,7 @@ namespace Jint.Marshal {
             }
 
             if (dm == null) {
-                dm = new DynamicMethod("dynamicPropertyGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsDictionaryObject) }, this.GetType());
+                dm = new DynamicMethod("dynamicPropertyGetter", typeof(IJsInstance), new Type[] { typeof(Marshaller), typeof(JsObjectBase) }, this.GetType());
 
                 MethodInfo info = prop.GetGetMethod();
 
@@ -393,7 +393,7 @@ namespace Jint.Marshal {
                 fieldGetCache.TryGetValue(field, out dm);
             }
             if (dm == null) {
-                dm = new DynamicMethod("dynamicFieldGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsDictionaryObject) }, this.GetType());
+                dm = new DynamicMethod("dynamicFieldGetter", typeof(IJsInstance), new Type[] { typeof(Marshaller), typeof(JsObjectBase) }, this.GetType());
                 var code = dm.GetILGenerator();
 
                 code.Emit(OpCodes.Ldarg_0);
@@ -435,7 +435,7 @@ namespace Jint.Marshal {
                 propSetCache.TryGetValue(prop, out dm);
             }
             if (dm == null) {
-                dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsDictionaryObject), typeof(JsInstance) }, this.GetType());
+                dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsObjectBase), typeof(IJsInstance) }, this.GetType());
                 MethodInfo info = prop.GetSetMethod();
 
                 var code = dm.GetILGenerator();
@@ -485,7 +485,7 @@ namespace Jint.Marshal {
             }
 
             if (dm == null) {
-                dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsDictionaryObject), typeof(JsInstance) }, this.GetType());
+                dm = new DynamicMethod("dynamicPropertySetter", null, new Type[] { typeof(Marshaller), typeof(JsObjectBase), typeof(IJsInstance) }, this.GetType());
 
                 var code = dm.GetILGenerator();
 
@@ -539,7 +539,7 @@ namespace Jint.Marshal {
 
 
 
-                dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) }, this.GetType());
+                dm = new DynamicMethod("dynamicIndexerSetter", typeof(IJsInstance), new Type[] { typeof(Marshaller), typeof(IJsInstance), typeof(IJsInstance) }, this.GetType());
 
                 ILGenerator code = dm.GetILGenerator();
 
@@ -605,7 +605,7 @@ namespace Jint.Marshal {
                 if (!(setMethod.GetParameters().Length == 2 && setMethod.ReturnType.Equals(typeof(void))))
                     throw new ArgumentException("Invalid getter", "getMethod");
 
-                dm = new DynamicMethod("dynamicIndexerSetter", typeof(void), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance), typeof(JsInstance) },this.GetType());
+                dm = new DynamicMethod("dynamicIndexerSetter", typeof(void), new Type[] { typeof(Marshaller), typeof(IJsInstance), typeof(IJsInstance), typeof(IJsInstance) },this.GetType());
 
                 ILGenerator code = dm.GetILGenerator();
 

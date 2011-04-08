@@ -20,17 +20,17 @@ namespace Jint.Native {
 
             //Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsDictionaryObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl));
 
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("valueOf", global.FunctionClass.New<JsDictionaryObject>(ValueOfImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("hasOwnProperty", global.FunctionClass.New<JsDictionaryObject>(HasOwnPropertyImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("isPrototypeOf", global.FunctionClass.New<JsDictionaryObject>(IsPrototypeOfImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("propertyIsEnumerable", global.FunctionClass.New<JsDictionaryObject>(PropertyIsEnumerableImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("valueOf", global.FunctionClass.New<JsObjectBase>(ValueOfImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("hasOwnProperty", global.FunctionClass.New<JsObjectBase>(HasOwnPropertyImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("isPrototypeOf", global.FunctionClass.New<JsObjectBase>(IsPrototypeOfImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("propertyIsEnumerable", global.FunctionClass.New<JsObjectBase>(PropertyIsEnumerableImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("getPrototypeOf", new JsFunctionWrapper(GetPrototypeOfImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
             if (global.HasOption(Options.Ecmascript5)) {
                 Prototype.DefineOwnProperty("defineProperty", new JsFunctionWrapper(DefineProperty, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
-                Prototype.DefineOwnProperty("__lookupGetter__", global.FunctionClass.New<JsDictionaryObject>(GetGetFunction), PropertyAttributes.DontEnum);
-                Prototype.DefineOwnProperty("__lookupSetter__", global.FunctionClass.New<JsDictionaryObject>(GetSetFunction), PropertyAttributes.DontEnum);
+                Prototype.DefineOwnProperty("__lookupGetter__", global.FunctionClass.New<JsObjectBase>(GetGetFunction), PropertyAttributes.DontEnum);
+                Prototype.DefineOwnProperty("__lookupSetter__", global.FunctionClass.New<JsObjectBase>(GetSetFunction), PropertyAttributes.DontEnum);
             }
         }
 
@@ -84,12 +84,12 @@ namespace Jint.Native {
         /// <summary>
         /// 15.2.2.1
         /// </summary>
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             if (parameters.Length > 0) {
                 switch (parameters[0].Class) {
-                    case JsInstance.CLASS_STRING: return Global.StringClass.New(parameters[0].ToString());
-                    case JsInstance.CLASS_NUMBER: return Global.NumberClass.New(parameters[0].ToNumber());
-                    case JsInstance.CLASS_BOOLEAN: return Global.BooleanClass.New(parameters[0].ToBoolean());
+                    case IJsInstance.CLASS_STRING: return Global.StringClass.New(parameters[0].ToString());
+                    case IJsInstance.CLASS_NUMBER: return Global.NumberClass.New(parameters[0].ToNumber());
+                    case IJsInstance.CLASS_BOOLEAN: return Global.BooleanClass.New(parameters[0].ToBoolean());
                     default:
                         return parameters[0];
                 }
@@ -99,23 +99,23 @@ namespace Jint.Native {
         }
 
         // 15.2.4.3 and 15.2.4.4
-        public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             return Global.StringClass.New(String.Concat("[object ", target.Class, "]"));
         }
 
         // 15.2.4.4
-        public JsInstance ValueOfImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ValueOfImpl(JsObjectBase target, IJsInstance[] parameters) {
             return target;
         }
 
         // 15.2.4.5
-        public JsInstance HasOwnPropertyImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance HasOwnPropertyImpl(JsObjectBase target, IJsInstance[] parameters) {
             return Global.BooleanClass.New(target.HasOwnProperty(parameters[0]));
         }
 
         // 15.2.4.6
-        public JsInstance IsPrototypeOfImpl(JsDictionaryObject target, JsInstance[] parameters) {
-            if (target.Class != JsInstance.CLASS_OBJECT) {
+        public IJsInstance IsPrototypeOfImpl(JsObjectBase target, IJsInstance[] parameters) {
+            if (target.Class != IJsInstance.CLASS_OBJECT) {
                 return Global.BooleanClass.False;
             }
 
@@ -132,7 +132,7 @@ namespace Jint.Native {
         }
 
         // 15.2.4.7
-        public JsInstance PropertyIsEnumerableImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance PropertyIsEnumerableImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (!HasOwnProperty(parameters[0])) {
                 return Global.BooleanClass.False;
             }
@@ -146,8 +146,8 @@ namespace Jint.Native {
         /// 15.2.3.2
         /// </summary>
         /// <returns></returns>
-        public JsInstance GetPrototypeOfImpl(JsInstance[] parameters) {
-            if (parameters[0].Class != JsInstance.CLASS_OBJECT)
+        public IJsInstance GetPrototypeOfImpl(IJsInstance[] parameters) {
+            if (parameters[0].Class != IJsInstance.CLASS_OBJECT)
                 throw new JsException(Global.TypeErrorClass.New());
             return ((parameters[0] as JsObject ?? JsUndefined.Instance)[JsFunction.CONSTRUCTOR] as JsObject ?? JsUndefined.Instance)[JsFunction.PROTOTYPE];
         }
@@ -158,16 +158,16 @@ namespace Jint.Native {
         /// <param name="instance"></param>
         /// <param name="p"></param>
         /// <param name="currentDescriptor"></param>
-        public JsInstance DefineProperty(JsInstance[] parameters) {
-            JsInstance instance = parameters[0];
+        public IJsInstance DefineProperty(IJsInstance[] parameters) {
+            IJsInstance instance = parameters[0];
 
-            if (!(instance is JsDictionaryObject))
+            if (!(instance is JsObjectBase))
                 throw new JsException(Global.TypeErrorClass.New());
 
             string name = parameters[1].ToString();
-            Descriptor desc = Descriptor.ToPropertyDesciptor(Global, (JsDictionaryObject)instance, name, parameters[2]);
+            Descriptor desc = Descriptor.ToPropertyDesciptor(Global, (JsObjectBase)instance, name, parameters[2]);
 
-            ((JsDictionaryObject)instance).DefineOwnProperty(desc);
+            ((JsObjectBase)instance).DefineOwnProperty(desc);
 
             return instance;
         }

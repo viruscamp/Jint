@@ -225,7 +225,7 @@ namespace Jint.Native
         /// <param name="global">global object</param>
         /// <param name="args">Constructor args, ignored</param>
         /// <returns>A new boxed value objec of type T</returns>
-        static object CreateStruct<T>(IGlobal global,JsInstance[] args) where T : struct
+        static object CreateStruct<T>(IGlobal global,IJsInstance[] args) where T : struct
         {
             return new T();
         }
@@ -238,7 +238,7 @@ namespace Jint.Native
         /// <param name="that"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
+        public override IJsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters)
         {
             if (that == null || that == JsUndefined.Instance || that == JsNull.Instance || (that as IGlobal) == visitor.Global)
                 throw new JintException("A constructor '" + reflectedType.FullName + "' should be applied to the object");
@@ -262,7 +262,7 @@ namespace Jint.Native
         /// <param name="genericArgs">Ignored since this class represents a non-generic types</param>
         /// <param name="visitor">Execution visitor</param>
         /// <returns>A newly created js object</returns>
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, Jint.Expressions.IJintVisitor visitor)
+        public override JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, Jint.Expressions.IJintVisitor visitor)
         {
             return (JsObject)Wrap( CreateInstance( visitor, parameters ) );
         }
@@ -273,21 +273,21 @@ namespace Jint.Native
         /// <param name="visitor">Execution visitor</param>
         /// <param name="parameters">Parameters for a constructor</param>
         /// <returns>A newly created native object</returns>
-        object CreateInstance(Jint.Expressions.IJintVisitor visitor, JsInstance[] parameters)
+        object CreateInstance(Jint.Expressions.IJintVisitor visitor, IJsInstance[] parameters)
         {
             ConstructorImpl impl = m_overloads.ResolveOverload(parameters, null);
             if (impl == null)
                 throw new JintException(
                     String.Format("No matching overload found {0}({1})",
                         reflectedType.FullName,
-                        String.Join(",", Array.ConvertAll<JsInstance, string>(parameters, p => p.ToString()))
+                        String.Join(",", Array.ConvertAll<IJsInstance, string>(parameters, p => p.ToString()))
                     )
                 );
 
             return impl(visitor.Global, parameters);
         }
 
-        public void SetupNativeProperties(JsDictionaryObject target)
+        public void SetupNativeProperties(JsObjectBase target)
         {
             if (target == null || target == JsNull.Instance || target == JsUndefined.Instance )
                 throw new ArgumentException("A valid js object is required","target");
@@ -295,7 +295,7 @@ namespace Jint.Native
                 target.DefineOwnProperty(new NativeDescriptor(target, prop) );
         }
 
-        public override JsInstance Wrap<T>(T value)
+        public override IJsInstance Wrap<T>(T value)
         {
             if (!reflectedType.IsAssignableFrom(value.GetType()))
                 throw new JintException("Attempt to wrap '" + typeof(T).FullName + "' with '" + reflectedType.FullName+ "'");

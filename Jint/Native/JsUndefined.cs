@@ -6,7 +6,7 @@ using Jint.Delegates;
 namespace Jint.Native {
     [Serializable]
     public class JsUndefined : JsObject {
-        public static JsUndefined Instance = new JsUndefined() { Attributes = PropertyAttributes.DontEnum | PropertyAttributes.DontDelete };
+        public static JsUndefined Instance = new JsUndefined();
 
         public JsUndefined() {
         }
@@ -35,11 +35,11 @@ namespace Jint.Native {
             get { return CLASS_OBJECT; }
         }
 
-        public override string Type
+        public override JsObjectType Type
         {
             get
             {
-                return TYPE_UNDEFINED;
+                return JsObjectType.Undefined;
             }
         }
 

@@ -23,7 +23,7 @@ namespace Jint.Native {
         public override void InitPrototype(IGlobal global) {
             var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsInstance>(ToStringImpl,1), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<IJsInstance>(ToStringImpl,1), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toExponential", global.FunctionClass.New<JsNumber>(ToExponentialImpl), PropertyAttributes.DontEnum);
@@ -38,7 +38,7 @@ namespace Jint.Native {
             return New(0d);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             if (that == null || (that as IGlobal) == visitor.Global)
             {
                 // 15.7.1 - When Number is called as a function rather than as a constructor, it performs a type conversion.
@@ -62,12 +62,12 @@ namespace Jint.Native {
             }
         }
 
-        public JsInstance ToLocaleStringImpl(JsNumber target, JsInstance[] parameters) {
+        public IJsInstance ToLocaleStringImpl(JsNumber target, IJsInstance[] parameters) {
             // Remove parameters
-            return ToStringImpl(target, new JsInstance[0]);
+            return ToStringImpl(target, new IJsInstance[0]);
         }
 
-        public JsInstance ToStringImpl(JsInstance target, JsInstance[] parameters) {
+        public IJsInstance ToStringImpl(IJsInstance target, IJsInstance[] parameters) {
             if (target == this["NaN"]) {
                 return Global.StringClass.New("NaN");
             }
@@ -103,7 +103,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToFixedImpl(JsNumber target, JsInstance[] parameters) {
+        public IJsInstance ToFixedImpl(JsNumber target, IJsInstance[] parameters) {
             int fractions = 0;
             if (parameters.Length > 0) {
                 fractions = Convert.ToInt32(parameters[0].ToNumber());
@@ -126,9 +126,9 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToExponentialImpl(JsNumber target, JsInstance[] parameters) {
+        public IJsInstance ToExponentialImpl(JsNumber target, IJsInstance[] parameters) {
             if (double.IsInfinity(target.ToNumber()) || double.IsNaN(target.ToNumber())) {
-                return ToStringImpl(target, new JsInstance[0]);
+                return ToStringImpl(target, new IJsInstance[0]);
             }
 
             int fractions = 16;
@@ -150,9 +150,9 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToPrecisionImpl(JsNumber target, JsInstance[] parameters) {
+        public IJsInstance ToPrecisionImpl(JsNumber target, IJsInstance[] parameters) {
             if (double.IsInfinity(target.ToNumber()) || double.IsNaN(target.ToNumber())) {
-                return ToStringImpl(target, new JsInstance[0]);
+                return ToStringImpl(target, new IJsInstance[0]);
             }
 
             if (parameters.Length == 0) {
@@ -160,7 +160,7 @@ namespace Jint.Native {
             }
 
             if (parameters[0] == JsUndefined.Instance) {
-                return ToStringImpl(target, new JsInstance[0]);
+                return ToStringImpl(target, new IJsInstance[0]);
             }
 
             int precision = 0;

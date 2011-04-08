@@ -49,15 +49,16 @@ namespace Jint.Expressions {
 
         bool DebugMode { get; }
 
-        JsInstance Result { get; set; }
-        JsDictionaryObject CallTarget { get; }
+        IJsInstance Result { get; }
+        JsObjectBase CallTarget { get; }
 
-        IGlobal Global { get; }
+        // TODO: replace JsGlobal with IGlobal
+        JsGlobal Global { get; }
 
-        JsInstance Returned { get; }
+        IJsInstance Returned { get; }
 
-        JsInstance Return(JsInstance result);
+        IJsInstance Return(IJsInstance result);
 
-        void ExecuteFunction(JsFunction function, JsDictionaryObject _this, JsInstance[] _parameters);
+        void ExecuteFunction(JsFunction function, JsObjectBase _this, IJsInstance[] _parameters);
     }
 }

@@ -12,21 +12,21 @@ namespace Jint.Native
     /// </summary>
     public class NativeDescriptor : Descriptor
     {
-        public NativeDescriptor(JsDictionaryObject owner, string name, JsGetter getter)
+        public NativeDescriptor(JsObjectBase owner, string name, JsGetter getter)
             : base(owner, name)
         {
             this.getter = getter;
             Writable = false;
         }
 
-        public NativeDescriptor(JsDictionaryObject owner, string name, JsGetter getter, JsSetter setter)
+        public NativeDescriptor(JsObjectBase owner, string name, JsGetter getter, JsSetter setter)
             : base(owner, name)
         {
             this.getter = getter;
             this.setter = setter;
         }
 
-        public NativeDescriptor(JsDictionaryObject owner, NativeDescriptor src)
+        public NativeDescriptor(JsObjectBase owner, NativeDescriptor src)
             : base(owner, src.Name)
         {
             getter = src.getter;
@@ -47,12 +47,12 @@ namespace Jint.Native
             return new NativeDescriptor(Owner, this);
         }
 
-        public override JsInstance Get(JsDictionaryObject that)
+        public override IJsInstance Get(JsObjectBase that)
         {
             return getter != null ? getter(that) : JsUndefined.Instance ;
         }
 
-        public override void Set(JsDictionaryObject that, JsInstance value)
+        public override void Set(JsObjectBase that, IJsInstance value)
         {
             if (setter != null)
                 setter(that, value);

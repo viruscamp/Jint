@@ -17,14 +17,14 @@ namespace Jint.Native {
             var Prototype = PrototypeProperty;
             //Prototype = global.ObjectClass.New(this);
 
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("lastIndex", global.FunctionClass.New<JsRegExp>(GetLastIndex), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("exec", global.FunctionClass.New<JsRegExp>(ExecImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("test", global.FunctionClass.New<JsRegExp>(TestImpl), PropertyAttributes.DontEnum);
         }
 
-        public JsInstance GetLastIndex(JsRegExp regex, JsInstance[] parameters) {
+        public IJsInstance GetLastIndex(JsRegExp regex, IJsInstance[] parameters) {
             return regex["lastIndex"];
         }
 
@@ -41,7 +41,7 @@ namespace Jint.Native {
             return ret;
         }
 
-        public JsInstance ExecImpl(JsRegExp regexp, JsInstance[] parameters) {
+        public IJsInstance ExecImpl(JsRegExp regexp, IJsInstance[] parameters) {
             JsArray A = Global.ArrayClass.New();
             string input = parameters[0].ToString();
             A["input"] = Global.StringClass.New(input);
@@ -66,11 +66,11 @@ namespace Jint.Native {
             return A;
         }
 
-        public JsInstance TestImpl(JsRegExp regex, JsInstance[] parameters) {
+        public IJsInstance TestImpl(JsRegExp regex, IJsInstance[] parameters) {
             return Global.BooleanClass.New(ExecImpl(regex, parameters) != JsNull.Instance);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             if (parameters.Length == 0) {
                 return visitor.Return(New());
                 //throw new ArgumentNullException("pattern");
@@ -79,7 +79,7 @@ namespace Jint.Native {
             return visitor.Return(New(parameters[0].ToString(), false, false, false));
         }
 
-        public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             return Global.StringClass.New(target.ToString());
         }
     }

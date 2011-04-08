@@ -11,7 +11,7 @@ namespace Jint.Native {
     /// </remarks>
     class LinkedDescriptor : Descriptor {
         Descriptor d;
-        JsDictionaryObject m_that;
+        JsObjectBase m_that;
 
         /// <summary>
         /// Constructs new descriptor
@@ -21,7 +21,7 @@ namespace Jint.Native {
         /// <param name="source">A property descriptor of the target object to which we should link to</param>
         /// <param name="that">A target object to whose property we are linking. This parameter will be
         /// used in the calls to a 'Get' and 'Set' properties of the source descriptor.</param>
-        public LinkedDescriptor(JsDictionaryObject owner, string name, Descriptor source, JsDictionaryObject that)
+        public LinkedDescriptor(JsObjectBase owner, string name, Descriptor source, JsObjectBase that)
             : base(owner, name) {
             if (source.isReference) {
                 LinkedDescriptor sourceLink = source as LinkedDescriptor;
@@ -35,8 +35,12 @@ namespace Jint.Native {
             m_that = that;
         }
 
-        public JsDictionaryObject targetObject {
+        public JsObjectBase targetObject {
             get { return m_that; }
+        }
+
+        public Descriptor targetDescriptor {
+            get { return d; }
         }
 
         public override bool isReference {
@@ -60,16 +64,16 @@ namespace Jint.Native {
             };
         }
 
-        public override JsInstance Get(JsDictionaryObject that) {
-            return d.Get(that);
+        public override IJsInstance Get(JsObjectBase that) {
+            return d.Get(m_that);
         }
 
-        public override void Set(JsDictionaryObject that, JsInstance value) {
-            d.Set(that, value);
+        public override void Set(JsObjectBase that, IJsInstance value) {
+            d.Set(m_that, value);
         }
 
         internal override DescriptorType DescriptorType {
-            get { return DescriptorType.Value; }
+            get { return d.DescriptorType; }
         }
     }
 }

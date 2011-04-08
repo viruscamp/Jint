@@ -8,13 +8,13 @@ namespace Jint.Native {
     public sealed class JsArray : JsObject {
         private int length = 0;
 
-        SortedList<int, JsInstance> m_data = new SortedList<int, JsInstance>();
+        SortedList<int, IJsInstance> m_data = new SortedList<int, IJsInstance>();
 
         public JsArray(JsObject prototype)
             : base(prototype) {
         }
 
-        private JsArray(SortedList<int, JsInstance> data, int len, JsObject prototype)
+        private JsArray(SortedList<int, IJsInstance> data, int len, JsObject prototype)
             : base(prototype) {
             m_data = data;
             length = len;
@@ -52,7 +52,7 @@ namespace Jint.Native {
             }
         }
 
-        public override JsInstance this[string index] {
+        public override IJsInstance this[string index] {
             get {
                 int i;
                 if (Int32.TryParse(index, out i))
@@ -74,7 +74,7 @@ namespace Jint.Native {
         /// </summary>
         /// <param name="key">index</param>
         /// <returns>value</returns>
-        public override JsInstance this[JsInstance key] {
+        public override IJsInstance this[IJsInstance key] {
             get {
                 double keyNumber = key.ToNumber();
                 int i = (int)keyNumber;
@@ -108,12 +108,12 @@ namespace Jint.Native {
             }
         }
 
-        public JsInstance get(int i) {
-            JsInstance value;
+        public IJsInstance get(int i) {
+            IJsInstance value;
             return m_data.TryGetValue(i, out value) && value != null ? value : JsUndefined.Instance;
         }
 
-        public JsInstance put(int i, JsInstance value) {
+        public IJsInstance put(int i, IJsInstance value) {
             if (i >= length)
                 length = i + 1;
             return m_data[i] = value;
@@ -133,7 +133,7 @@ namespace Jint.Native {
             length = newLength;
         }
 
-        public override bool TryGetProperty(string index, out JsInstance result) {
+        public override bool TryGetProperty(string index, out IJsInstance result) {
             result = JsUndefined.Instance;
             try {
                 return m_data.TryGetValue(Convert.ToInt32(index), out result);
@@ -184,7 +184,7 @@ namespace Jint.Native {
             return right;
         }
 
-        public override void Delete(JsInstance key) {
+        public override void Delete(IJsInstance key) {
             double keyNumber = key.ToNumber();
             int index = (int)keyNumber;
             if (index == keyNumber)
@@ -205,8 +205,8 @@ namespace Jint.Native {
         #region array specific methods
 
         [RawJsMethod]
-        public JsArray concat(IGlobal global, JsInstance[] args) {
-            var newData = new SortedList<int, JsInstance>(m_data);
+        public JsArray concat(IGlobal global, IJsInstance[] args) {
+            var newData = new SortedList<int, IJsInstance>(m_data);
             int offset = length;
             foreach (var item in args) {
                 if (item is JsArray) {
@@ -219,7 +219,7 @@ namespace Jint.Native {
                     JsObject obj = (JsObject)item;
 
                     for (int i = 0; i < obj.Length; i++) {
-                        JsInstance value;
+                        IJsInstance value;
                         if (obj.TryGetProperty(i.ToString(), out value))
                             newData.Add(offset + i, value);
                     }
@@ -234,14 +234,14 @@ namespace Jint.Native {
         }
 
         [RawJsMethod]
-        public JsString join(IGlobal global, JsInstance separator) {
+        public JsString join(IGlobal global, IJsInstance separator) {
             if (length == 0)
                 return global.StringClass.New();
 
             string sep = separator == JsUndefined.Instance ? "," : separator.ToString();
             string[] map = new string[length];
 
-            JsInstance item;
+            IJsInstance item;
             for (int i = 0; i < length; i++)
                 map[i] = m_data.TryGetValue(i, out item) && item != JsNull.Instance && item != JsUndefined.Instance ? item.ToString() : "";
 
@@ -252,7 +252,7 @@ namespace Jint.Native {
 
 
         public override string ToString() {
-            var list = new List<JsInstance>(GetValues());
+            var list = new List<IJsInstance>(GetValues());
             string[] values = new string[list.Count];
             for (int i = 0; i < list.Count; i++) {
                 if (list[i] != null)
@@ -276,12 +276,12 @@ namespace Jint.Native {
                 yield return key;
         }
 
-        IEnumerable<JsInstance> baseGetValues()
+        IEnumerable<IJsInstance> baseGetValues()
         {
             return base.GetValues();
         }
 
-        public override IEnumerable<JsInstance> GetValues() {
+        public override IEnumerable<IJsInstance> GetValues() {
             var vals = m_data.Values;
             for (int i = 0; i < vals.Count; i++)
                 yield return vals[i];

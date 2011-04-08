@@ -19,11 +19,11 @@ namespace Jint.Native {
             }
         }
 
-        public override string Type
+        public override JsObjectType Type
         {
             get
             {
-                return TYPE_NULL;
+                return JsObjectType.Null;
             }
         }
 
@@ -80,7 +80,7 @@ namespace Jint.Native {
             return false;
         }
 
-        public override JsInstance this[string index] {
+        public override IJsInstance this[string index] {
             get {
                 return JsUndefined.Instance;
             }

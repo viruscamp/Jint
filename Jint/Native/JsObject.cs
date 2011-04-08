@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Jint.Native {
     [Serializable]
-    public class JsObject : JsDictionaryObject {
+    public class JsObject : JsObjectBase {
 
         public INativeIndexer Indexer { get; set; }
         
@@ -13,7 +13,7 @@ namespace Jint.Native {
 
         public JsObject(object value, JsObject prototype)
             : base(prototype) {
-            this.value = value;
+            this.m_value = value;
         }
 
         public JsObject(JsObject prototype)
@@ -33,16 +33,16 @@ namespace Jint.Native {
             get { return CLASS_OBJECT; }
         }
 
-        public override string Type
+        public override JsObjectType Type
         {
-            get { return TYPE_OBJECT; }
+            get { return JsObjectType.Object; }
         }
 
-        protected object value;
+        private object m_value;
 
         public override object Value {
-            get { return value; }
-            set { this.value = value; }
+            get { return m_value; }
+            set { this.m_value = value; }
         }
 
         public override int GetHashCode() {
@@ -50,7 +50,7 @@ namespace Jint.Native {
         }
 
         #region primitive operations
-        public override JsInstance ToPrimitive(IGlobal global) {
+        public override IJsInstance ToPrimitive(IGlobal global) {
             switch (Convert.GetTypeCode(Value)) {
                 case TypeCode.Boolean:
                     return global.BooleanClass.New((bool)Value);
@@ -109,7 +109,7 @@ namespace Jint.Native {
                 case TypeCode.DBNull:
                 case TypeCode.Empty:
                 default:
-                    if (value is IConvertible) {
+                    if (Value is IConvertible) {
                         return Convert.ToBoolean(Value);
                     }
                     else {
@@ -150,7 +150,7 @@ namespace Jint.Native {
                 case TypeCode.DBNull:
                 case TypeCode.Empty:
                 default:
-                    if (value is IConvertible) {
+                    if (Value is IConvertible) {
                         return Convert.ToDouble(Value);
                     }
                     else {
@@ -160,15 +160,63 @@ namespace Jint.Native {
         }
 
         public override string ToString() {
-            if (value == null) {
+            if (Value == null) {
                 return null;
             }
 
-            if (value is IConvertible)
+            if (Value is IConvertible)
                 return Convert.ToString(Value);
 
-            return value.ToString();
+            return Value.ToString();
         }
         #endregion
+
+        /// <summary>
+        /// non standard
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="p"></param>
+        /// <param name="currentDescriptor"></param>
+        public virtual IJsInstance GetGetFunction(JsObjectBase target, IJsInstance[] parameters) {
+            if (parameters.Length <= 0) {
+                throw new ArgumentException("propertyName");
+            }
+
+            if (!target.HasOwnProperty(parameters[0].ToString())) {
+                return GetGetFunction(target.Prototype, parameters);
+            }
+
+            PropertyDescriptor desc = target.properties.Get(parameters[0].ToString()) as PropertyDescriptor;
+            if (desc == null) {
+                return JsUndefined.Instance;
+            }
+
+            return (IJsInstance)desc.GetFunction ?? JsUndefined.Instance;
+
+        }
+
+        /// <summary>
+        /// non standard
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="p"></param>
+        /// <param name="currentDescriptor"></param>
+        public virtual IJsInstance GetSetFunction(JsObjectBase target, IJsInstance[] parameters) {
+            if (parameters.Length <= 0) {
+                throw new ArgumentException("propertyName");
+            }
+
+            if (!target.HasOwnProperty(parameters[0].ToString())) {
+                return GetSetFunction(target.Prototype, parameters);
+            }
+
+            PropertyDescriptor desc = target.properties.Get(parameters[0].ToString()) as PropertyDescriptor;
+            if (desc == null) {
+                return JsUndefined.Instance;
+            }
+
+            return (IJsInstance)desc.SetFunction ?? JsUndefined.Instance;
+
+        }
     }
 }

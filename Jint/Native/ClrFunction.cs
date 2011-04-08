@@ -20,13 +20,13 @@ namespace Jint.Native {
             Parameters = d.Method.GetParameters();
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             int clrParameterCount = Delegate.Method.GetParameters().Length;
             object[] clrParameters = new object[clrParameterCount];
 
             for (int i = 0; i < parameters.Length; i++) {
                 // First see if either the JsInstance or it's value can be directly accepted without converstion
-                if (typeof(JsInstance).IsAssignableFrom(Parameters[i].ParameterType) && Parameters[i].ParameterType.IsInstanceOfType(parameters[i])) {
+                if (typeof(IJsInstance).IsAssignableFrom(Parameters[i].ParameterType) && Parameters[i].ParameterType.IsInstanceOfType(parameters[i])) {
                     clrParameters[i] = parameters[i];
                 }
                 else if (Parameters[i].ParameterType.IsInstanceOfType(parameters[i].Value)) {
@@ -55,8 +55,8 @@ namespace Jint.Native {
 
             if (result != null) {
                 // Don't wrap if the result should be a JsInstance
-                if (typeof(JsInstance).IsInstanceOfType(result)) {
-                    visitor.Return((JsInstance)result);
+                if (typeof(IJsInstance).IsInstanceOfType(result)) {
+                    visitor.Return((IJsInstance)result);
                 }
                 else {
                     visitor.Return(visitor.Global.WrapClr(result));

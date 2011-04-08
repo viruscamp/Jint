@@ -78,11 +78,11 @@ namespace Jint.Native {
             get { return CLASS_STRING; }
         }
 
-        public override string Type
+        public override JsObjectType Type
         {
             get
             {
-                return TYPE_STRING;
+                return JsObjectType.String;
             }
         }
 

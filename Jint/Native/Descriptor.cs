@@ -11,7 +11,7 @@ namespace Jint.Native {
 
     [Serializable]
     public abstract class Descriptor {
-        public Descriptor(JsDictionaryObject owner, string name) {
+        public Descriptor(JsObjectBase owner, string name) {
             this.Owner = owner;
             Name = name;
         }
@@ -21,7 +21,7 @@ namespace Jint.Native {
         public bool Enumerable { get; set; }
         public bool Configurable { get; set; }
         public bool Writable { get; set; }
-        public JsDictionaryObject Owner { get; set; }
+        public JsObjectBase Owner { get; set; }
 
         public virtual bool isDeleted { get; protected set; }
 
@@ -49,7 +49,7 @@ namespace Jint.Native {
         /// <param name="that">A target object. This has a meaning in case of descriptors which helds an accessors,
         /// in value descriptors this parameter is ignored.</param>
         /// <returns>A value stored in the descriptor</returns>
-        public abstract JsInstance Get(JsDictionaryObject that);
+        public abstract IJsInstance Get(JsObjectBase that);
 
         /// <summary>
         /// Sets a value.
@@ -57,7 +57,7 @@ namespace Jint.Native {
         /// <param name="that">A target object. This has a meaning in case of descriptors which helds an accessors,
         /// in value descriptors this parameter is ignored.</param>
         /// <param name="value">A new value which should be stored in the descriptor.</param>
-        public abstract void Set(JsDictionaryObject that, JsInstance value);
+        public abstract void Set(JsObjectBase that, IJsInstance value);
 
         internal abstract DescriptorType DescriptorType { get; }
 
@@ -67,8 +67,8 @@ namespace Jint.Native {
         /// <param name="global"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal static Descriptor ToPropertyDesciptor(IGlobal global, JsDictionaryObject owner, string name, JsInstance jsInstance) {
-            if (jsInstance.Class != JsInstance.CLASS_OBJECT) {
+        internal static Descriptor ToPropertyDesciptor(IGlobal global, JsObjectBase owner, string name, IJsInstance jsInstance) {
+            if (jsInstance.Class != IJsInstance.CLASS_OBJECT) {
                 throw new JsException(global.TypeErrorClass.New("The target object has to be an instance of an object"));
             }
 
@@ -78,7 +78,7 @@ namespace Jint.Native {
             }
 
             Descriptor desc;
-            JsInstance result = null;
+            IJsInstance result = null;
 
             if (obj.HasProperty("value")) {
                 desc = new ValueDescriptor(owner, name, obj["value"]);

@@ -15,12 +15,12 @@ namespace Jint.Native
         }
         #region INativeIndexer Members
 
-        public JsInstance get(JsInstance that, JsInstance index)
+        public IJsInstance get(IJsInstance that, IJsInstance index)
         {
             return m_marshller.MarshalClrValue<T>( m_marshller.MarshalJsValue<T[]>(that)[m_marshller.MarshalJsValue<int>(index)] );
         }
 
-        public void set(JsInstance that, JsInstance index, JsInstance value)
+        public void set(IJsInstance that, IJsInstance index, IJsInstance value)
         {
             m_marshller.MarshalJsValue<T[]>(that)[m_marshller.MarshalJsValue<int>(index)] = m_marshller.MarshalJsValue<T>(value);
         }

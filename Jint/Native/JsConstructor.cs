@@ -42,7 +42,7 @@ namespace Jint.Native {
         /// <typeparam name="T">A type of a native value to wrap</typeparam>
         /// <param name="value">A native value to wrap</param>
         /// <returns>A js instance</returns>
-        public virtual JsInstance Wrap<T>(T value)
+        public virtual IJsInstance Wrap<T>(T value)
         {
             return new JsObject(value,PrototypeProperty);
         }

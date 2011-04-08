@@ -11,7 +11,7 @@ namespace Jint.Native {
     /// </summary>
     [Serializable]
     public class ClrImplDefinition<T> : JsFunction
-        where T : JsInstance {
+        where T : IJsInstance {
         Delegate impl;
         private int length;
         bool hasParameters;
@@ -21,33 +21,33 @@ namespace Jint.Native {
             this.hasParameters = hasParameters;
         }
 
-        public ClrImplDefinition(Func<T, JsInstance[], JsInstance> impl, JsObject prototype)
+        public ClrImplDefinition(Func<T, IJsInstance[], IJsInstance> impl, JsObject prototype)
             : this(impl, -1, prototype) {
         }
 
-        public ClrImplDefinition(Func<T, JsInstance[], JsInstance> impl, int length, JsObject prototype)
+        public ClrImplDefinition(Func<T, IJsInstance[], IJsInstance> impl, int length, JsObject prototype)
             : this(true, prototype) {
             this.impl = impl;
             this.length = length;
         }
 
-        public ClrImplDefinition(Func<T, JsInstance> impl, JsObject prototype)
+        public ClrImplDefinition(Func<T, IJsInstance> impl, JsObject prototype)
             : this(impl, -1, prototype) {
         }
 
-        public ClrImplDefinition(Func<T, JsInstance> impl, int length, JsObject prototype)
+        public ClrImplDefinition(Func<T, IJsInstance> impl, int length, JsObject prototype)
             : this(false, prototype) {
             this.impl = impl;
             this.length = length;
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             try {
-                JsInstance result;
+                IJsInstance result;
                 if (hasParameters)
-                    result = impl.DynamicInvoke(new object[] { that, parameters }) as JsInstance;
+                    result = impl.DynamicInvoke(new object[] { that, parameters }) as IJsInstance;
                 else
-                    result = impl.DynamicInvoke(new object[] { that }) as JsInstance;
+                    result = impl.DynamicInvoke(new object[] { that }) as IJsInstance;
 
                 visitor.Return(result);
                 return result;

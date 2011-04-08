@@ -34,17 +34,17 @@ namespace Jint.Native
             );
         }
 
-        public JsInstance get(JsInstance that, JsInstance index)
+        public IJsInstance get(IJsInstance that, IJsInstance index)
         {
-            JsIndexerGetter getter = m_getOverload.ResolveOverload(new JsInstance[] { index }, null);
+            JsIndexerGetter getter = m_getOverload.ResolveOverload(new IJsInstance[] { index }, null);
             if (getter == null)
                 throw new JintException("No matching overload found");
             return getter(that, index);
         }
 
-        public void set(JsInstance that, JsInstance index, JsInstance value)
+        public void set(IJsInstance that, IJsInstance index, IJsInstance value)
         {
-            JsIndexerSetter setter = m_setOverload.ResolveOverload(new JsInstance[] { index, value }, null);
+            JsIndexerSetter setter = m_setOverload.ResolveOverload(new IJsInstance[] { index, value }, null);
             if (setter == null)
                 throw new JintException("No matching overload found");
 

@@ -21,8 +21,8 @@ namespace Jint.Native {
             var Prototype = PrototypeProperty;
 
             Prototype.DefineOwnProperty("name", global.StringClass.New(errorType), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
         }
 
         public JsError New(string message) {
@@ -35,7 +35,7 @@ namespace Jint.Native {
             return New(String.Empty);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             if (that == null || (that as IGlobal) == visitor.Global)
             {
                 visitor.Return(parameters.Length > 0 ? New(parameters[0].ToString()) : New());
@@ -54,11 +54,11 @@ namespace Jint.Native {
             return that;
         }
 
-        public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             return Global.StringClass.New(target["name"] + ": " + target["message"]);
         }
 
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
+        public override JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
         {
             return parameters != null && parameters.Length > 0 ?
                 visitor.Global.ErrorClass.New( parameters[0].ToString() ) :

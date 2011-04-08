@@ -67,13 +67,13 @@ namespace Jint.Native
             return m_nativeMethod;
         }
 
-        public override JsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
+        public override IJsInstance Execute(Jint.Expressions.IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters)
         {
             visitor.Return( m_impl(visitor.Global, that, parameters) );
             return that;
         }
 
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
+        public override JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
         {
             throw new JintException("This method can't be used as a constructor");
         }
@@ -83,7 +83,7 @@ namespace Jint.Native
             return "[native code]";
         }
 
-        public override JsInstance ToPrimitive(IGlobal global) {
+        public override IJsInstance ToPrimitive(IGlobal global) {
             return global.StringClass.New( ToString() );
         }
     }

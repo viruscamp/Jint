@@ -26,7 +26,7 @@ namespace Jint.Native {
             JsObject objectProrotype = new JsObject(JsNull.Instance);
 
             JsFunction functionPrototype = new JsFunctionWrapper(
-                delegate(JsInstance[] arguments) {
+                delegate(IJsInstance[] arguments) {
                     return JsUndefined.Instance;
                 },
                 objectProrotype
@@ -60,7 +60,7 @@ namespace Jint.Native {
             #endregion
 
 
-            foreach (JsInstance c in this.GetValues()) {
+            foreach (IJsInstance c in this.GetValues()) {
                 if (c is JsConstructor) {
                     ((JsConstructor)c).InitPrototype(this);
                 }
@@ -123,8 +123,8 @@ namespace Jint.Native {
         /// <summary>
         /// 15.1.2.1
         /// </summary>
-        public JsInstance Eval(JsInstance[] arguments) {
-            if (JsInstance.CLASS_STRING != arguments[0].Class) {
+        public IJsInstance Eval(IJsInstance[] arguments) {
+            if (IJsInstance.CLASS_STRING != arguments[0].Class) {
                 return arguments[0];
             }
 
@@ -150,7 +150,7 @@ namespace Jint.Native {
         /// <summary>
         /// 15.1.2.2
         /// </summary>
-        public JsInstance ParseInt(JsInstance[] arguments) {
+        public IJsInstance ParseInt(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return JsUndefined.Instance;
             }
@@ -203,7 +203,7 @@ namespace Jint.Native {
         /// <summary>
         /// 15.1.2.3
         /// </summary>
-        public JsInstance ParseFloat(JsInstance[] arguments) {
+        public IJsInstance ParseFloat(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return JsUndefined.Instance;
             }
@@ -226,7 +226,7 @@ namespace Jint.Native {
         /// <summary>
         /// 15.1.2.4
         /// </summary>
-        public JsInstance IsNaN(JsInstance[] arguments) {
+        public IJsInstance IsNaN(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return BooleanClass.New(false);
             }
@@ -237,7 +237,7 @@ namespace Jint.Native {
         /// <summary>
         /// 15.1.2.5
         /// </summary>
-        protected JsInstance isFinite(JsInstance[] arguments) {
+        protected IJsInstance isFinite(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return BooleanClass.False;
             }
@@ -249,7 +249,7 @@ namespace Jint.Native {
             );
         }
 
-        protected JsInstance DecodeURI(JsInstance[] arguments) {
+        protected IJsInstance DecodeURI(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return StringClass.New();
             }
@@ -260,7 +260,7 @@ namespace Jint.Native {
         private static char[] reservedEncoded = new char[] { ';', ',', '/', '?', ':', '@', '&', '=', '+', '$', '#' };
         private static char[] reservedEncodedComponent = new char[] { '-', '_', '.', '!', '~', '*', '\'', '(', ')', '[', ']' };
 
-        protected JsInstance EncodeURI(JsInstance[] arguments) {
+        protected IJsInstance EncodeURI(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return this.StringClass.New();
             }
@@ -278,7 +278,7 @@ namespace Jint.Native {
             return this.StringClass.New(encoded.ToUpper());
         }
 
-        protected JsInstance DecodeURIComponent(JsInstance[] arguments) {
+        protected IJsInstance DecodeURIComponent(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return this.StringClass.New();
             }
@@ -286,7 +286,7 @@ namespace Jint.Native {
             return this.StringClass.New(Uri.UnescapeDataString(arguments[0].ToString().Replace("+", " ")));
         }
 
-        protected JsInstance EncodeURIComponent(JsInstance[] arguments) {
+        protected IJsInstance EncodeURIComponent(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return this.StringClass.New();
             }
@@ -301,36 +301,6 @@ namespace Jint.Native {
         }
 
         #endregion
-        [Obsolete]
-        public JsObject Wrap(object value) {
-            switch (Convert.GetTypeCode(value)) {
-                case TypeCode.Boolean:
-                    return BooleanClass.New((bool)value);
-                case TypeCode.Char:
-                case TypeCode.String:
-                    return StringClass.New(Convert.ToString(value));
-                case TypeCode.DateTime:
-                    return DateClass.New((DateTime)value);
-                case TypeCode.Byte:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    return NumberClass.New(Convert.ToDouble(value));
-                case TypeCode.Object:
-                    return ObjectClass.New(value);
-                case TypeCode.DBNull:
-                case TypeCode.Empty:
-                default:
-                    throw new ArgumentNullException("value");
-            }
-        }
 
         public JsObject WrapClr(object value) {
             return (JsObject)Marshaller.MarshalClrValue<object>(value);
@@ -343,7 +313,7 @@ namespace Jint.Native {
         #region IGlobal Members
 
 
-        public JsInstance NaN {
+        public IJsInstance NaN {
             get { return this["NaN"]; }
         }
 

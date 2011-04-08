@@ -15,28 +15,28 @@ namespace Jint.Native {
             DefineOwnProperty("length", constructor.Global.NumberClass.New(1), PropertyAttributes.ReadOnly);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             JsFunction function = that as JsFunction;
 
             if (function == null) {
                 throw new ArgumentException("the target of call() must be a function");
             }
 
-            JsDictionaryObject _this;
-            JsInstance[] _parameters;
+            JsObjectBase _this;
+            IJsInstance[] _parameters;
             if (parameters.Length >= 1 && parameters[0] != JsUndefined.Instance && parameters[0] != JsNull.Instance)
-                _this = parameters[0] as JsDictionaryObject;
+                _this = parameters[0] as JsObjectBase;
             else
-                _this = visitor.Global as JsDictionaryObject;
+                _this = visitor.Global as JsObjectBase;
 
             if (parameters.Length >= 2 && parameters[1] != JsNull.Instance) {
-                _parameters = new JsInstance[parameters.Length - 1];
+                _parameters = new IJsInstance[parameters.Length - 1];
                 for (int i = 1; i < parameters.Length; i++) {
                     _parameters[i - 1] = parameters[i];
                 }
             }
             else {
-                _parameters = JsInstance.EMPTY;
+                _parameters = IJsInstance.EMPTY;
             }
             // Executes the statements in 'that' and use _this as the target of the call
             visitor.ExecuteFunction(function, _this, _parameters);

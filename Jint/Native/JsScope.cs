@@ -10,11 +10,11 @@ namespace Jint.Native {
     /// Tries to add new properties to the global scope.
     /// </remarks>
     [Serializable]
-    public class JsScope : JsDictionaryObject {
+    public class JsScope : JsObjectBase {
         private Descriptor thisDescriptor;
         private Descriptor argumentsDescriptor;
         private JsScope globalScope;
-        private JsDictionaryObject bag;
+        private JsObjectBase bag;
 
         public static string THIS = "this";
         public static string ARGUMENTS = "arguments";
@@ -39,7 +39,7 @@ namespace Jint.Native {
             globalScope = outer.Global;
         }
 
-        public JsScope(JsScope outer, JsDictionaryObject bag)
+        public JsScope(JsScope outer, JsObjectBase bag)
             : base(outer) {
             if (outer == null)
                 throw new ArgumentNullException("outer");
@@ -49,7 +49,7 @@ namespace Jint.Native {
             this.bag = bag;
         }
 
-        public JsScope(JsDictionaryObject bag)
+        public JsScope(JsObjectBase bag)
             : base(JsNull.Instance) {
             this.bag = bag;
         }
@@ -58,16 +58,16 @@ namespace Jint.Native {
             get { return CLASS_SCOPE; }
         }
 
-        public override string Type
+        public override JsObjectType Type
         {
-            get { return TYPE_OBJECT; }
+            get { return JsObjectType.Object; }
         }
 
         public JsScope Global {
             get { return globalScope ?? this; }
         }
 
-        public override JsInstance this[string index] {
+        public override IJsInstance this[string index] {
             get {
                 if (index == THIS && thisDescriptor != null)
                     return thisDescriptor.Get(this);
@@ -156,7 +156,7 @@ namespace Jint.Native {
             return base.GetKeys();
         }
 
-        public override IEnumerable<JsInstance> GetValues() {
+        public override IEnumerable<IJsInstance> GetValues() {
             foreach (var key in GetKeys())
                 yield return this[key];
         }

@@ -7,17 +7,17 @@ using Jint.Delegates;
 namespace Jint.Native {
     [Serializable]
     public class JsFunctionWrapper : JsFunction {
-        public Func<JsInstance[], JsInstance> Delegate { get; set; }
+        public Func<IJsInstance[], IJsInstance> Delegate { get; set; }
 
-        public JsFunctionWrapper(Func<JsInstance[], JsInstance> d, JsObject prototype)
+        public JsFunctionWrapper(Func<IJsInstance[], IJsInstance> d, JsObject prototype)
             : base(prototype) {
             Delegate = d;
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             try {
                 //visitor.CurrentScope["this"] = visitor.Global;
-                JsInstance result = Delegate( parameters );
+                IJsInstance result = Delegate( parameters );
                 visitor.Return(result == null ? JsUndefined.Instance : result);
 
                 return that;

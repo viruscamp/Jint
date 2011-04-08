@@ -14,19 +14,19 @@ namespace Jint {
 
     public class ExecutionVisitor : IStatementVisitor, IJintVisitor{
         struct ResultInfo {
-            public JsDictionaryObject baseObject;
-            public JsInstance result;
+            public JsObjectBase baseObject;
+            public IJsInstance result;
         }
 
         protected internal ITypeResolver typeResolver;
 
-        public IGlobal Global { get; private set; }
+        public JsGlobal Global { get; private set; }
         public JsScope GlobalScope { get; private set; }
 
         protected Stack<JsScope> Scopes = new Stack<JsScope>();
 
         protected bool exit;
-        protected JsInstance returnInstance;
+        protected IJsInstance returnInstance;
         protected int recursionLevel;
 
         public event EventHandler<DebugInformation> Step;
@@ -36,40 +36,21 @@ namespace Jint {
         public bool DebugMode { get; set; }
         public int MaxRecursions { get; set; }
 
-        public JsInstance Returned { get { return returnInstance; } }
+        public IJsInstance Returned { get { return returnInstance; } }
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
         
         private StringBuilder typeFullname = new StringBuilder();
         private string lastIdentifier = String.Empty;
 
-        ResultInfo lastResult;
+        IJsInstance lastResult;
+
         Stack<ResultInfo> stackResults = new Stack<ResultInfo>();
-
-        public JsDictionaryObject CallTarget {
-            get {
-                return lastResult.baseObject;
-            }
-        }
-        public JsInstance Result {
-            get {
-                return lastResult.result;
-            }
-            set {
-                lastResult.result = value;
-                lastResult.baseObject = null;
-            }
-        }
-
-        public void SetResult(JsInstance value, JsDictionaryObject baseObject) {
-            lastResult.result = value;
-            lastResult.baseObject = baseObject;
-        }
 
         public ExecutionVisitor(Options options) {
             typeResolver = CachedTypeResolver.Default;
-
-            Global = new JsGlobal(this, options);
+            JsGlobal global = new JsGlobal(this, options);
+            Global = global;// new JsGlobal(this, options);
             GlobalScope = new JsScope(Global as JsObject);
 
             EnterScope(GlobalScope);
@@ -85,7 +66,7 @@ namespace Jint {
 
             typeResolver = CachedTypeResolver.Default;
 
-            Global = GlobalObject;
+            Global = (JsGlobal)GlobalObject;
             GlobalScope = Scope.Global;
             MaxRecursions = 500;
 
@@ -118,7 +99,7 @@ namespace Jint {
             get { return Scopes.Peek(); }
         }
 
-        protected void EnterScope(JsDictionaryObject scope) {
+        protected void EnterScope(JsObjectBase scope) {
             Scopes.Push(new JsScope(CurrentScope, scope));
         }
 
@@ -143,7 +124,9 @@ namespace Jint {
                 if (DebugMode) {
                     OnStep(CreateDebugInformation(statement));
                 }
-                Result = null;
+
+                lastResult = null;
+
                 statement.Accept(this);
 
                 if (exit) {
@@ -183,7 +166,7 @@ namespace Jint {
                 default: throw new NotSupportedException();
             }
 
-            JsInstance right = Result;
+            IJsInstance right = lastResult;
 
             MemberExpression left = statement.Left as MemberExpression;
             if (left == null) {
@@ -195,7 +178,7 @@ namespace Jint {
             Result = right;
         }
 
-        public void Assign(MemberExpression left, JsInstance value) {
+        public void Assign(MemberExpression left, IJsInstance value) {
             string propertyName;
             Descriptor d = null;
 
@@ -205,12 +188,12 @@ namespace Jint {
 
             EnsureIdentifierIsDefined(value);
 
-            JsDictionaryObject baseObject;
+            JsObjectBase baseObject;
 
             if (left.Previous != null) {
                 // if this a property
                 left.Previous.Accept(this);
-                baseObject = Result as JsDictionaryObject;
+                baseObject = Result as JsObjectBase;
 
                 if (baseObject == null)
                     throw new JintException("Attempt to assign to an undefined variable.");
@@ -358,7 +341,7 @@ namespace Jint {
 
             statement.Expression.Accept(this);
 
-            var dictionary = Result as JsDictionaryObject;
+            var dictionary = Result as JsObjectBase;
 
             if (Result.Value is IEnumerable) {
                 foreach (object value in (IEnumerable)Result.Value) {
@@ -412,11 +395,11 @@ namespace Jint {
         public void Visit(WithStatement statement) {
             statement.Expression.Accept(this);
 
-            if (!(Result is JsDictionaryObject)) {
+            if (!(Result is JsObjectBase)) {
                 throw new JsException(Global.StringClass.New("Invalid expression in 'with' statement"));
             }
 
-            EnterScope((JsDictionaryObject)Result);
+            EnterScope((JsObjectBase)Result);
 
             try {
                 statement.Statement.Accept(this);
@@ -510,7 +493,7 @@ namespace Jint {
             exit = true;
         }
 
-        public JsInstance Return(JsInstance instance) {
+        public IJsInstance Return(IJsInstance instance) {
             returnInstance = instance;
             return returnInstance;
         }
@@ -699,7 +682,7 @@ namespace Jint {
                 JsFunction function = (JsFunction)Result;
                 
                 // Process parameters
-                JsInstance[] parameters = new JsInstance[expression.Arguments.Count];
+                IJsInstance[] parameters = new IJsInstance[expression.Arguments.Count];
 
                 for (int i = 0; i < expression.Arguments.Count; i++) {
                     expression.Arguments[i].Accept(this);
@@ -733,11 +716,11 @@ namespace Jint {
             }
         }
 
-        public static bool IsNullOrUndefined(JsInstance o) {
+        public static bool IsNullOrUndefined(IJsInstance o) {
             return (o == JsUndefined.Instance) || (o == JsNull.Instance) || (o.IsClr && o.Value == null);
         }
 
-        public JsBoolean Compare(JsInstance x, JsInstance y)
+        public JsBoolean Compare(IJsInstance x, IJsInstance y)
         {
             if (x.IsClr && y.IsClr)
             {
@@ -764,7 +747,7 @@ namespace Jint {
                 {
                     return Global.BooleanClass.True;
                 }
-                else if (x.Type == JsInstance.TYPE_NUMBER)
+                else if (x.Type == IJsInstance.TYPE_NUMBER)
                 {
                     if (x.ToNumber() == double.NaN)
                     {
@@ -783,15 +766,15 @@ namespace Jint {
                         return Global.BooleanClass.False;
                     }
                 }
-                else if (x.Type == JsInstance.TYPE_STRING)
+                else if (x.Type == IJsInstance.TYPE_STRING)
                 {
                     return Global.BooleanClass.New(x.ToString() == y.ToString());
                 }
-                else if (x.Type == JsInstance.TYPE_BOOLEAN)
+                else if (x.Type == IJsInstance.TYPE_BOOLEAN)
                 {
                     return Global.BooleanClass.New(x.ToBoolean() == y.ToBoolean());
                 }
-                else if (x.Type == JsInstance.TYPE_OBJECT )
+                else if (x.Type == IJsInstance.TYPE_OBJECT )
                 {
                     return Global.BooleanClass.New(x == y);
                 }
@@ -808,23 +791,23 @@ namespace Jint {
             {
                 return Global.BooleanClass.True;
             }
-            else if (x.Type == JsInstance.TYPE_NUMBER && y.Type == JsInstance.TYPE_STRING)
+            else if (x.Type == IJsInstance.TYPE_NUMBER && y.Type == IJsInstance.TYPE_STRING)
             {
                 return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
             }
-            else if (x.Type == JsInstance.TYPE_STRING && y.Type == JsInstance.TYPE_NUMBER)
+            else if (x.Type == IJsInstance.TYPE_STRING && y.Type == IJsInstance.TYPE_NUMBER)
             {
                 return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
             }
-            else if (x.Type == JsInstance.TYPE_BOOLEAN || y.Type == JsInstance.TYPE_BOOLEAN)
+            else if (x.Type == IJsInstance.TYPE_BOOLEAN || y.Type == IJsInstance.TYPE_BOOLEAN)
             {
                 return Global.BooleanClass.New(x.ToNumber() == y.ToNumber());
             }
-            else if (y.Type == JsInstance.TYPE_OBJECT && (x.Type == JsInstance.TYPE_STRING || x.Type == JsInstance.TYPE_NUMBER))
+            else if (y.Type == IJsInstance.TYPE_OBJECT && (x.Type == IJsInstance.TYPE_STRING || x.Type == IJsInstance.TYPE_NUMBER))
             {
                 return Compare(x, y.ToPrimitive(Global));
             }
-            else if (x.Type == JsInstance.TYPE_OBJECT && (y.Type == JsInstance.TYPE_STRING || y.Type == JsInstance.TYPE_NUMBER))
+            else if (x.Type == IJsInstance.TYPE_OBJECT && (y.Type == IJsInstance.TYPE_STRING || y.Type == IJsInstance.TYPE_NUMBER))
             {
                 return Compare(x.ToPrimitive(Global), y);
             }
@@ -841,7 +824,7 @@ namespace Jint {
 
             EnsureIdentifierIsDefined(Result);
 
-            JsInstance left = Result;
+            IJsInstance left = Result;
 
             //prevents execution of the right hand side if false
             if (expression.Type == BinaryExpressionType.And && !left.ToBoolean()) {
@@ -860,7 +843,7 @@ namespace Jint {
 
             EnsureIdentifierIsDefined(Result);
 
-            JsInstance right = Result;
+            IJsInstance right = Result;
 
             switch (expression.Type) {
                 case BinaryExpressionType.And:
@@ -943,7 +926,7 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Plus:
-                    if (left.Class == JsInstance.CLASS_STRING || right.Class == JsInstance.CLASS_STRING)
+                    if (left.Class == IJsInstance.CLASS_STRING || right.Class == IJsInstance.CLASS_STRING)
                     {
                         Result = Global.StringClass.New(String.Concat(left.ToString(), right.ToString()));
                     }
@@ -984,7 +967,7 @@ namespace Jint {
                     else if (left is JsNull) {
                         Result = Global.BooleanClass.True;
                     }
-                    else if (left.Type == JsInstance.TYPE_NUMBER)
+                    else if (left.Type == IJsInstance.TYPE_NUMBER)
                     {
                         if (left == Global.NumberClass["NaN"] || right == Global.NumberClass["NaN"]) {
                             Result = Global.BooleanClass.False;
@@ -995,11 +978,11 @@ namespace Jint {
                         else
                             Result = Global.BooleanClass.False;
                     }
-                    else if (left.Type == JsInstance.TYPE_STRING)
+                    else if (left.Type == IJsInstance.TYPE_STRING)
                     {
                         Result = Global.BooleanClass.New(left.ToString() == right.ToString());
                     }
-                    else if (left.Type == JsInstance.TYPE_BOOLEAN)
+                    else if (left.Type == IJsInstance.TYPE_BOOLEAN)
                     {
                         Result = Global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
                     }
@@ -1046,7 +1029,7 @@ namespace Jint {
                         throw new JsException(Global.ErrorClass.New("Cannot apply 'in' operator to the specified member."));
                     }
                     else {
-                        Result = Global.BooleanClass.New(((JsDictionaryObject)right).HasProperty(left));
+                        Result = Global.BooleanClass.New(((JsObjectBase)right).HasProperty(left));
                     }
 
                     break;
@@ -1067,9 +1050,9 @@ namespace Jint {
                     if (Result == null)
                         Result = Global.StringClass.New(JsUndefined.Instance.Type);
                     else if (Result is JsNull)
-                        Result = Global.StringClass.New(JsInstance.TYPE_OBJECT);
+                        Result = Global.StringClass.New(IJsInstance.TYPE_OBJECT);
                     else if (Result is JsFunction)
-                        Result = Global.StringClass.New(JsInstance.TYPEOF_FUNCTION);
+                        Result = Global.StringClass.New(IJsInstance.TYPEOF_FUNCTION);
                     else
                         Result = Global.StringClass.New(Result.Type);
 
@@ -1097,7 +1080,7 @@ namespace Jint {
 
                     expression.Expression.Accept(this);
                     EnsureIdentifierIsDefined(Result);
-                    JsInstance value = Result;
+                    IJsInstance value = Result;
 
                     member = expression.Expression as MemberExpression ?? new MemberExpression(expression.Expression, null);
 
@@ -1161,7 +1144,7 @@ namespace Jint {
                     if (string.IsNullOrEmpty(propertyName))
                         throw new JsException(Global.TypeErrorClass.New());
                     try {
-                        ((JsDictionaryObject)value).Delete(propertyName);
+                        ((JsObjectBase)value).Delete(propertyName);
                     }
                     catch (JintException) {
                         throw new JsException(Global.TypeErrorClass.New());
@@ -1193,7 +1176,7 @@ namespace Jint {
                 case TypeCode.Single:
                 case TypeCode.Double: Result = Global.NumberClass.New(Convert.ToDouble(expression.Value)); break;
                 case TypeCode.String: Result = Global.StringClass.New((string)expression.Value); break;
-                default: Result = expression.Value as JsInstance;
+                default: Result = expression.Value as IJsInstance;
                     break;
             }
         }
@@ -1244,7 +1227,7 @@ namespace Jint {
             if (target.IsClr)
                 EnsureClrAllowed();
 
-            if (target.Class == JsInstance.CLASS_STRING) {
+            if (target.Class == IJsInstance.CLASS_STRING) {
                 SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
             }
             else {
@@ -1291,7 +1274,7 @@ namespace Jint {
             }
 
             #region Evaluates parameters
-            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
+            IJsInstance[] parameters = new IJsInstance[methodCall.Arguments.Count];
 
             if (methodCall.Arguments.Count > 0) {
 
@@ -1324,7 +1307,7 @@ namespace Jint {
 
                 returnInstance = JsUndefined.Instance;
 
-                JsInstance[] original = new JsInstance[parameters.Length];
+                IJsInstance[] original = new IJsInstance[parameters.Length];
                 parameters.CopyTo(original, 0);
 
                 ExecuteFunction(function, that, parameters, genericParameters);
@@ -1350,12 +1333,12 @@ namespace Jint {
 
         }
 
-        public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters)
+        public void ExecuteFunction(JsFunction function, JsObjectBase that, IJsInstance[] parameters)
         {
             ExecuteFunction(function, that, parameters, null);
         }
 
-        public void ExecuteFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters, Type[] genericParameters) {
+        public void ExecuteFunction(JsFunction function, JsObjectBase that, IJsInstance[] parameters, Type[] genericParameters) {
             if (function == null) {
                 return;
             }
@@ -1436,7 +1419,7 @@ namespace Jint {
 
         public void Visit(PropertyExpression expression) {
             // save base of current expression
-            var callTarget = Result as JsDictionaryObject;
+            var callTarget = Result as JsObjectBase;
 
             // this check is disabled becouse it prevents Clr names to resolve
             //if ((callTarget) == null || callTarget == JsUndefined.Instance || callTarget == JsNull.Instance)
@@ -1448,7 +1431,7 @@ namespace Jint {
 
             string propertyName = lastIdentifier = expression.Text;
 
-            JsInstance result = null;
+            IJsInstance result = null;
 
             if (callTarget != null && callTarget.TryGetProperty(propertyName, out result)) {
                 SetResult(result, callTarget);
@@ -1464,7 +1447,7 @@ namespace Jint {
 
         public void Visit(PropertyDeclarationExpression expression) {
             // previous result was the object in which we need to define a property
-            var target = Result as JsDictionaryObject;
+            var target = Result as JsObjectBase;
 
             switch (expression.Mode) {
                 case PropertyExpressionType.Data:
@@ -1494,13 +1477,19 @@ namespace Jint {
 
             string propertyName = lastIdentifier = expression.Text;
 
+            JsReference reference;
+
             Descriptor result = null;
             if (CurrentScope.TryGetDescriptor(propertyName, out result)) {
                 if (!result.isReference)
-                    Result = result.Get(CurrentScope);
+                    //Result = result.Get(CurrentScope);
+                    reference = new JsDescriptorReference((JsObject)Global,result);
                 else {
                     LinkedDescriptor r = result as LinkedDescriptor;
                     SetResult(r.Get(CurrentScope), r.targetObject);
+
+                    //TODO: remove type cast
+                    reference = new JsDescriptorReference((JsObject)r.targetObject, r.targetDescriptor);
                 }
 
                 if (Result != null)
@@ -1557,7 +1546,7 @@ namespace Jint {
             var array = Global.ArrayClass.New();
 
             // Process parameters
-            JsInstance[] parameters = new JsInstance[expression.Parameters.Count];
+            IJsInstance[] parameters = new IJsInstance[expression.Parameters.Count];
 
             for (int i = 0; i < expression.Parameters.Count; i++) {
                 expression.Parameters[i].Accept(this);

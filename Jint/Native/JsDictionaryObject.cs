@@ -13,7 +13,7 @@ namespace Jint.Native {
     /// Implements generic property storing mechanism
     /// </remarks>
     [Serializable]
-    public abstract class JsDictionaryObject : JsInstance, IEnumerable<KeyValuePair<string, JsInstance>> {
+    public abstract class JsObjectBase: IEnumerable<KeyValuePair<string, JsObjectBase>> {
         protected internal IPropertyBag properties = new MiniCachedPropertyBag();
 
         /// <summary>
@@ -24,22 +24,15 @@ namespace Jint.Native {
         /// </remarks>
         public bool Extensible { get; set; }
 
-        public bool hasChildren { get; private set; }
-
-        private int m_length = 0;
-
         /// <summary>
-        /// gets the number of an actually stored properties
+        /// Defines wheather current object acts as a prototype for the others objects.
         /// </summary>
-        /// <remarks>
-        /// This is a non ecma262 standart property
-        /// </remarks>
-        public virtual int Length { get { return m_length; } set { } }
+        public bool hasChildren { get; private set; }
 
         /// <summary>
         /// Creates new Object without prototype
         /// </summary>
-        public JsDictionaryObject() {
+        public JsObjectBase() {
             Extensible = true;
             Prototype = JsNull.Instance;
         }
@@ -48,7 +41,7 @@ namespace Jint.Native {
         /// Creates new object with an specified prototype
         /// </summary>
         /// <param name="prototype">Prototype</param>
-        public JsDictionaryObject(JsDictionaryObject prototype) {
+        public JsObjectBase(JsObjectBase prototype) {
             this.Prototype = prototype;
             Extensible = true;
             prototype.hasChildren = true;
@@ -57,7 +50,7 @@ namespace Jint.Native {
         /// <summary>
         /// ecma262 [[prototype]] property
         /// </summary>
-        private JsDictionaryObject Prototype { get; set; }
+        private JsObjectBase Prototype { get; set; }
 
         /// <summary>
         /// Checks whether an object or it's [[prototype]] has the specified property.
@@ -68,7 +61,7 @@ namespace Jint.Native {
         /// This implementation uses a HasOwnProperty method while walking a prototypes chain.
         /// </remarks>
         public virtual bool HasProperty(string key) {
-            JsDictionaryObject obj = this;
+            JsObjectBase obj = this;
             while (true) {
                 if (obj.HasOwnProperty(key)) {
                     return true;
@@ -82,6 +75,10 @@ namespace Jint.Native {
             }
         }
 
+        public virtual bool HasProperty(IJsInstance key) {
+            return this.HasProperty(key.ToString());
+        }
+
         /// <summary>
         /// Checks whether object has an own property
         /// </summary>
@@ -92,19 +89,17 @@ namespace Jint.Native {
             return properties.TryGet(key, out desc) && desc.Owner == this;
         }
 
-        public virtual bool HasProperty(JsInstance key) {
-            return this.HasProperty(key.ToString());
-        }
+        
 
-        public virtual bool HasOwnProperty(JsInstance key) {
+        public virtual bool HasOwnProperty(IJsInstance key) {
             return this.HasOwnProperty(key.ToString());
         }
 
-        public virtual Descriptor GetDescriptor(string index) {
+        internal virtual Descriptor GetDescriptor(string index) {
 
             Descriptor result;
             if (properties.TryGet(index, out result))
-                if (!result.isDeleted)
+                if (!result.isDeleted) // the result is actual (or own descriptor)
                     return result;
                 else
                     properties.Delete(index); // remove from cache
@@ -116,7 +111,7 @@ namespace Jint.Native {
             return result;
         }
 
-        public virtual bool TryGetDescriptor(JsInstance index, out Descriptor result) {
+        public virtual bool TryGetDescriptor(IJsInstance index, out Descriptor result) {
             return TryGetDescriptor(index.ToString(), out result);
         }
 
@@ -125,11 +120,11 @@ namespace Jint.Native {
             return result != null;
         }
 
-        public virtual bool TryGetProperty(JsInstance index, out JsInstance result) {
+        public virtual bool TryGetProperty(IJsInstance index, out IJsInstance result) {
             return TryGetProperty(index.ToString(), out result);
         }
 
-        public virtual bool TryGetProperty(string index, out JsInstance result) {
+        public virtual bool TryGetProperty(string index, out IJsInstance result) {
             Descriptor d = GetDescriptor(index);
             if (d == null) {
                 result = JsUndefined.Instance;
@@ -141,12 +136,12 @@ namespace Jint.Native {
             return true;
         }
 
-        public virtual JsInstance this[JsInstance key] {
+        public virtual IJsInstance this[IJsInstance key] {
             get { return this[key.ToString()]; }
             set { this[key.ToString()] = value; }
         }
 
-        public virtual JsInstance this[string index] {
+        public virtual IJsInstance this[string index] {
             get {
                 Descriptor d = GetDescriptor(index);
                 return d != null ? d.Get(this) : JsUndefined.Instance;
@@ -160,7 +155,7 @@ namespace Jint.Native {
             }
         }
 
-        public virtual void Delete(JsInstance key) {
+        public virtual void Delete(IJsInstance key) {
             Delete(key.ToString());
         }
 
@@ -178,11 +173,11 @@ namespace Jint.Native {
             }
         }
 
-        public void DefineOwnProperty(string key, JsInstance value, PropertyAttributes propertyAttributes) {
+        public void DefineOwnProperty(string key, IJsInstance value, PropertyAttributes propertyAttributes) {
             DefineOwnProperty(new ValueDescriptor(this, key, value) { Writable = (propertyAttributes & PropertyAttributes.ReadOnly) == 0, Enumerable = (propertyAttributes & PropertyAttributes.DontEnum) == 0 });
         }
 
-        public void DefineOwnProperty(string key, JsInstance value) {
+        public void DefineOwnProperty(string key, IJsInstance value) {
             DefineOwnProperty(new ValueDescriptor(this, key, value));
         }
 
@@ -223,8 +218,9 @@ namespace Jint.Native {
             }
             else {
                 // add a new property
-                if (desc != null)
-                    desc.Owner.RedefineProperty(desc.Name); // if we have a cached property
+                if (desc != null && hasChildren)
+                    // if we have a cached property, and this instance is a prototype for other objects
+                    desc.Owner.RedefineProperty(desc.Name); 
 
                 properties.Put(key, currentDescriptor);
                 m_length++;
@@ -239,12 +235,12 @@ namespace Jint.Native {
             }
         }
 
-        #region IEnumerable<KeyValuePair<JsInstance,JsInstance>> Members
+        #region IEnumerable<KeyValuePair<JsInstance,JsObjectBase>> Members
 
-        public IEnumerator<KeyValuePair<string, JsInstance>> GetEnumerator() {
+        public IEnumerator<KeyValuePair<string, IJsInstance>> GetEnumerator() {
             foreach (KeyValuePair<string, Descriptor> descriptor in properties) {
                 if (descriptor.Value.Enumerable)
-                    yield return new KeyValuePair<string, JsInstance>(descriptor.Key, descriptor.Value.Get(this));
+                    yield return new KeyValuePair<string, IJsInstance>(descriptor.Key, descriptor.Value.Get(this));
             }
         }
 
@@ -258,7 +254,7 @@ namespace Jint.Native {
 
         #endregion
 
-        public virtual IEnumerable<JsInstance> GetValues() {
+        public virtual IEnumerable<IJsInstance> GetValues() {
             foreach (Descriptor descriptor in properties.Values) {
                 if (descriptor.Enumerable)
                     yield return descriptor.Get(this);
@@ -283,65 +279,9 @@ namespace Jint.Native {
             yield break;
         }
 
-        /// <summary>
-        /// non standard
-        /// </summary>
-        /// <param name="instance"></param>
-        /// <param name="p"></param>
-        /// <param name="currentDescriptor"></param>
-        public virtual JsInstance GetGetFunction(JsDictionaryObject target, JsInstance[] parameters) {
-            if (parameters.Length <= 0) {
-                throw new ArgumentException("propertyName");
-            }
+        
 
-            if (!target.HasOwnProperty(parameters[0].ToString())) {
-                return GetGetFunction(target.Prototype, parameters);
-            }
-
-            PropertyDescriptor desc = target.properties.Get(parameters[0].ToString()) as PropertyDescriptor;
-            if (desc == null) {
-                return JsUndefined.Instance;
-            }
-
-            return (JsInstance)desc.GetFunction ?? JsUndefined.Instance;
-
-        }
-
-        /// <summary>
-        /// non standard
-        /// </summary>
-        /// <param name="instance"></param>
-        /// <param name="p"></param>
-        /// <param name="currentDescriptor"></param>
-        public virtual JsInstance GetSetFunction(JsDictionaryObject target, JsInstance[] parameters) {
-            if (parameters.Length <= 0) {
-                throw new ArgumentException("propertyName");
-            }
-
-            if (!target.HasOwnProperty(parameters[0].ToString())) {
-                return GetSetFunction(target.Prototype, parameters);
-            }
-
-            PropertyDescriptor desc = target.properties.Get(parameters[0].ToString()) as PropertyDescriptor;
-            if (desc == null) {
-                return JsUndefined.Instance;
-            }
-
-            return (JsInstance)desc.SetFunction ?? JsUndefined.Instance;
-
-        }
-
-        [Obsolete("will be removed in 1.2",true)]
-        public override object Call(IJintVisitor visitor, string function, params JsInstance[] parameters) {
-            visitor.ExecuteFunction(this[function] as JsFunction, this, parameters);
-            return visitor.Returned;
-        }
-
-        public override bool IsClr {
-            get { return false; }
-        }
-
-        public bool IsPrototypeOf(JsDictionaryObject target) {
+        public bool IsPrototypeOf(JsObjectBase target) {
             if (target == null)
                 return false;
             if (target == JsUndefined.Instance || target == JsNull.Instance)

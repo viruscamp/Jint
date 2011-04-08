@@ -64,12 +64,12 @@ namespace Jint.Native
             }
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters)
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters)
         {
             return Execute(visitor, that, parameters, null);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters, Type[] genericArguments)
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters, Type[] genericArguments)
         {
             if (m_generics.Count == 0 && (genericArguments != null && genericArguments.Length > 0))
                 return base.Execute(visitor, that, parameters, genericArguments);

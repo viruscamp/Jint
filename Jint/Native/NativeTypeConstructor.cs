@@ -32,7 +32,7 @@ namespace Jint.Native
             return inst;
         }
 
-        public override JsInstance Wrap<T>(T value)
+        public override IJsInstance Wrap<T>(T value)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
@@ -49,7 +49,7 @@ namespace Jint.Native
                 throw new JintException("Attempt to wrap '" + value.GetType().FullName + "' with '" + typeof(Type).FullName + "'");
         }
 
-        public JsInstance WrapSpecialType(Type value, JsObject prototypePropertyPrototype)
+        public IJsInstance WrapSpecialType(Type value, JsObject prototypePropertyPrototype)
         {
             if (value == null)
                 throw new ArgumentNullException("value");

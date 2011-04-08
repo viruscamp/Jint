@@ -15,7 +15,7 @@ namespace Jint.Native {
             set { this[CALLEE] = value; }
         }
 
-        public JsArguments(IGlobal global, JsFunction callee, JsInstance[] arguments)
+        public JsArguments(IGlobal global, JsFunction callee, IJsInstance[] arguments)
             : base(global.ObjectClass.New())
         {            
             this.global = global;
@@ -69,7 +69,7 @@ namespace Jint.Native {
             get { return CLASS_ARGUMENTS; }
         }
 
-        public JsInstance GetLength(JsArguments target) {
+        public IJsInstance GetLength(JsArguments target) {
             return global.NumberClass.New(target.length);
         }
     }

@@ -22,8 +22,8 @@ namespace Jint.Native {
         public override void InitPrototype(IGlobal global) {
             var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToString2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToString2), PropertyAttributes.DontEnum);
         }
 
         public JsBoolean New() {
@@ -34,7 +34,7 @@ namespace Jint.Native {
             return new JsBoolean(value, PrototypeProperty);
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             // e.g., var foo = Boolean(true);
             if (that == null || (that as IGlobal) == visitor.Global)
             {
@@ -56,7 +56,7 @@ namespace Jint.Native {
         }
 
 
-        public JsInstance ToString2(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToString2(JsObjectBase target, IJsInstance[] parameters) {
             return Global.StringClass.New(target.ToString());
         }
     }

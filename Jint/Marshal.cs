@@ -101,13 +101,13 @@ namespace Jint
         /// <typeparam name="T">A type of a native value</typeparam>
         /// <param name="value">A native value</param>
         /// <returns>A marshalled JsInstance</returns>
-        public JsInstance MarshalClrValue<T>(T value)
+        public IJsInstance MarshalClrValue<T>(T value)
         {
             if (value == null)
                 return JsNull.Instance;
 
-            if (value is JsInstance)
-                return value as JsInstance;
+            if (value is IJsInstance)
+                return value as IJsInstance;
 
             if (value is Type)
             {
@@ -201,7 +201,7 @@ namespace Jint
         /// <typeparam name="T">A native object type</typeparam>
         /// <param name="value">A JsInstance to marshal</param>
         /// <returns>A converted native velue</returns>
-        public T MarshalJsValue<T>(JsInstance value)
+        public T MarshalJsValue<T>(IJsInstance value)
         {
             if (value.Value is T)
             {
@@ -263,7 +263,7 @@ namespace Jint
         /// <typeparam name="T">Type of value type, which we desire to get</typeparam>
         /// <param name="value">A js value which should be marshalled</param>
         /// <returns>A reference to a boxed value</returns>
-        public object MarshalJsValueBoxed<T>(JsInstance value)
+        public object MarshalJsValueBoxed<T>(IJsInstance value)
         {
             if (value.Value is T)
                 return value.Value;
@@ -284,7 +284,7 @@ namespace Jint
         /// </remarks>
         /// <param name="value">JsInstance value</param>
         /// <returns>A Type object</returns>
-        public Type GetInstanceType(JsInstance value)
+        public Type GetInstanceType(IJsInstance value)
         {
             if (value == null || value == JsUndefined.Instance || value == JsNull.Instance )
                 return null;
@@ -350,7 +350,7 @@ namespace Jint
         /// <param name="prop">Property to marshal</param>
         /// <param name="owner">Owner of the returned descriptor</param>
         /// <returns>A descriptor</returns>
-        public NativeDescriptor MarshalPropertyInfo(PropertyInfo prop, JsDictionaryObject owner)
+        public NativeDescriptor MarshalPropertyInfo(PropertyInfo prop, JsObjectBase owner)
         {
             JsGetter getter;
             JsSetter setter = null;
@@ -361,7 +361,7 @@ namespace Jint
             }
             else
             {
-                getter = delegate(JsDictionaryObject that)
+                getter = delegate(JsObjectBase that)
                 {
                     return JsUndefined.Instance;
                 };
@@ -381,23 +381,23 @@ namespace Jint
         /// <param name="prop">Field info to marshal</param>
         /// <param name="owner">Owner for the descriptor</param>
         /// <returns>Descriptor</returns>
-        public NativeDescriptor MarshalFieldInfo(FieldInfo prop, JsDictionaryObject owner)
+        public NativeDescriptor MarshalFieldInfo(FieldInfo prop, JsObjectBase owner)
         {
             JsGetter getter;
             JsSetter setter;
 
             if (prop.IsLiteral)
             {
-                JsInstance value = null; // this demand initization should prevent a stack overflow while reflecting types
-                getter = delegate(JsDictionaryObject that) {
+                IJsInstance value = null; // this demand initization should prevent a stack overflow while reflecting types
+                getter = delegate(JsObjectBase that) {
                     if (value == null)
-                        value = (JsInstance)typeof(Marshaller)
+                        value = (IJsInstance)typeof(Marshaller)
                             .GetMethod("MarshalClrValue")
                             .MakeGenericMethod(prop.FieldType)
                             .Invoke(this, new object[] { prop.GetValue(null) });
                     return value;
                 };
-                setter = delegate(JsDictionaryObject that, JsInstance v) { };
+                setter = delegate(JsObjectBase that, IJsInstance v) { };
             }
             else
             {

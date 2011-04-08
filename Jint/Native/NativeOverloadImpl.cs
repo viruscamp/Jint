@@ -135,9 +135,9 @@ namespace Jint.Native
             m_protoCache[MakeKey(args, generics)] = impl;
         }
 
-        public TImpl ResolveOverload(JsInstance[] args, Type[] generics)
+        public TImpl ResolveOverload(IJsInstance[] args, Type[] generics)
         {
-            Type[] argTypes = Array.ConvertAll<JsInstance, Type>(args, x => m_marshaller.GetInstanceType(x));
+            Type[] argTypes = Array.ConvertAll<IJsInstance, Type>(args, x => m_marshaller.GetInstanceType(x));
             string key = MakeKey(argTypes, generics);
             TImpl method;
             if (!m_protoCache.TryGetValue(key, out method))

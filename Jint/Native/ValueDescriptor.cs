@@ -5,16 +5,16 @@ using System.Text;
 namespace Jint.Native {
     [Serializable]
     public class ValueDescriptor : Descriptor {
-        public ValueDescriptor(JsDictionaryObject owner, string name)
+        public ValueDescriptor(JsObjectBase owner, string name)
             : base(owner, name) {
             Enumerable = true;
             Writable = true;
             Configurable = true;
         }
 
-        JsInstance value;
+        IJsInstance value;
 
-        public ValueDescriptor(JsDictionaryObject owner, string name, JsInstance value)
+        public ValueDescriptor(JsObjectBase owner, string name, IJsInstance value)
             : this(owner, name) {
             Set(null, value);
         }
@@ -31,11 +31,11 @@ namespace Jint.Native {
             };
         }
 
-        public override JsInstance Get(JsDictionaryObject that) {
+        public override IJsInstance Get(JsObjectBase that) {
             return value ?? JsUndefined.Instance;
         }
 
-        public override void Set(JsDictionaryObject that, JsInstance value) {
+        public override void Set(JsObjectBase that, IJsInstance value) {
             if (!Writable)
                 throw new JintException("This property is not writable");
             this.value = value;

@@ -24,31 +24,31 @@ namespace Jint.Native {
             Prototype.DefineOwnProperty(CALL.ToString(), new JsCallFunction(this), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty(APPLY.ToString(), new JsApplyFunction(this), PropertyAttributes.DontEnum);
 
-            Prototype.DefineOwnProperty("toString", New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", New<JsObjectBase>(ToString2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", New<JsObjectBase>(ToString2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty(new PropertyDescriptor<JsObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl));
         }
 
 
 
-        public JsInstance GetLengthImpl(JsDictionaryObject target) {
+        public IJsInstance GetLengthImpl(JsObjectBase target) {
             return Global.NumberClass.New(target.Length);
         }
 
-        public JsInstance SetLengthImpl(JsInstance target, JsInstance[] parameters) {
+        public IJsInstance SetLengthImpl(IJsInstance target, IJsInstance[] parameters) {
             int length = (int)parameters[0].ToNumber();
 
             if (length < 0 || double.IsNaN(length) || double.IsInfinity(length)) {
                 throw new JsException(Global.RangeErrorClass.New("invalid length"));
             }
 
-            JsDictionaryObject obj = (JsDictionaryObject)target;
+            JsObjectBase obj = (JsObjectBase)target;
             obj.Length = length;
 
             return parameters[0];
         }
 
-        public JsInstance GetLength(JsDictionaryObject target) {
+        public IJsInstance GetLength(JsObjectBase target) {
             return Global.NumberClass.New(target.Length);
         }
 
@@ -58,26 +58,26 @@ namespace Jint.Native {
             return function;
         }
 
-        public JsFunction New<T>(Func<T, JsInstance> impl) where T : JsInstance {
+        public JsFunction New<T>(Func<T, IJsInstance> impl) where T : IJsInstance {
             JsFunction function = new ClrImplDefinition<T>(impl, PrototypeProperty);
             function.PrototypeProperty = Global.ObjectClass.New(function);
             //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
-        public JsFunction New<T>(Func<T, JsInstance> impl, int length) where T : JsInstance {
+        public JsFunction New<T>(Func<T, IJsInstance> impl, int length) where T : IJsInstance {
             JsFunction function = new ClrImplDefinition<T>(impl, length, PrototypeProperty);
             function.PrototypeProperty = Global.ObjectClass.New(function);
             //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
 
-        public JsFunction New<T>(Func<T, JsInstance[], JsInstance> impl) where T : JsInstance {
+        public JsFunction New<T>(Func<T, IJsInstance[], IJsInstance> impl) where T : IJsInstance {
             JsFunction function = new ClrImplDefinition<T>(impl, PrototypeProperty);
             function.PrototypeProperty = Global.ObjectClass.New(function);
             //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }
-        public JsFunction New<T>(Func<T, JsInstance[], JsInstance> impl, int length) where T : JsInstance {
+        public JsFunction New<T>(Func<T, IJsInstance[], IJsInstance> impl, int length) where T : IJsInstance {
             JsFunction function = new ClrImplDefinition<T>(impl, length, PrototypeProperty);
             function.PrototypeProperty = Global.ObjectClass.New(function);
             //function.Scope = new JsScope(PrototypeProperty);
@@ -91,11 +91,11 @@ namespace Jint.Native {
             return function;
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             return visitor.Return( Construct(parameters,null,visitor) );
         }
 
-        public override JsObject Construct(JsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
+        public override JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor)
         {
             JsFunction instance = New();
 
@@ -120,7 +120,7 @@ namespace Jint.Native {
             return instance;
         }
 
-        public JsInstance ToString2(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToString2(JsObjectBase target, IJsInstance[] parameters) {
             return Global.StringClass.New(target.ToSource());
         }
     }

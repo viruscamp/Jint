@@ -13,11 +13,11 @@ namespace Jint.Marshal
         Delegate m_impl;
         IJintVisitor m_visitor;
         JsFunction m_function;
-        JsDictionaryObject m_that;
+        JsObjectBase m_that;
         Marshaller m_marshaller;
         Type m_delegateType;
 
-        public JsFunctionDelegate(IJintVisitor visitor, JsFunction function, JsDictionaryObject that,Type delegateType)
+        public JsFunctionDelegate(IJintVisitor visitor, JsFunction function, JsObjectBase that,Type delegateType)
         {
             if (visitor == null)
                 throw new ArgumentNullException("visitor");
@@ -61,12 +61,12 @@ namespace Jint.Marshal
             // local_0 parameters
             // local_1 marshaller
 
-            code.DeclareLocal(typeof(JsInstance[]));
+            code.DeclareLocal(typeof(IJsInstance[]));
             code.DeclareLocal(typeof(Marshaller));
 
             // parameters = new JsInstance[...];
             code.Emit(OpCodes.Ldc_I4, parameters.Length);
-            code.Emit(OpCodes.Newarr, typeof(JsInstance));
+            code.Emit(OpCodes.Newarr, typeof(IJsInstance));
             code.Emit(OpCodes.Stloc_0);
 
             // load a marshller
@@ -113,7 +113,7 @@ namespace Jint.Marshal
                 );
                 // save arg
 
-                code.Emit(OpCodes.Stelem, typeof(JsInstance) );
+                code.Emit(OpCodes.Stelem, typeof(IJsInstance) );
             }
 
             // m_visitor.ExecuteFunction(m_function,m_that,arguments)
@@ -145,7 +145,7 @@ namespace Jint.Marshal
 
                     code.Emit(OpCodes.Ldloc_0);
                     code.Emit(OpCodes.Ldc_I4, i - 1);
-                    code.Emit(OpCodes.Ldelem, typeof(JsInstance));
+                    code.Emit(OpCodes.Ldelem, typeof(IJsInstance));
 
                     code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalJsValue").MakeGenericMethod(paramType));
 

@@ -30,11 +30,11 @@ namespace Jint.Native {
             }
         }
 
-        public override string Type
+        public override JsObjectType Type
         {
             get
             {
-                return TYPE_BOOLEAN;
+                return JsObjectType.Boolean;
             }
         }
 

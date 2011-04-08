@@ -33,49 +33,49 @@ namespace Jint.Native {
             #endregion
 
             #region Methods
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsDictionaryObject>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toDateString", global.FunctionClass.New<JsDictionaryObject>(ToDateStringImpl, 0), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toTimeString", global.FunctionClass.New<JsDictionaryObject>(ToTimeStringImpl, 0), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsDictionaryObject>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleDateString", global.FunctionClass.New<JsDictionaryObject>(ToLocaleDateStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleTimeString", global.FunctionClass.New<JsDictionaryObject>(ToLocaleTimeStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("valueOf", global.FunctionClass.New<JsDictionaryObject>(ValueOfImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getTime", global.FunctionClass.New<JsDictionaryObject>(GetTimeImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getFullYear", global.FunctionClass.New<JsDictionaryObject>(GetFullYearImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCFullYear", global.FunctionClass.New<JsDictionaryObject>(GetUTCFullYearImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getMonth", global.FunctionClass.New<JsDictionaryObject>(GetMonthImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCMonth", global.FunctionClass.New<JsDictionaryObject>(GetUTCMonthImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getDate", global.FunctionClass.New<JsDictionaryObject>(GetDateImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCDate", global.FunctionClass.New<JsDictionaryObject>(GetUTCDateImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getDay", global.FunctionClass.New<JsDictionaryObject>(GetDayImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCDay", global.FunctionClass.New<JsDictionaryObject>(GetUTCDayImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getHours", global.FunctionClass.New<JsDictionaryObject>(GetHoursImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCHours", global.FunctionClass.New<JsDictionaryObject>(GetUTCHoursImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getMinutes", global.FunctionClass.New<JsDictionaryObject>(GetMinutesImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCMinutes", global.FunctionClass.New<JsDictionaryObject>(GetUTCMinutesImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getSeconds", global.FunctionClass.New<JsDictionaryObject>(GetSecondsImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCSeconds", global.FunctionClass.New<JsDictionaryObject>(GetUTCSecondsImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getMilliseconds", global.FunctionClass.New<JsDictionaryObject>(GetMillisecondsImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getUTCMilliseconds", global.FunctionClass.New<JsDictionaryObject>(GetUTCMillisecondsImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getTimezoneOffset", global.FunctionClass.New<JsDictionaryObject>(GetTimezoneOffsetImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toDateString", global.FunctionClass.New<JsObjectBase>(ToDateStringImpl, 0), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toTimeString", global.FunctionClass.New<JsObjectBase>(ToTimeStringImpl, 0), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleDateString", global.FunctionClass.New<JsObjectBase>(ToLocaleDateStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleTimeString", global.FunctionClass.New<JsObjectBase>(ToLocaleTimeStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("valueOf", global.FunctionClass.New<JsObjectBase>(ValueOfImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getTime", global.FunctionClass.New<JsObjectBase>(GetTimeImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getFullYear", global.FunctionClass.New<JsObjectBase>(GetFullYearImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCFullYear", global.FunctionClass.New<JsObjectBase>(GetUTCFullYearImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getMonth", global.FunctionClass.New<JsObjectBase>(GetMonthImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCMonth", global.FunctionClass.New<JsObjectBase>(GetUTCMonthImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getDate", global.FunctionClass.New<JsObjectBase>(GetDateImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCDate", global.FunctionClass.New<JsObjectBase>(GetUTCDateImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getDay", global.FunctionClass.New<JsObjectBase>(GetDayImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCDay", global.FunctionClass.New<JsObjectBase>(GetUTCDayImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getHours", global.FunctionClass.New<JsObjectBase>(GetHoursImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCHours", global.FunctionClass.New<JsObjectBase>(GetUTCHoursImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getMinutes", global.FunctionClass.New<JsObjectBase>(GetMinutesImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCMinutes", global.FunctionClass.New<JsObjectBase>(GetUTCMinutesImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getSeconds", global.FunctionClass.New<JsObjectBase>(GetSecondsImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCSeconds", global.FunctionClass.New<JsObjectBase>(GetUTCSecondsImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getMilliseconds", global.FunctionClass.New<JsObjectBase>(GetMillisecondsImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getUTCMilliseconds", global.FunctionClass.New<JsObjectBase>(GetUTCMillisecondsImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("getTimezoneOffset", global.FunctionClass.New<JsObjectBase>(GetTimezoneOffsetImpl), PropertyAttributes.DontEnum);
 
-            Prototype.DefineOwnProperty("setTime", global.FunctionClass.New<JsDictionaryObject>(SetTimeImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setMilliseconds", global.FunctionClass.New<JsDictionaryObject>(SetMillisecondsImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCMilliseconds", global.FunctionClass.New<JsDictionaryObject>(SetUTCMillisecondsImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setSeconds", global.FunctionClass.New<JsDictionaryObject>(SetSecondsImpl, 2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCSeconds", global.FunctionClass.New<JsDictionaryObject>(SetUTCSecondsImpl, 2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setMinutes", global.FunctionClass.New<JsDictionaryObject>(SetMinutesImpl, 3), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCMinutes", global.FunctionClass.New<JsDictionaryObject>(SetUTCMinutesImpl, 3), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setHours", global.FunctionClass.New<JsDictionaryObject>(SetHoursImpl, 4), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCHours", global.FunctionClass.New<JsDictionaryObject>(SetUTCHoursImpl, 4), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setDate", global.FunctionClass.New<JsDictionaryObject>(SetDateImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCDate", global.FunctionClass.New<JsDictionaryObject>(SetUTCDateImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setMonth", global.FunctionClass.New<JsDictionaryObject>(SetMonthImpl, 2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCMonth", global.FunctionClass.New<JsDictionaryObject>(SetUTCMonthImpl, 2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setFullYear", global.FunctionClass.New<JsDictionaryObject>(SetFullYearImpl, 3), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("setUTCFullYear", global.FunctionClass.New<JsDictionaryObject>(SetUTCFullYearImpl, 3), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setTime", global.FunctionClass.New<JsObjectBase>(SetTimeImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setMilliseconds", global.FunctionClass.New<JsObjectBase>(SetMillisecondsImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCMilliseconds", global.FunctionClass.New<JsObjectBase>(SetUTCMillisecondsImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setSeconds", global.FunctionClass.New<JsObjectBase>(SetSecondsImpl, 2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCSeconds", global.FunctionClass.New<JsObjectBase>(SetUTCSecondsImpl, 2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setMinutes", global.FunctionClass.New<JsObjectBase>(SetMinutesImpl, 3), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCMinutes", global.FunctionClass.New<JsObjectBase>(SetUTCMinutesImpl, 3), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setHours", global.FunctionClass.New<JsObjectBase>(SetHoursImpl, 4), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCHours", global.FunctionClass.New<JsObjectBase>(SetUTCHoursImpl, 4), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setDate", global.FunctionClass.New<JsObjectBase>(SetDateImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCDate", global.FunctionClass.New<JsObjectBase>(SetUTCDateImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setMonth", global.FunctionClass.New<JsObjectBase>(SetMonthImpl, 2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCMonth", global.FunctionClass.New<JsObjectBase>(SetUTCMonthImpl, 2), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setFullYear", global.FunctionClass.New<JsObjectBase>(SetFullYearImpl, 3), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("setUTCFullYear", global.FunctionClass.New<JsObjectBase>(SetUTCFullYearImpl, 3), PropertyAttributes.DontEnum);
 
-            Prototype.DefineOwnProperty("toUTCString", global.FunctionClass.New<JsDictionaryObject>(ToUTCStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toUTCString", global.FunctionClass.New<JsObjectBase>(ToUTCStringImpl), PropertyAttributes.DontEnum);
             #endregion
         }
         public JsDateConstructor(IGlobal global)
@@ -99,14 +99,14 @@ namespace Jint.Native {
             return new JsDate(value, prototype);
         }
 
-        public JsDate Construct(JsInstance[] parameters) {
+        public JsDate Construct(IJsInstance[] parameters) {
             JsDate result = null;
 
             if (parameters.Length == 1) {
-                if ((parameters[0].Class == JsInstance.CLASS_NUMBER || parameters[0].Class == JsInstance.CLASS_OBJECT) && double.IsNaN(parameters[0].ToNumber())) {
+                if ((parameters[0].Class == IJsInstance.CLASS_NUMBER || parameters[0].Class == IJsInstance.CLASS_OBJECT) && double.IsNaN(parameters[0].ToNumber())) {
                     result = New(double.NaN);
                 }
-                else if (parameters[0].Class == JsInstance.CLASS_NUMBER)
+                else if (parameters[0].Class == IJsInstance.CLASS_NUMBER)
                 {
                     result = New(parameters[0].ToNumber());
                 }
@@ -168,12 +168,12 @@ namespace Jint.Native {
             return result;
         }
 
-        public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
+        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
             JsDate result = Construct(parameters);
 
             if (that == null || (that as IGlobal) == visitor.Global)
             {
-                return visitor.Return(ToStringImpl(result, JsInstance.EMPTY));
+                return visitor.Return(ToStringImpl(result, IJsInstance.EMPTY));
             }
 
             return result;
@@ -216,7 +216,7 @@ namespace Jint.Native {
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public JsInstance ParseImpl(JsInstance[] parameters) {
+        public IJsInstance ParseImpl(IJsInstance[] parameters) {
             double d;
             if (ParseDate(parameters[0].ToString(), CultureInfo.InvariantCulture, out d)) {
                 return Global.NumberClass.New(d);
@@ -231,7 +231,7 @@ namespace Jint.Native {
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public JsInstance ParseLocaleImpl(JsInstance[] parameters) {
+        public IJsInstance ParseLocaleImpl(IJsInstance[] parameters) {
             double d;
             if (ParseDate(parameters[0].ToString(), CultureInfo.CurrentCulture, out d)) {
                 return Global.NumberClass.New(d);
@@ -251,7 +251,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -265,7 +265,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToLocaleStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToLocaleStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -279,7 +279,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToDateStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToDateStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -293,7 +293,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToTimeStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToTimeStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -307,7 +307,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToLocaleDateStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToLocaleDateStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -321,7 +321,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToLocaleTimeStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToLocaleTimeStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -335,7 +335,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ValueOfImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ValueOfImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -349,7 +349,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetTimeImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetTimeImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -363,7 +363,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetFullYearImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetFullYearImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -377,7 +377,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCFullYearImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCFullYearImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -391,7 +391,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetMonthImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetMonthImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -405,7 +405,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCMonthImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCMonthImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -420,7 +420,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetDateImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetDateImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -434,7 +434,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCDateImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCDateImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -448,7 +448,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetDayImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetDayImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -462,7 +462,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCDayImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCDayImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -476,7 +476,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetHoursImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetHoursImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -490,7 +490,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCHoursImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCHoursImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -504,7 +504,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetMinutesImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetMinutesImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -518,7 +518,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCMinutesImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCMinutesImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -532,7 +532,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToUTCStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance ToUTCStringImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.StringClass.New(double.NaN.ToString());
             }
@@ -546,7 +546,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetSecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetSecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -560,7 +560,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCSecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCSecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -574,7 +574,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetMillisecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetMillisecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -588,7 +588,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetUTCMillisecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetUTCMillisecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (double.IsNaN(target.ToNumber())) {
                 return Global.NaN;
             }
@@ -602,7 +602,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance GetTimezoneOffsetImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance GetTimezoneOffsetImpl(JsObjectBase target, IJsInstance[] parameters) {
             return Global.NumberClass.New(-TimeZone.CurrentTimeZone.GetUtcOffset(new DateTime()).TotalMinutes);
         }
 
@@ -612,7 +612,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetTimeImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetTimeImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no tiem specified");
 
@@ -626,7 +626,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetMillisecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetMillisecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no millisecond specified");
 
@@ -643,7 +643,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCMillisecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCMillisecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no millisecond specified");
 
@@ -660,7 +660,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetSecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetSecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no second specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
@@ -668,7 +668,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddSeconds(parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetMillisecondsImpl(target, innerParams);
             }
@@ -681,7 +681,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCSecondsImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCSecondsImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no second specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
@@ -689,7 +689,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddSeconds(parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetMillisecondsImpl(target, innerParams);
             }
@@ -702,7 +702,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetMinutesImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetMinutesImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no minute specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
@@ -710,7 +710,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddMinutes(parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetSecondsImpl(target, innerParams);
             }
@@ -723,7 +723,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCMinutesImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCMinutesImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no minute specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
@@ -731,7 +731,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddMinutes(parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetSecondsImpl(target, innerParams);
             }
@@ -744,7 +744,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetHoursImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetHoursImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no hour specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
@@ -752,7 +752,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddHours(parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetMinutesImpl(target, innerParams);
             }
@@ -765,7 +765,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCHoursImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCHoursImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no hour specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
@@ -773,7 +773,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddHours(parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetMinutesImpl(target, innerParams);
             }
@@ -786,7 +786,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetDateImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetDateImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no date specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
@@ -803,7 +803,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCDateImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCDateImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no date specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
@@ -819,7 +819,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetMonthImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetMonthImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no month specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
@@ -827,7 +827,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddMonths((int)parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetDateImpl(target, innerParams);
             }
@@ -840,7 +840,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCMonthImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCMonthImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no month specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
@@ -848,7 +848,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddMonths((int)parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetDateImpl(target, innerParams);
             }
@@ -861,7 +861,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetFullYearImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetFullYearImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no year specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
@@ -869,7 +869,7 @@ namespace Jint.Native {
             valueOf = valueOf.AddYears((int)parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetMonthImpl(target, innerParams);
             }
@@ -883,7 +883,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance SetUTCFullYearImpl(JsDictionaryObject target, JsInstance[] parameters) {
+        public IJsInstance SetUTCFullYearImpl(JsObjectBase target, IJsInstance[] parameters) {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no year specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
@@ -891,18 +891,18 @@ namespace Jint.Native {
             valueOf = valueOf.AddYears((int)parameters[0].ToNumber());
             target.Value = valueOf;
             if (parameters.Length > 1) {
-                JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
+                IJsInstance[] innerParams = new IJsInstance[parameters.Length - 1];
                 parameters.CopyTo(innerParams, 1);
                 target = (JsDate)SetMonthImpl(target, innerParams);
             }
             return target;
         }
 
-        public JsInstance UTCImpl(JsInstance[] parameters) {
+        public IJsInstance UTCImpl(IJsInstance[] parameters) {
             for (int i = 0; i < parameters.Length; i++) {
                 if (parameters[i] == JsUndefined.Instance  // undefined
-                    || (parameters[i].Class == JsInstance.CLASS_NUMBER && double.IsNaN(parameters[i].ToNumber())) // NaN
-                    || (parameters[i].Class == JsInstance.CLASS_NUMBER && double.IsInfinity(parameters[i].ToNumber())) // Infinity
+                    || (parameters[i].Class == IJsInstance.CLASS_NUMBER && double.IsNaN(parameters[i].ToNumber())) // NaN
+                    || (parameters[i].Class == IJsInstance.CLASS_NUMBER && double.IsInfinity(parameters[i].ToNumber())) // Infinity
                     //|| parameters[i].Class == JsInstance.CLASS_OBJECT // don't accept objects ???!
                     ) {
                     return Global.NaN;

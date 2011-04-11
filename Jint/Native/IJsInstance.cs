@@ -19,7 +19,7 @@ namespace Jint.Native {
     /// <summary>
     /// A base class for values in javascript.
     /// </summary>
-    public interface IJsInstance: IConvertible {
+    public interface IJsInstance {
 
         #region managed interop related section
 
@@ -73,6 +73,13 @@ namespace Jint.Native {
         /// returns base for this reference, or JsObject.NullInstance otherwise
         /// </summary>
         IJsObject BaseObject {
+            get;
+        }
+
+        /// <summary>
+        /// returns the name of a property from the base object
+        /// </summary>
+        string ReferencedProperty {
             get;
         }
 

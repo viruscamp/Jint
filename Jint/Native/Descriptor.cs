@@ -18,14 +18,14 @@ namespace Jint.Native {
 
         public string Name { get; set; }
 
-        public bool Enumerable { get; set; }
+        public virtual bool Enumerable { get; set; }
         
-        public bool Configurable { get; set; }
+        public virtual bool Configurable { get; set; }
         
         /// <summary>
         /// If true current descriptor is writable or it has Set method
         /// </summary>
-        public bool Writable { get; set; }
+        public abstract bool Writable { get; set; }
         
         public IJsObject Owner { get; set; }
 
@@ -78,7 +78,7 @@ namespace Jint.Native {
                 throw new JsException(global.TypeErrorClass.New("The target object has to be an instance of an object"));
             }
 
-            JsObject obj = (JsObject)jsInstance;
+            IJsObject obj = jsInstance.GetObject();
             if ((obj.HasProperty("value") || obj.HasProperty("writable")) && (obj.HasProperty("set") || obj.HasProperty("get"))) {
                 throw new JsException(global.TypeErrorClass.New("The property cannot be both writable and have get/set accessors or cannot have both a value and an accessor defined"));
             }
@@ -122,8 +122,29 @@ namespace Jint.Native {
             return desc;
         }
 
-        internal void Merge(Descriptor desc) {
-            throw new NotImplementedException();
+        /// <summary>
+        /// Updates current descriptor using properties from supplied descriptor.
+        /// </summary>
+        /// <param name="desc">A descriptor from which to get properties.</param>
+        /// <remarks>
+        /// Current implementation expects to get a <c>GenericDescriptor</c> and will
+        /// update <c>Enumerable</c> and <c>Configurable</c> properties.
+        /// </remarks>
+        /// <returns>True if update successful, false in case of incompatible
+        /// source descriptor <paramref name="desc"/>.</returns>
+        public virtual bool Merge(Descriptor desc) {
+            if (desc == null)
+                throw new ArgumentNullException("desc");
+
+            GenericDescriptor genDescriptor = desc as GenericDescriptor;
+            if (genDescriptor == null)
+                return false;
+
+            if (genDescriptor.HasAttribute(DescriptorAttributes.Enumerable))
+                Enumerable = genDescriptor.Enumerable;
+
+            if (genDescriptor.HasAttribute(DescriptorAttributes.Configurable))
+                Configurable = genDescriptor.Configurable;
         }
     }
 }

@@ -55,12 +55,14 @@
     <Compile Include="Marshal\ProxyHelper.cs" />
     <Compile Include="Marshal\RawJsMethodAttribute.cs" />
     <Compile Include="Native\ClrFunction.cs" />
+    <Compile Include="Native\GenericDescriptor.cs" />
     <Compile Include="Native\IJsObject.cs" />
     <Compile Include="Native\INativeIndexer.cs" />
     <Compile Include="Native\JsDescriptorReference.cs" />
     <Compile Include="Native\JsInstance.cs" />
     <Compile Include="Native\JsReference.cs" />
     <Compile Include="Native\JsReferenceException.cs" />
+    <Compile Include="Native\JsTypeException.cs" />
     <Compile Include="Native\JsUnresolvedReference.cs" />
     <Compile Include="Native\NativeArrayIndexer.cs" />
     <Compile Include="Native\NativeIndexer.cs" />
@@ -122,7 +124,7 @@
     <Compile Include="Native\JsStringConstructor.cs" />
     <Compile Include="Native\JsBooleanConstructor.cs" />
     <Compile Include="Native\JsArrayConstructor.cs" />
-    <Compile Include="Native\JsDictionaryObject.cs" />
+    <Compile Include="Native\JsObjectBase.cs" />
     <Compile Include="Native\JsNull.cs" />
     <Compile Include="Native\JsObjectConstructor.cs" />
     <Compile Include="Expressions\RegexpExpression.cs" />

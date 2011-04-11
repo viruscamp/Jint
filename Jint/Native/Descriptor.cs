@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Jint.Native {
     internal enum DescriptorType {
-        Value,
-        Accessor,
-        Clr
+        Value, // a descriptor references a value, 'that' parameter is ignored
+        Accessor, // will use 'that' parameter in Get/Set methods
+        Generic // a descriptor isn't able to store a value
     }
 
     [Serializable]
@@ -19,9 +19,15 @@ namespace Jint.Native {
         public string Name { get; set; }
 
         public bool Enumerable { get; set; }
+        
         public bool Configurable { get; set; }
+        
+        /// <summary>
+        /// If true current descriptor is writable or it has Set method
+        /// </summary>
         public bool Writable { get; set; }
-        public JsObjectBase Owner { get; set; }
+        
+        public IJsObject Owner { get; set; }
 
         public virtual bool isDeleted { get; protected set; }
 
@@ -49,7 +55,7 @@ namespace Jint.Native {
         /// <param name="that">A target object. This has a meaning in case of descriptors which helds an accessors,
         /// in value descriptors this parameter is ignored.</param>
         /// <returns>A value stored in the descriptor</returns>
-        public abstract IJsInstance Get(JsObjectBase that);
+        public abstract IJsObject Get(IJsObject that);
 
         /// <summary>
         /// Sets a value.
@@ -57,9 +63,9 @@ namespace Jint.Native {
         /// <param name="that">A target object. This has a meaning in case of descriptors which helds an accessors,
         /// in value descriptors this parameter is ignored.</param>
         /// <param name="value">A new value which should be stored in the descriptor.</param>
-        public abstract void Set(JsObjectBase that, IJsInstance value);
+        public abstract void Set(IJsObject that, IJsObject value);
 
-        internal abstract DescriptorType DescriptorType { get; }
+        public abstract DescriptorType DescriptorType { get; }
 
         /// <summary>
         /// 8.10.5
@@ -114,6 +120,10 @@ namespace Jint.Native {
             }
 
             return desc;
+        }
+
+        internal void Merge(Descriptor desc) {
+            throw new NotImplementedException();
         }
     }
 }

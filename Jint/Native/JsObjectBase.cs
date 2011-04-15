@@ -11,10 +11,20 @@ namespace Jint.Native {
     /// Base class for a JsObject class.
     /// </summary>
     /// <remarks>
-    /// Implements generic property storing mechanism
+    /// <para>
+    /// Implements generic property storing mechanism.
+    /// </para>
+    /// <para>
+    /// Not that this object also behaves like a dictionary collection, but this collection
+    /// behaves like JS object rather than a regular dictionary. For example method <c>Clear()</c>
+    /// deletes only own properties, therefore a collection will remain not empty.
+    /// </para>
+    /// <para>
+    /// Enumeration is avalibale only through
+    /// </para>
     /// </remarks>
     [Serializable]
-    public abstract class JsObjectBase: IDictionary<string,JsObjectBase>, IJsObject {
+    public abstract class JsObjectBase: IJsObject {
 
         bool m_extensible;
         bool m_hasChidren;
@@ -40,14 +50,30 @@ namespace Jint.Native {
             prototype.ChildNotify();
         }
 
-        void internalDefineOwnProperty(Descriptor current, Descriptor desc) {
+        /// <summary>
+        /// Adds a specified descriptor to properties of the current object.
+        /// </summary>
+        /// <remarks>
+        /// If there were a descriptor (own or cached) in the object it will be replaced
+        /// by the new one. If this object is used as a prototype for the other object and
+        /// a previous descriptor was cached from the prototype of the current object it
+        /// (the previous descriptor) will be repopulated. If the previous descriptor was
+        /// an own descriptor of the current obbject it will be marked as deleted.
+        /// </remarks>
+        /// <param name="current">A previous descriptor.</param>
+        /// <param name="desc">A new descriptor.</param>
+        protected void internalDefineOwnProperty(Descriptor current, Descriptor desc) {
             Debug.Assert(desc.DescriptorType != DescriptorType.Generic);
 
-            if (current != null && m_hasChidren)
-                current.Owner.RepopulateProperty(current.Name);
+            if (current != null) {
+                if (current.Owner == this) {
+                    current.Delete(); // if we are redefining an own property
+                }  else if (m_hasChidren)
+                    current.Owner.RepopulateProperty(current.Name); // repopulate cached descriptor
+            }
 
             if (desc.DescriptorType == DescriptorType.Generic)
-                desc = ((GenericDescriptor)desc).ToValueDescriptor();
+                desc = ((IGenericDescriptor)desc).ToRealDescriptor();
 
             m_properties.Put(desc.Name, desc);
         }
@@ -195,6 +221,15 @@ namespace Jint.Native {
             d.Delete(); // mark as absolete
         }
 
+        public void RepopulateProperty(string name) {
+            Descriptor d;
+            m_properties.TryGet(name, out d);
+            if (d.Owner == this && !d.isDeleted) {
+                m_properties.Put(name, d.Clone());
+                d.Delete();
+            }
+        }
+
         public abstract IJsObject DefaultValue();
 
         public abstract IJsObject DefaultValue(DefaultValueHints hint);
@@ -236,12 +271,7 @@ namespace Jint.Native {
                     // object isn't extensible
                     return Reject(String.Format("Can't define a new own property {0}, object isn't extensible", desc.Name), throwError);
                 } else {
-                    internalDefineOwnProperty(
-                        current,
-                        desc.DescriptorType == DescriptorType.Generic ?
-                            ((IGenericDescriptor)desc).ToRealDescriptor() :
-                            desc
-                    );
+                    internalDefineOwnProperty(current,desc);
                 }
             } else {
                 if (desc.DescriptorType != DescriptorType.Generic) {
@@ -260,19 +290,19 @@ namespace Jint.Native {
         }
 
         public void ChildNotify() {
-            throw new NotImplementedException();
+            m_hasChidren = true;
         }
 
         public IJsObject IndexerGet(IJsObject key) {
-            throw new NotImplementedException();
+            return Get(key.ToString());
         }
 
         public void IndexerPut(IJsObject key, IJsObject value) {
-            throw new NotImplementedException();
+            Put(key.ToString(),value,false);
         }
 
         public IEnumerable<IJsObject> CustomEnumerator {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         #endregion
@@ -280,44 +310,39 @@ namespace Jint.Native {
         #region IJsInstance Members
 
 
-        public object Value {
-            get {
-                throw new NotImplementedException();
-            }
-            set {
-                throw new NotImplementedException();
-            }
+        public abstract object Value {
+            get;
+            set;
         }
 
-        public IJsObject ToPrimitive(IGlobal global) {
-            throw new NotImplementedException();
+        public abstract IJsObject ToPrimitive(IGlobal global);
+
+        public abstract string Class {
+            get;
         }
 
-        public string Class {
-            get { throw new NotImplementedException(); }
-        }
-
-        public JsObjectType Type {
-            get { throw new NotImplementedException(); }
+        public abstract JsObjectType Type {
+            get;
         }
 
         public bool IsReference {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         public IJsObject BaseObject {
-            get { throw new NotImplementedException(); }
+            get { return JsNull.Instance; }
         }
 
         public string ReferencedProperty {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         public IJsObject GetObject() {
-            throw new NotImplementedException();
+            return this;
         }
 
         public void SetObject(IJsObject value) {
+            // TODO: use appropriate exception
             throw new NotImplementedException();
         }
 
@@ -325,36 +350,104 @@ namespace Jint.Native {
 
         #region IDictionary<string,IJsObject> Members
 
+        Dictionary<string, IJsObject> internalGetPairs() {
+            Dictionary<string, IJsObject> pairs = new Dictionary<string, IJsObject>();
+
+            foreach (var item in m_prototype)
+                pairs[item.Key] = item.Value;
+
+            foreach (var item in m_properties.Values)
+                if (item.Enumerable)
+                    pairs[item.Name] = item.Get(this);
+
+            return pairs;
+        }
+
+        /// <summary>
+        /// Adds a new item to the dectionary, synonim for <c>Put</c> method.
+        /// </summary>
+        /// <param name="key">A property name.</param>
+        /// <param name="value">A value</param>
         public void Add(string key, IJsObject value) {
-            throw new NotImplementedException();
+            Put(key,value,true);
         }
 
+        /// <summary>
+        /// Same as <c>HasProperty</c>.
+        /// </summary>
+        /// <param name="key">A property name.</param>
+        /// <returns>True if object has a specified property.</returns>
         public bool ContainsKey(string key) {
-            throw new NotImplementedException();
+            return HasProperty(key);
         }
 
+        /// <summary>
+        /// Returns a collection of keys (property names), only enumerble properties are included.
+        /// </summary>
         public ICollection<string> Keys {
-            get { throw new NotImplementedException(); }
+            get {
+                var pairs = internalGetPairs();
+                return pairs.Keys;
+            }
         }
 
+        /// <summary>
+        /// Removes a property from the object.
+        /// </summary>
+        /// <remarks>
+        /// Removes only own properties.
+        /// </remarks>
+        /// <param name="key">A property name.</param>
+        /// <returns>True if property was removed.</returns>
         public bool Remove(string key) {
-            throw new NotImplementedException();
+            if (GetOwnProperty(key) == null)
+                return false;
+            return Delete(key,false);
         }
 
+        /// <summary>
+        /// Gets a value of a specified property.
+        /// </summary>
+        /// <param name="key">A property name.</param>
+        /// <param name="value">A value</param>
+        /// <returns>
+        /// True if property exists, false otherwise.
+        /// In contrast to <c>Get</c> method, in case of fail <paramref name="value"/>
+        /// parameter will be <c>null</c>, rather than <c>JsUndefined.Instance</c>
+        /// </returns>
         public bool TryGetValue(string key, out IJsObject value) {
-            throw new NotImplementedException();
+            value = null;
+            Descriptor d = GetProperty(key);
+            if (d == null || d.DescriptorType == DescriptorType.None)
+                return false;
+            else {
+                value = d.Get(this);
+                return true;
+            }
         }
 
+        /// <summary>
+        /// Returns a collection of values of properties. Only enumerable properties are returned.
+        /// </summary>
         public ICollection<IJsObject> Values {
-            get { throw new NotImplementedException(); }
+            get {
+                var pairs = internalGetPairs();
+                return pairs.Values;
+            }
         }
 
+        /// <summary>
+        /// Indexer, uses <c>Get</c> and <c>Put</c> methods to store and
+        /// retrieve values.
+        /// </summary>
+        /// <param name="key">A property name</param>
+        /// <returns>A property value or <c>JsUndefined.Instance</c></returns>
         public IJsObject this[string key] {
             get {
-                throw new NotImplementedException();
+                return Get(key);
             }
             set {
-                throw new NotImplementedException();
+                Put(key,value,true);
             }
         }
 
@@ -362,32 +455,60 @@ namespace Jint.Native {
 
         #region ICollection<KeyValuePair<string,IJsObject>> Members
 
+        /// <summary>
+        /// Adds a property with name and value from a specified pair.
+        /// </summary>
+        /// <param name="item">A pair or key and value</param>
         public void Add(KeyValuePair<string, IJsObject> item) {
-            throw new NotImplementedException();
+            Put(item.Key,item.Value,true);
         }
 
+        /// <summary>
+        /// This method isn't implemented since we can't delete inherited properties,
+        /// and therefore can't completely clear the object.
+        /// </summary>
         public void Clear() {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Test wheather the object has a specified property with a specified value.
+        /// </summary>
+        /// <param name="item">A pair of the property name and the value.</param>
+        /// <returns>True if a desired property exists and its value equals the specified value.</returns>
         public bool Contains(KeyValuePair<string, IJsObject> item) {
-            throw new NotImplementedException();
+            if (item == null)
+                throw new ArgumentNullException("item");
+            return Get(item.Key).Equals(item.Value);
         }
 
+        /// <summary>
+        /// Copies a collection of pairs to the specified array.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="arrayIndex"></param>
         public void CopyTo(KeyValuePair<string, IJsObject>[] array, int arrayIndex) {
-            throw new NotImplementedException();
+            if (array == null)
+                throw new ArgumentNullException("array");
+
+            ICollection<KeyValuePair<string, IJsObject>> pairs = internalGetPairs();
+            pairs.CopyTo(array,arrayIndex);
         }
 
         public int Count {
-            get { throw new NotImplementedException(); }
+            get { internalGetPairs().Count; }
         }
 
         public bool IsReadOnly {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         public bool Remove(KeyValuePair<string, IJsObject> item) {
-            throw new NotImplementedException();
+            if (item == null)
+                throw new ArgumentNullException("item");
+
+            if (Get(item.Key).Equals(item.Value))
+                return Delete(item.Key,false);
         }
 
         #endregion
@@ -395,7 +516,16 @@ namespace Jint.Native {
         #region IEnumerable<KeyValuePair<string,IJsObject>> Members
 
         public IEnumerator<KeyValuePair<string, IJsObject>> GetEnumerator() {
-            throw new NotImplementedException();
+            Dictionary<string,bool> visited = new Dictionary<string,bool>();
+
+            foreach(var pair in m_prototype) {
+                visited[pair.Key] = true;
+                yield return pair;
+            }
+
+            foreach (var d in m_properties.Values)
+                if (d.Owner == this && d.Enumerable && !visited.ContainsKey(d.Name))
+                    yield return new KeyValuePair<string, IJsObject>(d.Name, d.Get(this));
         }
 
         #endregion
@@ -403,80 +533,46 @@ namespace Jint.Native {
         #region IEnumerable Members
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         #endregion
 
         #region IConvertible Members
 
-        public TypeCode GetTypeCode() {
-            throw new NotImplementedException();
-        }
+        public abstract TypeCode GetTypeCode();
 
-        public bool ToBoolean(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract bool ToBoolean(IFormatProvider provider);
 
-        public byte ToByte(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract byte ToByte(IFormatProvider provider);
 
-        public char ToChar(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract char ToChar(IFormatProvider provider);
 
-        public DateTime ToDateTime(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract DateTime ToDateTime(IFormatProvider provider);
 
-        public decimal ToDecimal(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract decimal ToDecimal(IFormatProvider provider);
 
-        public double ToDouble(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract double ToDouble(IFormatProvider provider);
 
-        public short ToInt16(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract short ToInt16(IFormatProvider provider);
 
-        public int ToInt32(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract int ToInt32(IFormatProvider provider);
 
-        public long ToInt64(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract long ToInt64(IFormatProvider provider);
 
-        public sbyte ToSByte(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract sbyte ToSByte(IFormatProvider provider);
 
-        public float ToSingle(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract float ToSingle(IFormatProvider provider);
 
-        public string ToString(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract string ToString(IFormatProvider provider);
 
-        public object ToType(Type conversionType, IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract object ToType(Type conversionType, IFormatProvider provider);
 
-        public ushort ToUInt16(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract ushort ToUInt16(IFormatProvider provider);
 
-        public uint ToUInt32(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract uint ToUInt32(IFormatProvider provider);
 
-        public ulong ToUInt64(IFormatProvider provider) {
-            throw new NotImplementedException();
-        }
+        public abstract ulong ToUInt64(IFormatProvider provider);
 
         #endregion
     }

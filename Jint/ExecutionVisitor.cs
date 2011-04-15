@@ -1025,6 +1025,7 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.In:
+                    // TODO: why we cant iterate over literals??!!!!
                     if (right is ILiteral) {
                         throw new JsException(Global.ErrorClass.New("Cannot apply 'in' operator to the specified member."));
                     }

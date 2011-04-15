@@ -44,8 +44,35 @@ namespace Jint.Native {
             global.Visitor.ExecuteFunction(SetFunction, that, new IJsInstance[] { value });
         }
 
-        internal override DescriptorType DescriptorType {
+        public override DescriptorType DescriptorType {
             get { return DescriptorType.Accessor; }
+        }
+
+        public override bool Merge(Descriptor desc) {
+            GenericDescriptor gen = desc as GenericDescriptor;
+            if (gen == null)
+                return false;
+
+            if (gen.IsDataDescriptor())
+                return false;
+
+            if (
+                gen.HasAnyAttribute(
+                    DescriptorAttributes.Configurable |
+                    DescriptorAttributes.Enumerable |
+                    DescriptorAttributes.Getter |
+                    DescriptorAttributes.Setter
+                ) && !Configurable
+            )
+                return false;
+
+            base.Merge(desc);
+
+            if (gen.HasAttribute(DescriptorAttributes.Getter))
+                GetFunction = gen.Getter;
+
+            if (gen.HasAttribute(DescriptorAttributes.Setter))
+                SetFunction = gen.Setter;
         }
     }
 

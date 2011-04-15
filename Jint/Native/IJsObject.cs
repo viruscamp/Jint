@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Jint.Native {
-    enum DefaultValueHints{
+    public enum DefaultValueHints{
         String,
         Number
     }

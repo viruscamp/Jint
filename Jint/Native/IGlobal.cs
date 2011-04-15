@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Jint.Native {
     public interface IGlobal {
         bool HasOption(Options options);

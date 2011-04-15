@@ -56,32 +56,37 @@ namespace Jint.Native {
             if (desc == null)
                 throw new ArgumentNullException("desc");
 
-            bool canConfigure = Configurable;
-            bool canWrite = Writable;
+            GenericDescriptor gen = desc as GenericDescriptor;
+
+            if (gen == null)
+                return false;
+
+            if (gen.IsAccessorDescriptor())
+                return false;
+
+            if (
+                !Configurable &&
+                gen.HasAnyAttribute(
+                    DescriptorAttributes.Configurable |
+                    DescriptorAttributes.Enumerable |
+                    DescriptorAttributes.Writable
+                )
+            )
+                return false;
+
+            if (! (Writable || Configurable) && gen.HasAttribute(Value))
+                return false;
 
             if (!base.Merge(desc))
                 return false;
 
-            canWrite = canWtite || Writable;
+            if (gen.HasAttribute(DescriptorAttributes.Writable))
+                Writable = gen.Writable;
 
-            GenericDescriptor gen = desc as GenericDescriptor;
-            
-            if (gen == null)
-                return false;
+            if (gen.HasAttribute(DescriptorAttributes.Value))
+                Value = gen.Value;
 
-            if (gen.HasAttribute(DescriptorAttributes.Writable)) {
-                if (canConfigure)
-                    Writable = gen.Writable;
-                else
-                    return false;
-            }
-
-            if (gen.HasAttribute(DescriptorAttributes.Value) && gen.Value != Value) {
-                if (canConfigure || Writable)
-                    Value = gen.Value;
-                else
-                    return false;
-            }
+            return true;
         }
     }
 }

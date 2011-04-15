@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Jint.Native {
-    internal enum DescriptorType {
+    public enum DescriptorType {
         Value, // a descriptor references a value, 'that' parameter is ignored
         Accessor, // will use 'that' parameter in Get/Set methods
-        Generic // a descriptor isn't able to store a value
+        Generic, // a descriptor isn't able to store a value
+        None // a descriptor for absent property
     }
 
     [Serializable]
@@ -138,6 +139,9 @@ namespace Jint.Native {
 
             GenericDescriptor genDescriptor = desc as GenericDescriptor;
             if (genDescriptor == null)
+                return false;
+
+            if (!Configurable && genDescriptor.HasAnyAttribute(DescriptorAttributes.Configurable | DescriptorAttributes.Enumerable))
                 return false;
 
             if (genDescriptor.HasAttribute(DescriptorAttributes.Enumerable))

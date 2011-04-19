@@ -19,7 +19,7 @@ namespace Jint.Native {
         }
 
         public bool Extensible {
-            get { return false ; }
+            get { return false; }
         }
 
         public bool IsClr {
@@ -95,7 +95,7 @@ namespace Jint.Native {
         }
 
         public IJsObject ToPrimitive(IGlobal global) {
-            JsUndefined.Instance;
+            return Instance;
         }
 
         public string Class {
@@ -173,7 +173,7 @@ namespace Jint.Native {
         }
 
         public bool Contains(KeyValuePair<string, IJsObject> item) {
-            return false ;
+            return false;
         }
 
         public void CopyTo(KeyValuePair<string, IJsObject>[] array, int arrayIndex) {
@@ -197,7 +197,7 @@ namespace Jint.Native {
         #region IEnumerable<KeyValuePair<string,IJsObject>> Members
 
         public IEnumerator<KeyValuePair<string, IJsObject>> GetEnumerator() {
-            return new KeyValuePair<string,IJsObject>[0];
+            return new KeyValuePair<string, IJsObject>[0];
         }
 
         #endregion
@@ -210,80 +210,44 @@ namespace Jint.Native {
 
         #endregion
 
-        #region IConvertible Members
 
-        public TypeCode GetTypeCode() {
-            return TypeCode.Object;
+        #region IJsObject Members
+
+
+        public IJsObject DefaultValue(IGlobal global) {
+            throw new JsTypeException("Can't get default value for null instance");
         }
 
-        public bool ToBoolean(IFormatProvider provider) {
+        public IJsObject DefaultValue(IGlobal global, DefaultValueHints hint) {
+            throw new JsTypeException("Can't get default value for null instance");
+        }
+
+        public bool ToBoolean() {
             return false;
         }
 
-        public byte ToByte(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public double ToNumber() {
+            return 0;
         }
 
-        public char ToChar(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public int ToInteger() {
+            return 0;
         }
 
-        public DateTime ToDateTime(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public uint ToUInt32() {
+            return 0;
         }
 
-        public decimal ToDecimal(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public ushort ToUInt16() {
+            return 0;
         }
 
-        public double ToDouble(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public IJsObject ToObject(IGlobal global) {
+            throw new JsTypeException("A null can't be converted to object");
         }
 
-        public short ToInt16(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public int ToInt32(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public long ToInt64(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public sbyte ToSByte(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public float ToSingle(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public string ToString(IFormatProvider provider) {
-            return String.Empty;
-        }
-
-        public object ToType(Type conversionType, IFormatProvider provider) {
-            if (conversionType == null)
-                throw new ArgumentNullException("conversionType");
-
-            if (conversionType.IsValueType)
-                throw new InvalidCastException();
-            else
-                return null;
-        }
-
-        public ushort ToUInt16(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public uint ToUInt32(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public ulong ToUInt64(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public override string ToString() {
+            return "null";
         }
 
         #endregion

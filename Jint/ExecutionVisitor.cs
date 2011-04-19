@@ -1311,6 +1311,7 @@ namespace Jint {
                 IJsInstance[] original = new IJsInstance[parameters.Length];
                 parameters.CopyTo(original, 0);
 
+                // TODO: replace with function.Invoke(that,parameters)
                 ExecuteFunction(function, that, parameters, genericParameters);
 
                 for (int i = 0; i < original.Length; i++)

@@ -11,7 +11,16 @@ namespace Jint.Native {
     /// <summary>
     /// Describes js object specific methods and properties.
     /// </summary>
-    public interface IJsObject : IJsInstance, IDictionary<string, IJsObject>, IConvertible {
+    /// <remarks>
+    /// <para>
+    /// ecma 262 8.1-5 defines primitive types, which are not objects (ie they doesn't have any properties),
+    /// but in paragraph 8.7 references has some special case for primitive values which turns them to
+    /// equivalent objects to resolve properties, therefore we will consider primitive objects as a special
+    /// case of usual objects which are not able to store own properties and have a corresponding type
+    /// (number, string, etc).
+    /// </para>
+    /// </remarks>
+    public interface IJsObject : IJsInstance, IDictionary<string, IJsObject> {
         /// <summary>
         /// [[Prototype]] property, should be either a valid object or <c>JsNull.Instance</c>.
         /// </summary>
@@ -85,14 +94,14 @@ namespace Jint.Native {
         /// Gets a default value for the object.
         /// </summary>
         /// <returns>a primitive default value</returns>
-        IJsObject DefaultValue();
+        IJsObject DefaultValue(IGlobal global);
 
         /// <summary>
         /// Gets a default value for the object with a hint.
         /// </summary>
         /// <param name="hint">A hint.</param>
         /// <returns>a primitive default value.</returns>
-        IJsObject DefaultValue(DefaultValueHints hint);
+        IJsObject DefaultValue(IGlobal global,DefaultValueHints hint);
 
         /// <summary>
         /// Defines a new own property using supplied descriptor.
@@ -135,6 +144,22 @@ namespace Jint.Native {
             get;
         }
         
+        #endregion
+
+        #region conversion routines ecma 262.5 9
+
+        bool ToBoolean();
+
+        double ToNumber();
+
+        int ToInteger();
+
+        UInt32 ToUInt32();
+
+        UInt16 ToUInt16();
+
+        IJsObject ToObject(IGlobal global);
+
         #endregion
     }
 }

@@ -8,25 +8,39 @@ using Jint.Marshal;
 namespace Jint.Native
 {
     /// <summary>
+    /// A wrapper around native property getter.
+    /// </summary>
+    /// <param name="that">A target object</param>
+    /// <returns>A value of a property</returns>
+    public delegate IJsObject JsGetter(JsObjectBase that);
+
+    /// <summary>
+    /// A wrapper around native property setter
+    /// </summary>
+    /// <param name="that">A target object</param>
+    /// <param name="value">A new value for the property</param>
+    public delegate void JsSetter(JsObjectBase that, IJsObject value);
+
+    /// <summary>
     /// Descriptor which get and set methods are implemented through delegates
     /// </summary>
-    public class NativeDescriptor : Descriptor
+    public class NativeAccessorDescriptor : Descriptor
     {
-        public NativeDescriptor(JsObjectBase owner, string name, JsGetter getter)
+        public NativeAccessorDescriptor(JsObjectBase owner, string name, JsGetter getter)
             : base(owner, name)
         {
             this.getter = getter;
             Writable = false;
         }
 
-        public NativeDescriptor(JsObjectBase owner, string name, JsGetter getter, JsSetter setter)
+        public NativeAccessorDescriptor(IJsObject owner, string name, JsGetter getter, JsSetter setter)
             : base(owner, name)
         {
             this.getter = getter;
             this.setter = setter;
         }
 
-        public NativeDescriptor(JsObjectBase owner, NativeDescriptor src)
+        public NativeAccessorDescriptor(IJsObject owner, NativeAccessorDescriptor src)
             : base(owner, src.Name)
         {
             getter = src.getter;
@@ -44,15 +58,15 @@ namespace Jint.Native
         }
 
         public override Descriptor Clone() {
-            return new NativeDescriptor(Owner, this);
+            return new NativeAccessorDescriptor(Owner, this);
         }
 
-        public override IJsInstance Get(JsObjectBase that)
+        public override IJsObject Get(IJsObject that)
         {
             return getter != null ? getter(that) : JsUndefined.Instance ;
         }
 
-        public override void Set(JsObjectBase that, IJsInstance value)
+        public override void Set(IJsObject that, IJsObject value)
         {
             if (setter != null)
                 setter(that, value);
@@ -60,7 +74,7 @@ namespace Jint.Native
 
         internal override DescriptorType DescriptorType
         {
-            get { return DescriptorType.Clr; }
+            get { return DescriptorType.Accessor; }
         }
 
 

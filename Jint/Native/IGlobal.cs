@@ -4,29 +4,34 @@ namespace Jint.Native {
     public interface IGlobal {
         bool HasOption(Options options);
 
-        Jint.Native.JsArrayConstructor ArrayClass { get; }
-        Jint.Native.JsBooleanConstructor BooleanClass { get; }
-        Jint.Native.JsDateConstructor DateClass { get; }
-        Jint.Native.JsErrorConstructor ErrorClass { get; }
-        Jint.Native.JsErrorConstructor EvalErrorClass { get; }
-        Jint.Native.JsFunctionConstructor FunctionClass { get; }
-        Jint.Native.IJsInstance IsNaN(Jint.Native.IJsInstance[] arguments);
-        Jint.Native.JsMathConstructor MathClass { get; }
-        Jint.Native.JsNumberConstructor NumberClass { get; }
-        Jint.Native.JsObjectConstructor ObjectClass { get; }
-        Jint.Native.IJsInstance ParseFloat(Jint.Native.IJsInstance[] arguments);
-        Jint.Native.IJsInstance ParseInt(Jint.Native.IJsInstance[] arguments);
-        Jint.Native.JsErrorConstructor RangeErrorClass { get; }
-        Jint.Native.JsErrorConstructor ReferenceErrorClass { get; }
-        Jint.Native.JsRegExpConstructor RegExpClass { get; }
-        Jint.Native.JsStringConstructor StringClass { get; }
-        Jint.Native.JsErrorConstructor SyntaxErrorClass { get; }
-        Jint.Native.JsErrorConstructor TypeErrorClass { get; }
-        Jint.Native.JsErrorConstructor URIErrorClass { get; }
-        Jint.Native.JsObject WrapClr(object value);
+        JsArrayConstructor ArrayClass { get; }
+        JsBooleanConstructor BooleanClass { get; }
+        JsDateConstructor DateClass { get; }
+        JsErrorConstructor ErrorClass { get; }
+        JsErrorConstructor EvalErrorClass { get; }
+        JsFunctionConstructor FunctionClass { get; }
+        IJsInstance IsNaN(Jint.Native.IJsInstance[] arguments);
+        JsMathConstructor MathClass { get; }
+        JsNumberConstructor NumberClass { get; }
+        JsObjectConstructor ObjectClass { get; }
+        IJsInstance ParseFloat(Jint.Native.IJsInstance[] arguments);
+        IJsInstance ParseInt(Jint.Native.IJsInstance[] arguments);
+        JsErrorConstructor RangeErrorClass { get; }
+        JsErrorConstructor ReferenceErrorClass { get; }
+        JsRegExpConstructor RegExpClass { get; }
+        JsStringConstructor StringClass { get; }
+        JsErrorConstructor SyntaxErrorClass { get; }
+        JsErrorConstructor TypeErrorClass { get; }
+        JsErrorConstructor URIErrorClass { get; }
+        JsObject WrapClr(object value);
+
+        IJsObject NewPrimitive(string value);
+        IJsObject NewPrimitive(double value);
+        IJsObject NewPrimitive(bool value);
 
         IJsInstance NaN { get; }
 
+        // TODO: think about mutation
         Jint.Expressions.IJintVisitor Visitor { get; }
         Jint.Marshaller Marshaller { get; }
     }

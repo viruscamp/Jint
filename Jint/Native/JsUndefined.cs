@@ -6,7 +6,7 @@ using Jint.Delegates;
 namespace Jint.Native {
     [Serializable]
     public class JsUndefined : IJsObject {
-        public JsUndefined Instance = new JsUndefined();
+        public static JsUndefined Instance = new JsUndefined();
 
         private JsUndefined() {
         }
@@ -203,80 +203,44 @@ namespace Jint.Native {
 
         #endregion
 
-        #region IConvertible Members
 
-        public TypeCode GetTypeCode() {
-            return TypeCode.Object;
+        #region IJsObject Members
+
+
+        public IJsObject DefaultValue(IGlobal global) {
+            throw new JsTypeException("Can't get a DefaultValue for undefined instance");
         }
 
-        public bool ToBoolean(IFormatProvider provider) {
+        public IJsObject DefaultValue(IGlobal global, DefaultValueHints hint) {
+            throw new JsTypeException("Can't get a DefaultValue for undefined instance");
+        }
+
+        public bool ToBoolean() {
             return false;
         }
 
-        public byte ToByte(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public double ToNumber() {
+            Double.NaN;
         }
 
-        public char ToChar(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public int ToInteger() {
+            return 0;
         }
 
-        public DateTime ToDateTime(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public uint ToUInt32() {
+            return 0;
         }
 
-        public decimal ToDecimal(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public ushort ToUInt16() {
+            return 0;
         }
 
-        public double ToDouble(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public IJsObject ToObject(IGlobal global) {
+            throw new JsTypeException("Can't convert the undefined instance to an object");
         }
 
-        public short ToInt16(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public int ToInt32(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public long ToInt64(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public sbyte ToSByte(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public float ToSingle(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public string ToString(IFormatProvider provider) {
-            return String.Empty;
-        }
-
-        public object ToType(Type conversionType, IFormatProvider provider) {
-            if (conversionType == null)
-                throw new ArgumentNullException("conversionType");
-
-            if (conversionType.IsValueType)
-                throw new InvalidCastException();
-            else
-                return null;
-        }
-
-        public ushort ToUInt16(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public uint ToUInt32(IFormatProvider provider) {
-            throw new InvalidCastException();
-        }
-
-        public ulong ToUInt64(IFormatProvider provider) {
-            throw new InvalidCastException();
+        public override string ToString() {
+            return "undefined";
         }
 
         #endregion

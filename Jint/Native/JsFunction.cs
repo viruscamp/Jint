@@ -5,124 +5,123 @@ using Jint.Expressions;
 
 namespace Jint.Native {
     [Serializable]
-    public class JsFunction : JsObject {
-        public static string CALL = "call";
-        public static string APPLY = "apply";
-        public static string CONSTRUCTOR = "constructor";
-        public static string PROTOTYPE = "prototype";
+    public class JsFunction : JsObjectBase, IFunction {
 
-        public string Name { get; set; }
-        public Statement Statement { get; set; }
-        public List<string> Arguments { get; set; }
-        public JsScope Scope { get; set; }
+        string m_name;
+        List<string> m_arguments = new List<string>();
 
-        public JsFunction(IGlobal global, Statement statement)
-            : this(global.FunctionClass.PrototypeProperty) {
-            Statement = statement;
-        }
+        IGlobal m_global;
+        JsScope m_scope;
+        Statement m_body;
+        Options m_options;
 
         /// <summary>
-        /// 
+        /// A special version of method <c>Invoke</c> used when an isnatnce of
+        /// the interpreter is known.
         /// </summary>
-        /// <param name="global"></param>
-        public JsFunction(IGlobal global)
-            : this(global.FunctionClass.PrototypeProperty) {
+        /// <param name="that">'this' parameter</param>
+        /// <param name="parameters">A list of arguments passsed to the function</param>
+        /// <param name="visitor">An instance of the interpreter</param>
+        /// <returns>A returned value</returns>
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters, IStatementVisitor visitor) {
+
         }
 
-        /// <summary>
-        /// Init new function object with a specified prototype
-        /// </summary>
-        /// <param name="prototype">prototype for this object</param>
-        public JsFunction(JsObject prototype)
-            : base(prototype) {
-            Arguments = new List<string>();
-            Statement = new EmptyStatement();
-            DefineOwnProperty(PROTOTYPE, JsNull.Instance, PropertyAttributes.DontEnum);
+        IStatementVisitor GetVisitor() {
+            return new ExecutionVisitor(m_options);
         }
 
-        public override int Length
-        {
-            get
-            {
-                return Arguments.Count;
-            }
-            set
-            {
-                ;
-            }
-        }
+        #region IFunction Members
 
-        public JsObject PrototypeProperty {
+        public string Name {
             get {
-                return this[PROTOTYPE] as JsObject;
-            }
-            set {
-                this[PROTOTYPE] = value;
+                return m_name;
             }
         }
 
-        //15.3.5.3
-        public virtual bool HasInstance(JsObject inst) {
-            if (inst != null && inst != JsNull.Instance && inst != JsNull.Instance) {
-                return this.PrototypeProperty.IsPrototypeOf(inst);
-            }
-            return false;
-        }
-
-        //13.2.2
-        public virtual JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
-            var instance = visitor.Global.ObjectClass.New(PrototypeProperty);
-            visitor.ExecuteFunction(this, instance, parameters);
-
-            return (visitor.Result as JsObject ?? instance);
-        }
-
-        public override bool IsClr
-        {
-            get
-            {
-                return false;
+        public IList<string> Arguments {
+            get {
+                return m_arguments.AsReadOnly();
             }
         }
 
-        public override object Value {
-            get { return null; }
-            set { }
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
+            if ((m_options & Options.Ecmascript3) && that == null || that == JsNull.Instance || that == JsUndefined.Instance)
+                that = m_global;
+            else if (that == null)
+                that = JsNull.Instance;
+
+            JsArguments args = new JsArguments(m_global, this, parameters);
+
+            JsScope functionScope = new JsScope(m_scope);
+
+            for (int i = 0; i < function.Arguments.Count; i++)
+                if (i < parameters.Length)
+                    functionScope.DefineOwnProperty(
+                        new LinkedDescriptor(
+                            functionScope,
+                            function.Arguments[i],
+                            args.GetDescriptor(i.ToString()),
+                            args
+                        )
+                    );
+                else
+                    functionScope.DefineOwnProperty(
+                        new ValueDescriptor(
+                            functionScope,
+                            function.Arguments[i],
+                            JsUndefined.Instance
+                        )
+                    );
+
+            // define arguments variable
+            if (HasOption(Options.Strict))
+                functionScope.DefineOwnProperty(JsScope.ARGUMENTS, args);
+            else
+                args.DefineOwnProperty(JsScope.ARGUMENTS, args);
+
+            // set this variable
+            if (that != null)
+                functionScope.DefineOwnProperty(JsScope.THIS, that);
+            else
+                functionScope.DefineOwnProperty(JsScope.THIS, that = Global as JsObject);
+
+            // enter activation object
+            EnterScope(functionScope);
+
+            try {
+                PermissionSet.PermitOnly();
+
+                if (genericParameters != null && genericParameters.Length > 0)
+                    Result = function.Execute(this, that, parameters, genericParameters);
+                else
+                    Result = function.Execute(this, that, parameters);
+
+                // Resets the return flag
+                if (exit) {
+                    exit = false;
+                }
+            } finally {
+                // return to previous execution state
+                ExitScope();
+
+                CodeAccessPermission.RevertPermitOnly();
+                recursionLevel--;
+            }
         }
 
-        public virtual IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
-            Statement.Accept((IStatementVisitor)visitor);
-            return that;
+        public IJsObject Construct(IJsInstance[] parameters) {
+            throw new NotImplementedException();
         }
 
-        public virtual IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters, Type[] genericArguments)
-        {
-            throw new JintException("This method can't be called as a generic");
+        #endregion
+
+        #region IEnumerable Members
+
+        public new System.Collections.IEnumerator GetEnumerator() {
+            throw new NotImplementedException();
         }
 
-        public override string Class {
-            get { return CLASS_FUNCTION; }
-        }
-
-        public override string ToSource() {
-            return String.Format("function {0} ( {1} ) {{ {2} }}", Name, String.Join(", ", Arguments.ToArray()), GetBody());
-        }
-
-        public virtual string GetBody() {
-            return "/* js code */";
-        }
-
-        public override string ToString()
-        {
-            return ToSource();
-        }
-
-        public override bool ToBoolean() {
-            return true;
-        }
-
-        public override double ToNumber() {
-            return 1;
-        }
+        #endregion
     }
 }

@@ -17,7 +17,7 @@ namespace Jint.Native
     {
         Type reflectedType;
 
-        LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
+        LinkedList<NativeAccessorDescriptor> m_properties = new LinkedList<NativeAccessorDescriptor>();
         INativeIndexer m_indexer;
 
         ConstructorInfo[] m_constructors;
@@ -292,7 +292,7 @@ namespace Jint.Native
             if (target == null || target == JsNull.Instance || target == JsUndefined.Instance )
                 throw new ArgumentException("A valid js object is required","target");
             foreach (var prop in m_properties)
-                target.DefineOwnProperty(new NativeDescriptor(target, prop) );
+                target.DefineOwnProperty(new NativeAccessorDescriptor(target, prop) );
         }
 
         public override IJsInstance Wrap<T>(T value)

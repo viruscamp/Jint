@@ -3,59 +3,67 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Jint.Native {
-    [Serializable]
-    public sealed class JsBoolean : JsObject, ILiteral {
-        private bool value;
+    /// <summary>
+    /// Boolean class
+    /// </summary>
+    public sealed class JsBoolean : JsObjectBase {
 
+        bool m_value;
+
+        public override bool IsClr {
+            get { return false; }
+        }
+
+        public override IJsObject DefaultValue(IGlobal global, DefaultValueHints hint) {
+            if (global == null)
+                throw new ArgumentNullException("global");
+
+            switch (hint) {
+                case DefaultValueHints.String:
+                    return global.NewPrimitive(ToString());
+                case DefaultValueHints.Number:
+                    return global.NewPrimitive(m_value);
+            }
+        }
 
         public override object Value {
-            get { return value; }
-        }
-
-        public JsBoolean(JsObject prototype)
-            : this(false, prototype) {
-            value = false;
-        }
-
-        public JsBoolean(bool boolean, JsObject prototype)
-            : base(prototype) {
-            value = boolean;
-        }
-
-        public override bool IsClr
-        {
-            get
-            {
-                return false;
+            get {
+                return m_value;
+            }
+            set {
+                m_value = (bool)value;
             }
         }
 
-        public override JsObjectType Type
-        {
-            get
-            {
-                return JsObjectType.Boolean;
-            }
+        public override IJsObject ToPrimitive(IGlobal global) {
+            if (global == null)
+                throw new ArgumentNullException("global");
+
+            return global.NewPrimitive(m_value);
         }
 
         public override string Class {
-            get { return CLASS_BOOLEAN; }
-        }
-
-        public override bool ToBoolean() {
-            return value;
-        }
-
-        public override string ToString() {
-            return value ? "true" : "false";
-        }
-
-        public static double BooleanToNumber(bool value) {
-            return value ? 1 : 0;
+            get { return JsInstance.CLASS_BOOLEAN; }
         }
 
         public override double ToNumber() {
-            return BooleanToNumber(value);
+            return m_value ? 1 : 0;
+        }
+
+        public override int ToInteger() {
+            return m_value ? 1 : 0;
+        }
+
+        public override uint ToUInt32() {
+            return m_value ? 1 : 0;
+        }
+
+        public override ushort ToUInt16() {
+            return m_value ? 1 : 0;
+        }
+
+        public override string ToString() {
+            return m_value ? "true" : "false";
         }
     }
 }

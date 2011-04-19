@@ -12,7 +12,12 @@ namespace Jint.Native {
 
     [Serializable]
     public abstract class Descriptor {
-        public Descriptor(JsObjectBase owner, string name) {
+        public Descriptor(IJsObject owner, string name) {
+            if (owner == null)
+                throw new ArgumentNullException("owner");
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("A property name must be a valid string","name");
+
             this.Owner = owner;
             Name = name;
         }

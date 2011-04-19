@@ -230,9 +230,11 @@ namespace Jint.Native {
             }
         }
 
-        public abstract IJsObject DefaultValue();
+        public IJsObject DefaultValue(IGlobal global) {
+            return DefaultValue(global, DefaultValueHints.Number);
+        }
 
-        public abstract IJsObject DefaultValue(DefaultValueHints hint);
+        public abstract IJsObject DefaultValue(IGlobal global, DefaultValueHints hint);
 
         // 8.12.9
         /// <summary>
@@ -321,8 +323,10 @@ namespace Jint.Native {
             get;
         }
 
-        public abstract JsObjectType Type {
-            get;
+        public JsObjectType Type {
+            get {
+                return JsObjectType.Object;
+            }
         }
 
         public bool IsReference {
@@ -330,11 +334,11 @@ namespace Jint.Native {
         }
 
         public IJsObject BaseObject {
-            get { return JsNull.Instance; }
+            get { return JsUndefined.Instance; }
         }
 
         public string ReferencedProperty {
-            get { return null; }
+            get { return String.Empty; }
         }
 
         public IJsObject GetObject() {
@@ -538,41 +542,21 @@ namespace Jint.Native {
 
         #endregion
 
-        #region IConvertible Members
+        #region conversions
 
-        public abstract TypeCode GetTypeCode();
+        public abstract bool ToBoolean();
 
-        public abstract bool ToBoolean(IFormatProvider provider);
+        public abstract double ToNumber();
 
-        public abstract byte ToByte(IFormatProvider provider);
+        public abstract int ToInteger();
 
-        public abstract char ToChar(IFormatProvider provider);
+        public abstract UInt32 ToUInt32();
 
-        public abstract DateTime ToDateTime(IFormatProvider provider);
+        public abstract UInt16 ToUInt16();
 
-        public abstract decimal ToDecimal(IFormatProvider provider);
-
-        public abstract double ToDouble(IFormatProvider provider);
-
-        public abstract short ToInt16(IFormatProvider provider);
-
-        public abstract int ToInt32(IFormatProvider provider);
-
-        public abstract long ToInt64(IFormatProvider provider);
-
-        public abstract sbyte ToSByte(IFormatProvider provider);
-
-        public abstract float ToSingle(IFormatProvider provider);
-
-        public abstract string ToString(IFormatProvider provider);
-
-        public abstract object ToType(Type conversionType, IFormatProvider provider);
-
-        public abstract ushort ToUInt16(IFormatProvider provider);
-
-        public abstract uint ToUInt32(IFormatProvider provider);
-
-        public abstract ulong ToUInt64(IFormatProvider provider);
+        public IJsObject ToObject(IGlobal global) {
+            return this;
+        }
 
         #endregion
     }

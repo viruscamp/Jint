@@ -6,88 +6,68 @@ using Jint.Delegates;
 
 namespace Jint.Native {
     [Serializable]
-    public sealed class JsString : JsObject, ILiteral {
-        private string value;
+    public sealed class JsString : JsObjectBase {
+
+        string m_value;
+
+        public override bool IsClr {
+            get { return false; }
+        }
+
+        public override IJsObject DefaultValue(IGlobal global, DefaultValueHints hint) {
+            if (global == null)
+                throw new ArgumentNullException("global");
+
+            switch (hint) {
+                case DefaultValueHints.String:
+                    return global.NewPrimitive(m_value);
+                case DefaultValueHints.Number:
+                    return global.NewPrimitive(ToNumber());
+            }
+        }
 
         public override object Value {
             get {
-                return value;
+                return m_value;
             }
-        }
-        public JsString(JsObject prototype)
-            : base(prototype) {
-            value = String.Empty;
-        }
-
-        public JsString(string str, JsObject prototype)
-            : base(prototype) {
-            value = str;
-        }
-
-        public static bool StringToBoolean(string value) {
-            if (value == null)
-                return false;
-            if (value == "true" || value.Length > 0) {
-                return true;
-            }
-
-            return false;
-        }
-
-        public override bool IsClr
-        {
-            get
-            {
-                return false;
+            set {
+                m_value = (string) value;
             }
         }
 
-        public override bool ToBoolean() {
-            return StringToBoolean(value);
-        }
+        public override IJsObject ToPrimitive(IGlobal global) {
+            if (global == null)
+                throw new ArgumentNullException("global");
 
-        public static double StringToNumber(string value) {
-            if (value == null) {
-                return double.NaN;
-            }
-
-            double result;
-
-            if (Double.TryParse(value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture, out result)) {
-                return result;
-            }
-            else {
-                return double.NaN;
-            }
-        }
-
-        public override double ToNumber() {
-            return StringToNumber(value);
-        }
-
-        public override string ToSource() {
-            /// TODO: subsitute escape sequences
-            return value == null ? "null" : "'" + ToString() + "'";
-        }
-
-        public override string ToString() {
-            return value.ToString();
+            return global.NewPrimitive(m_value);
         }
 
         public override string Class {
-            get { return CLASS_STRING; }
+            get { return JsInstance.CLASS_STRING; }
         }
 
-        public override JsObjectType Type
-        {
-            get
-            {
-                return JsObjectType.String;
-            }
+        public override bool ToBoolean() {
+            return ConversionTraits.ToBoolean(m_value);
         }
 
-        public override int GetHashCode() {
-            return value.GetHashCode();
+        public override double ToNumber() {
+            return ConversionTraits.ToNumber(m_value);
+        }
+
+        public override int ToInteger() {
+            return ConversionTraits.ToInteger(m_value);
+        }
+
+        public override uint ToUInt32() {
+            return ConversionTraits.ToUInt32(m_value);
+        }
+
+        public override ushort ToUInt16() {
+            return ConversionTraits.ToUInt16(m_value);
+        }
+
+        public override string ToString() {
+            return m_value;
         }
     }
 }

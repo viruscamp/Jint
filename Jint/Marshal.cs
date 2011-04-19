@@ -350,7 +350,7 @@ namespace Jint
         /// <param name="prop">Property to marshal</param>
         /// <param name="owner">Owner of the returned descriptor</param>
         /// <returns>A descriptor</returns>
-        public NativeDescriptor MarshalPropertyInfo(PropertyInfo prop, JsObjectBase owner)
+        public NativeAccessorDescriptor MarshalPropertyInfo(PropertyInfo prop, JsObjectBase owner)
         {
             JsGetter getter;
             JsSetter setter = null;
@@ -372,7 +372,7 @@ namespace Jint
                 setter = (JsSetter)WrapSetProperty(prop);
             }
 
-            return setter == null ? new NativeDescriptor(owner, prop.Name, getter) { Enumerable = true } : new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
+            return setter == null ? new NativeAccessorDescriptor(owner, prop.Name, getter) { Enumerable = true } : new NativeAccessorDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace Jint
         /// <param name="prop">Field info to marshal</param>
         /// <param name="owner">Owner for the descriptor</param>
         /// <returns>Descriptor</returns>
-        public NativeDescriptor MarshalFieldInfo(FieldInfo prop, JsObjectBase owner)
+        public NativeAccessorDescriptor MarshalFieldInfo(FieldInfo prop, JsObjectBase owner)
         {
             JsGetter getter;
             JsSetter setter;
@@ -405,7 +405,7 @@ namespace Jint
                 setter = (JsSetter)WrapSetField(prop);
             }
 
-            return new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
+            return new NativeAccessorDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
         }
 
         #endregion

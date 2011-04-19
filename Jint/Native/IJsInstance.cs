@@ -21,8 +21,6 @@ namespace Jint.Native {
     /// </summary>
     public interface IJsInstance {
 
-        #region managed interop related section
-
         /// <summary>
         /// Wheather current instance holds a CLR object
         /// </summary>
@@ -36,8 +34,6 @@ namespace Jint.Native {
         /// it will be a Double and so on.
         /// </remarks>
         object Value { get; set; }
-
-        #endregion
 
         /// <summary>
         /// Converts current instance to the one of the apropriate primitive objects.

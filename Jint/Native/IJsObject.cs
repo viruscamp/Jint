@@ -143,6 +143,18 @@ namespace Jint.Native {
         IEnumerable<IJsObject> CustomEnumerator {
             get;
         }
+
+        /// <summary>
+        /// Returns all properties of the object.
+        /// </summary>
+        /// <returns>Property enumerator</returns>
+        IEnumerable<Descriptor> GetProperties();
+
+        /// <summary>
+        /// Return only own properties of the obejct.
+        /// </summary>
+        /// <returns>Property enumerator</returns>
+        IEnumerable<Descriptor> GetOwnProperties();
         
         #endregion
 

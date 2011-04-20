@@ -75,25 +75,6 @@ namespace Jint.Native {
             return false;
         }
 
-        public IJsObject DefaultValue(IGlobal global) {
-            if (global == null)
-                throw new ArgumentNullException("global");
-
-            return DefaultValue(global,DefaultValueHints.Number);
-        }
-
-        public IJsObject DefaultValue(IGlobal global,DefaultValueHints hint) {
-            if (global == null)
-                throw new ArgumentNullException("global");
-
-            switch (hint) {
-                case DefaultValueHints.String:
-                    return global.NewPrimitive(ToString());
-                case DefaultValueHints.Number:
-                    return this;
-            };
-        }
-
         public bool DefineOwnProperty(Descriptor desc, bool throwError) {
             return Reject("A primitive value can't have an own properties", throwError);
         }
@@ -141,6 +122,10 @@ namespace Jint.Native {
         }
 
         public IJsObject ToPrimitive(IGlobal global) {
+            return this;
+        }
+
+        public IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
             return this;
         }
 

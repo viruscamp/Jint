@@ -30,6 +30,8 @@ namespace Jint.Native {
         bool m_hasChidren;
         IJsObject m_prototype;
         IPropertyBag m_properties = new MiniCachedPropertyBag();
+        JsDescriptorReference m_toStringMethod;
+        JsDescriptorReference m_valueOfMethod;
 
         /// <summary>
         /// Creates new Object without prototype
@@ -44,6 +46,9 @@ namespace Jint.Native {
         public JsObjectBase(IJsObject prototype) {
             if (prototype == null)
                 throw new ArgumentNullException("prototype");
+
+            m_toStringMethod = new JsDescriptorReference(this, "toString");
+            m_valueOfMethod = new JsDescriptorReference(this, "valueOf");
 
             m_prototype = prototype;
             m_extensible = true;
@@ -118,6 +123,7 @@ namespace Jint.Native {
             Descriptor d = GetProperty(name);
 
             // this is own writable property or writable accessor
+            // we don't check DescriptorType here since DescriptorType.None isn't writable
             if (d != null) {
                 if (d.Owner == this) {
                     
@@ -150,6 +156,7 @@ namespace Jint.Native {
             Descriptor d = GetProperty(name);
 
             // this is own writable property or writable accessor
+            // we don't check DescriptorType since DescriptorType.None isn't writable
             if (d != null) {
                 if (d.Owner == this)
                     return d.Writable;
@@ -179,6 +186,7 @@ namespace Jint.Native {
             // a descriptor not found or absolute
             d = m_prototype.GetProperty(name);
 
+            // cache descriptor
             if (d != null)
                 m_properties.Put(d.Name, d);
             return d;
@@ -201,7 +209,11 @@ namespace Jint.Native {
             if (name == null)
                 throw new ArgumentNullException("name");
 
-            return GetProperty(name) != null;
+            Descriptor d = GetProperty(name);
+            if (d == null || d.DescriptorType == DescriptorType.None)
+                return false;
+            else
+                return true;
         }
 
         // 8.12.7
@@ -229,12 +241,6 @@ namespace Jint.Native {
                 d.Delete();
             }
         }
-
-        public IJsObject DefaultValue(IGlobal global) {
-            return DefaultValue(global, DefaultValueHints.Number);
-        }
-
-        public abstract IJsObject DefaultValue(IGlobal global, DefaultValueHints hint);
 
         // 8.12.9
         /// <summary>
@@ -295,16 +301,38 @@ namespace Jint.Native {
             m_hasChidren = true;
         }
 
-        public IJsObject IndexerGet(IJsObject key) {
+        public virtual IJsObject IndexerGet(IJsObject key) {
             return Get(key.ToString());
         }
 
-        public void IndexerPut(IJsObject key, IJsObject value) {
+        public virtual void IndexerPut(IJsObject key, IJsObject value) {
             Put(key.ToString(),value,false);
         }
 
-        public IEnumerable<IJsObject> CustomEnumerator {
+        public virtual IEnumerable<IJsObject> CustomEnumerator {
             get { return null; }
+        }
+
+        public IEnumerable<Descriptor> GetProperties() {
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+
+            foreach (var d in GetOwnProperties()) {
+                visited[d.Name] = true;
+                yield return d;
+            }
+
+            foreach (var d in m_prototype.GetProperties()) {
+                if (!visited.ContainsKey(d.Name)) {
+                    visited[d.Name] = true;
+                    yield return d;
+                }
+            }
+        }
+
+        public IEnumerable<Descriptor> GetOwnProperties() {
+            foreach (var d in m_properties.Values)
+                if (d.Owner == this)
+                    yield return d;
         }
 
         #endregion
@@ -317,7 +345,42 @@ namespace Jint.Native {
             set;
         }
 
-        public abstract IJsObject ToPrimitive(IGlobal global);
+        public virtual IJsObject ToPrimitive(IGlobal global) {
+            return ToPrimitive(global, JsObjectType.Number);
+        }
+
+        /// <summary>
+        /// ecma 8.12.8
+        /// </summary>
+        /// <param name="global"></param>
+        /// <param name="hint"></param>
+        /// <returns></returns>
+        public virtual IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
+            IFunction fn;
+            if (hint == JsObjectType.Number)
+                fn = m_valueOfMethod.GetObject() as IFunction;
+
+            IJsObject prim;
+            if (fn != null)
+                prim = fn.Invoke(this, null);
+
+            // if result isn't a primitive or valueOf isn't a function
+            if (prim == null || prim.Type == JsObjectType.Object)
+                fn = m_toStringMethod.GetObject() as IFunction;
+
+            if (fn == null)
+                throw new JsTypeException("This object can't be converted to a primitive value");
+
+            prim = fn.Invoke(this, null);
+
+            // function should always return a value
+            Debug.Assert(prim != null);
+
+            if (prim.Type == JsObjectType.Object)
+                throw new JsTypeException("This object can't be converted to a primitive value");
+
+            return prim;
+        }
 
         public abstract string Class {
             get;

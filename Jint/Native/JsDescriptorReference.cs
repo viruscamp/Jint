@@ -11,7 +11,7 @@ namespace Jint.Native {
     /// <remarks>
     /// If the cached descriptor becomes outdated it will be resolved again.
     /// </remarks>
-    public class JsDescriptorReference: IJsInstance {
+    public class JsDescriptorReference: JsReference {
         IJsObject m_base;
         Descriptor m_descriptor;
         string m_propertyName;
@@ -42,57 +42,24 @@ namespace Jint.Native {
             m_propertyName = propertyName;
         }
 
-        #region IJsInstance Members
+        #region JsReference Members
 
-        public bool IsClr {
-            get { return GetObject().IsClr; }
-        }
-
-        public object Value {
-            get {
-                return GetObject().Value;
-            }
-            set {
-                GetObject().Value = value;
-            }
-        }
-
-        public IJsObject ToPrimitive(IGlobal global) {
-            return GetObject().ToPrimitive(global) ;
-        }
-
-        public IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
-            return GetObject().ToPrimitive(global,hint);
-        }
-
-        public string Class {
-            get { return GetObject().Class; }
-        }
-
-        public JsObjectType Type {
-            get { return GetObject().Type; }
-        }
-
-        public bool IsReference {
-            get { return true; }
-        }
-
-        public IJsObject BaseObject {
+        public override IJsObject BaseObject {
             get { return m_base; }
         }
 
-        public string ReferencedProperty {
+        public override string ReferencedProperty {
             get { return m_propertyName; }
         }
 
-        public IJsObject GetObject() {
+        public override IJsObject GetObject() {
             if (m_descriptor == null || m_descriptor.isDeleted)
                 m_descriptor = m_base.GetProperty(m_propertyName);
 
             return m_descriptor == null ? JsUndefined.Instance : m_descriptor.Get(m_base);
         }
 
-        public void SetObject(IJsObject value) {
+        public override void SetObject(IJsObject value) {
             if (m_descriptor == null || m_descriptor.isDeleted)
                 m_descriptor = m_base.GetProperty(m_propertyName);
 

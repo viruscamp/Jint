@@ -200,7 +200,7 @@ namespace Jint.Native {
 
             if (m_properties.TryGet(name, out d) && d.Owner == this) {
                 // got own descriptor
-                Debug.Assert(!d.isDeleted);
+                Debug.Assert(!d.isDeleted); // own descriptor can't be marked as deleted since on deletion it will be removed from the object
                 return d;
             }
         }

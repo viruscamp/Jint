@@ -17,9 +17,9 @@ namespace Jint
     /// </summary>
     /// <remarks>
     /// <pre>
-    /// Marshaller holds a reference to a global object which is used to get a prototype while marshalling from
-    /// clr to js. Futhermore a marshaller is to be accessible while running a script, therefore it strictly
-    /// linked to the global object which defines a runtime environment for the script.
+    /// Marshaller holds a reference to a global object which is used to get prototypes while marshalling from
+    /// clr to js. Futhermore a marshaller needs to be accessible while running a script, therefore ExecutionVisitor
+    /// needs to hold a reference to marshaller.
     /// </pre>
     /// </remarks>
     public class Marshaller

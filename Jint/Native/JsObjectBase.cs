@@ -105,7 +105,7 @@ namespace Jint.Native {
         }
 
         // 8.12.3
-        public IJsObject Get(string name) {
+        public virtual IJsObject Get(string name) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -116,7 +116,7 @@ namespace Jint.Native {
         }
 
         // 8.12.5
-        public void Put(string name, IJsObject value, bool throwError) {
+        public virtual void Put(string name, IJsObject value, bool throwError) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -149,7 +149,7 @@ namespace Jint.Native {
         }
 
         // 8.12.4
-        public bool CanPut(string name) {
+        public virtual bool CanPut(string name) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -169,7 +169,7 @@ namespace Jint.Native {
         }
 
         // 8.12.2
-        public Descriptor GetProperty(string name) {
+        public virtual Descriptor GetProperty(string name) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -192,7 +192,7 @@ namespace Jint.Native {
             return d;
         }
 
-        public Descriptor GetOwnProperty(string name) {
+        public virtual Descriptor GetOwnProperty(string name) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -205,7 +205,7 @@ namespace Jint.Native {
             }
         }
 
-        public bool HasProperty(string name) {
+        public virtual bool HasProperty(string name) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -217,7 +217,7 @@ namespace Jint.Native {
         }
 
         // 8.12.7
-        public bool Delete(string name, bool throwError) {
+        public virtual bool Delete(string name, bool throwError) {
             if (name == null)
                 throw new ArgumentNullException("name");
 
@@ -233,7 +233,7 @@ namespace Jint.Native {
             d.Delete(); // mark as absolete
         }
 
-        public void RepopulateProperty(string name) {
+        public virtual void RepopulateProperty(string name) {
             Descriptor d;
             m_properties.TryGet(name, out d);
             if (d.Owner == this && !d.isDeleted) {
@@ -244,7 +244,7 @@ namespace Jint.Native {
 
         // 8.12.9
         /// <summary>
-        /// Implementation of ecma 262.5 8.12.9
+        /// Defines own property, see ecma 262.5 8.12.9
         /// </summary>
         /// <param name="desc">A new property descriptor</param>
         /// <param name="throwError">If true, this method will throw an exception in case of error</param>
@@ -265,7 +265,7 @@ namespace Jint.Native {
         /// should stay in its original state.
         /// </para>
         /// </remarks>
-        public bool DefineOwnProperty(Descriptor desc, bool throwError) {
+        public virtual bool DefineOwnProperty(Descriptor desc, bool throwError) {
             if (desc == null)
                 throw new ArgumentNullException("desc");
 
@@ -309,11 +309,11 @@ namespace Jint.Native {
             Put(key.ToString(),value,false);
         }
 
-        public virtual IEnumerable<IJsObject> CustomEnumerator {
-            get { return null; }
+        public virtual IEnumerable<IJsObject> GetCustomEnumerator (IGlobal global) {
+            return null;
         }
 
-        public IEnumerable<Descriptor> GetProperties() {
+        public virtual IEnumerable<Descriptor> GetProperties() {
             Dictionary<string, bool> visited = new Dictionary<string, bool>();
 
             foreach (var d in GetOwnProperties()) {
@@ -329,7 +329,7 @@ namespace Jint.Native {
             }
         }
 
-        public IEnumerable<Descriptor> GetOwnProperties() {
+        public virtual IEnumerable<Descriptor> GetOwnProperties() {
             foreach (var d in m_properties.Values)
                 if (d.Owner == this)
                     yield return d;
@@ -442,9 +442,8 @@ namespace Jint.Native {
             foreach (var item in m_prototype)
                 pairs[item.Key] = item.Value;
 
-            foreach (var item in m_properties.Values)
-                if (item.Enumerable)
-                    pairs[item.Name] = item.Get(this);
+            foreach (var item in GetOwnProperties())
+                pairs[item.Name] = item.Get(this);
 
             return pairs;
         }
@@ -486,7 +485,8 @@ namespace Jint.Native {
         /// <param name="key">A property name.</param>
         /// <returns>True if property was removed.</returns>
         public bool Remove(string key) {
-            if (GetOwnProperty(key) == null)
+            Descriptor d = GetProperty(key);
+            if (d == null || d.DescriptorType == DescriptorType.None)
                 return false;
             return Delete(key,false);
         }
@@ -604,14 +604,15 @@ namespace Jint.Native {
         public IEnumerator<KeyValuePair<string, IJsObject>> GetEnumerator() {
             Dictionary<string,bool> visited = new Dictionary<string,bool>();
 
-            foreach(var pair in m_prototype) {
-                visited[pair.Key] = true;
-                yield return pair;
+            foreach (var d in GetOwnProperties()) {
+                visited[d.Name] = true;
+                yield return new KeyValuePair<string, IJsObject>(d.Name, d.Get(this));
             }
 
-            foreach (var d in m_properties.Values)
-                if (d.Owner == this && d.Enumerable && !visited.ContainsKey(d.Name))
-                    yield return new KeyValuePair<string, IJsObject>(d.Name, d.Get(this));
+            foreach(var pair in m_prototype) {
+                if (!visited.ContainsKey(pair.Key))
+                    yield return pair;
+            }
         }
 
         #endregion
@@ -662,6 +663,10 @@ namespace Jint.Native {
 
         public virtual IJsObject ToObject(IGlobal global) {
             return this;
+        }
+
+        public override string ToString() {
+            return internalToPrimitive(JsObjectType.String).ToString();
         }
 
         #endregion

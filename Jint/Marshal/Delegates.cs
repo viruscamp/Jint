@@ -12,7 +12,7 @@ namespace Jint.Marshal
     /// <param name="that">A target object</param>
     /// <param name="arguments">A list of arguments</param>
     /// <returns>A result of a function invocation</returns>
-    public delegate IJsInstance JsMethodImpl(IGlobal global, IJsInstance that, IJsInstance[] arguments);
+    public delegate IJsObject JsMethodImpl(IGlobal global, IJsInstance that, IJsInstance[] arguments);
 
     /// <summary>
     /// A wrapper around native constructor
@@ -28,7 +28,7 @@ namespace Jint.Marshal
     /// <param name="that">A target js object</param>
     /// <param name="index">index</param>
     /// <returns>A value at the specified index</returns>
-    public delegate IJsInstance JsIndexerGetter(IJsInstance that, IJsInstance index);
+    public delegate IJsObject JsIndexerGetter(IJsObject that, IJsObject index);
 
     /// <summary>
     /// A wrapper around native indexer setter
@@ -36,6 +36,6 @@ namespace Jint.Marshal
     /// <param name="that">A target js object</param>
     /// <param name="index">index</param>
     /// <param name="value">A value which should be set at the specified index</param>
-    public delegate void JsIndexerSetter(IJsInstance that, IJsInstance index,IJsInstance value);
+    public delegate void JsIndexerSetter(IJsObject that, IJsObject index, IJsObject value);
 
 }

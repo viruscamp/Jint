@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Jint.Native {
     [Serializable]
-    public class JsGlobal : JsObject, IGlobal {
+    public class JsGlobal : JsObjectBase, IGlobal {
         /// <summary>
         /// Useful for eval()
         /// </summary>
@@ -150,7 +150,7 @@ namespace Jint.Native {
         /// <summary>
         /// 15.1.2.2
         /// </summary>
-        public IJsInstance ParseInt(IJsInstance[] arguments) {
+        public IJsObject ParseInt(IJsInstance[] arguments) {
             if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
                 return JsUndefined.Instance;
             }

@@ -1,38 +1,43 @@
 ﻿using System;
 
 namespace Jint.Native {
-    public interface IGlobal {
+    public interface IGlobal: IJsObject {
         bool HasOption(Options options);
 
+        JsObjectConstructor ObjectClass { get; }
+        JsFunctionConstructor FunctionClass { get; }
         JsArrayConstructor ArrayClass { get; }
+        JsStringConstructor StringClass { get; }
         JsBooleanConstructor BooleanClass { get; }
+        JsNumberConstructor NumberClass { get; }
         JsDateConstructor DateClass { get; }
+        JsRegExpConstructor RegExpClass { get; }
+
         JsErrorConstructor ErrorClass { get; }
         JsErrorConstructor EvalErrorClass { get; }
-        JsFunctionConstructor FunctionClass { get; }
-        IJsInstance IsNaN(Jint.Native.IJsInstance[] arguments);
-        JsMathConstructor MathClass { get; }
-        JsNumberConstructor NumberClass { get; }
-        JsObjectConstructor ObjectClass { get; }
-        IJsInstance ParseFloat(Jint.Native.IJsInstance[] arguments);
-        IJsInstance ParseInt(Jint.Native.IJsInstance[] arguments);
         JsErrorConstructor RangeErrorClass { get; }
         JsErrorConstructor ReferenceErrorClass { get; }
-        JsRegExpConstructor RegExpClass { get; }
-        JsStringConstructor StringClass { get; }
         JsErrorConstructor SyntaxErrorClass { get; }
         JsErrorConstructor TypeErrorClass { get; }
         JsErrorConstructor URIErrorClass { get; }
-        JsObject WrapClr(object value);
 
         IJsObject NewPrimitive(string value);
         IJsObject NewPrimitive(double value);
         IJsObject NewPrimitive(bool value);
 
-        IJsInstance NaN { get; }
+        IJsObject NaN { get; }
+        IJsObject Infinity { get; }
+        IJsObject Undefined { get; }
 
-        // TODO: think about mutation
-        Jint.Expressions.IJintVisitor Visitor { get; }
-        Jint.Marshaller Marshaller { get; }
+        IJsObject ParseInt(IJsInstance[] arguments);
+        IJsObject ParseFloat(IJsInstance[] arguments);
+        IJsObject IsNaN(IJsInstance[] arguments);
+        IJsObject IsFinite(IJsInstance[] arguments);
+
+        IJsObject DecodeURI(IJsInstance[]);
+
+        JsMathConstructor MathClass { get; }
+        JsJSON JSON { get; }
+
     }
 }

@@ -12,7 +12,7 @@ namespace Jint.Marshal
     /// <param name="that">A target object</param>
     /// <param name="arguments">A list of arguments</param>
     /// <returns>A result of a function invocation</returns>
-    public delegate IJsObject JsMethodImpl(IGlobal global, IJsInstance that, IJsInstance[] arguments);
+    public delegate IJsObject JsMethodImpl(IGlobal global, IJsObject that, IJsInstance[] arguments);
 
     /// <summary>
     /// A wrapper around native constructor

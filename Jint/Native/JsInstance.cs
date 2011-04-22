@@ -34,6 +34,7 @@ namespace Jint.Native {
         public const string CLASS_ARGUMENTS = "Arguments";
         public const string CLASS_GLOBAL = "Global";
         public const string CLASS_SCOPE = "Scope";
+        public const string CLASS_JSON = "JSON";
 
     }
 }

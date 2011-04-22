@@ -63,6 +63,7 @@
     <Compile Include="Native\JsBooleanPrimitive.cs" />
     <Compile Include="Native\JsDescriptorReference.cs" />
     <Compile Include="Native\JsInstance.cs" />
+    <Compile Include="Native\JsJSON.cs" />
     <Compile Include="Native\JsNumberPrimitive.cs" />
     <Compile Include="Native\JsPrimitiveValue.cs" />
     <Compile Include="Native\JsReference.cs" />

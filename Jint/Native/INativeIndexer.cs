@@ -3,7 +3,7 @@ namespace Jint.Native
 {
     public interface INativeIndexer
     {
-        IJsInstance get(IJsInstance that, IJsInstance index);
-        void set(IJsInstance that, IJsInstance index, IJsInstance value);
+        IJsObject get(IJsObject that, IJsObject index);
+        void set(IJsObject that, IJsObject index, IJsObject value);
     }
 }

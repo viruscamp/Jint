@@ -350,36 +350,55 @@ namespace Jint.Native {
         }
 
         /// <summary>
-        /// ecma 8.12.8
+        /// To Primitive conversions, see ecma262.5 9.1, 8.12.8 .
         /// </summary>
-        /// <param name="global"></param>
-        /// <param name="hint"></param>
-        /// <returns></returns>
-        public virtual IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
-            IFunction fn;
-            if (hint == JsObjectType.Number)
-                fn = m_valueOfMethod.GetObject() as IFunction;
+        /// <remarks>
+        /// Since ecma specification uses <c>valueOf</c> and <c>toString</c> methods
+        /// we don't need a 'global' object it's implicitly bound to these functions.
+        /// </remarks>
+        /// <param name="hint">A desired type</param>
+        /// <returns>A corresponding primitive value</returns>
+        protected IJsObject internalToPrimitive(JsObjectType hint) {
+            IFunction fn1, fn2;
+            if (hint == JsObjectType.Number) {
+                fn1 = m_valueOfMethod.GetObject() as IFunction;
+                fn2 = m_toStringMethod.GetObject() as IFunction;
+            } else {
+                fn2 = m_valueOfMethod.GetObject() as IFunction;
+                fn1 = m_toStringMethod.GetObject() as IFunction;
+            }
 
             IJsObject prim;
-            if (fn != null)
-                prim = fn.Invoke(this, null);
 
-            // if result isn't a primitive or valueOf isn't a function
+            if (fn1 != null) {
+                prim = fn1.Invoke(this, null);
+
+                // function should always return a value (at least undefined)
+                Debug.Assert(prim != null);
+            }
+
+            if ((prim == null || prim.Type == JsObjectType.Object) && fn2 != null) {
+                prim = fn2.Invoke(this, null);
+
+                // function should always return a value (at least undefined)
+                Debug.Assert(prim != null);
+            }
+
             if (prim == null || prim.Type == JsObjectType.Object)
-                fn = m_toStringMethod.GetObject() as IFunction;
-
-            if (fn == null)
-                throw new JsTypeException("This object can't be converted to a primitive value");
-
-            prim = fn.Invoke(this, null);
-
-            // function should always return a value
-            Debug.Assert(prim != null);
-
-            if (prim.Type == JsObjectType.Object)
                 throw new JsTypeException("This object can't be converted to a primitive value");
 
             return prim;
+        }
+
+        /// <summary>
+        /// To Primitive conversions, see ecma262.5 9.1.
+        /// </summary>
+        /// <seealso cref="internalToPrimitive"/>
+        /// <param name="global">A global object. Not used.</param>
+        /// <param name="hint">A desired type</param>
+        /// <returns>A new primitive value</returns>
+        public virtual IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
+            return internalToPrimitive(hint);
         }
 
         public abstract string Class {
@@ -410,7 +429,7 @@ namespace Jint.Native {
 
         public void SetObject(IJsObject value) {
             // TODO: use appropriate exception
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
 
         #endregion
@@ -607,17 +626,41 @@ namespace Jint.Native {
 
         #region conversions
 
-        public abstract bool ToBoolean();
+        /// <summary>
+        /// Convertion to boolean, see ecma 262.5 9.2.
+        /// </summary>
+        /// <remarks>
+        /// Even <c>new Boolean(false)</c> is <c>true</c>.
+        /// <code>
+        /// var o = new Boolean(false);
+        /// var a = Boolean(o); // 'a' will be 'true', this is a feature
+        /// var b = Boolean(false); // 'b' will be 'false'
+        /// a == true;
+        /// o == false;
+        /// </code>
+        /// </remarks>
+        /// <returns></returns>
+        public virtual bool ToBoolean() {
+            return true;
+        }
 
-        public abstract double ToNumber();
+        public virtual double ToNumber() {
+            return internalToPrimitive(JsObjectType.Number).ToNumber();
+        }
 
-        public abstract int ToInteger();
+        public virtual int ToInteger() {
+            return internalToPrimitive(JsObjectType.Number).ToInteger();
+        }
 
-        public abstract UInt32 ToUInt32();
+        public virtual UInt32 ToUInt32() {
+            return internalToPrimitive(JsObjectType.Number).ToUInt32();
+        }
 
-        public abstract UInt16 ToUInt16();
+        public virtual UInt16 ToUInt16() {
+            return internalToPrimitive(JsObjectType.Number).ToUInt16();
+        }
 
-        public IJsObject ToObject(IGlobal global) {
+        public virtual IJsObject ToObject(IGlobal global) {
             return this;
         }
 

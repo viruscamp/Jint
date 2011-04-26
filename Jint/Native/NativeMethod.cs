@@ -86,6 +86,10 @@ namespace Jint.Native
         public override IJsInstance ToPrimitive(IGlobal global) {
             return global.StringClass.New( ToString() );
         }
+
+        public override IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
+            return global.StringClass.New( ToString() );
+        }
     }
     
 }

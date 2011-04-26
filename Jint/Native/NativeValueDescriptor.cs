@@ -12,6 +12,12 @@ namespace Jint.Native {
         JsSetter m_setter;
         IJsObject m_target;
 
+        /// <summary>
+        /// Creates new data descriptor. Writable = true, Enumerable = false, Configurable = false.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="name"></param>
+        /// <param name="getter"></param>
         public NativeValueDescriptor(IJsObject owner, string name, JsSetter setter, JsGetter getter)
             : base(owner, name) {
             m_getter = getter;
@@ -19,6 +25,12 @@ namespace Jint.Native {
             m_target = owner;
         }
 
+        /// <summary>
+        /// Creates new data descriptor. Writable = false, Enumerable = false, Configurable = false.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="name"></param>
+        /// <param name="getter"></param>
         public NativeValueDescriptor(IJsObject owner, string name, JsGetter getter)
             : base(owner, name) {
             m_getter = getter;

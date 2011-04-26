@@ -12,10 +12,19 @@ namespace Jint.Native {
     /// </remarks>
     public class JsScope : JsObjectBase {
         protected JsScope m_outer;
+        Options m_options;
 
         public JsScope(JsScope outer)
             : base(outer) {
             m_outer = outer;
+        }
+
+        public Options Options {
+            get { return m_options; }
+        }
+
+        public bool IsStrict {
+            get { return m_options & Options.Strict; }
         }
 
         public override bool IsClr {

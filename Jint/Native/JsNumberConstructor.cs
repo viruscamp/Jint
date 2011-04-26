@@ -8,7 +8,7 @@ namespace Jint.Native {
     [Serializable]
     public class JsNumberConstructor : JsConstructor {
         public JsNumberConstructor(IGlobal global)
-            : base(global) {
+            : base(global.FunctionClass.PrototypeProperty) {
             Name = "Number";
 
             DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure);

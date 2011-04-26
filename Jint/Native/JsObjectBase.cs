@@ -25,7 +25,6 @@ namespace Jint.Native {
     /// </remarks>
     [Serializable]
     public abstract class JsObjectBase: IJsObject {
-
         bool m_extensible;
         bool m_hasChidren;
         IJsObject m_prototype;

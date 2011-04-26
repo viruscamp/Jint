@@ -64,7 +64,7 @@ namespace Jint.Marshal {
             LinkedList<ParameterInfo> parameters = new LinkedList<ParameterInfo>(info.GetParameters());
             LinkedList<MarshalledParameter> outParams = new LinkedList<MarshalledParameter>();
 
-            DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(IJsInstance), new Type[] { typeof(IGlobal), typeof(IJsInstance), typeof(IJsInstance[]) }, this.GetType());
+            DynamicMethod jsWrapper = new DynamicMethod("jsWrapper", typeof(IJsObject), new Type[] { typeof(IGlobal), typeof(IJsObject), typeof(IJsInstance[]) }, this.GetType());
             var code = jsWrapper.GetILGenerator();
 
             code.DeclareLocal(typeof(int)); // local #0: count of the passed arguments
@@ -104,7 +104,7 @@ namespace Jint.Marshal {
                 code.MarkLabel(lblWrong);
 
                 code.Emit(OpCodes.Ldstr, "The specified 'that' object is not acceptable for this method");
-                code.Emit(OpCodes.Newobj, typeof(JintException).GetConstructor(new Type[] { typeof(string) }));
+                code.Emit(OpCodes.Newobj, typeof(JsTypeException).GetConstructor(new Type[] { typeof(string) }));
                 code.Emit(OpCodes.Throw);
 
                 code.MarkLabel(lblDesired);
@@ -198,15 +198,23 @@ namespace Jint.Marshal {
                 code.Emit(OpCodes.Ldc_I4, param.index);
                 code.Emit(OpCodes.Ble, lblEnd);
 
-                // set arguments[i] = marshaller.MarshalClrValue(tempLocal);
+                // if( arguments[i].IsReference );
                 code.Emit(OpCodes.Ldarg_2);
                 code.Emit(OpCodes.Ldc_I4, param.index);
+                code.Emit(OpCodes.Ldelem, typeof(IJsInstance));
+                code.Emit(OpCodes.Callvirt, typeof(IJsInstance).GetProperty("IsReference").GetGetMethod());
+                code.Emit(OpCodes.Brfalse, lblEnd);
+
+                // arguments[i].SetObject(marshaller.MarshalClrValue<T>(tempLocal));
+                code.Emit(OpCodes.Ldarg_2);
+                code.Emit(OpCodes.Ldc_I4, param.index);
+                code.Emit(OpCodes.Ldelem, typeof(IJsInstance));
 
                 code.Emit(OpCodes.Ldloc_1);
                 code.Emit(OpCodes.Ldloc, param.tempLocal);
                 code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(param.tempLocal.LocalType));
 
-                code.Emit(OpCodes.Stelem, typeof(IJsInstance));
+                code.Emit(OpCodes.Callvirt, typeof(IJsInstance).GetMethod("SetObject"));
 
                 code.MarkLabel(lblEnd);
             }
@@ -345,7 +353,7 @@ namespace Jint.Marshal {
             }
 
             if (dm == null) {
-                dm = new DynamicMethod("dynamicPropertyGetter", typeof(IJsInstance), new Type[] { typeof(Marshaller), typeof(JsObjectBase) }, this.GetType());
+                dm = new DynamicMethod("dynamicPropertyGetter", typeof(IJsObject), new Type[] { typeof(Marshaller), typeof(IJsObject) }, this.GetType());
 
                 MethodInfo info = prop.GetGetMethod();
 

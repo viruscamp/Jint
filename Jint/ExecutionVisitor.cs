@@ -9,15 +9,12 @@ using Jint.Debugger;
 using System.Security;
 using System.Runtime.Serialization;
 using Jint.Delegates;
+using System.Diagnostics;
 
 namespace Jint {
 
     public class ExecutionVisitor : IStatementVisitor, IJintVisitor{
-        struct ResultInfo {
-            public JsObjectBase baseObject;
-            public IJsInstance result;
-        }
-
+        
         protected internal ITypeResolver typeResolver;
 
         public JsGlobal Global { get; private set; }
@@ -40,19 +37,28 @@ namespace Jint {
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
         
-        private StringBuilder typeFullname = new StringBuilder();
         private string lastIdentifier = String.Empty;
 
         IJsInstance lastResult;
-
-        Stack<ResultInfo> stackResults = new Stack<ResultInfo>();
 
         public ExecutionVisitor(Options options) {
             typeResolver = CachedTypeResolver.Default;
             JsGlobal global = new JsGlobal(this, options);
             Global = global;// new JsGlobal(this, options);
-            GlobalScope = new JsScope(Global as JsObject);
+            GlobalScope = new JsGlobalScope(Global as JsObject);
 
+            EnterScope(GlobalScope);
+
+            CallStack = new Stack<string>();
+        }
+
+        public ExecutionVisitor(IGlobal global) {
+            if (global == null)
+                throw new ArgumentNullException("global");
+
+            typeResolver = CachedTypeResolver.Default;
+            Global = global;
+            GlobalScope = new JsGlobalScope(Global);
             EnterScope(GlobalScope);
 
             CallStack = new Stack<string>();
@@ -1240,10 +1246,12 @@ namespace Jint {
         }
 
         public void Visit(MethodCall methodCall) {
-            var that = CallTarget;
-            var target = Result;
+            Debug.Assert(lastResult != null);
 
-            if (target == JsUndefined.Instance || Result == null) {
+            IJsObject that = lastResult.BaseObject;
+            IJsObject target = lastResult.GetObject();
+
+            if (target == JsUndefined.Instance) {
                 if (!String.IsNullOrEmpty(lastIdentifier)) {
  
                 }
@@ -1274,7 +1282,7 @@ namespace Jint {
                 }
             }
 
-            #region Evaluates parameters
+            // Evaluates parameters
             IJsInstance[] parameters = new IJsInstance[methodCall.Arguments.Count];
 
             if (methodCall.Arguments.Count > 0) {
@@ -1285,10 +1293,9 @@ namespace Jint {
                 }
 
             }
-            #endregion
-
-            if (target is JsFunction) {
-                JsFunction function = (JsFunction)target;
+            
+            if (target is IFunction) {
+                IFunction function = (IFunction)target;
 
                 if (DebugMode) {
                     string stack = function.Name + "(";
@@ -1296,7 +1303,7 @@ namespace Jint {
 
                     for (int i = 0; i < parameters.Length; i++) {
                         if (parameters[i] != null)
-                            paramStrings[i] = parameters[i].ToSource();
+                            paramStrings[i] = parameters[i].GetObject().ToString();
                         else
                             paramStrings[i] = "null";
                     }
@@ -1308,22 +1315,19 @@ namespace Jint {
 
                 returnInstance = JsUndefined.Instance;
 
-                IJsInstance[] original = new IJsInstance[parameters.Length];
-                parameters.CopyTo(original, 0);
-
-                // TODO: replace with function.Invoke(that,parameters)
-                ExecuteFunction(function, that, parameters, genericParameters);
-
-                for (int i = 0; i < original.Length; i++)
-                    if (original[i] != parameters[i]) {
-                        if (methodCall.Arguments[i] is MemberExpression && ((MemberExpression)methodCall.Arguments[i]).Member is IAssignable)
-                            Assign((MemberExpression)methodCall.Arguments[i], parameters[i]);
-                        else if (methodCall.Arguments[i] is Identifier)
-                            Assign(new MemberExpression(methodCall.Arguments[i], null), parameters[i]);
+                try {
+                    if (genericParameters != null && function is IFunctionGeneric) {
+                        Return((function as IFunctionGeneric).Invoke(that, parameters, genericParameters));
+                    } else {
+                        if (function is JsFunction)
+                            Return(((JsFunction)function).Invoke(that, parameters, this));
+                        else
+                            Return(function.Invoke(that, parameters));
                     }
-
-                if (DebugMode) {
-                    CallStack.Pop();
+                } finally {
+                    if (DebugMode) {
+                        CallStack.Pop();
+                    }
                 }
 
                 Result = returnInstance;
@@ -1333,85 +1337,6 @@ namespace Jint {
                 throw new JsException(Global.ErrorClass.New("Function expected."));
             }
 
-        }
-
-        public void ExecuteFunction(JsFunction function, JsObjectBase that, IJsInstance[] parameters)
-        {
-            ExecuteFunction(function, that, parameters, null);
-        }
-
-        public void ExecuteFunction(JsFunction function, JsObjectBase that, IJsInstance[] parameters, Type[] genericParameters) {
-            if (function == null) {
-                return;
-            }
-
-            if (recursionLevel++ > MaxRecursions) {
-                throw new JsException(Global.ErrorClass.New("Too many recursions in the script."));
-            }
-
-            // ecma chapter 10.
-            // TODO: move creation of the activation object to the JsFunction
-            // create new argument object and instantinate arguments into it
-            JsArguments args = new JsArguments(Global, function, parameters);
-
-            // create new activation object and copy instantinated arguments to it
-            // Activation should be before the function.Scope hierarchy
-            JsScope functionScope = new JsScope(function.Scope ?? GlobalScope);
-
-            for (int i = 0; i < function.Arguments.Count; i++)
-                if (i < parameters.Length) 
-                    functionScope.DefineOwnProperty(
-                        new LinkedDescriptor(
-                            functionScope,
-                            function.Arguments[i],
-                            args.GetDescriptor(i.ToString()),
-                            args
-                        )
-                    );
-                else
-                    functionScope.DefineOwnProperty(
-                        new ValueDescriptor(
-                            functionScope,
-                            function.Arguments[i],
-                            JsUndefined.Instance
-                        )
-                    );
-
-            // define arguments variable
-            if (HasOption(Options.Strict))
-                functionScope.DefineOwnProperty(JsScope.ARGUMENTS, args);
-            else
-                args.DefineOwnProperty(JsScope.ARGUMENTS, args);
-
-            // set this variable
-            if (that != null)
-                functionScope.DefineOwnProperty(JsScope.THIS, that);
-            else
-                functionScope.DefineOwnProperty(JsScope.THIS, that = Global as JsObject);
-
-            // enter activation object
-            EnterScope(functionScope);
-
-            try {
-                PermissionSet.PermitOnly();
-
-                if (genericParameters != null && genericParameters.Length > 0)
-                    Result = function.Execute(this, that, parameters, genericParameters);
-                else
-                    Result = function.Execute(this, that, parameters);
-
-                // Resets the return flag
-                if (exit) {
-                    exit = false;
-                }
-            }
-            finally {
-                // return to previous execution state
-                ExitScope();
-
-                CodeAccessPermission.RevertPermitOnly();
-                recursionLevel--;
-            }
         }
 
         private bool HasOption(Options options) {

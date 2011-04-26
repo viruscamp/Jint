@@ -3,18 +3,30 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Jint.Native {
-    [Serializable]
+    
     public class ValueDescriptor : Descriptor {
-        public ValueDescriptor(JsObjectBase owner, string name)
+        IJsObject m_value;
+        bool m_writable;
+
+        /// <summary>
+        /// Creates a new data descriptor. Writable, Enumerable, Configurable by default.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="name"></param>
+        public ValueDescriptor(IJsObject owner, string name)
             : base(owner, name) {
             Enumerable = true;
             Writable = true;
             Configurable = true;
         }
 
-        IJsInstance m_value;
-
-        public ValueDescriptor(JsObjectBase owner, string name, IJsInstance value)
+        /// <summary>
+        /// Creates a new data descriptor. Writable, Enumerable, Configurable by default.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public ValueDescriptor(IJsObject owner, string name, IJsObject value)
             : this(owner, name) {
             Set(null, value);
         }
@@ -31,17 +43,17 @@ namespace Jint.Native {
             };
         }
 
-        public override IJsInstance Get(JsObjectBase that) {
+        public override IJsObject Get(IJsObject that) {
             return m_value ?? JsUndefined.Instance;
         }
 
-        public override void Set(JsObjectBase that, IJsInstance value) {
+        public override void Set(IJsObject that, IJsObject value) {
             if (!Writable)
                 throw new JintException("This property is not writable");
             this.m_value = value;
         }
 
-        public IJsInstance Value {
+        public IJsObject Value {
             get { return m_value; }
             set {
                 m_value = value;
@@ -87,6 +99,15 @@ namespace Jint.Native {
                 Value = gen.Value;
 
             return true;
+        }
+
+        public override bool Writable {
+            get {
+                return m_writable;
+            }
+            set {
+                m_writable = value;
+            }
         }
     }
 }

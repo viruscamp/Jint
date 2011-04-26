@@ -10,7 +10,7 @@ namespace Jint.Native {
     public class JsStringConstructor : JsConstructor {
         public JsStringConstructor(IGlobal global)
             : base(global) {
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontDelete | PropertyAttributes.DontEnum);
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontConfigure | PropertyAttributes.DontEnum);
             Name = "String";
         }
 

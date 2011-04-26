@@ -13,14 +13,14 @@ namespace Jint.Native {
             this.errorType = errorType;
             Name = errorType;
 
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global) {
             //Prototype = global.FunctionClass;
             var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("name", global.StringClass.New(errorType), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            Prototype.DefineOwnProperty("name", global.StringClass.New(errorType), PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
         }

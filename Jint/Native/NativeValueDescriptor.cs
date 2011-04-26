@@ -19,6 +19,12 @@ namespace Jint.Native {
             m_target = owner;
         }
 
+        public NativeValueDescriptor(IJsObject owner, string name, JsGetter getter)
+            : base(owner, name) {
+            m_getter = getter;
+            m_target = owner;
+        }
+
         public override bool Writable {
             get {
                 return m_setter != null;

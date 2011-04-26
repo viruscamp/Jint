@@ -11,7 +11,7 @@ namespace Jint.Native {
     /// A prototype chain is used to represent nested environments.
     /// </remarks>
     public class JsScope : JsObjectBase {
-        JsScope m_outer;
+        protected JsScope m_outer;
 
         public JsScope(JsScope outer)
             : base(outer) {
@@ -35,7 +35,7 @@ namespace Jint.Native {
             get { JsInstance.CLASS_SCOPE; }
         }
 
-        public IJsInstance ResolveIdentifier(string name) {
+        public virtual IJsInstance ResolveIdentifier(string name) {
             Descriptor d = GetOwnProperty(name);
             
             if (d == null || d.DescriptorType == DescriptorType.None)

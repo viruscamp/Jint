@@ -45,16 +45,23 @@ namespace Jint.Expressions {
 
     }
 
-    public interface IJintVisitor {
+    public interface IJintVisitor : IStatementVisitor {
 
         bool DebugMode { get; }
 
-        IJsInstance Result { get; }
+        
         JsObjectBase CallTarget { get; }
 
-        // TODO: replace JsGlobal with IGlobal
-        JsGlobal Global { get; }
+        IGlobal Global { get; }
 
+        /// <summary>
+        /// Last evaluted result
+        /// </summary>
+        IJsInstance Result { get; }
+
+        /// <summary>
+        /// Result of 'return' statement
+        /// </summary>
         IJsInstance Returned { get; }
 
         IJsInstance Return(IJsInstance result);

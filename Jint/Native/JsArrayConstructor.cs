@@ -10,7 +10,7 @@ namespace Jint.Native {
         public JsArrayConstructor(IGlobal global)
             : base(global) {
             Name = "Array";
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontDelete | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly);
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontConfigure | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global) {

@@ -36,13 +36,6 @@ namespace Jint.Native {
         }
 
         /// <summary>
-        /// If true this instance is a wrapper around a CLR object.
-        /// </summary>
-        bool IsClr {
-            get;
-        }
-
-        /// <summary>
         /// Gets a property value.
         /// </summary>
         /// <param name="name">property name.</param>
@@ -89,19 +82,6 @@ namespace Jint.Native {
         /// </summary>
         /// <param name="name">a property name.</param>
         bool Delete(string name, bool throwError);
-
-        /// <summary>
-        /// Gets a default value for the object.
-        /// </summary>
-        /// <returns>a primitive default value</returns>
-        IJsObject DefaultValue(IGlobal global);
-
-        /// <summary>
-        /// Gets a default value for the object with a hint.
-        /// </summary>
-        /// <param name="hint">A hint.</param>
-        /// <returns>a primitive default value.</returns>
-        IJsObject DefaultValue(IGlobal global,DefaultValueHints hint);
 
         /// <summary>
         /// Defines a new own property using supplied descriptor.

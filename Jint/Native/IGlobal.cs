@@ -34,10 +34,15 @@ namespace Jint.Native {
         IJsObject IsNaN(IJsInstance[] arguments);
         IJsObject IsFinite(IJsInstance[] arguments);
 
-        IJsObject DecodeURI(IJsInstance[]);
+        IJsObject DecodeURI(IJsInstance[] arguments);
+        IJsObject DecodeURIComponent(IJsInstance[] arguments);
+        IJsObject EncodeURI(IJsInstance[] arguments);
+        IJsObject EncodeURIComponent(IJsInstance[] arguments);
 
-        JsMathConstructor MathClass { get; }
+        JsMath MathClass { get; }
         JsJSON JSON { get; }
+
+        Marshaller Marshaller { get; }
 
     }
 }

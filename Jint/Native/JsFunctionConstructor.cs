@@ -11,7 +11,7 @@ namespace Jint.Native {
         public JsFunctionConstructor(IGlobal global, JsObject prototype)
             : base(global, prototype) {
             Name = "Function";
-            DefineOwnProperty(PROTOTYPE, prototype, PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            DefineOwnProperty(PROTOTYPE, prototype, PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global) {

@@ -9,7 +9,7 @@ namespace Jint.Native {
         public JsObjectConstructor(IGlobal global, JsObject prototype, JsObject rootPrototype)
             : base(global) {
             Name = "Object";
-            DefineOwnProperty(PROTOTYPE, rootPrototype, PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            DefineOwnProperty(PROTOTYPE, rootPrototype, PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global) {
@@ -51,7 +51,7 @@ namespace Jint.Native {
         /// <param name="constructor">JsFunction which is used as a constructor</param>
         /// <param name="Prototype">JsObjetc which is used as a prototype</param>
         /// <returns>new object</returns>
-        public JsObject New(JsFunction constructor, JsObject Prototype)
+        public JsObject New(IFunction constructor, IJsObject Prototype)
         {
             JsObject obj = new JsObject(Prototype);
             obj.DefineOwnProperty(new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });

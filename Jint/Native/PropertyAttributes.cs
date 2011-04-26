@@ -25,9 +25,8 @@ namespace Jint.Native {
         DontEnum = 2,
 
         /// <summary>
-        /// Attempts to delete the property will be ignored. See the description of the
-        /// delete operator in section 11.4.1.
+        /// Attempts to delete or change attributes of the property will be ignored.
         /// </summary>
-        DontDelete = 4
+        DontConfigure = 4
     }
 }

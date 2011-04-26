@@ -62,10 +62,13 @@
     <Compile Include="Native\INativeIndexer.cs" />
     <Compile Include="Native\JsBooleanPrimitive.cs" />
     <Compile Include="Native\JsDescriptorReference.cs" />
+    <Compile Include="Native\JsFunctionBase.cs" />
+    <Compile Include="Native\JsGlobalScope.cs" />
     <Compile Include="Native\JsIdentifierReference.cs" />
     <Compile Include="Native\JsInstance.cs" />
     <Compile Include="Native\JsJSON.cs" />
     <Compile Include="Native\JsNumberPrimitive.cs" />
+    <Compile Include="Native\JsObjectScope.cs" />
     <Compile Include="Native\JsPrimitiveValue.cs" />
     <Compile Include="Native\JsReference.cs" />
     <Compile Include="Native\JsReferenceException.cs" />
@@ -121,8 +124,6 @@
     <Compile Include="Expressions\IForStatement.cs" />
     <Compile Include="JintException.cs" />
     <Compile Include="Native\ClrImplDefinition.cs" />
-    <Compile Include="Native\JsClrConstructorInfo.cs" />
-    <Compile Include="Native\JsClrMethodInfo.cs" />
     <Compile Include="Native\JsException.cs" />
     <Compile Include="Native\JsFunctionWrapper.cs" />
     <Compile Include="Native\JsArguments.cs" />
@@ -142,7 +143,7 @@
     <Compile Include="Native\IJsInstance.cs" />
     <Compile Include="Native\JsUndefined.cs" />
     <Compile Include="Native\JsRegExp.cs" />
-    <Compile Include="Native\JsMathConstructor.cs" />
+    <Compile Include="Native\JsMath.cs" />
     <Compile Include="Native\JsBoolean.cs" />
     <Compile Include="Native\JsString.cs" />
     <Compile Include="Native\JsNumber.cs" />

@@ -9,7 +9,6 @@ namespace Jint.Native {
     /// <summary>
     /// Wraps a delegate which can be called as a method on an object, with or without parameters.
     /// </summary>
-    [Serializable]
     public class ClrImplDefinition<T> : JsFunction
         where T : IJsInstance {
         Delegate impl;

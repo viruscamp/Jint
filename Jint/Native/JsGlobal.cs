@@ -23,14 +23,9 @@ namespace Jint.Native {
             this.Visitor = visitor;
 
             this["null"] = JsNull.Instance;
-            JsObject objectProrotype = new JsObject(JsNull.Instance);
 
-            JsFunction functionPrototype = new JsFunctionWrapper(
-                delegate(IJsInstance[] arguments) {
-                    return JsUndefined.Instance;
-                },
-                objectProrotype
-            );
+            JsObject objectProrotype = new JsObject(JsNull.Instance);
+            JsFunction functionPrototype = new JsFunction(this,new JsGlobalScope(this),null,objectProrotype,options);
 
             #region Global Classes
             this["Function"] = FunctionClass = new JsFunctionConstructor(this, functionPrototype);
@@ -53,7 +48,7 @@ namespace Jint.Native {
             this["Number"] = NumberClass = new JsNumberConstructor(this);
             this["RegExp"] = RegExpClass = new JsRegExpConstructor(this);
             this["String"] = StringClass = new JsStringConstructor(this);
-            this["Math"] = MathClass = new JsMathConstructor(this);
+            this["Math"] = MathClass = new JsMath(this);
 
             // 15.1 prototype of the global object varies on the implementation
             //this.Prototype = ObjectClass.PrototypeProperty;
@@ -114,7 +109,7 @@ namespace Jint.Native {
         public JsErrorConstructor TypeErrorClass { get; private set; }
         public JsErrorConstructor URIErrorClass { get; private set; }
 
-        public JsMathConstructor MathClass { get; private set; }
+        public JsMath MathClass { get; private set; }
         public JsNumberConstructor NumberClass { get; private set; }
         public JsRegExpConstructor RegExpClass { get; private set; }
         public JsStringConstructor StringClass { get; private set; }

@@ -145,7 +145,7 @@ namespace Jint.Native {
                 Reject(String.Format("Can't define a new own property {0}, object isn't extensible", name),throwError);
 
             // optimized version of DefineOwnProperty
-            internalDefineOwnProperty(d,new ValueDescriptor(this, name, value));
+            internalDefineOwnProperty(d, new ValueDescriptor(this, name, value));
         }
 
         // 8.12.4
@@ -297,6 +297,28 @@ namespace Jint.Native {
             return true;
         }
 
+        /// <summary>
+        /// Creates a data descriptor and defines own property with it. By default a created property is
+        /// configurable, enumerable and writable unless it explicitly specified in <paramref name="attrs"/>.
+        /// </summary>
+        /// <param name="name">A property name.</param>
+        /// <param name="value">A value of a property.</param>
+        /// <param name="attrs">A property attributes.</param>
+        /// <exception cref="JsTypeException">An operation isn't permited.</exception>
+        public void DefineOwnProperty(string name, IJsObject value, PropertyAttributes attrs) {
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("A property name should be a not empty string", "name");
+            if (value == null)
+                throw new ArgumentNullException("value");
+
+            ValueDescriptor d = new ValueDescriptor(this, name, value);
+            d.Configurable = !(attrs & PropertyAttributes.DontConfigure);
+            d.Writable = !(attrs & PropertyAttributes.ReadOnly);
+            d.Enumerable = !(attrs & PropertyAttributes.DontEnum);
+
+            DefineOwnProperty(d, true);
+        }
+
         public void ChildNotify() {
             m_hasChidren = true;
         }
@@ -309,8 +331,8 @@ namespace Jint.Native {
             Put(key.ToString(),value,false);
         }
 
-        public virtual IEnumerable<IJsObject> GetCustomEnumerator (IGlobal global) {
-            return null;
+        public virtual IEnumerable<IJsObject> CustomEnumerator {
+            get { return null; }
         }
 
         public virtual IEnumerable<Descriptor> GetProperties() {
@@ -331,7 +353,7 @@ namespace Jint.Native {
 
         public virtual IEnumerable<Descriptor> GetOwnProperties() {
             foreach (var d in m_properties.Values)
-                if (d.Owner == this)
+                if (d.Owner == this && !d.isDeleted && d.DescriptorType != DescriptorType.None)
                     yield return d;
         }
 

@@ -3,10 +3,10 @@ using Jint.Delegates;
 
 namespace Jint.Native {
     [Serializable]
-    public class JsMathConstructor : JsObject {
+    public class JsMath : JsObject {
         public IGlobal Global { get; set; }
 
-        public JsMathConstructor(IGlobal global)
+        public JsMath(IGlobal global)
             : base(global.ObjectClass.PrototypeProperty) {
             Global = global;
             var random = new Random();

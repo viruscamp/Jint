@@ -54,7 +54,7 @@ namespace Jint.Native
                 m_constructors = type.GetConstructors();
             }
 
-            DefineOwnProperty(PROTOTYPE, PrototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this,PrototypePrototype), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            DefineOwnProperty(PROTOTYPE, PrototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this,PrototypePrototype), PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
 
             m_overloads = new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>(
                 m_marshaller,

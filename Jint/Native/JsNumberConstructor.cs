@@ -11,7 +11,7 @@ namespace Jint.Native {
             : base(global) {
             Name = "Number";
 
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontDelete);
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure);
 
             this.DefineOwnProperty("MAX_VALUE", New(Double.MaxValue));
             this.DefineOwnProperty("MIN_VALUE", New(Double.MinValue));

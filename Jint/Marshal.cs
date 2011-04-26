@@ -124,9 +124,9 @@ namespace Jint
                 {
                     return MarshalType(value as Type);
                 }
-            }
-            else
-            {
+            } else if (value is Delegate) {
+                return m_global.FunctionClass.New((Delegate)value);
+            } else {
                 return MarshalType(value.GetType()).Wrap(value);
             }
         }
@@ -142,13 +142,6 @@ namespace Jint
 
         NativeConstructor CreateConstructor(Type t)
         {
-            // TODO: Move this code to NativeTypeConstructor.Wrap
-            /* NativeConstructor res;
-            res = new NativeConstructor(t, m_global);
-            res.InitPrototype(m_global);
-            m_typeType.SetupNativeProperties(res);
-            return res;
-            */
             return (NativeConstructor)m_typeType.Wrap(t);
         }
 
@@ -165,11 +158,6 @@ namespace Jint
         /// <returns></returns>
         NativeConstructor CreateConstructor(Type t, JsObject prototypePropertyPrototype)
         {
-            /* NativeConstructor res;
-            res = new NativeConstructor(t, m_global,prototypeProperty);
-            res.InitPrototype(m_global);
-            m_typeType.SetupNativeProperties(res);
-            return res; */
             return (NativeConstructor)m_typeType.WrapSpecialType(t, prototypePropertyPrototype);
         }
 
@@ -186,12 +174,9 @@ namespace Jint
             return res;
         }
 
-        object MarshalJsFunctionHelper(JsFunction func,Type delegateType)
+        object MarshalJsFunctionHelper(IFunction func,Type delegateType)
         {
-            // create independent visitor
-            ExecutionVisitor visitor = new ExecutionVisitor(m_global, new JsScope((JsObject)m_global));
-            visitor.PermissionSet = ((ExecutionVisitor)m_global.Visitor).PermissionSet;
-            JsFunctionDelegate wrapper = new JsFunctionDelegate(visitor, func, JsNull.Instance , delegateType);
+            JsFunctionDelegate wrapper = new JsFunctionDelegate(func, JsNull.Instance , delegateType);
             return wrapper.GetDelegate();
         }
 
@@ -199,10 +184,12 @@ namespace Jint
         /// Marshals a JsInstance to a native value.
         /// </summary>
         /// <typeparam name="T">A native object type</typeparam>
-        /// <param name="value">A JsInstance to marshal</param>
+        /// <param name="inst">A JsInstance to marshal</param>
         /// <returns>A converted native velue</returns>
-        public T MarshalJsValue<T>(IJsInstance value)
+        public T MarshalJsValue<T>(IJsInstance inst)
         {
+            IJsObject value = inst.GetObject(); // resolve reference when nesessary
+
             if (value.Value is T)
             {
                 return (T)value.Value;
@@ -282,10 +269,12 @@ namespace Jint
         /// If a value is an js object (constructed with a pure js function) this method returns
         /// a type of this value (for example JsArray, JsObject)
         /// </remarks>
-        /// <param name="value">JsInstance value</param>
+        /// <param name="inst">JsInstance value</param>
         /// <returns>A Type object</returns>
-        public Type GetInstanceType(IJsInstance value)
+        public Type GetInstanceType(IJsInstance inst)
         {
+            IJsObject value = inst.GetObject();
+
             if (value == null || value == JsUndefined.Instance || value == JsNull.Instance )
                 return null;
 

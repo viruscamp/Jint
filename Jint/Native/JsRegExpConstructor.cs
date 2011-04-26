@@ -10,7 +10,7 @@ namespace Jint.Native {
         public JsRegExpConstructor(IGlobal global)
             : base(global) {
             Name = "RegExp";
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontDelete | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly);
+            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontConfigure | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly);
         }
 
         public override void InitPrototype(IGlobal global) {

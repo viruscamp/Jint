@@ -5,34 +5,70 @@ using Jint.Expressions;
 using Jint.Delegates;
 
 namespace Jint.Native {
+    public delegate IJsObject JsFunctionImpl(IJsInstance[] arguments);
+
     [Serializable]
-    public class JsFunctionWrapper : JsFunction {
-        public Func<IJsInstance[], IJsInstance> Delegate { get; set; }
+    public class JsFunctionWrapper : JsObjectBase, IFunction {
+        JsFunctionImpl m_delegate;
+        int m_length;
+        string m_name;
 
-        public JsFunctionWrapper(Func<IJsInstance[], IJsInstance> d, JsObject prototype)
+        public JsFunctionWrapper(JsFunctionImpl impl,string name, int length, JsObject prototype)
             : base(prototype) {
-            Delegate = d;
-        }
-
-        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
-            try {
-                //visitor.CurrentScope["this"] = visitor.Global;
-                IJsInstance result = Delegate( parameters );
-                visitor.Return(result == null ? JsUndefined.Instance : result);
-
-                return that;
-            }
-            catch (Exception e) {
-                if (e.InnerException is JsException) {
-                    throw e.InnerException;
-                }
-
-                throw;
-            }
+            if (impl == null)
+                throw new ArgumentNullException("impl");
+            m_delegate = impl;
+            m_length = length;
+            m_name = name;
         }
 
         public override string ToString() {
             return String.Format("function {0}() {{ [native code] }}", Delegate.Method.Name);
         }
+
+        #region IFunction Members
+
+        public string Name {
+            get { return String.Empty; }
+        }
+
+        public IList<string> Arguments {
+            get { return new string[0]; }
+        }
+
+        public int Length {
+            get { return m_length; }
+        }
+
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
+            m_delegate(parameters);
+        }
+
+        public IJsObject Construct(IJsInstance[] parameters) {
+            throw new JsTypeException("This function isn't able to construct new objects");
+        }
+
+        public IJsObject PrototypeProperty {
+            get {
+                ;
+            }
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool HasInstance(IJsObject instance) {
+            return;
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        public new System.Collections.IEnumerator GetEnumerator() {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

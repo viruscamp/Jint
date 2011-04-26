@@ -2,18 +2,80 @@
 using System.Collections.Generic;
 using System.Text;
 using Jint.Expressions;
+using System.Diagnostics;
 
 namespace Jint.Native {
-    [Serializable]
-    public class JsFunction : JsObjectBase, IFunction {
-
+    /// <summary>
+    /// Represents a function which will be interpreted using an execution visitor.
+    /// </summary>
+    public class JsFunction : JsFunctionBase {
         string m_name;
         List<string> m_arguments = new List<string>();
 
+        
         IGlobal m_global;
         JsScope m_scope;
         Statement m_body;
         Options m_options;
+
+        /// <summary>
+        /// Constructs a new function.
+        /// </summary>
+        /// <remarks>
+        /// This class assumes that global object is initialized and is able to construct a new object.
+        /// </remarks>
+        /// <param name="global">A global object.</param>
+        /// <param name="scope">A function scope.</param>
+        /// <param name="body">A function body, can be null.</param>
+        /// <param name="options">An ecma script options (es3 ,es5, strict).</param>
+        public JsFunction(IGlobal global, JsScope scope, Statement body,IJsObject prototype, Options options) : base(prototype) {
+            if (global == null)
+                throw new ArgumentNullException("global");
+            if (scope == null)
+                throw new ArgumentNullException("scope");
+
+            m_global = global;
+            m_scope = scope;
+            m_body = body;
+            m_options = options;
+
+            DefineOwnProperty(
+                new NativeValueDescriptor(
+                    this,
+                    LENGTH,
+                    delegate(IJsObject that) {
+                        return m_arguments.Count;
+                    }
+                ) { Enumerable = false, Configurable = false, Writable = false },
+                true
+            );
+
+            IJsObject proto = global.ObjectClass.New();
+
+            proto.DefineOwnProperty(new ValueDescriptor(proto, CONSTRUCTOR, this) { Enumerable = false }, true);
+            DefineOwnProperty(PROTOTYPE, proto, PropertyAttributes.DontEnum);
+
+            if (options & Options.Strict) {
+                proto.DefineOwnProperty(
+                    new NativeAccessorDescriptor(
+                        this,
+                        CALLER,
+                        delegate(IJsObject that) { throw new JsTypeException(); },
+                        delegate(IJsObject that, IJsObject v) { throw new JsTypeException(); }
+                    ),
+                    true
+                );
+                proto.DefineOwnProperty(
+                    new NativeAccessorDescriptor(
+                        this,
+                        ARGUMENTS,
+                        delegate(IJsObject that) { throw new JsTypeException(); },
+                        delegate(IJsObject that, IJsObject v) { throw new JsTypeException(); }
+                    ),
+                    true
+                );
+            }
+        }
 
         /// <summary>
         /// A special version of method <c>Invoke</c> used when an isnatnce of
@@ -23,30 +85,14 @@ namespace Jint.Native {
         /// <param name="parameters">A list of arguments passsed to the function</param>
         /// <param name="visitor">An instance of the interpreter</param>
         /// <returns>A returned value</returns>
-        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters, IStatementVisitor visitor) {
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters, IJintVisitor visitor) {
+            if (visitor == null)
+                throw new ArgumentNullException("visitor");
 
-        }
+            if (m_body == null)
+                return JsUndefined.Instance;
 
-        IStatementVisitor GetVisitor() {
-            return new ExecutionVisitor(m_options);
-        }
-
-        #region IFunction Members
-
-        public string Name {
-            get {
-                return m_name;
-            }
-        }
-
-        public IList<string> Arguments {
-            get {
-                return m_arguments.AsReadOnly();
-            }
-        }
-
-        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
-            if ((m_options & Options.Ecmascript3) && that == null || that == JsNull.Instance || that == JsUndefined.Instance)
+            if ((m_options & Options.Ecmascript3) && ( that == null || that == JsNull.Instance || that == JsUndefined.Instance) )
                 that = m_global;
             else if (that == null)
                 that = JsNull.Instance;
@@ -63,7 +109,8 @@ namespace Jint.Native {
                             function.Arguments[i],
                             args.GetDescriptor(i.ToString()),
                             args
-                        )
+                        ),
+                        true
                     );
                 else
                     functionScope.DefineOwnProperty(
@@ -71,31 +118,25 @@ namespace Jint.Native {
                             functionScope,
                             function.Arguments[i],
                             JsUndefined.Instance
-                        )
+                        ),
+                        true
                     );
 
             // define arguments variable
-            if (HasOption(Options.Strict))
-                functionScope.DefineOwnProperty(JsScope.ARGUMENTS, args);
-            else
-                args.DefineOwnProperty(JsScope.ARGUMENTS, args);
+            functionScope[ARGUMENTS] = args;
 
             // set this variable
-            if (that != null)
-                functionScope.DefineOwnProperty(JsScope.THIS, that);
-            else
-                functionScope.DefineOwnProperty(JsScope.THIS, that = Global as JsObject);
-
+            functionScope[THIS] = that;
+            
             // enter activation object
             EnterScope(functionScope);
 
             try {
-                PermissionSet.PermitOnly();
 
-                if (genericParameters != null && genericParameters.Length > 0)
-                    Result = function.Execute(this, that, parameters, genericParameters);
-                else
-                    Result = function.Execute(this, that, parameters);
+                m_body.Accept(visitor);
+
+                Debug.Assert(visitor.Returned != null);
+                return visitor.Returned;
 
                 // Resets the return flag
                 if (exit) {
@@ -104,24 +145,108 @@ namespace Jint.Native {
             } finally {
                 // return to previous execution state
                 ExitScope();
-
-                CodeAccessPermission.RevertPermitOnly();
-                recursionLevel--;
             }
         }
 
-        public IJsObject Construct(IJsInstance[] parameters) {
-            throw new NotImplementedException();
+        IJintVisitor GetVisitor() {
+            return new ExecutionVisitor(m_global);
         }
 
+        #region IFunction Members
+
+        public string Name {
+            get {
+                return m_name;
+            }
+        }
+
+        public IList<string> Arguments {
+            get {
+                return m_arguments.AsReadOnly();
+            }
+        }
+
+        public int Length {
+            get {
+                return m_arguments.Count;
+            }
+        }
+
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
+            if (m_body == null)
+                return JsUndefined.Instance;
+
+            return Invoke(that, parameters, GetVisitor());
+        }
+
+        public IJsObject Construct(IJsInstance[] parameters) {
+            IJsObject instance = m_global.ObjectClass.New(this,this.PrototypeProperty);
+            IJsObject result;
+
+            if (m_body != null)
+                result = Invoke(instance, parameters);
+            else
+                return instance;
+
+            Debug.Assert(result != null);
+
+            if (result != JsNull.Instance && result != JsUndefined.Instance)
+                return result;
+
+            return instance;
+        }
+
+        public IJsObject Construct(IJsInstance[] parameters, IJintVisitor visitor) {
+            if (visitor == null)
+                throw new ArgumentNullException("visitor");
+
+            IJsObject instance = m_global.ObjectClass.New(this, this.PrototypeProperty);
+            IJsObject result;
+
+            if (m_body != null)
+                result = Invoke(instance, parameters,visitor);
+            else
+                return instance;
+
+            Debug.Assert(result != null);
+
+            if (result != JsNull.Instance && result != JsUndefined.Instance)
+                return result;
+
+            return instance;
+        }
+
+        public IJsObject PrototypeProperty {
+            get { return m_prototypeReference.GetObject(); }
+            set { m_prototypeReference.SetObject(value); }
+        }
+
+        
         #endregion
 
         #region IEnumerable Members
 
         public new System.Collections.IEnumerator GetEnumerator() {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         #endregion
+
+        public override bool IsClr {
+            get { return false; }
+        }
+
+        public override object Value {
+            get {
+                return null;
+            }
+            set {
+                ;
+            }
+        }
+
+        public override string Class {
+            get { return JsInstance.CLASS_FUNCTION; }
+        }
     }
 }

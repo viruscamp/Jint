@@ -382,12 +382,14 @@ namespace Jint {
         }
 
         public object CallFunction(string name, params object[] args) {
-            return CallFunction((JsFunction)visitor.CurrentScope[name], args);
-        }
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("A function name should be not empty string", "name");
 
-        public object CallFunction(JsFunction function, params object[] args) {
-            visitor.ExecuteFunction(function, null, Array.ConvertAll<object,IJsInstance>( args, x => visitor.Global.Marshaller.MarshalClrValue<object>(x) ));
-            return visitor.Global.Marshaller.MarshalJsValue<object>(visitor.Returned);
+            IFunction fn = visitor.CurrentScope[name] as IFunction;
+            if (fn == null)
+                throw new InvalidOperationException(String.Format("{0} isn't a function", name));
+
+            fn.Invoke(JsNull.Instance, Array.ConvertAll<object, IJsInstance>(args, x => visitor.Global.Marshaller.MarshalClrValue<object>(x)));
         }
 
         public JintEngine SetFunction(string name, Delegate function) {

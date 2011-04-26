@@ -12,14 +12,14 @@ namespace Jint.Native
     /// </summary>
     /// <param name="that">A target object</param>
     /// <returns>A value of a property</returns>
-    public delegate IJsObject JsGetter(JsObjectBase that);
+    public delegate IJsObject JsGetter(IJsObject that);
 
     /// <summary>
     /// A wrapper around native property setter
     /// </summary>
     /// <param name="that">A target object</param>
     /// <param name="value">A new value for the property</param>
-    public delegate void JsSetter(JsObjectBase that, IJsObject value);
+    public delegate void JsSetter(IJsObject that, IJsObject value);
 
     /// <summary>
     /// Descriptor which get and set methods are implemented through delegates

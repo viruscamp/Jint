@@ -307,5 +307,9 @@ namespace Jint.Native {
         public override bool Equals(object obj) {
             return this == obj;
         }
+
+        internal void CopyTo(IJsInstance[] args, int p) {
+            throw new NotImplementedException();
+        }
     }
 }

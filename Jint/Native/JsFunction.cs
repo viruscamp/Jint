@@ -39,21 +39,10 @@ namespace Jint.Native {
             m_body = body;
             m_options = options;
 
-            DefineOwnProperty(
-                new NativeValueDescriptor(
-                    this,
-                    LENGTH,
-                    delegate(IJsObject that) {
-                        return m_arguments.Count;
-                    }
-                ) { Enumerable = false, Configurable = false, Writable = false },
-                true
-            );
-
             IJsObject proto = global.ObjectClass.New();
 
             proto.DefineOwnProperty(new ValueDescriptor(proto, CONSTRUCTOR, this) { Enumerable = false }, true);
-            DefineOwnProperty(PROTOTYPE, proto, PropertyAttributes.DontEnum);
+            DefineOwnProperty(PROTOTYPE, proto, PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure);
 
             if (options & Options.Strict) {
                 proto.DefineOwnProperty(
@@ -152,34 +141,32 @@ namespace Jint.Native {
             return new ExecutionVisitor(m_global);
         }
 
-        #region IFunction Members
-
-        public string Name {
+        public override string Name {
             get {
                 return m_name;
             }
         }
 
-        public IList<string> Arguments {
+        public override IList<string> Arguments {
             get {
                 return m_arguments.AsReadOnly();
             }
         }
 
-        public int Length {
+        public override int Length {
             get {
                 return m_arguments.Count;
             }
         }
 
-        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext) {
             if (m_body == null)
                 return JsUndefined.Instance;
 
             return Invoke(that, parameters, GetVisitor());
         }
 
-        public IJsObject Construct(IJsInstance[] parameters) {
+        public override IJsObject Construct(IJsInstance[] parameters) {
             IJsObject instance = m_global.ObjectClass.New(this,this.PrototypeProperty);
             IJsObject result;
 
@@ -216,37 +203,8 @@ namespace Jint.Native {
             return instance;
         }
 
-        public IJsObject PrototypeProperty {
-            get { return m_prototypeReference.GetObject(); }
-            set { m_prototypeReference.SetObject(value); }
-        }
-
-        
-        #endregion
-
-        #region IEnumerable Members
-
-        public new System.Collections.IEnumerator GetEnumerator() {
-            return GetEnumerator();
-        }
-
-        #endregion
-
-        public override bool IsClr {
-            get { return false; }
-        }
-
-        public override object Value {
-            get {
-                return null;
-            }
-            set {
-                ;
-            }
-        }
-
-        public override string Class {
-            get { return JsInstance.CLASS_FUNCTION; }
+        public override string GetBody() {
+            return m_body == null ? String.Empty : " /* js code */ " ;
         }
     }
 }

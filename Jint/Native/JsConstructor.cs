@@ -1,89 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace Jint.Native {
-    [Serializable]
-    public abstract class JsConstructor : JsObjectBase, IFunction {
-        /// <summary>
-        /// Stores Global object used for creating this function.
-        /// This property may be used in the InitProtype method.
-        /// </summary>
-        public IGlobal Global { get; set; }
-
-        /// <summary>
-        /// Constructs JsContructor, setting [[Prototype]] property to global.FunctionClass.PrototypeProperty
-        /// </summary>
-        /// <param name="global">Global</param>
-        public JsConstructor(IGlobal global)
-            : base(global) {
-            Global = global;
-        }
-
-        /// <summary>
-        /// Special form of the contructor used when constructin JsFunctionConstructor
-        /// </summary>
-        /// <remarks>This constructor is called when the global.FunctionClass isn't set yet.</remarks>
-        /// <param name="global">Global</param>
-        /// <param name="prototype">Prototype</param>
-        protected JsConstructor(IGlobal global, JsObject prototype)
+    /// <summary>
+    /// Constructors is a special class of functions, they are able to create
+    /// new objects and always have a prototype.
+    /// </summary>
+    public abstract class JsConstructor : JsFunctionBase {
+        IGlobal m_global;
+        string m_name;
+        int m_length;
+        
+        protected JsConstructor(string name, int length, IGlobal global, IJsObject prototype)
             : base(prototype) {
-            Global = global;
+
+            Debug.Assert(global != null);
+            Debug.Assert(length >= 0);
+
+            m_global = global;
         }
 
-        public abstract void InitPrototype(IGlobal global);
-
-        /// <summary>
-        /// This method is used to wrap an native value with a js object of the specified type.
-        /// </summary>
-        /// <remarks>
-        /// This method creates a new apropriate js object and stores a CLR value in it.
-        /// </remarks>
-        /// <typeparam name="T">A type of a native value to wrap</typeparam>
-        /// <param name="value">A native value to wrap</param>
-        /// <returns>A js instance</returns>
-        public virtual IJsInstance Wrap<T>(T value)
-        {
-            return new JsObject(value,PrototypeProperty);
+        public IGlobal Global {
+            get { return m_global; }
         }
 
-
-
-        #region IFunction Members
-
-        public string Name {
-            get { throw new NotImplementedException(); }
-        }
-
-        public IList<string> Arguments {
-            get { throw new NotImplementedException(); }
-        }
-
-        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
-            throw new NotImplementedException();
-        }
-
-        public IJsObject Construct(IJsInstance[] parameters) {
-            throw new NotImplementedException();
-        }
-
-        public IJsObject PrototypeProperty {
+        public override string Name {
             get {
-                throw new NotImplementedException();
-            }
-            set {
-                throw new NotImplementedException();
+                return m_name;
             }
         }
 
-        #endregion
-
-        #region IEnumerable Members
-
-        public new System.Collections.IEnumerator GetEnumerator() {
-            return GetEnumerator();
+        public override IList<string> Arguments {
+            get { return new string[0]; }
         }
 
-        #endregion
+        public override int Length {
+            get { return m_length; }
+        }
+
+        public override string GetBody() {
+            return "/* native code */";
+        }
     }
 }

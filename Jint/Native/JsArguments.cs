@@ -72,5 +72,9 @@ namespace Jint.Native {
         public IJsInstance GetLength(JsArguments target) {
             return global.NumberClass.New(target.length);
         }
+
+        internal void CopyTo(IJsInstance[] targetParameters, int p) {
+            throw new NotImplementedException();
+        }
     }
 }

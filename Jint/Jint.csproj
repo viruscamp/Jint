@@ -123,7 +123,7 @@
     <Compile Include="Expressions\PropertyExpression.cs" />
     <Compile Include="Expressions\IForStatement.cs" />
     <Compile Include="JintException.cs" />
-    <Compile Include="Native\ClrImplDefinition.cs" />
+    <Compile Include="Native\JsMethodWrapper.cs" />
     <Compile Include="Native\JsException.cs" />
     <Compile Include="Native\JsFunctionWrapper.cs" />
     <Compile Include="Native\JsArguments.cs" />

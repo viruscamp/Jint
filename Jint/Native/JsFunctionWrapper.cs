@@ -32,12 +32,8 @@ namespace Jint.Native {
             get { return m_length; }
         }
 
-        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters,JsScope callingContext) {
             return m_delegate(parameters);
-        }
-
-        public override IJsObject Construct(IJsInstance[] parameters) {
-            throw new JsTypeException("This function can't be used as a constructor");
         }
 
         public override string GetBody() {

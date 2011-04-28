@@ -7,10 +7,9 @@ using Jint.Expressions;
 
 namespace Jint.Native
 {
-    public class NativeMethodOverload : JsFunction
+    public class NativeMethodOverload : JsFunctionBase, IFunctionGeneric
     {
-
-        Marshaller m_marshaller;
+        IGlobal m_global;
         NativeOverloadImpl<MethodInfo, JsMethodImpl> m_overloads;
 
         // a list of methods
@@ -24,7 +23,9 @@ namespace Jint.Native
         {
             if (global == null)
                 throw new ArgumentNullException("global");
-            m_marshaller = global.Marshaller;
+
+            m_global = global;
+            Marshaller m_marshaller = global.Marshaller;
 
             foreach (MethodInfo info in methods)
             {
@@ -61,25 +62,6 @@ namespace Jint.Native
             }
             set {
                 ;
-            }
-        }
-
-        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters)
-        {
-            return Execute(visitor, that, parameters, null);
-        }
-
-        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters, Type[] genericArguments)
-        {
-            if (m_generics.Count == 0 && (genericArguments != null && genericArguments.Length > 0))
-                return base.Execute(visitor, that, parameters, genericArguments);
-            else
-            {
-                JsMethodImpl impl = m_overloads.ResolveOverload(parameters, genericArguments);
-                if (impl == null)
-                    throw new JintException(String.Format("No matching overload found {0}<{1}>", Name, genericArguments));
-                visitor.Return(impl(visitor.Global, that, parameters));
-                return that;
             }
         }
 
@@ -123,7 +105,34 @@ namespace Jint.Native
 
         public override string GetBody()
         {
-            return "[native overload]";
+            return " /*native overload*/ ";
         }
+
+        public override IList<string> Arguments {
+            get { return new string[0]; }
+        }
+
+        public override int Length {
+            get { return 0; }
+        }
+
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext) {
+            return Invoke(that,parameters,callingContext);
+        }
+
+        #region IFunctionGeneric Members
+
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters, Type[] typeParemeters, JsScope callingContext) {
+            JsMethodImpl impl;
+            if (m_generics.Count == 0)
+                impl = m_overloads.ResolveOverload(parameters, null);
+            else 
+                impl = m_overloads.ResolveOverload(parameters, genericArguments);
+            if (impl == null)
+                throw new JintException(String.Format("No matching overload found {0}<{1}>", Name, genericArguments));
+            return impl(m_global, that, parameters);
+        }
+
+        #endregion
     }
 }

@@ -207,14 +207,6 @@ namespace Jint.Native {
         #region IJsObject Members
 
 
-        public IJsObject DefaultValue(IGlobal global) {
-            throw new JsTypeException("Can't get a DefaultValue for undefined instance");
-        }
-
-        public IJsObject DefaultValue(IGlobal global, DefaultValueHints hint) {
-            throw new JsTypeException("Can't get a DefaultValue for undefined instance");
-        }
-
         public bool ToBoolean() {
             return false;
         }
@@ -241,6 +233,48 @@ namespace Jint.Native {
 
         public override string ToString() {
             return "undefined";
+        }
+
+        #endregion
+
+        #region IJsObject Members
+
+
+        public bool Sealed {
+            get { return true; }
+        }
+
+        public bool Frozen {
+            get { return true; }
+        }
+
+        public bool HasOwnProperty(string name) {
+            return false;
+        }
+
+        public bool IsPrototypeOf(IJsObject other) {
+            return false;
+        }
+
+        public IEnumerable<Descriptor> GetProperties() {
+            return new Descriptor[0];
+        }
+
+        public IEnumerable<Descriptor> GetOwnProperties() {
+            return new Descriptor[0];
+        }
+
+        public void Seal() {
+        }
+
+        public void Freeze() {
+        }
+
+        public void PreventExtensions() {
+        }
+
+        public IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
+            return Instance;
         }
 
         #endregion

@@ -8,8 +8,6 @@ namespace Jint.Native {
     /// Number class, see ecma 262.5 15.7.
     /// </summary>
     /// <remarks>
-    
-    /// </remarks>
     public sealed class JsNumber : JsObjectBase {
 
         double m_value;

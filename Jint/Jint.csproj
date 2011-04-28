@@ -62,6 +62,7 @@
     <Compile Include="Native\INativeIndexer.cs" />
     <Compile Include="Native\JsBooleanPrimitive.cs" />
     <Compile Include="Native\JsDescriptorReference.cs" />
+    <Compile Include="Native\JsEmptyFunction.cs" />
     <Compile Include="Native\JsFunctionBase.cs" />
     <Compile Include="Native\JsGlobalScope.cs" />
     <Compile Include="Native\JsIdentifierReference.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Native\JsNumberPrimitive.cs" />
     <Compile Include="Native\JsObjectScope.cs" />
     <Compile Include="Native\JsPrimitiveValue.cs" />
+    <Compile Include="Native\JsRangeException.cs" />
     <Compile Include="Native\JsReference.cs" />
     <Compile Include="Native\JsReferenceException.cs" />
     <Compile Include="Native\JsStringPrimitive.cs" />
@@ -105,7 +107,6 @@
     <Compile Include="PropertyBags\HashedPropertyBag.cs" />
     <Compile Include="PropertyBags\IPropertyBag.cs" />
     <Compile Include="Native\IGlobal.cs" />
-    <Compile Include="Native\JsApplyFunction.cs" />
     <Compile Include="Native\Descriptor.cs" />
     <Compile Include="Native\JsComparer.cs" />
     <Compile Include="Native\JsConstructor.cs" />

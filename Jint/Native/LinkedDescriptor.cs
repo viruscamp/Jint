@@ -64,16 +64,25 @@ namespace Jint.Native {
             };
         }
 
-        public override IJsInstance Get(JsObjectBase that) {
+        public override IJsObject Get(IJsObject that) {
             return d.Get(m_that);
         }
 
-        public override void Set(JsObjectBase that, IJsInstance value) {
+        public override void Set(IJsObject that, IJsObject value) {
             d.Set(m_that, value);
         }
 
-        internal override DescriptorType DescriptorType {
+        public override DescriptorType DescriptorType {
             get { return d.DescriptorType; }
+        }
+
+        public override bool Writable {
+            get {
+                return d.Writable ;
+            }
+            set {
+                ;
+            }
         }
     }
 }

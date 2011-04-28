@@ -10,8 +10,8 @@ namespace Jint.Native {
     public class JsFunctionConstructor : JsConstructor {
 
 
-        public JsFunctionConstructor(IGlobal global, JsFunction prototype)
-            : base(JsInstance.CLASS_FUNCTION ,1,global, prototype) {
+        public JsFunctionConstructor(IGlobal global, IFunction prototype)
+            : base(JsInstance.CLASS_FUNCTION , global, prototype) {
 
             DefineOwnProperty(PROTOTYPE, prototype, PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
 
@@ -84,71 +84,61 @@ namespace Jint.Native {
         }
 
         IJsObject ToStringImpl(IFunction that) {
-            return Global.NewPrimitive(
-                String.Format(
-                    "function {0} ({1}) {{ /* native code */ }}",
-                    that.Name,
-                    String.Join(", ", new List<string>(that.Arguments).ToArray())
-                )
-            );
+            Debug.Assert(that != null);
+            return Global.NewPrimitive( that.ToStringImpl() );
         }
 
         public IFunction New() {
-            JsFunction function = new JsFunction(PrototypeProperty);
-            function.PrototypeProperty = Global.ObjectClass.New(function);
-            return function;
+            return new JsEmptyFunction(Global, PrototypeProperty);
         }
 
-        public IFunction New<T>(Func<T, IJsInstance> impl) where T : IJsInstance {
-            JsFunction function = new JsMethodWrapper<T>(impl, PrototypeProperty);
-            function.PrototypeProperty = Global.ObjectClass.New(function);
-            //function.Scope = new JsScope(PrototypeProperty);
-            return function;
+        public IFunction New<T>(JsMethodNoArgsDelegate<T> impl) where T : IJsObject {
+            return new JsMethodWrapper<T>(impl, PrototypeProperty);
         }
 
-        public IFunction New<T>(Func<T, IJsInstance[], IJsInstance> impl) where T : IJsInstance {
-            JsFunction function = new JsMethodWrapper<T>(impl, PrototypeProperty);
-            function.PrototypeProperty = Global.ObjectClass.New(function);
-            //function.Scope = new JsScope(PrototypeProperty);
-            return function;
+        public IFunction New<T>(JsMethodDelegate<T> impl) where T : IJsObject {
+            return new JsMethodWrapper<T>(impl, PrototypeProperty);
         }
-        public IFunction New<T>(Func<T, IJsInstance[], IJsInstance> impl, int length) where T : IJsInstance {
-            JsFunction function = new JsMethodWrapper<T>(impl, length, PrototypeProperty);
-            function.PrototypeProperty = Global.ObjectClass.New(function);
-            //function.Scope = new JsScope(PrototypeProperty);
-            return function;
+
+        public IFunction New<T>(JsMethodDelegate<T> impl, int length) where T : IJsObject {
+            return new JsMethodWrapper<T>(impl, length, PrototypeProperty);
+        }
+
+        public IFunction New(JsFunctionDelegate impl, int length) {
+            return new JsFunctionWrapper(impl, String.Empty, length, PrototypeProperty);
         }
 
         public IFunction New(Delegate d) {
-            JsFunction function = new ClrFunction(d, PrototypeProperty);
-            function.PrototypeProperty = Global.ObjectClass.New(function);
-            //function.Scope = new JsScope(PrototypeProperty);
-            return function;
+            return Global.Marshaller.MarshalDelegate(d);
         }
 
-        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters) {
-            return Construct(parameters);
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext) {
+            return Construct(parameters, callingContext);
         }
 
-        public override IJsObject Construct(IJsInstance[] parameters) {
-            JsFunction instance = new JsFunction(Global,new JsGlobalScope(Global,true),;
+        public override IJsObject Construct(IJsInstance[] parameters,JsScope callingContext) {
+            if (parameters == null || parameters.Length == 0)
+                return new JsEmptyFunction(Global,PrototypeProperty);
 
-            instance.Arguments = new List<string>();
+            // at least one parameter
+            Program p = JintEngine.Compile(parameters[parameters.Length - 1].Value.ToString(), false);
+            BlockStatement body = new BlockStatement() { Statements = p.Statements };
+            
+            List<string> args = new List<string>(parameters.Length -1);
 
             for (int i = 0; i < parameters.Length - 1; i++) {
                 string arg = parameters[i].ToString();
 
-                foreach (string a in arg.Split(',')) {
-                    instance.Arguments.Add(a.Trim());
-                }
+                foreach (string a in arg.Split(','))
+                    args.Add(a.Trim());
             }
 
-            if (parameters.Length >= 1) {
-                Program p = JintEngine.Compile(parameters[parameters.Length - 1].Value.ToString(), visitor.DebugMode);
-                instance.Statement = new BlockStatement() { Statements = p.Statements };
-            }
 
-            return instance;
+            return new JsFunction(Global, new JsScope(callingContext), String.Empty, args, body, PrototypeProperty);
+        }
+
+        public override int Length {
+            get { return 1; }
         }
     }
 }

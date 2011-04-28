@@ -46,7 +46,7 @@ namespace Jint.Native {
             JsArray array = New();
 
             for (int i = 0; i < parameters.Length; i++)
-                array.put(i, parameters[i]); // fast versin since it avoids a type conversion
+                array.Put(i, parameters[i]); // fast versin since it avoids a type conversion
 
             return array;
         }
@@ -135,12 +135,12 @@ namespace Jint.Native {
                         string p = k.ToString();
                         IJsInstance result = null;
                         if (((JsObject)e).TryGetProperty(p, out result))
-                            array.put(n, result);
+                            array.Put(n, result);
                         n++;
                     }
                 }
                 else {
-                    array.put(n, e);
+                    array.Put(n, e);
                     n++;
                 }
             }
@@ -376,7 +376,7 @@ namespace Jint.Native {
                 string from = (relativeStart + k).ToString();
                 IJsInstance result = null;
                 if (target.TryGetProperty(from, out result)) {
-                    array.put(k, result);
+                    array.Put(k, result);
                 }
             }
 

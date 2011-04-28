@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Jint.Expressions;
 
 namespace Jint.Native {
     /// <summary>
@@ -43,7 +44,20 @@ namespace Jint.Native {
         /// and this case should be treated as calling from a global context.
         /// </remarks>
         IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext);
-    
+
+        /// <summary>
+        /// Default implementation of Function.prototype.toString.
+        /// </summary>
+        /// <returns>A string respresentation for this function.</returns>
+        string ToStringImpl();
+
+    }
+
+    /// <summary>
+    /// Interface for constructors. All constructors are functions since they can be applied to objects
+    /// to initilize them.
+    /// </summary>
+    public interface IConstructor: IFunction {
         /// <summary>
         /// Constructs a new object using this function as a constructor.
         /// </summary>
@@ -67,16 +81,19 @@ namespace Jint.Native {
         bool HasInstance(IJsObject instance);
     }
 
-    /// <summary>
-    /// Interface for function generics
-    /// </summary>
-    /// <remarks>
-    /// Using three argument form of <c>Invoke</c> or two argument form of <c>Construct</c> methods
-    /// may or may not to suggest type parameters.
-    /// </remarks>
     public interface IFunctionGeneric : IFunction {
 
         IJsObject Invoke(IJsObject that, IJsInstance[] parameters, Type[] typeParemeters, JsScope callingContext);
+
+    }
+
+    public interface IConstructorGeneric: IFunctionGeneric, IConstructor {
+
         IJsObject Construct(IJsInstance[] parameters, Type[] typeParameters, JsScope callingContext);
+    }
+
+    public interface IJintFunction {
+        IJsObject Invoke(IJsObject that, IJsInstance[] parameters, Type[] typeParemeters, IJintVisitor visitor);
+        IJsObject Construct(IJsInstance[] parameters, Type[] typeParameters, IJintVisitor visitor);
     }
 }

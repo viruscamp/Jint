@@ -125,10 +125,14 @@ namespace Jint
                     return MarshalType(value as Type);
                 }
             } else if (value is Delegate) {
-                return m_global.FunctionClass.New((Delegate)value);
+                return MarshalDelegate((Delegate)value);
             } else {
                 return MarshalType(value.GetType()).Wrap(value);
             }
+        }
+
+        public IFunction MarshalDelegate(Delegate d) {
+            return new ClrFunction(m_global, (Delegate)value, m_global.FunctionClass.PrototypeProperty);
         }
 
         public JsConstructor MarshalType(Type t)

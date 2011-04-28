@@ -155,5 +155,9 @@ namespace Jint.Native {
             if (genDescriptor.HasAttribute(DescriptorAttributes.Configurable))
                 Configurable = genDescriptor.Configurable;
         }
+
+        internal IJsObject ToObject() {
+            throw new NotImplementedException();
+        }
     }
 }

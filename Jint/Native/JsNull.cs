@@ -12,6 +12,8 @@ namespace Jint.Native {
     public class JsNull : IJsObject {
         public static JsNull Instance = new JsNull();
 
+        private JsNull() { }
+
         #region IJsObject Members
 
         public IJsObject Prototype {
@@ -248,6 +250,48 @@ namespace Jint.Native {
 
         public override string ToString() {
             return "null";
+        }
+
+        #endregion
+
+        #region IJsObject Members
+
+
+        public bool Sealed {
+            get { return true; }
+        }
+
+        public bool Frozen {
+            get { return true; }
+        }
+
+        public bool HasOwnProperty(string name) {
+            return false;
+        }
+
+        public bool IsPrototypeOf(IJsObject other) {
+            return true;
+        }
+
+        public IEnumerable<Descriptor> GetProperties() {
+            return new Descriptor[0];
+        }
+
+        public IEnumerable<Descriptor> GetOwnProperties() {
+            return new Descriptor[0];
+        }
+
+        public void Seal() {
+        }
+
+        public void Freeze() {
+        }
+
+        public void PreventExtensions() {
+        }
+
+        public IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
+            return Instance;
         }
 
         #endregion

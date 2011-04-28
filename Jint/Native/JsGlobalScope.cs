@@ -7,13 +7,8 @@ namespace Jint.Native {
     /// Class represents a global scope which is binded to the global object.
     /// </summary>
     public class JsGlobalScope: JsObjectScope {
-        IGlobal m_global;
-        bool m_strict;
-
-        public JsGlobalScope(IGlobal global, bool strict)
-            : base(global, JsNull.Instance) {
-            m_strict = strict;
-            m_global = global;
+        public JsGlobalScope(IGlobal global, Options options)
+            : base(global, JsNull.Instance, options) {
         }
 
         public override IJsInstance ResolveIdentifier(string name) {
@@ -30,7 +25,7 @@ namespace Jint.Native {
                 }
             }
 
-            return new JsUnresolvedReference(m_bag, name, m_strict);
+            return new JsUnresolvedReference(GlobalObject, name, IsStrict);
         }
     }
 }

@@ -29,9 +29,23 @@ namespace Jint.Native {
         }
         
         /// <summary>
-        /// [[Extensible]] If true, own properties may be added to the object.
+        /// [[Extensible]] If true, own properties may be added to the object, see ecma 15.2.3.10
         /// </summary>
         bool Extensible {
+            get;
+        }
+
+        /// <summary>
+        /// True if object is sealed, see ecma 15.2.3.8
+        /// </summary>
+        bool Sealed {
+            get;
+        }
+
+        /// <summary>
+        /// True if object is frozen, see ecma 15.2.3.9
+        /// </summary>
+        bool Frozen {
             get;
         }
 
@@ -76,6 +90,21 @@ namespace Jint.Native {
         /// <param name="name">a property name.</param>
         /// <returns>true if the object has a property</returns>
         bool HasProperty(string name);
+
+        /// <summary>
+        /// Checks whether the object has a specified property.
+        /// </summary>
+        /// <param name="name">a property name.</param>
+        /// <returns>true if the object has a property</returns>
+        bool HasOwnProperty(string name);
+
+        /// <summary>
+        /// Tests wheather the current object is in the prototype chain
+        /// of the other obejct.
+        /// </summary>
+        /// <param name="other">The object to inspect a prototype chain.</param>
+        /// <returns>True if the current object is a prototype for the other.</returns>
+        bool IsPrototypeOf(IJsObject other);
 
         /// <summary>
         /// Deletes a specfied property .
@@ -135,10 +164,26 @@ namespace Jint.Native {
         /// </summary>
         /// <returns>Property enumerator</returns>
         IEnumerable<Descriptor> GetOwnProperties();
+
+        /// <summary>
+        /// Seals the object, see ecma 262.5 15.2.3.8
+        /// </summary>
+        void Seal();
+
+        /// <summary>
+        /// Freezes object, same as seal, except all properties becomes a read only.
+        /// </summary>
+        void Freeze();
+
+        /// <summary>
+        /// Marks object as non extensible.
+        /// </summary>
+        void PreventExtensions();
         
         #endregion
 
         #region conversion routines ecma 262.5 9
+
 
         bool ToBoolean();
 
@@ -151,6 +196,30 @@ namespace Jint.Native {
         UInt16 ToUInt16();
 
         IJsObject ToObject(IGlobal global);
+
+        /// <summary>
+        /// Converts current instance to the one of the apropriate primitive objects.
+        /// </summary>
+        /// <param name="global">
+        /// An instance of a global object which should help to construct a new
+        /// instance of primitive object.
+        /// </param>
+        /// <returns>A new primitive object</returns>
+        IJsObject ToPrimitive(IGlobal global);
+
+        /// <summary>
+        /// Converts current instance to the one of the apropriate primitive objects.
+        /// </summary>
+        /// <param name="global">
+        /// An instance of a global object which should help to construct a new
+        /// instance of primitive object.
+        /// </param>
+        /// <param name="hint">
+        /// If an object is capable of converting to more than one primitive type,
+        /// it <b>may</b> use the optional hint to favour that type.
+        /// </param>
+        /// <returns>A new primitive object</returns>
+        IJsObject ToPrimitive(IGlobal global, JsObjectType hint);
 
         #endregion
     }

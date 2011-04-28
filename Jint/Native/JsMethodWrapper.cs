@@ -12,6 +12,10 @@ namespace Jint.Native {
     /// <summary>
     /// Wraps a delegate which can be called as a method on an object, with or without parameters.
     /// </summary>
+    /// <remarks>
+    /// Resulting object is a function and can't be used as a constructor. It doesn't have 'prototype'
+    /// property.
+    /// </remarks>
     public class JsMethodWrapper<T> : JsFunctionBase
         where T : IJsObject {
         

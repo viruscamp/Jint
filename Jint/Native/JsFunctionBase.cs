@@ -13,8 +13,6 @@ namespace Jint.Native {
         public const string CALL = "call";
         public const string APPLY = "apply";
 
-        JsDescriptorReference m_prototypeReference;
-
         public JsFunctionBase(IJsObject prototype)
             : base(prototype) {
             DefineOwnProperty(new NativeValueDescriptor(this, LENGTH, delegate(IJsObject that) { return Length; }), true);
@@ -68,28 +66,15 @@ namespace Jint.Native {
             get;
         }
 
-        public abstract IJsObject Invoke(IJsObject that, IJsInstance[] parameters);
+        public abstract IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext);
 
-        public abstract IJsObject Construct(IJsInstance[] parameters);
-
-        public IJsObject PrototypeProperty {
-            get {
-                return m_prototypeReference.GetObject();
-            }
-            set {
-                m_prototypeReference.SetObject(value);
-            }
-        }
-
-        public bool HasInstance(IJsObject instance) {
-            if (instance == null)
-                throw new ArgumentNullException("instance");
-
-            IJsObject proto = PrototypeProperty;
-            for (IJsObject p = instance.Prototype; p != JsNull.Instance; p = p.Prototype)
-                if (p == proto)
-                    return true;
-            return false;
+        public virtual string ToStringImpl() {
+            return String.Format(
+                "function {0} ({1}) {{ {2} }}",
+                that.Name,
+                String.Join(", ", new List<string>(that.Arguments).ToArray()),
+                GetBody()
+            );
         }
 
         public abstract string GetBody();

@@ -18,6 +18,13 @@ namespace Jint.Native {
             m_bag = bag;
         }
 
+        protected JsObjectScope(IJsObject bag, IGlobal global, IJsObject prototype, Options options)
+            : base(global, prototype, options) {
+            Debug.Assert(bag != null);
+
+            m_bag = bag;
+        }
+
         public override Descriptor GetOwnProperty(string name) {
 
             Descriptor d = base.GetOwnProperty(name);

@@ -229,5 +229,11 @@ namespace Jint.Native {
         public static ushort ToUInt16(object value) {
             return ToUInt16(ToNumber(value));
         }
+
+        public static DateTime ToDate(double value) {
+            if (Double.IsNaN(value) || Double.IsInfinity(value))
+                return DateTime.MinValue;
+            return new DateTime((long)(number * JsDate.TICKSFACTOR + JsDate.OFFSET_1970), DateTimeKind.Utc);
+        }
     }
 }

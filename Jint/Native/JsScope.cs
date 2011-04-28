@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Jint.PropertyBags;
+using System.Diagnostics;
 
 namespace Jint.Native {
     /// <summary>
@@ -13,10 +14,23 @@ namespace Jint.Native {
     public class JsScope : JsObjectBase {
         protected JsScope m_outer;
         Options m_options;
+        IGlobal m_global;
 
         public JsScope(JsScope outer)
             : base(outer) {
             m_outer = outer;
+            m_options = outer.Options;
+            m_global = outer.GlobalObject;
+        }
+
+        protected JsScope(IGlobal global,IJsObject prototype,Options options): base(prototype) {
+            Debug.Assert(global != null);
+            m_global = global;
+            m_options = options;
+        }
+
+        public IGlobal GlobalObject {
+            get { return m_global; }
         }
 
         public Options Options {

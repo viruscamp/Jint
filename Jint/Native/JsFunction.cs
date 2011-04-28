@@ -8,9 +8,9 @@ namespace Jint.Native {
     /// <summary>
     /// Represents a function which will be interpreted using an execution visitor.
     /// </summary>
-    public class JsFunction : JsFunctionBase {
+    public class JsFunction : JsConstructor, IJintFunction {
         string m_name;
-        List<string> m_arguments = new List<string>();
+        List<string> m_arguments;
 
         
         IGlobal m_global;
@@ -26,25 +26,34 @@ namespace Jint.Native {
         /// </remarks>
         /// <param name="global">A global object.</param>
         /// <param name="scope">A function scope.</param>
+        /// <param name="name">A function name, can be null.</param>
+        /// <param name="arguments">A list of arguments of the function, can be null.</param>
+        /// <param name="prototype">A prototype for this function</param>
         /// <param name="body">A function body, can be null.</param>
-        /// <param name="options">An ecma script options (es3 ,es5, strict).</param>
-        public JsFunction(IGlobal global, JsScope scope, Statement body,IJsObject prototype, Options options) : base(prototype) {
+        public JsFunction(IGlobal global, JsScope scope, string name,IList<string> arguments, Statement body,IJsObject prototype) : base(prototype) {
             if (global == null)
                 throw new ArgumentNullException("global");
             if (scope == null)
                 throw new ArgumentNullException("scope");
+
+            m_options = scope.Options;
 
             m_global = global;
             m_scope = scope;
             m_body = body;
             m_options = options;
 
+            if (arguments == null)
+                m_arguments = new List<string>();
+            else
+                m_arguments = new List<string>(arguments);
+
             IJsObject proto = global.ObjectClass.New();
 
             proto.DefineOwnProperty(new ValueDescriptor(proto, CONSTRUCTOR, this) { Enumerable = false }, true);
             DefineOwnProperty(PROTOTYPE, proto, PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure);
 
-            if (options & Options.Strict) {
+            if (m_options & Options.Strict) {
                 proto.DefineOwnProperty(
                     new NativeAccessorDescriptor(
                         this,
@@ -74,7 +83,7 @@ namespace Jint.Native {
         /// <param name="parameters">A list of arguments passsed to the function</param>
         /// <param name="visitor">An instance of the interpreter</param>
         /// <returns>A returned value</returns>
-        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters, IJintVisitor visitor) {
+        public IJsObject Invoke(IJsObject that, IJsInstance[] parameters,Type[] typeParameters, IJintVisitor visitor) {
             if (visitor == null)
                 throw new ArgumentNullException("visitor");
 
@@ -163,15 +172,15 @@ namespace Jint.Native {
             if (m_body == null)
                 return JsUndefined.Instance;
 
-            return Invoke(that, parameters, GetVisitor());
+            return Invoke(that, parameters, null, GetVisitor());
         }
 
-        public override IJsObject Construct(IJsInstance[] parameters) {
+        public IJsObject Construct(IJsInstance[] parameters, JsScope callingContext) {
             IJsObject instance = m_global.ObjectClass.New(this,this.PrototypeProperty);
             IJsObject result;
 
             if (m_body != null)
-                result = Invoke(instance, parameters);
+                result = Invoke(instance, parameters, callingContext);
             else
                 return instance;
 
@@ -183,7 +192,7 @@ namespace Jint.Native {
             return instance;
         }
 
-        public IJsObject Construct(IJsInstance[] parameters, IJintVisitor visitor) {
+        public IJsObject Construct(IJsInstance[] parameters, Type[] typeParameters, IJintVisitor visitor) {
             if (visitor == null)
                 throw new ArgumentNullException("visitor");
 
@@ -191,7 +200,7 @@ namespace Jint.Native {
             IJsObject result;
 
             if (m_body != null)
-                result = Invoke(instance, parameters,visitor);
+                result = Invoke(instance, parameters, typeParameters, visitor);
             else
                 return instance;
 
@@ -206,5 +215,6 @@ namespace Jint.Native {
         public override string GetBody() {
             return m_body == null ? String.Empty : " /* js code */ " ;
         }
+
     }
 }

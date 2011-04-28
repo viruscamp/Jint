@@ -249,5 +249,43 @@ namespace Jint.Native {
         }
 
         #endregion
+
+        #region IJsObject Members
+
+
+        public bool Sealed {
+            get { return true; }
+        }
+
+        public bool Frozen {
+            get { return true; }
+        }
+
+        public bool HasOwnProperty(string name) {
+            return false;
+        }
+
+        public bool IsPrototypeOf(IJsObject other) {
+            return false;
+        }
+
+        public IEnumerable<Descriptor> GetProperties() {
+            return m_prototype.GetProperties();
+        }
+
+        public IEnumerable<Descriptor> GetOwnProperties() {
+            return new Descriptor[0];
+        }
+
+        public void Seal() {
+        }
+
+        public void Freeze() {
+        }
+
+        public void PreventExtensions() {
+        }
+
+        #endregion
     }
 }

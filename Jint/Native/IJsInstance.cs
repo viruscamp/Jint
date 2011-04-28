@@ -34,30 +34,6 @@ namespace Jint.Native {
         /// it will be a Double and so on.
         /// </remarks>
         object Value { get; set; }
-
-        /// <summary>
-        /// Converts current instance to the one of the apropriate primitive objects.
-        /// </summary>
-        /// <param name="global">
-        /// An instance of a global object which should help to construct a new
-        /// instance of primitive object.
-        /// </param>
-        /// <returns>A new primitive object</returns>
-        IJsObject ToPrimitive(IGlobal global);
-
-        /// <summary>
-        /// Converts current instance to the one of the apropriate primitive objects.
-        /// </summary>
-        /// <param name="global">
-        /// An instance of a global object which should help to construct a new
-        /// instance of primitive object.
-        /// </param>
-        /// <param name="hint">
-        /// If an object is capable of converting to more than one primitive type,
-        /// it <b>may</b> use the optional hint to favour that type.
-        /// </param>
-        /// <returns>A new primitive object</returns>
-        IJsObject ToPrimitive(IGlobal global,JsObjectType hint);
         
         /// <summary>
         /// Class of an object, don't confuse with type of an object.

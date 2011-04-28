@@ -2,60 +2,38 @@
 using System.Collections.Generic;
 using System.Text;
 using Jint.Expressions;
+using System.Diagnostics;
 
 namespace Jint.Native {
     [Serializable]
     public class JsObjectConstructor : JsConstructor {
-        public JsObjectConstructor(IGlobal global, JsObject prototype, JsObject rootPrototype)
-            : base(global) {
-            Name = "Object";
-            DefineOwnProperty(PROTOTYPE, rootPrototype, PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure | PropertyAttributes.ReadOnly);
-        }
+        public JsObjectConstructor(IGlobal global, IJsObject prototype, JsObject prototypeProperty)
+            : base(JsInstance.CLASS_OBJECT, global, prototype) {
 
-        public override void InitPrototype(IGlobal global) {
-            var Prototype = PrototypeProperty;
+            DefineOwnProperty(PROTOTYPE, prototypeProperty, ConstPropertyAttributes);
+        
+            DefineProperty(prototypeProperty, "constructor", this, PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "toString", global.FunctionClass.New<IJsObject>(ToStringImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "toLocaleString", global.FunctionClass.New<IJsObject>(ToStringImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "valueOf", global.FunctionClass.New<IJsObject>(ValueOfImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "hasOwnProperty", global.FunctionClass.New<IJsObject>(HasOwnPropertyImpl,1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "isPrototypeOf", global.FunctionClass.New<IJsObject>(IsPrototypeOfImpl,1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "propertyIsEnumerable", global.FunctionClass.New<IJsObject>(PropertyIsEnumerableImpl), PropertyAttributes.DontEnum);
 
-            // we need to keep this becouse the prototype is passed to the consctrucor rather than created in it
-            Prototype.DefineOwnProperty("constructor", this, PropertyAttributes.DontEnum);
+            DefineOwnProperty("getPrototypeOf", global.FunctionClass.New(GetPrototypeOfImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("getOwnPropertyDescriptor", global.FunctionClass.New(GetOwnPropertyDescriptorImpl, 2), PropertyAttributes.DontEnum);
+            DefineOwnProperty("getOwnPropertyNames", global.FunctionClass.New(GetOwnPropertyNames, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("create", global.FunctionClass.New(CreateImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("defineProperty", global.FunctionClass.New(DefinePropertyImpl, 3), PropertyAttributes.DontEnum);
+            DefineOwnProperty("defineProperties", global.FunctionClass.New(DefinePropertiesImpl, 2), PropertyAttributes.DontEnum);
+            DefineOwnProperty("seal", global.FunctionClass.New(SealImpl,1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("freeze", global.FunctionClass.New(FreezeImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("preventExtensions", global.FunctionClass.New(PreventExtensionsImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("isSealed", global.FunctionClass.New(IsSealedImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("isFrozen", global.FunctionClass.New(IsFrozenImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("isExtensible", global.FunctionClass.New(IsExtensibleImpl, 1), PropertyAttributes.DontEnum);
+            DefineOwnProperty("keys", global.FunctionClass.New(KeysImpl, 1), PropertyAttributes.DontEnum);
 
-            //Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsDictionaryObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl));
-
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsObjectBase>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("valueOf", global.FunctionClass.New<JsObjectBase>(ValueOfImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("hasOwnProperty", global.FunctionClass.New<JsObjectBase>(HasOwnPropertyImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("isPrototypeOf", global.FunctionClass.New<JsObjectBase>(IsPrototypeOfImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("propertyIsEnumerable", global.FunctionClass.New<JsObjectBase>(PropertyIsEnumerableImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("getPrototypeOf", new JsFunctionWrapper(GetPrototypeOfImpl, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
-            if (global.HasOption(Options.Ecmascript5)) {
-                Prototype.DefineOwnProperty("defineProperty", new JsFunctionWrapper(DefineProperty, global.FunctionClass.PrototypeProperty), PropertyAttributes.DontEnum);
-                Prototype.DefineOwnProperty("__lookupGetter__", global.FunctionClass.New<JsObjectBase>(GetGetFunction), PropertyAttributes.DontEnum);
-                Prototype.DefineOwnProperty("__lookupSetter__", global.FunctionClass.New<JsObjectBase>(GetSetFunction), PropertyAttributes.DontEnum);
-            }
-        }
-
-        /// <summary>
-        /// Creates new JsObject, sets a [[Prototype]] to the Object.PrototypeProperty and a 'constructor' property to the specified function
-        /// </summary>
-        /// <param name="constructor">JsFunction which is used as a constructor</param>
-        /// <returns>new object</returns>
-        public JsObject New(JsFunction constructor) {
-            JsObject obj = new JsObject(this.PrototypeProperty);
-            obj.DefineOwnProperty(new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
-            return obj;
-        }
-
-        /// <summary>
-        /// Creates new JsObject, sets a [[Prototype]] to the Prototype parameter and a 'constructor' property to the specified function.
-        /// </summary>
-        /// <param name="constructor">JsFunction which is used as a constructor</param>
-        /// <param name="Prototype">JsObjetc which is used as a prototype</param>
-        /// <returns>new object</returns>
-        public JsObject New(IFunction constructor, IJsObject Prototype)
-        {
-            JsObject obj = new JsObject(Prototype);
-            obj.DefineOwnProperty(new ValueDescriptor(obj, CONSTRUCTOR, constructor) { Enumerable = false });
-            return obj;
         }
 
         /// <summary>
@@ -67,109 +45,252 @@ namespace Jint.Native {
             return new JsObject(value, this.PrototypeProperty);
         }
 
-        public JsObject New(object value, JsObject prototype)
+        public IJsObject New(object value, JsObject prototype)
         {
             return new JsObject(value, prototype);
         }
 
-        public JsObject New() {
-            return New((object)null);
+        public IJsObject New() {
+            return new JsObject(PrototypeProperty);
         }
 
-        public JsObject New(JsObject prototype)
+        public IJsObject New(JsObject prototype)
         {
             return new JsObject(prototype);
         }
 
-        /// <summary>
-        /// 15.2.2.1
-        /// </summary>
-        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
-            if (parameters.Length > 0) {
-                switch (parameters[0].Class) {
-                    case IJsInstance.CLASS_STRING: return Global.StringClass.New(parameters[0].ToString());
-                    case IJsInstance.CLASS_NUMBER: return Global.NumberClass.New(parameters[0].ToNumber());
-                    case IJsInstance.CLASS_BOOLEAN: return Global.BooleanClass.New(parameters[0].ToBoolean());
-                    default:
-                        return parameters[0];
-                }
-            }
-
-            return New(this);
-        }
-
-        // 15.2.4.3 and 15.2.4.4
-        public IJsInstance ToStringImpl(JsObjectBase target, IJsInstance[] parameters) {
-            return Global.StringClass.New(String.Concat("[object ", target.Class, "]"));
+        // 15.2.4.2 15.2.4.3
+        IJsObject ToStringImpl(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+            return Global.NewPrimitive(String.Concat("[object ", target.Class, "]"));
         }
 
         // 15.2.4.4
-        public IJsInstance ValueOfImpl(JsObjectBase target, IJsInstance[] parameters) {
+        IJsObject ValueOfImpl(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
             return target;
         }
 
         // 15.2.4.5
-        public IJsInstance HasOwnPropertyImpl(JsObjectBase target, IJsInstance[] parameters) {
-            return Global.BooleanClass.New(target.HasOwnProperty(parameters[0]));
+        IJsObject HasOwnPropertyImpl(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
+            string key;
+
+            if (parameters == null || parameters.Length == 0)
+                key = JsUndefined.Instance.ToString();
+            else
+                key = parameters[0].GetObject().ToString();
+
+            return Global.NewPrimitive( target.HasOwnProperty(key) );
         }
 
         // 15.2.4.6
-        public IJsInstance IsPrototypeOfImpl(JsObjectBase target, IJsInstance[] parameters) {
-            if (target.Class != IJsInstance.CLASS_OBJECT) {
-                return Global.BooleanClass.False;
-            }
+        public IJsObject IsPrototypeOfImpl(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-            while (true) {
-                IsPrototypeOf(target);
-                if (target == null) {
-                    return Global.BooleanClass.True;
-                }
+            IJsObject param = parameters = null || parameters.Length == 0 ? JsUndefined.Instance : parameters[0];
+            if (param.Type != JsObjectType.Object)
+                return Global.NewPrimitive(false);
 
-                if (target == this) {
-                    return Global.BooleanClass.True;
-                }
-            }
+            // if target is primitive it will return false, same result if primitive will be converted to new Object
+            return Global.NewPrimitive( target.IsPrototypeOf(param) );
         }
 
         // 15.2.4.7
-        public IJsInstance PropertyIsEnumerableImpl(JsObjectBase target, IJsInstance[] parameters) {
-            if (!HasOwnProperty(parameters[0])) {
-                return Global.BooleanClass.False;
-            }
+        public IJsObject PropertyIsEnumerableImpl(IJsObject target, IJsInstance[] parameters) {
 
-            var v = target[parameters[0]];
+            string key = parameters = null || parameters.Length == 0 ? JsUndefined.Instance.ToString() : parameters[0].GetObject().ToString() ;
+            Descriptor d = target.GetOwnProperty(key);
 
-            return Global.BooleanClass.New((v.Attributes & PropertyAttributes.DontEnum) == PropertyAttributes.None);
+            if (d == null || d.DescriptorType == DescriptorType.None)
+                return Global.NewPrimitive(false);
+            else
+                return Global.NewPrimitive(d.Enumerable);
         }
 
+        #region Constructor Object methods
         /// <summary>
         /// 15.2.3.2
         /// </summary>
         /// <returns></returns>
-        public IJsInstance GetPrototypeOfImpl(IJsInstance[] parameters) {
-            if (parameters[0].Class != IJsInstance.CLASS_OBJECT)
-                throw new JsException(Global.TypeErrorClass.New());
-            return ((parameters[0] as JsObject ?? JsUndefined.Instance)[JsFunction.CONSTRUCTOR] as JsObject ?? JsUndefined.Instance)[JsFunction.PROTOTYPE];
+        IJsObject GetPrototypeOfImpl(IJsInstance[] parameters) {
+            if (parameters == 0 || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+            
+            return parameters[0].GetObject().Prototype;
         }
 
-        /// <summary>
-        /// 15.2.3.6
-        /// </summary>
-        /// <param name="instance"></param>
-        /// <param name="p"></param>
-        /// <param name="currentDescriptor"></param>
-        public IJsInstance DefineProperty(IJsInstance[] parameters) {
-            IJsInstance instance = parameters[0];
+        // 15.2.3.3
+        IJsObject GetOwnPropertyDescriptorImpl(IJsInstance[] parameters) {
+            if (parameters == 0 || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A first parameter should be an object");
 
-            if (!(instance is JsObjectBase))
-                throw new JsException(Global.TypeErrorClass.New());
+            string key = parameters.Length > 1 ? parameters[0].GetObject().ToString() : JsUndefined.Instance.ToString();
 
-            string name = parameters[1].ToString();
-            Descriptor desc = Descriptor.ToPropertyDesciptor(Global, (JsObjectBase)instance, name, parameters[2]);
+            return parameters[0].GetObject().GetOwnProperty(key).ToObject();
+        }
 
-            ((JsObjectBase)instance).DefineOwnProperty(desc);
+        // 15.2.3.4
+        IJsObject GetOwnPropertyNames(IJsInstance[] parameters) {
+            if (parameters == 0 || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
 
-            return instance;
+            JsArray result = new JsArray(Global.ArrayClass.PrototypeProperty);
+            IJsObject target = parameters[0].GetObject();
+            int i = 0;
+
+            foreach (var d in target.GetOwnProperties())
+                result.Put(i++, Global.NewPrimitive(d.Name));
+
+            return result;
+        }
+
+        // 15.2.3.5
+        IJsObject CreateImpl(IJsInstance[] parameters) {
+            if (
+                parameters == null || parameters.Length == 0
+                || (parameters[0].Type != JsObjectType.Object && parameters[0].Type != JsObjectType.Null)
+            )
+                throw new JsTypeException("A first parameter should be either Object or Null");
+
+            IJsObject result = New(parameters[0].GetObject());
+
+            if (parameters.Length > 1 && parameters[1].Type != JsObjectType.Undefined)
+                DefinePropertiesImpl(new JsInstance[] { result, parameters[1] });
+
+            return result;
+        }
+
+        // 15.2.3.6
+        IJsObject DefinePropertyImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+            string name = parameters.Length > 1 ? parameters[1].GetObject().ToString() : JsUndefined.Instance.ToString();
+            IJsObject attributes = parameters.Length > 2 ? parameters[2].GetObject() : JsUndefined.Instance;
+
+            Descriptor d = Descriptor.ToPropertyDesciptor(Global, target, name, attributes);
+            target.DefineOwnProperty(d, true);
+
+            return target;
+        }
+
+        // 15.2.3.7
+        IJsObject DefinePropertiesImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+            IJsObject bag = parameters.Length > 1 ? parameters[1].GetObject().ToObject(Global) : JsUndefined.Instance.ToObject(Global);
+
+            foreach (var item in bag.GetOwnProperties())
+                if ( item.Enumerable )
+                    DefineProperty(target, item.Name, item.Get(bag), PropertyAttributes.None);
+
+            return target;
+        }
+
+        // 15.2.3.8
+        IJsObject SealImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+
+            target.Seal();
+
+            return target;
+        }
+
+        // 15.2.3.9
+        IJsObject FreezeImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+
+            target.Freeze();
+
+            return target;
+        }
+
+        // 15.2.3.10
+        IJsObject PreventExtensionsImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+
+            target.PreventExtensions();
+
+            return target;
+        }
+
+        // 15.2.3.11
+        IJsObject IsSealedImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+
+            return Global.NewPrimitive(target.Sealed);
+        }
+
+        // 15.2.3.12
+        IJsObject IsFrozenImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+
+            return Global.NewPrimitive(target.Frozen);
+        }
+
+        // 15.2.3.13
+        IJsObject IsExtensibleImpl(IJsInstance[] parameters) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            IJsObject target = parameters[0].GetObject();
+
+            return Global.NewPrimitive(target.Extensible);
+        }
+
+        // 15.2.3.14
+        IJsObject KeysImpl(IJsInstance[] parameters) {
+            if (parameters == 0 || parameters.Length == 0 || parameters[0].Type != JsObjectType.Object)
+                throw new JsTypeException("A parameter should be an object");
+
+            JsArray result = new JsArray(Global.ArrayClass.PrototypeProperty);
+            IJsObject target = parameters[0].GetObject();
+            int i = 0;
+
+            foreach (var d in target.GetOwnProperties())
+                if (d.Enumerable)
+                    result.Put(i++, Global.NewPrimitive(d.Name));
+
+            return result;
+        }
+
+        #endregion
+
+        public override IJsObject Construct(IJsInstance[] parameters, JsScope callingContext) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type == JsObjectType.Null || parameters[0].Type == JsObjectType.Undefined)
+                return New(PrototypeProperty);
+            return parameters[0].GetObject().ToObject(Global);
+        }
+
+        public override int Length {
+            get { return 1; }
+        }
+
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext) {
+            if (parameters == null || parameters.Length == 0 || parameters[0].Type == JsObjectType.Null || parameters[0].Type == JsObjectType.Undefined)
+                return New(PrototypeProperty);
+            else
+                return parameters[0].GetObject().ToObject(Global);
         }
     }
 }

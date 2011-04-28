@@ -3,31 +3,28 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using Jint.Expressions;
+using System.Diagnostics;
 
 namespace Jint.Native {
     [Serializable]
     public class JsNumberConstructor : JsConstructor {
         public JsNumberConstructor(IGlobal global)
-            : base(global.FunctionClass.PrototypeProperty) {
-            Name = "Number";
+            : base(JsInstance.CLASS_NUMBER, global, global.FunctionClass.PrototypeProperty) {
 
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontEnum | PropertyAttributes.DontConfigure);
+            JsObject prototypeProperty = CreatePrototypeObject();
+            DefineOwnProperty(PROTOTYPE, prototypeProperty , ConstPropertyAttributes);
 
-            this.DefineOwnProperty("MAX_VALUE", New(Double.MaxValue));
-            this.DefineOwnProperty("MIN_VALUE", New(Double.MinValue));
-            this.DefineOwnProperty("NaN", New(Double.NaN));
-            this.DefineOwnProperty("NEGATIVE_INFINITY", New(Double.PositiveInfinity));
-            this.DefineOwnProperty("POSITIVE_INFINITY", New(Double.NegativeInfinity));
-        }
+            DefineOwnProperty("MAX_VALUE", global.NewPrimitive(Double.MaxValue), ConstPropertyAttributes );
+            DefineOwnProperty("MIN_VALUE", global.NewPrimitive(Double.MinValue), ConstPropertyAttributes);
+            DefineOwnProperty("NaN", global.NewPrimitive(Double.NaN), ConstPropertyAttributes);
+            DefineOwnProperty("NEGATIVE_INFINITY", global.NewPrimitive(Double.PositiveInfinity), ConstPropertyAttributes);
+            DefineOwnProperty("POSITIVE_INFINITY", global.NewPrimitive(Double.NegativeInfinity), ConstPropertyAttributes);
 
-        public override void InitPrototype(IGlobal global) {
-            var Prototype = PrototypeProperty;
-
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<IJsInstance>(ToStringImpl,1), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toExponential", global.FunctionClass.New<JsNumber>(ToExponentialImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toPrecision", global.FunctionClass.New<JsNumber>(ToPrecisionImpl), PropertyAttributes.DontEnum);
+            prototypeProperty.DefineOwnProperty("toString", global.FunctionClass.New<JsNumber>(ToStringImpl, 1), PropertyAttributes.DontEnum);
+            prototypeProperty.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
+            prototypeProperty.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
+            prototypeProperty.DefineOwnProperty("toExponential", global.FunctionClass.New<JsNumber>(ToExponentialImpl), PropertyAttributes.DontEnum);
+            prototypeProperty.DefineOwnProperty("toPrecision", global.FunctionClass.New<JsNumber>(ToPrecisionImpl), PropertyAttributes.DontEnum);
         }
 
         public JsNumber New(double value) {
@@ -38,62 +35,51 @@ namespace Jint.Native {
             return New(0d);
         }
 
-        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
-            if (that == null || (that as IGlobal) == visitor.Global)
-            {
-                // 15.7.1 - When Number is called as a function rather than as a constructor, it performs a type conversion.
-                if (parameters.Length > 0) {
-                    return visitor.Return(New(parameters[0].ToNumber()));
-                }
-                else {
-                    return visitor.Return(New(0));
-                }
-            }
-            else {
-                // 15.7.2 - When Number is called as part of a new expression, it is a constructor: it initialises the newly created object.
-                if (parameters.Length > 0) {
-                    that.Value = parameters[0].ToNumber();
-                }
-                else {
-                    that.Value = 0;
-                }
-
-                return visitor.Return(that);
-            }
+        IJsObject ToLocaleStringImpl(JsNumber target, IJsInstance[] parameters) {
+            return ToStringImpl(target, null);
         }
 
-        public IJsInstance ToLocaleStringImpl(JsNumber target, IJsInstance[] parameters) {
-            // Remove parameters
-            return ToStringImpl(target, new IJsInstance[0]);
-        }
+        // TODO: implement radix convertions
+        IJsObject ToStringImpl(JsNumber target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-        public IJsInstance ToStringImpl(IJsInstance target, IJsInstance[] parameters) {
-            if (target == this["NaN"]) {
-                return Global.StringClass.New("NaN");
+            if ( Double.IsNaN( target.PrimitiveValue ) ) {
+                return Global.NewPrimitive("NaN");
             }
 
-            if (target == this["NEGATIVE_INFINITY"]) {
-                return Global.StringClass.New("-Infinity");
+            if ( Double.IsNegativeInfinity( target.PrimitiveValue ) ) {
+                return Global.NewPrimitive("-Infinity");
             }
 
-            if (target == this["POSITIVE_INFINITY"]) {
-                return Global.StringClass.New("Infinity");
+            if ( Double.IsPositiveInfinity( target.PrimitiveValue ) ) {
+                return Global.NewPrimitive("Infinity");
             }
 
-            double radix = 10;
+            int radix = 10;
 
             // is radix defined ?
-            if (parameters.Length > 0) {
-                if (parameters[0] != JsUndefined.Instance) {
-                    radix = parameters[0].ToNumber();
-                }
+            if (parameters != null && parameters.Length > 0) {
+                IJsObject p0 = parameters[0].GetObject();
+
+                if (p0.ToNumber() != p0.ToInteger())
+                    throw new JsTypeException("A radix should be an integer");
+
+                radix = p0.ToInteger();
+                if (radix < 2 || radix > 36)
+                    throw new JsTypeException("A radix should be between 2 and 36");
             }
 
             if (radix == 10) {
-                return Global.StringClass.New(target.ToNumber().ToString(CultureInfo.InvariantCulture).ToLower());
+                return Global.NewPrimitive(ConversionTraits.ToString(target.PrimitiveValue));
             }
             else {
-                return Global.StringClass.New(Convert.ToString(Convert.ToUInt32(target.ToNumber(), CultureInfo.InvariantCulture), Convert.ToInt32(radix)).ToLower());
+                return Global.NewPrimitive(
+                    Convert.ToString(
+                        Convert.ToUInt32(target.PrimitiveValue, CultureInfo.InvariantCulture),
+                        Convert.ToInt32(radix)
+                    )
+                    .ToLower()
+                );
             }
         }
 
@@ -103,21 +89,25 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance ToFixedImpl(JsNumber target, IJsInstance[] parameters) {
+        IJsObject ToFixedImpl(JsNumber target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
             int fractions = 0;
-            if (parameters.Length > 0) {
-                fractions = Convert.ToInt32(parameters[0].ToNumber());
+            if (parameters != null && parameters.Length > 0) {
+                fractions = parameters[0].GetObject().ToInteger();
             }
 
             if (fractions > 20 || fractions < 0) {
-                throw new JsException(Global.SyntaxErrorClass.New("Fraction Digits must be greater than 0 and lesser than 20"));
+                throw new JsRangeException("Fraction Digits must be greater than 0 and lesser than 20");
             }
 
-            if (target == Global.NaN) {
-                return Global.StringClass.New(target.ToString());
+            if ( Double.IsNaN( target.PrimitiveValue ) ) {
+                return Global.NewPrimitive("NaN");
             }
 
-            return Global.StringClass.New(target.ToNumber().ToString("f" + fractions, CultureInfo.InvariantCulture));
+            return Global.NewPrimitive(
+                target.PrimitiveValue.ToString("f" + fractions, CultureInfo.InvariantCulture)
+            );
         }
 
         /// <summary>
@@ -126,22 +116,24 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance ToExponentialImpl(JsNumber target, IJsInstance[] parameters) {
-            if (double.IsInfinity(target.ToNumber()) || double.IsNaN(target.ToNumber())) {
-                return ToStringImpl(target, new IJsInstance[0]);
+        IJsObject ToExponentialImpl(JsNumber target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
+            if (double.IsInfinity(target.PrimitiveValue) || double.IsNaN(target.PrimitiveValue)) {
+                return ToStringImpl(target, null);
             }
 
             int fractions = 16;
-            if (parameters.Length > 0) {
-                fractions = Convert.ToInt32(parameters[0].ToNumber());
+            if (paramerters != null && parameters.Length > 0) {
+                fractions = parameters[0].GetObject().ToInteger();
             }
 
             if (fractions > 20 || fractions < 0) {
-                throw new JsException(Global.SyntaxErrorClass.New("Fraction Digits must be greater than 0 and lesser than 20"));
+                throw new JsRangeException("Fraction Digits must be greater than 0 and lesser than 20");
             }
 
             string format = String.Concat("#.", new String('0', fractions), "e+0");
-            return Global.StringClass.New(target.ToNumber().ToString(format, CultureInfo.InvariantCulture));
+            return Global.NewPrimitive(target.PrimitiveValue.ToString(format, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -150,13 +142,15 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance ToPrecisionImpl(JsNumber target, IJsInstance[] parameters) {
-            if (double.IsInfinity(target.ToNumber()) || double.IsNaN(target.ToNumber())) {
+        IJsObject ToPrecisionImpl(JsNumber target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
+            if (double.IsInfinity(target.PrimitiveValue) || double.IsNaN(target.PrimitiveValue)) {
                 return ToStringImpl(target, new IJsInstance[0]);
             }
 
-            if (parameters.Length == 0) {
-                throw new JsException(Global.SyntaxErrorClass.New("precision missing"));
+            if (parameters == null || parameters.Length == 0) {
+                return Global.NewPrimitive( ConversionTraits.ToString(target.PrimitiveValue) );
             }
 
             if (parameters[0] == JsUndefined.Instance) {
@@ -169,18 +163,36 @@ namespace Jint.Native {
             }
 
             if (precision < 1 || precision > 21) {
-                throw new JsException(Global.RangeErrorClass.New("precision must be between 1 and 21"));
+                throw new JsRangeException("precision must be between 1 and 21");
             }
 
             // Get the number of decimals
-            string str = target.ToNumber().ToString("e23", CultureInfo.InvariantCulture);
+            string str = target.PrimitiveValue.ToString("e23", CultureInfo.InvariantCulture);
             int decimals = str.IndexOfAny(new char[] { '.', 'e' });
             decimals = decimals == -1 ? str.Length : decimals;
 
             precision -= decimals;
             precision = precision < 1 ? 1 : precision;
 
-            return Global.StringClass.New(target.ToNumber().ToString("f" + precision, CultureInfo.InvariantCulture));
+            return Global.NewPrimitive(target.PrimitiveValue.ToString("f" + precision, CultureInfo.InvariantCulture));
+        }
+
+        public override IJsObject Construct(IJsInstance[] parameters, JsScope callingContext) {
+            if (parameters != null && parameters.Length > 0)
+                return New(parameters[0].GetObject().ToNumber());
+            else
+                return New();
+        }
+
+        public override int Length {
+            get { return 1; }
+        }
+
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext) {
+            if (parameters != null && parameters.Length > 0)
+                return Global.NewPrimitive(parameters[0].GetObject().ToNumber());
+            else
+                return Global.NewPrimitive(0);
         }
     }
 }

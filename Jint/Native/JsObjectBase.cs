@@ -32,6 +32,8 @@ namespace Jint.Native {
         JsDescriptorReference m_toStringMethod;
         JsDescriptorReference m_valueOfMethod;
 
+        protected const PropertyAttributes ConstPropertyAttributes = PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly | PropertyAttributes.DontConfigure;
+
         /// <summary>
         /// Creates new Object without prototype
         /// </summary>
@@ -45,6 +47,8 @@ namespace Jint.Native {
         public JsObjectBase(IJsObject prototype) {
             if (prototype == null)
                 throw new ArgumentNullException("prototype");
+            if (prototype == JsUndefined.Instance)
+                throw new ArgumentException("A prototype can't be undefined", "prototype");
 
             m_toStringMethod = new JsDescriptorReference(this, "toString");
             m_valueOfMethod = new JsDescriptorReference(this, "valueOf");
@@ -215,6 +219,28 @@ namespace Jint.Native {
                 return true;
         }
 
+        public virtual bool HasOwnProperty(string name) {
+            if (name == null)
+                throw new ArgumentNullException("name");
+
+            Descriptor d = GetOwnProperty(name);
+            if (d == null || d.DescriptorType == DescriptorType.None)
+                return false;
+            else
+                return true;
+        }
+
+        public bool IsPrototypeOf(IJsObject other) {
+            if (other == null)
+                throw new ArgumentNullException("other");
+
+            for (IJsObject o = other.Prototype; o != JsNull.Instance; o = o.Prototype)
+                if (this == o)
+                    return true;
+
+            return false;
+        }
+
         // 8.12.7
         public virtual bool Delete(string name, bool throwError) {
             if (name == null)
@@ -318,6 +344,20 @@ namespace Jint.Native {
             DefineOwnProperty(d, true);
         }
 
+        public static void DefineProperty(IJsObject target, string name, IJsObject value, PropertyAttributes attrs) {
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("A property name should be a not empty string", "name");
+            if (value == null)
+                throw new ArgumentNullException("value");
+
+            ValueDescriptor d = new ValueDescriptor(target, name, value);
+            d.Configurable = !(attrs & PropertyAttributes.DontConfigure);
+            d.Writable = !(attrs & PropertyAttributes.ReadOnly);
+            d.Enumerable = !(attrs & PropertyAttributes.DontEnum);
+
+            target.DefineOwnProperty(d, true);
+        }
+
         public void ChildNotify() {
             m_hasChidren = true;
         }
@@ -366,16 +406,14 @@ namespace Jint.Native {
             set;
         }
 
-        public virtual IJsObject ToPrimitive(IGlobal global) {
-            return ToPrimitive(global, JsObjectType.Number);
-        }
-
         /// <summary>
         /// To Primitive conversions, see ecma262.5 9.1, 8.12.8 .
         /// </summary>
         /// <remarks>
+        /// <para>
         /// Since ecma specification uses <c>valueOf</c> and <c>toString</c> methods
         /// we don't need a 'global' object it's implicitly bound to these functions.
+        /// </para>
         /// </remarks>
         /// <param name="hint">A desired type</param>
         /// <returns>A corresponding primitive value</returns>
@@ -392,14 +430,14 @@ namespace Jint.Native {
             IJsObject prim;
 
             if (fn1 != null) {
-                prim = fn1.Invoke(this, null);
+                prim = fn1.Invoke(this, null, null);
 
                 // function should always return a value (at least undefined)
                 Debug.Assert(prim != null);
             }
 
             if ((prim == null || prim.Type == JsObjectType.Object) && fn2 != null) {
-                prim = fn2.Invoke(this, null);
+                prim = fn2.Invoke(this, null, null);
 
                 // function should always return a value (at least undefined)
                 Debug.Assert(prim != null);
@@ -411,6 +449,10 @@ namespace Jint.Native {
             return prim;
         }
 
+        public virtual IJsObject ToPrimitive(IGlobal global) {
+            return ToPrimitive(global, JsObjectType.Number);
+        }
+
         /// <summary>
         /// To Primitive conversions, see ecma262.5 9.1.
         /// </summary>
@@ -418,6 +460,9 @@ namespace Jint.Native {
         /// <param name="global">A global object. Not used.</param>
         /// <param name="hint">A desired type</param>
         /// <returns>A new primitive value</returns>
+        /// <remarks>When overriding this method, consider to override
+        /// <c>ToNumber</c>, <c>ToInteget</c>, <c>ToUInt32</c>, <c>ToUInt16</c>,
+        /// <c>ToBoolean</c> and <c>ToString</c> methods.</remarks>
         public virtual IJsObject ToPrimitive(IGlobal global, JsObjectType hint) {
             return internalToPrimitive(hint);
         }
@@ -688,6 +733,66 @@ namespace Jint.Native {
 
         public override string ToString() {
             return internalToPrimitive(JsObjectType.String).ToString();
+        }
+
+        #endregion
+
+        #region IJsObject Members
+
+        /// <summary>
+        /// Returns true if the object is sealed, implemented exactly as in ecma 262.5 15.2.3.11
+        /// </summary>
+        public bool Sealed {
+            get {
+                foreach (var item in GetOwnProperties())
+                    if (item.Configurable)
+                        return false;
+
+                if (m_extensible)
+                    return false;
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the object is frozen, implemented exactly as in ecma 262.5 15.2.3.12
+        /// </summary>
+        public bool Frozen {
+            get {
+                foreach (var item in GetOwnProperties())
+                    if (item.Configurable || (item.DescriptorType == DescriptorType.Value && item.Writable) )
+                        return false;
+
+                if (m_extensible)
+                    return false;
+
+                return true;
+            }
+        }
+
+        public void Seal() {
+            foreach (var item in GetOwnProperties())
+                if (item.Configurable)
+                    item.Configurable = false;
+
+            PreventExtensions();
+        }
+
+        public void Freeze() {
+            foreach (var item in GetOwnProperties()) {
+                if (item.DescriptorType == DescriptorType.Value && item.Writable)
+                    item.Writable = false;
+
+                if (item.Configurable)
+                    item.Configurable = false;
+            }
+
+            PreventExtensions();
+        }
+
+        public void PreventExtensions() {
+            m_extensible = false;
         }
 
         #endregion

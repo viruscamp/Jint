@@ -6,7 +6,7 @@ using Jint.Delegates;
 
 namespace Jint.Native {
     [Serializable]
-    public sealed class JsString : JsObjectBase {
+    public sealed class JsString : JsObjectBase, IPrimitiveValue<string> {
 
         string m_value;
 
@@ -26,5 +26,21 @@ namespace Jint.Native {
         public override string Class {
             get { return JsInstance.CLASS_STRING; }
         }
+
+        #region IPrimitiveValue<string> Members
+
+        public string PrimitiveValue {
+            get { return m_value; }
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        public new System.Collections.IEnumerator GetEnumerator() {
+            return GetEnumerator();
+        }
+
+        #endregion
     }
 }

@@ -4,7 +4,10 @@ using System.Text;
 using Jint.Marshal;
 
 namespace Jint.Native {
-    [Serializable]
+    /// <summary>
+    /// This class holds properties with numerical names in a separate storage
+    /// to provide a more efficient access to them.
+    /// </summary>
     public sealed class JsArray : JsObjectBase {
         public const string LENGTH = "length";
 
@@ -74,6 +77,10 @@ namespace Jint.Native {
 
             Descriptor d;
             if (!m_data.TryGetValue(i, out d)) {
+
+                if (!Extensible)
+                    return JsUndefined.Instance;
+
                 d = new ValueDescriptor(this, i.ToString());
                 m_data[i] = d;
 

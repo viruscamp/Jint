@@ -6,8 +6,12 @@ namespace Jint.Native {
     /// <summary>
     /// A number primitive
     /// </summary>
-    public class JsNumberPrimitive: JsPrimitiveValue {
+    public class JsNumberPrimitive: JsPrimitiveValue<double> {
         double m_value;
+
+        public override double PrimitiveValue {
+            get { return m_value; }
+        }
 
         public JsNumberPrimitive(double val, IJsObject prototype): base(prototype) {
             m_value = val;

@@ -6,8 +6,12 @@ namespace Jint.Native {
     /// <summary>
     /// Primitive string type
     /// </summary>
-    public class JsStringPrimitive: JsPrimitiveValue {
+    public class JsStringPrimitive: JsPrimitiveValue<string> {
         string m_value;
+
+        public override string PrimitiveValue {
+            get { return m_value; }
+        }
 
         public JsStringPrimitive(string value, IJsObject prototype) : base(prototype) {
             m_value = value;

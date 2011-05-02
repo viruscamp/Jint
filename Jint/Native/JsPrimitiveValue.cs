@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Jint.Native {
+    public interface IPrimitiveValue<T>: IJsObject {
+        T PrimitiveValue {
+            get;
+        }
+    }
+
     /// <summary>
     /// A primitive value is a special wrapper around a CLR value, which
     /// inherits properties from the prototype but can't have own ones.
     /// This is a base class to represent Number, Strings, etc.
     /// </summary>
-    abstract public class JsPrimitiveValue: IJsObject {
+    abstract public class JsPrimitiveValue<T>: IPrimitiveValue<T> {
         IJsObject m_prototype;
 
         protected JsPrimitiveValue(IJsObject prototype) {
@@ -284,6 +290,14 @@ namespace Jint.Native {
         }
 
         public void PreventExtensions() {
+        }
+
+        #endregion
+
+        #region IPrimitiveValue<T> Members
+
+        public abstract T PrimitiveValue {
+            get;
         }
 
         #endregion

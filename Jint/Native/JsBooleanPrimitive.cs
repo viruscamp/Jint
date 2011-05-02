@@ -6,9 +6,13 @@ namespace Jint.Native {
     /// <summary>
     /// A primitive boolean type
     /// </summary>
-    public class JsBooleanPrimitive : JsPrimitiveValue {
+    public class JsBooleanPrimitive : JsPrimitiveValue<bool> {
 
         bool m_value;
+
+        public override bool PrimitiveValue {
+            get { return m_value; }
+        }
 
         public JsBooleanPrimitive(bool value, IJsObject prototype)
             : base(prototype) {

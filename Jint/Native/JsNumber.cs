@@ -4,11 +4,12 @@ using System.Text;
 using System.Globalization;
 
 namespace Jint.Native {
+    
     /// <summary>
     /// Number class, see ecma 262.5 15.7.
     /// </summary>
     /// <remarks>
-    public sealed class JsNumber : JsObjectBase {
+    public sealed class JsNumber : JsObjectBase, IPrimitiveValue<double> {
 
         double m_value;
 
@@ -40,5 +41,13 @@ namespace Jint.Native {
             get { return JsInstance.CLASS_NUMBER; }
         }
 
+
+        #region IEnumerable Members
+
+        public new System.Collections.IEnumerator GetEnumerator() {
+            return GetEnumerator();
+        }
+
+        #endregion
     }
 }

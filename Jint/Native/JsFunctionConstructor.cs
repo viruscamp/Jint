@@ -44,8 +44,8 @@ namespace Jint.Native {
             if (argArray is JsArray) {
                 JsArray nativeArray = argArray as JsArray;
 
-                targetParameters = new IJsInstance[nativeArray.Length];
-                nativeArray.CopyTo(targetParameters, 0);
+                targetParameters = nativeArray.ToArray();
+                
             } else if (argArray is JsArguments) {
                 JsArguments nativeArguments = argArray as JsArguments;
 

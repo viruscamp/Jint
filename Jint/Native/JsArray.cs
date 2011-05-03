@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using Jint.Marshal;
+using System.Collections.ObjectModel;
 
 namespace Jint.Native {
     /// <summary>
     /// This class holds properties with numerical names in a separate storage
     /// to provide a more efficient access to them.
     /// </summary>
-    public sealed class JsArray : JsObjectBase {
+    public class JsArray : JsObjectBase {
         public const string LENGTH = "length";
 
         private uint length = 0;
@@ -38,10 +39,8 @@ namespace Jint.Native {
             );
         }
 
-        public override bool IsClr
-        {
-            get
-            {
+        public override bool IsClr {
+            get {
                 return false;
             }
         }
@@ -49,10 +48,8 @@ namespace Jint.Native {
         /// <summary>
         /// 15.4.2
         /// </summary>
-        public override string Class
-        {
-            get
-            {
+        public override string Class {
+            get {
                 return JsInstance.CLASS_ARRAY;
             }
         }
@@ -71,7 +68,10 @@ namespace Jint.Native {
             return m_data.TryGetValue(i, out value) ? value.Get(this) : JsUndefined.Instance;
         }
 
-        public IJsObject Put(int i, IJsObject value) {
+        public void Put(int i, IJsObject value) {
+            if (value == null)
+                throw new ArgumentNullException("value");
+
             if (i < 0)
                 throw new JsRangeException("Index cant be a negative number");
 
@@ -79,7 +79,7 @@ namespace Jint.Native {
             if (!m_data.TryGetValue(i, out d)) {
 
                 if (!Extensible)
-                    return JsUndefined.Instance;
+                    return;
 
                 d = new ValueDescriptor(this, i.ToString());
                 m_data[i] = d;
@@ -110,7 +110,7 @@ namespace Jint.Native {
                         } else {
                             // if we get first non deletable property, we will stop
                             // and set length property to the correct value
-                            actualLength = m_data.Keys[i]+1;
+                            actualLength = m_data.Keys[i] + 1;
                             break;
                         }
                     }
@@ -124,15 +124,47 @@ namespace Jint.Native {
             int key;
             if (Int32.TryParse(name, out key) && key >= 0) {
                 Descriptor d;
-                return m_data.TryGetValue(key,out d) ? null : d;
+                return m_data.TryGetValue(key, out d) ? null : d;
             } else
                 return base.GetOwnProperty(name);
         }
 
         public override bool DefineOwnProperty(Descriptor desc, bool throwError) {
+            if (desc == null)
+                throw new ArgumentNullException("desc");
+
             int key;
 
-            return base.DefineOwnProperty(desc, throwError);
+            if (Int32.TryParse(desc.Name, out key) && key >= 0) {
+                Descriptor prev;
+                if (m_data.TryGetValue(key, out prev)) {
+                    if (!prev.Merge(desc)) {
+                        if (prev.Configurable) {
+                            prev.Delete();
+                            m_data[key] = desc;
+                        } else {
+                            return Reject(String.Format("Property {0} isn't configurable", desc.Name), throwError);
+                        }
+                    }
+                } else {
+                    if (Extensible)
+                        m_data[key] = desc;
+                    else
+                        return Reject("The object isn't extensible", throwError);
+                }
+                if (key >= length)
+                    length = key + 1;
+                return true;
+            } else {
+                return base.DefineOwnProperty(desc, throwError);
+            }
+        }
+
+        public override IEnumerable<Descriptor> GetOwnProperties() {
+            foreach (var d in m_data.Values)
+                yield return d;
+            foreach (var d in base.GetOwnProperties())
+                yield return d;
         }
 
         private int FindKeyOrNext(int key) {
@@ -176,53 +208,28 @@ namespace Jint.Native {
             return right;
         }
 
-        
-        #region array specific methods
+        public IEnumerable<KeyValuePair<int, Descriptor>> ArrayElements {
+            get {
+                return m_data;
+            }
+        }
 
-        [RawJsMethod]
-        public JsArray concat(IGlobal global, IJsInstance[] args) {
-            var newData = new SortedList<int, IJsInstance>(m_data);
-            int offset = length;
-            foreach (var item in args) {
-                if (item is JsArray) {
-                    foreach (var pair in ((JsArray)item).m_data)
-                        newData.Add(pair.Key + offset, pair.Value);
-                    offset += ((JsArray)item).Length;
-                }
-                else if (global.ArrayClass.HasInstance(item as JsObject)) {
-                    // Array subclass
-                    JsObject obj = (JsObject)item;
+        public virtual IJsObject[] ToArray() {
+            IJsObject[] result = new IJsObject[length];
 
-                    for (int i = 0; i < obj.Length; i++) {
-                        IJsInstance value;
-                        if (obj.TryGetProperty(i.ToString(), out value))
-                            newData.Add(offset + i, value);
-                    }
-                }
-                else {
-                    newData.Add(offset, item);
-                    offset++;
-                }
+            int last = 0;
+
+            foreach (var pair in m_data) {
+                int i = pair.Key;
+
+                for (int ii = last; ii < i; ii++)
+                    result[ii] = JsUndefined.Instance;
+                result[i] = pair.Value.Get(this);
             }
 
-            return new JsArray(newData, offset, global.ArrayClass.PrototypeProperty);
+            for (int ii = last; ii < length; ii++)
+                result[ii] = JsUndefined.Instance;
         }
 
-        [RawJsMethod]
-        public JsString join(IGlobal global, IJsInstance separator) {
-            if (length == 0)
-                return global.StringClass.New();
-
-            string sep = separator == JsUndefined.Instance ? "," : separator.ToString();
-            string[] map = new string[length];
-
-            IJsInstance item;
-            for (int i = 0; i < length; i++)
-                map[i] = m_data.TryGetValue(i, out item) && item != JsNull.Instance && item != JsUndefined.Instance ? item.ToString() : "";
-
-            return global.StringClass.New(String.Join(sep, map));
-        }
-
-        #endregion
     }
 }

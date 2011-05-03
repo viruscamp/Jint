@@ -129,7 +129,6 @@
     <Compile Include="Native\JsFunctionWrapper.cs" />
     <Compile Include="Native\JsArguments.cs" />
     <Compile Include="Native\JsScope.cs" />
-    <Compile Include="Native\JsCallFunction.cs" />
     <Compile Include="Native\JsDateConstructor.cs" />
     <Compile Include="Native\JsFunctionConstructor.cs" />
     <Compile Include="Native\JsNumberConstructor.cs" />

@@ -41,7 +41,6 @@ namespace Jint.Native {
             m_global = global;
             m_scope = scope;
             m_body = body;
-            m_options = options;
 
             if (arguments == null)
                 m_arguments = new List<string>();
@@ -95,7 +94,7 @@ namespace Jint.Native {
             else if (that == null)
                 that = JsNull.Instance;
 
-            JsArguments args = new JsArguments(m_global, this, parameters);
+            JsArguments args = new JsArguments(m_global, this, parameters, m_options & Options.Strict);
 
             JsScope functionScope = new JsScope(m_scope);
 

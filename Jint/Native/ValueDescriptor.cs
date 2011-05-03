@@ -86,6 +86,9 @@ namespace Jint.Native {
             )
                 return false;
 
+            if (gen.HasAttribute(DescriptorAttributes.Value) && !(Configurable || Writable))
+                return false;
+
             if (! (Writable || Configurable) && gen.HasAttribute(Value))
                 return false;
 

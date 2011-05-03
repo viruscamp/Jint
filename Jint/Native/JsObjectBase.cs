@@ -307,16 +307,12 @@ namespace Jint.Native {
                     internalDefineOwnProperty(current,desc);
                 }
             } else {
-                if (desc.DescriptorType != DescriptorType.Generic) {
+                if (!current.Merge(desc)) {
+                    // a descriptor can't be merged, only replaced
                     if (!current.Configurable)
                         return Reject(String.Format("Can't update a property {0}, it's not configurable", desc.Name), throwError);
-                } else {
-                    if (!current.Merge(desc)) {
-                        if (!current.Configurable)
-                            return Reject(String.Format("Can't update a property {0}, it's not configurable", desc.Name), throwError);
-                        else
-                            internalDefineOwnProperty(current,((IGenericDescriptor)desc).ToRealDescriptor(true,current.Enumerable));
-                    }
+                    else
+                        internalDefineOwnProperty(current, ((IGenericDescriptor)desc).ToRealDescriptor(true, current.Enumerable));
                 }
             }
             return true;
@@ -341,6 +337,23 @@ namespace Jint.Native {
             d.Writable = !(attrs & PropertyAttributes.ReadOnly);
             d.Enumerable = !(attrs & PropertyAttributes.DontEnum);
 
+            DefineOwnProperty(d, true);
+        }
+
+        public void DefineOwnPropertyThrower(string name) {
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("A property name should be a not empty string", "name");
+
+            NativeValueDescriptor d = new NativeValueDescriptor(
+                this,
+                name,
+                delegate(IJsObject that, IJsObject val) {
+                    throw new JsTypeException(String.Format("Property {0} isn't available", name));
+                },
+                delegate(IJsObject that) {
+                    throw new JsTypeException(String.Format("Property {0} isn't available", name));
+                }
+            );
             DefineOwnProperty(d, true);
         }
 

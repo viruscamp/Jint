@@ -1,6 +1,8 @@
 ﻿var offsetHours = ((new Date()).getTimezoneOffset() / 60) * -1;
 d = new Date(2001, 1, 2); // Feb 2 2001
 assert(2001, d.getFullYear());
+d.setFullYear(2010);
+assert(2010, d.getFullYear());
 assert(1, d.getMonth()); // February
 assert(2, d.getDate());
 
@@ -14,6 +16,7 @@ var now = new Date();
 assert(now.toDateString(), new Date(Date.parse(now.toDateString())).toDateString());
 assert(now.toTimeString(), new Date(Date.parse(now.toTimeString())).toTimeString());
 assert(now.toString(), new Date(Date.parse(now.toString())).toString());
+assert(new Date(now.getTime()).toString(),now.toString());
 
 
 var d = new Date(1970, 0, 1, 0, 0, 1);

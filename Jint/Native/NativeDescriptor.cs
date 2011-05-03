@@ -39,6 +39,14 @@ namespace Jint.Native
         JsGetter getter;
         JsSetter setter;
 
+        public override bool isReference {
+            get { return false; }
+        }
+
+        public override Descriptor Clone() {
+            return new NativeDescriptor(Owner, this);
+        }
+
         public override JsInstance Get(JsDictionaryObject that)
         {
             return getter != null ? getter(that) : JsUndefined.Instance ;

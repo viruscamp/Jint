@@ -16,24 +16,22 @@ namespace Jint.Native {
         }
 
         public JsArguments(IGlobal global, JsFunction callee, JsInstance[] arguments)
-            : base(global.ObjectClass.New()) {
+            : base(global.ObjectClass.New())
+        {            
             this.global = global;
-            // Add the named parameters
-            for (int i = 0; i < Math.Max(arguments.Length, callee.Arguments.Count); i++) {
-                ValueDescriptor d = new ValueDescriptor(this, i < callee.Arguments.Count ? callee.Arguments[i] : i.ToString()) { Attributes = PropertyAttributes.DontDelete };
 
-                d.Set(this, i < arguments.Length ? arguments[i] : JsUndefined.Instance);
-
-                this.DefineOwnProperty(i.ToString(), d);
-            }
+            // Add the named parameters            
+            for (int i = 0; i < arguments.Length ; i++)
+                this.DefineOwnProperty(
+                    new ValueDescriptor(this, i.ToString(), arguments[i]) { Enumerable = false }
+                );
 
             length = arguments.Length;
 
-            calleeDescriptor = new ValueDescriptor(this, CALLEE) { Attributes = PropertyAttributes.DontEnum };
-            DefineOwnProperty(CALLEE, calleeDescriptor);
-            calleeDescriptor.Set(this, callee);
+            calleeDescriptor = new ValueDescriptor(this, CALLEE, callee) { Enumerable = false };
+            DefineOwnProperty(calleeDescriptor);
 
-            DefineOwnProperty("length", new PropertyDescriptor<JsArguments>(global, this, "length", GetLength) { Attributes = PropertyAttributes.DontEnum });
+            DefineOwnProperty(new PropertyDescriptor<JsArguments>(global, this, "length", GetLength) { Enumerable = false });
         }
 
         private int length;

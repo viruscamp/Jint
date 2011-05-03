@@ -46,11 +46,6 @@ namespace Jint.Expressions {
     }
 
     public interface IJintVisitor {
-        /* TODO: cleanup
-        IPropertyGetter PropertyGetter { get; }
-        IMethodInvoker MethodGetter { get; }
-        IFieldGetter FieldGetter { get; }
-        */ 
 
         bool DebugMode { get; }
 
@@ -60,8 +55,6 @@ namespace Jint.Expressions {
         IGlobal Global { get; }
 
         JsInstance Returned { get; }
-
-        void CallFunction(JsFunction jsFunction, JsDictionaryObject that, JsInstance[] parameters);
 
         JsInstance Return(JsInstance result);
 

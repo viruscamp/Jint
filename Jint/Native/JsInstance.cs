@@ -4,6 +4,9 @@ using System.Text;
 using Jint.Expressions;
 
 namespace Jint.Native {
+    /// <summary>
+    /// A base class for values in javascript.
+    /// </summary>
     [Serializable]
     public abstract class JsInstance {
         public static JsInstance[] EMPTY = new JsInstance[0];
@@ -99,7 +102,7 @@ namespace Jint.Native {
         /// <param name="function"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        [Obsolete("will be removed in the 1.2 version",true)]
+        [Obsolete("will be removed in the 1.0 version",true)]
         public virtual object Call(IJintVisitor visitor, string function, params JsInstance[] parameters) {
             if (function == "toString")
                 return visitor.Global.StringClass.New(ToString());

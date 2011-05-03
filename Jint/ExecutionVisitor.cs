@@ -11,24 +11,13 @@ using System.Runtime.Serialization;
 using Jint.Delegates;
 
 namespace Jint {
-    [Serializable]
-    public class ExecutionVisitor : IStatementVisitor, IJintVisitor, IDeserializationCallback {
+
+    public class ExecutionVisitor : IStatementVisitor, IJintVisitor{
         struct ResultInfo {
             public JsDictionaryObject baseObject;
             public JsInstance result;
         }
 
-        /*
-        [NonSerialized]
-        protected internal IFieldGetter fieldGetter;
-        [NonSerialized]
-        protected internal IPropertyGetter propertyGetter;
-        [NonSerialized]
-        protected internal IMethodInvoker methodInvoker;
-        [NonSerialized]
-        protected internal IConstructorInvoker constructorInvoker;
-        [NonSerialized]
-        */
         protected internal ITypeResolver typeResolver;
 
         public IGlobal Global { get; private set; }
@@ -50,7 +39,7 @@ namespace Jint {
         public JsInstance Returned { get { return returnInstance; } }
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
-        [NonSerialized]
+        
         private StringBuilder typeFullname = new StringBuilder();
         private string lastIdentifier = String.Empty;
 
@@ -77,21 +66,30 @@ namespace Jint {
             lastResult.baseObject = baseObject;
         }
 
-        void SaveResult() {
-            stackResults.Push(lastResult);
-        }
-        void RestoreResult() {
-            lastResult = stackResults.Pop();
-        }
-
         public ExecutionVisitor(Options options) {
-            typeResolver = new CachedTypeResolver();
+            typeResolver = CachedTypeResolver.Default;
 
             Global = new JsGlobal(this, options);
             GlobalScope = new JsScope(Global as JsObject);
 
             EnterScope(GlobalScope);
 
+            CallStack = new Stack<string>();
+        }
+
+        public ExecutionVisitor(IGlobal GlobalObject, JsScope Scope) {
+            if (GlobalObject == null)
+                throw new ArgumentNullException("GlobalObject");
+            if (Scope == null)
+                throw new ArgumentNullException("Scope");
+
+            typeResolver = CachedTypeResolver.Default;
+
+            Global = GlobalObject;
+            GlobalScope = Scope.Global;
+            MaxRecursions = 500;
+
+            EnterScope(Scope);
             CallStack = new Stack<string>();
         }
 
@@ -567,17 +565,22 @@ namespace Jint {
             try {
                 statement.Statement.Accept(this);
             }
-            catch (JsException e) {
+            catch (Exception e) {
                 // there might be no catch statement defined
                 if (statement.Catch != null) {
                     // there is another exitscope called in Finally
                     ExitScope();
                     EnterScope(new JsObject());
 
+                    JsException jsException = e as JsException;
+
+                    if (jsException == null)
+                        jsException = new JsException(Global.ErrorClass.New(e.Message));
+
                     // handle thrown exception assignment to a local variable: catch(e)
                     if (statement.Catch.Identifier != null) {
                         // if catch is called, Result contains the thrown value
-                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), e.Value);
+                        Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), jsException.Value);
                     }
 
                     statement.Catch.Statement.Accept(this);
@@ -1200,6 +1203,7 @@ namespace Jint {
         }
 
         public void Visit(Statement expression) {
+            // fallback for an unsupported expression
             throw new NotImplementedException();
         }
 
@@ -1257,7 +1261,7 @@ namespace Jint {
 
             if (target == JsUndefined.Instance || Result == null) {
                 if (!String.IsNullOrEmpty(lastIdentifier)) {
-                    throw new JsException(Global.TypeErrorClass.New("Method isn't defined: " + lastIdentifier));
+ 
                 }
                 else {
                     throw new JsException(Global.TypeErrorClass.New("Method isn't defined"));
@@ -1370,16 +1374,23 @@ namespace Jint {
             JsScope functionScope = new JsScope(function.Scope ?? GlobalScope);
 
             for (int i = 0; i < function.Arguments.Count; i++)
-                functionScope.DefineOwnProperty(
-                    function.Arguments[i],
-                    new LinkedDescriptor(
-                        functionScope,
-                        function.Arguments[i],
-                        args.GetDescriptor(i.ToString()),
-                        args
-                    )
-                );
-
+                if (i < parameters.Length) 
+                    functionScope.DefineOwnProperty(
+                        new LinkedDescriptor(
+                            functionScope,
+                            function.Arguments[i],
+                            args.GetDescriptor(i.ToString()),
+                            args
+                        )
+                    );
+                else
+                    functionScope.DefineOwnProperty(
+                        new ValueDescriptor(
+                            functionScope,
+                            function.Arguments[i],
+                            JsUndefined.Instance
+                        )
+                    );
 
             // define arguments variable
             if (HasOption(Options.Strict))
@@ -1422,16 +1433,6 @@ namespace Jint {
             return Global.HasOption(options);
         }
 
-        //TODO: remove CallFunction from a visitor
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="function">Function to exectue</param>
-        /// <param name="that">Object to call the function on</param>
-        /// <param name="parameters">Parameters of the execution</param>
-        public void CallFunction(JsFunction function, JsDictionaryObject that, JsInstance[] parameters) {
-            function.Statement.Accept(this);
-        }
 
         public void Visit(PropertyExpression expression) {
             // save base of current expression
@@ -1468,7 +1469,7 @@ namespace Jint {
             switch (expression.Mode) {
                 case PropertyExpressionType.Data:
                     expression.Expression.Accept(this);
-                    Result = new ValueDescriptor(target, expression.Name, Result);
+                    target.DefineOwnProperty(new ValueDescriptor(target, expression.Name, Result) );
                     break;
                 case PropertyExpressionType.Get:
                 case PropertyExpressionType.Set:
@@ -1481,7 +1482,7 @@ namespace Jint {
                         expression.SetExpression.Accept(this);
                         set = (JsFunction)Result;
                     }
-                    Result = new PropertyDescriptor(Global, target, expression.Name) { GetFunction = get, SetFunction = set, Enumerable = true };
+                    target.DefineOwnProperty(new PropertyDescriptor(Global, target, expression.Name) { GetFunction = get, SetFunction = set, Enumerable = true });
                     break;
                 default:
                     break;
@@ -1493,9 +1494,15 @@ namespace Jint {
 
             string propertyName = lastIdentifier = expression.Text;
 
-            JsInstance result = null;
-            if (CurrentScope.TryGetProperty(propertyName, out result)) {
-                Result = result;
+            Descriptor result = null;
+            if (CurrentScope.TryGetDescriptor(propertyName, out result)) {
+                if (!result.isReference)
+                    Result = result.Get(CurrentScope);
+                else {
+                    LinkedDescriptor r = result as LinkedDescriptor;
+                    SetResult(r.Get(CurrentScope), r.targetObject);
+                }
+
                 if (Result != null)
                     return;
             }
@@ -1526,7 +1533,6 @@ namespace Jint {
             foreach (var item in json.Values) {
                 Result = instance;
                 item.Value.Accept(this);
-                instance.DefineOwnProperty(item.Key, Result);
             }
 
             Result = instance;

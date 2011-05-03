@@ -20,9 +20,11 @@ namespace Jint.Native {
         /// Determines wheater object is extensible or not. Extensible object allows defining new own properties.
         /// </summary>
         /// <remarks>
-        /// When object becomes non-extensible it can not becoma extansible again
+        /// When object becomes non-extensible it can not become extansible again
         /// </remarks>
         public bool Extensible { get; set; }
+
+        public bool hasChildren { get; private set; }
 
         private int m_length = 0;
 
@@ -49,6 +51,7 @@ namespace Jint.Native {
         public JsDictionaryObject(JsDictionaryObject prototype) {
             this.Prototype = prototype;
             Extensible = true;
+            prototype.hasChildren = true;
         }
 
         /// <summary>
@@ -100,13 +103,16 @@ namespace Jint.Native {
         public virtual Descriptor GetDescriptor(string index) {
 
             Descriptor result;
-            if (properties.TryGet(index, out result)) {
-                return result;
-            }
+            if (properties.TryGet(index, out result))
+                if (!result.isDeleted)
+                    return result;
+                else
+                    properties.Delete(index); // remove from cache
 
             // Prototype always a JsObject, (JsNull.Instance is also an object and next call will return null in case of null)
             if ((result = Prototype.GetDescriptor(index)) != null)
                 properties.Put(index, result); // cache descriptior
+
             return result;
         }
 
@@ -148,7 +154,7 @@ namespace Jint.Native {
             set {
                 Descriptor d = GetDescriptor(index);
                 if (d == null || ( d.Owner != this && d.DescriptorType == DescriptorType.Value ) )
-                    DefineOwnProperty(index, new ValueDescriptor(this, index, value));
+                    DefineOwnProperty(new ValueDescriptor(this, index, value));
                 else
                     d.Set(this, value);
             }
@@ -160,9 +166,10 @@ namespace Jint.Native {
 
         public virtual void Delete(string index) {
             Descriptor d = null;
-            if (TryGetDescriptor(index, out d)) {
+            if (TryGetDescriptor(index, out d) && d.Owner == this) {
                 if (d.Configurable) {
                     properties.Delete(index);
+                    d.Delete();
                     m_length--;
                 }
                 else {
@@ -172,19 +179,15 @@ namespace Jint.Native {
         }
 
         public void DefineOwnProperty(string key, JsInstance value, PropertyAttributes propertyAttributes) {
-            DefineOwnProperty(key, new ValueDescriptor(this, key, value) { Writable = (propertyAttributes & PropertyAttributes.ReadOnly) == 0, Enumerable = (propertyAttributes & PropertyAttributes.DontEnum) == 0 });
+            DefineOwnProperty(new ValueDescriptor(this, key, value) { Writable = (propertyAttributes & PropertyAttributes.ReadOnly) == 0, Enumerable = (propertyAttributes & PropertyAttributes.DontEnum) == 0 });
         }
 
         public void DefineOwnProperty(string key, JsInstance value) {
-            if (value is Descriptor) {
-                DefineOwnProperty(key, (Descriptor)value);
-            }
-            else {
-                DefineOwnProperty(key, new ValueDescriptor(this, key, value));
-            }
+            DefineOwnProperty(new ValueDescriptor(this, key, value));
         }
 
-        public virtual void DefineOwnProperty(string key, Descriptor currentDescriptor) {
+        public virtual void DefineOwnProperty(Descriptor currentDescriptor) {
+            string key = currentDescriptor.Name;
             Descriptor desc;
             if (properties.TryGet(key, out desc) && desc.Owner == this) {
 
@@ -220,8 +223,19 @@ namespace Jint.Native {
             }
             else {
                 // add a new property
+                if (desc != null)
+                    desc.Owner.RedefineProperty(desc.Name); // if we have a cached property
+
                 properties.Put(key, currentDescriptor);
                 m_length++;
+            }
+        }
+
+        void RedefineProperty(string name) {
+            Descriptor old;
+            if (properties.TryGet(name, out old) && old.Owner == this) {
+                properties.Put(name, old.Clone());
+                old.Delete();
             }
         }
 

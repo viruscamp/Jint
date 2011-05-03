@@ -265,7 +265,7 @@ namespace Jint {
                     }
                 }
 
-                if (visitor.CurrentStatement.Source != null) {
+                if (visitor.CurrentStatement != null && visitor.CurrentStatement.Source != null) {
                     source = Environment.NewLine + visitor.CurrentStatement.Source.ToString()
                             + Environment.NewLine + visitor.CurrentStatement.Source.Code;
                 }

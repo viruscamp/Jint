@@ -16,7 +16,7 @@ namespace Jint.Native {
         public override void InitPrototype(IGlobal global) {
             var Prototype = PrototypeProperty;
 
-            Prototype.DefineOwnProperty("length", new PropertyDescriptor<JsObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl) { Enumerable = false });
+            Prototype.DefineOwnProperty(new PropertyDescriptor<JsObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl) { Enumerable = false });
 
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsArray>(ToStringImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsArray>(ToLocaleStringImpl), PropertyAttributes.DontEnum);

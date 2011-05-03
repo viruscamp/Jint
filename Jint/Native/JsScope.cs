@@ -80,31 +80,23 @@ namespace Jint.Native {
                     if (thisDescriptor != null)
                         thisDescriptor.Set(this, value);
                     else {
-                        DefineOwnProperty(index, thisDescriptor = new ValueDescriptor(this, index, value));
+                        DefineOwnProperty(thisDescriptor = new ValueDescriptor(this, index, value));
                     }
                 }
                 else if (index == ARGUMENTS) {
                     if (argumentsDescriptor != null)
                         argumentsDescriptor.Set(this, value);
                     else {
-                        DefineOwnProperty(index, argumentsDescriptor = new ValueDescriptor(this, index, value));
+                        DefineOwnProperty(argumentsDescriptor = new ValueDescriptor(this, index, value));
                     }
                 }
                 else {
                     Descriptor d = GetDescriptor(index);
                     if (d != null) {
-                        // we have a property in the scopes hierarchy or in the bag
-                        if (d.Owner == bag || d.Owner == this || d.Owner.IsPrototypeOf(this)) {
-                            // if this is an own property of the bag or in scopes
-                            d.Set(d.Owner, value);
-                        }
-                        else {
-                            // this property should be from one of prototypes of the bag
-                            if (bag != null)
-                                bag[index] = value;
-                        }
+                        d.Set(this, value);
                     }
                     else if (globalScope != null) {
+                        // TODO: move to Execution visitor
                         // define missing property in the global scope
                         globalScope.DefineOwnProperty(index, value);
                     }
@@ -125,6 +117,8 @@ namespace Jint.Native {
         /// 1. OwnProperty for the current scope
         /// 2. Any property from the bag (if specified).
         /// 3. A property from scopes hierarchy.
+        /// 
+        /// A proeprty from the bag will be added as a link to the current scope.
         /// </remarks>
         /// <param name="index">Property name.</param>
         /// <returns>Descriptor</returns>
@@ -133,8 +127,11 @@ namespace Jint.Native {
             if ((own = base.GetDescriptor(index)) != null && own.Owner == this)
                 return own;
 
-            if (bag != null && (d = bag.GetDescriptor(index)) != null)
-                return d;
+            if (bag != null && (d = bag.GetDescriptor(index)) != null) {
+                Descriptor link = new LinkedDescriptor(this, d.Name, d, bag);
+                DefineOwnProperty(link);
+                return link;
+            }
 
             return own;
         }

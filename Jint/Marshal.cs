@@ -7,6 +7,8 @@ using System.Reflection.Emit;
 using Jint.Marshal;
 using Jint.Delegates;
 using System.Text.RegularExpressions;
+using System.Security;
+using System.Security.Permissions;
 
 namespace Jint
 {
@@ -186,9 +188,11 @@ namespace Jint
 
         object MarshalJsFunctionHelper(JsFunction func,Type delegateType)
         {
-            JsFunctionDelegate wrapper = new JsFunctionDelegate(m_global.Visitor, func, JsNull.Instance , delegateType);
+            // create independent visitor
+            ExecutionVisitor visitor = new ExecutionVisitor(m_global, new JsScope((JsObject)m_global));
+            visitor.PermissionSet = ((ExecutionVisitor)m_global.Visitor).PermissionSet;
+            JsFunctionDelegate wrapper = new JsFunctionDelegate(visitor, func, JsNull.Instance , delegateType);
             return wrapper.GetDelegate();
-
         }
 
         /// <summary>

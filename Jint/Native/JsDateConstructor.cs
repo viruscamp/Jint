@@ -162,7 +162,7 @@ namespace Jint.Native {
                 result = New(d);
             }
             else {
-                result = New(DateTime.Now);
+                result = New(DateTime.UtcNow);
             }
 
             return result;
@@ -354,7 +354,7 @@ namespace Jint.Native {
                 return Global.NaN;
             }
 
-            return Global.NumberClass.New(CreateDateTime(target.ToNumber()).TimeOfDay.Ticks / JsDate.TICKSFACTOR);
+            return Global.NumberClass.New(target.ToNumber());
         }
 
         /// <summary>
@@ -865,8 +865,8 @@ namespace Jint.Native {
             if (parameters.Length == 0)
                 throw new ArgumentException("There was no year specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
-            valueOf = valueOf.AddYears(-valueOf.Year);
-            valueOf = valueOf.AddYears((int)parameters[0].ToNumber());
+            int diff = valueOf.Year - (int)parameters[0].ToNumber();
+            valueOf = valueOf.AddYears(-diff);
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];

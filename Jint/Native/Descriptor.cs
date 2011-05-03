@@ -10,7 +10,7 @@ namespace Jint.Native {
     }
 
     [Serializable]
-    public abstract class Descriptor : JsInstance {
+    public abstract class Descriptor {
         public Descriptor(JsDictionaryObject owner, string name) {
             this.Owner = owner;
             Name = name;
@@ -23,14 +23,25 @@ namespace Jint.Native {
         public bool Writable { get; set; }
         public JsDictionaryObject Owner { get; set; }
 
-        public void Delete() {
-            if (!Configurable)
-                throw new JintException();
+        public virtual bool isDeleted { get; protected set; }
+
+        public abstract bool isReference { get; }
+
+        /// <summary>
+        /// Marks a descriptor as a deleted.
+        /// </summary>
+        /// <remarks>
+        /// A descriptor may be deleted to force a refresh of cached references.
+        /// </remarks>
+        public virtual void Delete() {
+            isDeleted = true;
         }
 
-        public override bool IsClr {
+        public bool IsClr {
             get { return false; }
         }
+
+        public abstract Descriptor Clone();
 
         /// <summary>
         /// Gets a value stored in the descriptor.
@@ -103,25 +114,6 @@ namespace Jint.Native {
             }
 
             return desc;
-        }
-
-        public override object Value {
-            get {
-                throw new NotSupportedException();
-                //return Get();
-            }
-            set {
-                throw new NotSupportedException();
-            }
-        }
-
-        public override string Class {
-            get { return CLASS_DESCRIPTOR; }
-        }
-
-        public override string Type
-        {
-            get { return TYPE_DESCRIPTOR; }
         }
     }
 }

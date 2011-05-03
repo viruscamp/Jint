@@ -17,7 +17,7 @@ namespace Jint.Native {
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {
             try {
                 //visitor.CurrentScope["this"] = visitor.Global;
-                JsInstance result = Delegate.DynamicInvoke(new object[] { parameters }) as JsInstance;
+                JsInstance result = Delegate( parameters );
                 visitor.Return(result == null ? JsUndefined.Instance : result);
 
                 return that;

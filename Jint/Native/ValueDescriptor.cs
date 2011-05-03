@@ -19,6 +19,18 @@ namespace Jint.Native {
             Set(null, value);
         }
 
+        public override bool isReference {
+            get { return false; }
+        }
+
+        public override Descriptor Clone() {
+            return new ValueDescriptor(Owner, Name, value) {
+                Enumerable = this.Enumerable,
+                Configurable = this.Configurable,
+                Writable = this.Writable
+            };
+        }
+
         public override JsInstance Get(JsDictionaryObject that) {
             return value ?? JsUndefined.Instance;
         }
@@ -31,15 +43,6 @@ namespace Jint.Native {
 
         internal override DescriptorType DescriptorType {
             get { return DescriptorType.Value; }
-        }
-
-        public override object Value {
-            get {
-                return value;
-            }
-            set {
-                this.value = (JsInstance)value;
-            }
         }
     }
 }

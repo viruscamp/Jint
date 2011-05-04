@@ -31,7 +31,6 @@ namespace Jint.Native {
             
             m_lengthReference = new JsDescriptorReference(this, lengthDescriptor);
 
-            // Add list of arguments
             if (links != null) {
                 // bind to named arguments
                 for (int i = 0; i < arguments.Length; i++)
@@ -51,12 +50,29 @@ namespace Jint.Native {
             } else {
                 DefineOwnProperty(CALLEE, callee, PropertyAttributes.DontEnum);
             }
+        }
 
+        public IJsInstance[] ToArguments() {
+            IJsObject len = m_lengthReference.GetObject();
+
+            int intLen = len.ToInteger();
+
+            if (len.ToNumber() == intLen && intLen >= 0) {
+                if (intLen == m_arguments.Length)
+                    return m_arguments;
+                else {
+                    IJsInstance[] result = new IJsInstance[intLen];
+                    for (int i = 0; i < intLen; i++)
+                        result[i] = Get(i.ToString());
+                    return result;
+                }
+            } else
+                throw new JsTypeException();
         }
 
         
         public override string Class {
-            get { return CLASS_ARGUMENTS; }
+            get { return JsInstance.CLASS_ARGUMENTS; }
         }
     }
 }

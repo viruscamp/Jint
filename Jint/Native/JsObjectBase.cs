@@ -26,7 +26,7 @@ namespace Jint.Native {
     [Serializable]
     public abstract class JsObjectBase: IJsObject {
         bool m_extensible;
-        bool m_hasChidren;
+        protected bool m_hasChildren;
         IJsObject m_prototype;
         IPropertyBag m_properties = new MiniCachedPropertyBag();
         JsDescriptorReference m_toStringMethod;
@@ -76,7 +76,7 @@ namespace Jint.Native {
             if (current != null) {
                 if (current.Owner == this) {
                     current.Delete(); // if we are redefining an own property
-                }  else if (m_hasChidren)
+                }  else if (m_hasChildren)
                     current.Owner.RepopulateProperty(current.Name); // repopulate cached descriptor
             }
 
@@ -188,6 +188,8 @@ namespace Jint.Native {
 
             // a descriptor not found or absolute
             d = m_prototype.GetProperty(name);
+            
+            Debug.Assert(!d.isDeleted); // should not return deleted descriptor
 
             // cache descriptor
             if (d != null)
@@ -206,6 +208,8 @@ namespace Jint.Native {
                 Debug.Assert(!d.isDeleted); // own descriptor can't be marked as deleted since on deletion it will be removed from the object
                 return d;
             }
+
+            return null;
         }
 
         public virtual bool HasProperty(string name) {
@@ -254,14 +258,17 @@ namespace Jint.Native {
             if (!d.Configurable)
                 return Reject(String.Format("A property {0} isn't configurable", name),throwError);
 
-            m_properties.Delete(d.Name); // remove from object
+            RemoveFromBag(d);
             d.Delete(); // mark as absolete
+        }
+
+        protected virtual void RemoveFromBag(Descriptor d) {
+            m_properties.Delete(d.Name); // remove from object
         }
 
         public virtual void RepopulateProperty(string name) {
             Descriptor d;
-            m_properties.TryGet(name, out d);
-            if (d.Owner == this && !d.isDeleted) {
+            if (m_properties.TryGet(name, out d) && d.Owner == this && !d.isDeleted) {
                 m_properties.Put(name, d.Clone());
                 d.Delete();
             }
@@ -372,7 +379,7 @@ namespace Jint.Native {
         }
 
         public void ChildNotify() {
-            m_hasChidren = true;
+            m_hasChildren = true;
         }
 
         public virtual IJsObject IndexerGet(IJsObject key) {
@@ -664,8 +671,11 @@ namespace Jint.Native {
             get { internalGetPairs().Count; }
         }
 
+        /// <summary>
+        /// Object is readonly if it's frozen (not extensible, all properties are readonly and not configurable).
+        /// </summary>
         public bool IsReadOnly {
-            get { return false; }
+            get { return Frozen; }
         }
 
         public bool Remove(KeyValuePair<string, IJsObject> item) {
@@ -769,7 +779,8 @@ namespace Jint.Native {
         }
 
         /// <summary>
-        /// Returns true if the object is frozen, implemented exactly as in ecma 262.5 15.2.3.12
+        /// Object is frozen if it's not extensible, all properties are readonly and not configurable.
+        /// Returns true if the object is frozen, implemented exactly as in ecma 262.5 15.2.3.12.
         /// </summary>
         public bool Frozen {
             get {
@@ -806,6 +817,17 @@ namespace Jint.Native {
 
         public void PreventExtensions() {
             m_extensible = false;
+        }
+
+        public IJsObject CallMethod(string name, IJsInstance[] parameters) {
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("Invalid method name", "name");
+
+            IFunction method = Get(name) as IFunction;
+            if (method == null)
+                throw new JsTypeException(String.Format("The object doesn't have {0} method", name));
+
+            return method.Invoke(this, parameters, null);
         }
 
         #endregion

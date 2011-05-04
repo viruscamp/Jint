@@ -55,7 +55,7 @@ namespace Jint.Expressions {
         IGlobal Global { get; }
 
         /// <summary>
-        /// Last evaluted result
+        /// Last evaluted expression
         /// </summary>
         IJsInstance Result { get; }
 
@@ -67,5 +67,8 @@ namespace Jint.Expressions {
         IJsInstance Return(IJsInstance result);
 
         void ExecuteFunction(JsFunction function, JsObjectBase _this, IJsInstance[] _parameters);
+
+        void EnterScope(JsScope scope);
+        void ExitScope();
     }
 }

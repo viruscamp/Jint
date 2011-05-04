@@ -292,6 +292,17 @@ namespace Jint.Native {
         public void PreventExtensions() {
         }
 
+        public IJsObject CallMethod(string name, IJsInstance[] parameters) {
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentException("Invalid method name", "name");
+
+            IFunction method = m_prototype.Get(name) as IFunction;
+            if (method == null)
+                throw new JsTypeException(String.Format("The object doesn't have {0} method", name));
+
+            return method.Invoke(this, parameters, null);
+        }
+
         #endregion
 
         #region IPrimitiveValue<T> Members

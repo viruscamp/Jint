@@ -72,9 +72,16 @@ namespace Jint.Native
                 setter(that, value);
         }
 
-        internal override DescriptorType DescriptorType
+        public override DescriptorType DescriptorType
         {
             get { return DescriptorType.Accessor; }
+        }
+
+        public override bool Writable {
+            get {
+                return setter != null;
+            }
+            set { }
         }
 
 

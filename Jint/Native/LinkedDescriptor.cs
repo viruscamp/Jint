@@ -20,9 +20,14 @@ namespace Jint.Native {
         /// <param name="name">A name of the new descriptor</param>
         /// <param name="source">A property descriptor of the target object to which we should link to</param>
         /// <param name="that">A target object to whose property we are linking. This parameter will be
-        /// used in the calls to a 'Get' and 'Set' properties of the source descriptor.</param>
+        /// used in calls to a 'Get' and 'Set' properties of the source descriptor.</param>
         public LinkedDescriptor(JsObjectBase owner, string name, Descriptor source, JsObjectBase that)
             : base(owner, name) {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (that == null)
+                throw new ArgumentNullException("that");
+
             if (source.isReference) {
                 LinkedDescriptor sourceLink = source as LinkedDescriptor;
                 d = sourceLink.d;
@@ -45,15 +50,6 @@ namespace Jint.Native {
 
         public override bool isReference {
             get { return true ; }
-        }
-
-        public override bool isDeleted {
-            get {
-                return d.isDeleted;
-            }
-            protected set {
-                /* do nothing */;
-            }
         }
 
         public override Descriptor Clone() {
@@ -81,7 +77,7 @@ namespace Jint.Native {
                 return d.Writable ;
             }
             set {
-                ;
+                d.Writable = value;
             }
         }
     }

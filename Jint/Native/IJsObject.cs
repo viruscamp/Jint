@@ -179,6 +179,15 @@ namespace Jint.Native {
         /// Marks object as non extensible.
         /// </summary>
         void PreventExtensions();
+
+        /// <summary>
+        /// Invokes a specified method and returns it's result.
+        /// </summary>
+        /// <param name="method">A method name.</param>
+        /// <param name="parameters">A parameters list, can be null.</param>
+        /// <returns>A value returned by the method or <c>JsUndefined.Instance</c>.</returns>
+        /// <exception cref="JsTypeException">Object doesn't have the specified method or it's not callable.</exception>
+        IJsObject CallMethod(string method, IJsObject[] parameters);
         
         #endregion
 

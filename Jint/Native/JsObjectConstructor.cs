@@ -60,13 +60,13 @@ namespace Jint.Native {
         }
 
         // 15.2.4.2 15.2.4.3
-        IJsObject ToStringImpl(IJsObject target, IJsInstance[] parameters) {
+        internal IJsObject ToStringImpl(IJsObject target, IJsInstance[] parameters) {
             Debug.Assert(target != null);
             return Global.NewPrimitive(String.Concat("[object ", target.Class, "]"));
         }
 
         // 15.2.4.4
-        IJsObject ValueOfImpl(IJsObject target, IJsInstance[] parameters) {
+        internal IJsObject ValueOfImpl(IJsObject target, IJsInstance[] parameters) {
             Debug.Assert(target != null);
             return target;
         }

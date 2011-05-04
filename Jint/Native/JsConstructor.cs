@@ -43,8 +43,7 @@ namespace Jint.Native {
         }
 
         /// <summary>
-        /// Creates a new object and sets it's 'contructor' property to this constructor. Received
-        /// object can be used as 'prototype' prototype of the constructor.
+        /// Creates a new object and sets it's 'contructor' property to this constructor.
         /// </summary>
         /// <returns>A new object which references this constructor.</returns>
         protected IJsObject CreatePrototypeObject() {

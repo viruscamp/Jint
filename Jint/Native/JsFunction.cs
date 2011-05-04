@@ -94,30 +94,19 @@ namespace Jint.Native {
             else if (that == null)
                 that = JsNull.Instance;
 
-            JsArguments args = new JsArguments(m_global, this, parameters, m_options & Options.Strict);
-
             JsScope functionScope = new JsScope(m_scope);
+            Descriptor[] links = new Descriptor[Math.Min(m_arguments.Count,parameters.Length)];
 
             for (int i = 0; i < function.Arguments.Count; i++)
-                if (i < parameters.Length)
-                    functionScope.DefineOwnProperty(
-                        new LinkedDescriptor(
-                            functionScope,
-                            function.Arguments[i],
-                            args.GetDescriptor(i.ToString()),
-                            args
-                        ),
-                        true
-                    );
-                else
-                    functionScope.DefineOwnProperty(
-                        new ValueDescriptor(
-                            functionScope,
-                            function.Arguments[i],
-                            JsUndefined.Instance
-                        ),
-                        true
-                    );
+                if (i < parameters.Length) {
+                    ValueDescriptor d = new ValueDescriptor(functionScope, m_arguments[i], parameters[i].GetObject());
+                    functionScope.DefineOwnProperty(d,true);
+                    links[i] = d;
+                } else {
+                    DefineProperty(functionScope, m_arguments[i], JsUndefined.Instance, PropertyAttributes.None);
+                }
+
+            JsArguments args = new JsArguments(m_global, this,links, parameters, m_options & Options.Strict);
 
             // define arguments variable
             functionScope[ARGUMENTS] = args;
@@ -126,7 +115,7 @@ namespace Jint.Native {
             functionScope[THIS] = that;
             
             // enter activation object
-            EnterScope(functionScope);
+            visitor.EnterScope(functionScope);
 
             try {
 
@@ -141,7 +130,7 @@ namespace Jint.Native {
                 }
             } finally {
                 // return to previous execution state
-                ExitScope();
+                visitor.ExitScope();
             }
         }
 

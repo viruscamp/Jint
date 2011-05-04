@@ -42,20 +42,14 @@ namespace Jint.Native {
             IJsInstance[] targetParameters;
 
             if (argArray is JsArray) {
-                JsArray nativeArray = argArray as JsArray;
-
-                targetParameters = nativeArray.ToArray();
-                
+                targetParameters = ((JsArray)nativeArray).ToArray();
             } else if (argArray is JsArguments) {
-                JsArguments nativeArguments = argArray as JsArguments;
-
-                targetParameters = new IJsInstance[nativeArguments.Length];
-                nativeArguments.CopyTo(targetParameters, 0);
+                targetParameters = ((JsArguments)nativeArguments).ToArguments();
             } else {
                 IJsObject len = argArray["length"];
                 UInt32 intLen = len.ToUInt32();
                 if (len.ToNumber() != intLen )
-                    throw new JsTypeException("Invalid arguments");
+                    throw new JsTypeException("Invalid argument");
 
                 targetParameters = new IJsInstance[intLen];
                 for (UInt32 i = 0; i < intLen; i++)

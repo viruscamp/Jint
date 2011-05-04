@@ -3,36 +3,39 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Delegates;
 using Jint.Expressions;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace Jint.Native {
     [Serializable]
     public class JsArrayConstructor : JsConstructor {
         public JsArrayConstructor(IGlobal global)
-            : base(global) {
-            Name = "Array";
-            DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.DontConfigure | PropertyAttributes.DontEnum | PropertyAttributes.ReadOnly);
-        }
+            : base(JsInstance.CLASS_ARRAY, global, global.FunctionClass.Prototype) {
 
-        public override void InitPrototype(IGlobal global) {
-            var Prototype = PrototypeProperty;
+            var prototypeProperty = CreatePrototypeObject();
 
-            Prototype.DefineOwnProperty(new PropertyDescriptor<JsObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl) { Enumerable = false });
+            DefineOwnProperty(PROTOTYPE, prototypeProperty, ConstPropertyAttributes);
 
-            Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsArray>(ToStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsArray>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("concat", global.FunctionClass.New<JsObject>(Concat), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("join", global.FunctionClass.New<JsObject>(Join, 1), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("pop", global.FunctionClass.New<JsObject>(Pop), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("push", global.FunctionClass.New<JsObject>(Push, 1), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("reverse", global.FunctionClass.New<JsObject>(Reverse), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("shift", global.FunctionClass.New<JsObject>(Shift), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("slice", global.FunctionClass.New<JsObject>(Slice, 2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("sort", global.FunctionClass.New<JsObject>(Sort), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("splice", global.FunctionClass.New<JsObject>(Splice, 2), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("unshift", global.FunctionClass.New<JsObject>(UnShift, 1), PropertyAttributes.DontEnum);
+            var fc = global.FunctionClass;
 
-            Prototype.DefineOwnProperty("indexOf", global.FunctionClass.New<JsObject>(IndexOfImpl, 1), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("lastIndexOf", global.FunctionClass.New<JsObject>(LastIndexOfImpl, 1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "toString", fc.New(ToStringImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "toLocaleString", fc.New(ToLocaleStringImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "concat", fc.New(Concat,1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "join", fc.New(Join, 1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "pop", fc.New(Pop), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "push", fc.New(Push, 1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "reverse", fc.New(Reverse), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "shift", fc.New(Shift), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "slice", fc.New(Slice, 2), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "sort", fc.New(Sort), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "splice", fc.New(Splice, 2), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty, "unshift", fc.New(UnShift, 1), PropertyAttributes.DontEnum);
+
+            if (Global.HasOption(Options.Ecmascript5)) {
+                DefineProperty(prototypeProperty, "indexOf", fc.New(IndexOfImpl, 1), PropertyAttributes.DontEnum);
+                DefineProperty(prototypeProperty, "lastIndexOf", fc.New(LastIndexOfImpl, 1), PropertyAttributes.DontEnum);
+            }
+
         }
 
 
@@ -42,75 +45,72 @@ namespace Jint.Native {
             return array;
         }
 
-        public override JsObject Construct(IJsInstance[] parameters, Type[] genericArgs, IJintVisitor visitor) {
-            JsArray array = New();
+        public override IJsObject Construct(IJsInstance[] parameters, JsScope callingContext) {
+            JsArray array = new JsArray(Global, PrototypeProperty);
 
-            for (int i = 0; i < parameters.Length; i++)
-                array.Put(i, parameters[i]); // fast versin since it avoids a type conversion
+            if (parameters != null && parameters.Length > 0) {
+                if (parameters.Length > 1) {
+                    for (int i = 0; i < parameters.Length; i++)
+                        array.Put((uint)i, parameters[i].GetObject());
+                } else {
+                    IJsObject len = parameters[0].GetObject();
+                    if (!Double.IsNaN(len.ToNumber())) {
+                        if (len.ToUInt32() == len.ToNumber())
+                            array.Length = len.ToUInt32();
+                        else
+                            throw new JsRangeException("Invalid array length");
+                    } else {
+                        array.Put(0, len);
+                    }
+                }
+            }
 
             return array;
         }
 
-        public override IJsInstance Execute(IJintVisitor visitor, JsObjectBase that, IJsInstance[] parameters) {
-            if (that == null || (that as IGlobal) == visitor.Global ) {
-                return visitor.Return(Construct(parameters,null,visitor));
-            }
-            else {
-                // When called as part of a new expression, it is a constructor: it initialises the newly created object.
-                for (int i = 0; i < parameters.Length; i++) {
-                    that[i.ToString()] = parameters[i];
-                }
-
-                return visitor.Return(that);
-            }
+        public override int Length {
+            get { return 1; }
         }
 
-        /// <summary>
+        public override IJsObject Invoke(IJsObject that, IJsInstance[] parameters, JsScope callingContext) {
+            return Construct(parameters, callingContext);
+        }
+
+        #region Array.prototype functions
+        
         /// 15.4.4.2
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsInstance ToStringImpl(JsArray target, IJsInstance[] parameters) {
-            JsArray result = Global.ArrayClass.New();
+        IJsObject ToStringImpl(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-            for (int i = 0; i < target.Length; i++) {
-                var obj = (JsObjectBase)target[i.ToString()];
-                if (ExecutionVisitor.IsNullOrUndefined(obj)) {
-                    result[i.ToString()] = Global.StringClass.New();
-                }
-                else {
-                    var function = obj["toString"] as JsFunction;
-                    if (function != null) {
-                        Global.Visitor.ExecuteFunction(function, obj, parameters);
-                        result[i.ToString()] = Global.Visitor.Returned;
-                    }
-                    else {
-                        result[i.ToString()] = Global.StringClass.New();
-                    }
-                }
-            }
-
-            return Global.StringClass.New(result.ToString());
-
+            IFunction join = target["join"] as IFunction;
+            if (join != null)
+                return join.Invoke(target, parameters, null);
+            else
+                return Global.ObjectClass.ToStringImpl(target, parameters);
         }
 
-        /// <summary>
         /// 15.4.4.3
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsInstance ToLocaleStringImpl(JsArray target, IJsInstance[] parameters) {
-            JsArray result = Global.ArrayClass.New();
+        IJsObject ToLocaleStringImpl(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-            for (int i = 0; i < target.Length; i++) {
-                var obj = (JsObjectBase)target[i.ToString()];
-                Global.Visitor.ExecuteFunction((JsFunction)obj["toLocaleString"], obj, parameters);
-                result[i.ToString()] = Global.Visitor.Returned;
+            uint len = target["length"].ToUInt32();
+
+            if (len == 0)
+                return Global.NewPrimitive(String.Empty);
+
+            string[] result = new string[len];
+
+            for (uint i = 0; i < len; i++) {
+                IJsObject item = target[i];
+
+                result[i] = (
+                    item == JsNull.Instance || item == JsUndefined.Instance ?
+                    String.Empty :
+                    item.CallMethod("toLocaleString",null).ToString()
+                );
             }
 
-            return Global.StringClass.New(result.ToString());
+            return Global.NewPrimitive( String.Join(CultureInfo.CurrentCulture.TextInfo.ListSeparator, result) );
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Concat(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Concat(IJsObject target, IJsInstance[] parameters) {
             if (target is JsArray)
                 return ((JsArray)target).concat(Global, parameters);
             JsArray array = Global.ArrayClass.New();
@@ -138,8 +138,7 @@ namespace Jint.Native {
                             array.Put(n, result);
                         n++;
                     }
-                }
-                else {
+                } else {
                     array.Put(n, e);
                     n++;
                 }
@@ -153,7 +152,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Join(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Join(IJsObject target, IJsInstance[] parameters) {
             if (target is JsArray)
                 return ((JsArray)target).join(Global, parameters.Length > 0 ? parameters[0] : JsUndefined.Instance);
             string separator = (parameters.Length == 0 || parameters[0] == JsUndefined.Instance)
@@ -169,8 +168,7 @@ namespace Jint.Native {
             StringBuilder r;
             if (element0 == JsUndefined.Instance || element0 == JsNull.Instance) {
                 r = new StringBuilder(string.Empty);
-            }
-            else {
+            } else {
                 r = new StringBuilder(element0.ToString());
             }
 
@@ -191,7 +189,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Pop(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Pop(IJsObject target, IJsInstance[] parameters) {
             var length = Convert.ToUInt32(target.Length);
             if (length == 0)
                 return JsUndefined.Instance;
@@ -208,7 +206,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Push(JsObjectBase target, IJsInstance[] parameters) {
+        public IJsObject Push(JsObjectBase target, IJsInstance[] parameters) {
             int length = (int)target["length"].ToNumber();
             foreach (var arg in parameters) {
                 target[Global.NumberClass.New(length)] = arg;
@@ -224,7 +222,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Reverse(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Reverse(IJsObject target, IJsInstance[] parameters) {
             int len = target.Length;
             int middle = len / 2;
 
@@ -240,15 +238,13 @@ namespace Jint.Native {
 
                 if (lowerExists) {
                     target[upperP] = lowerValue;
-                }
-                else {
+                } else {
                     target.Delete(upperP);
                 }
 
                 if (upperExists) {
                     target[lowerP] = upperValue;
-                }
-                else {
+                } else {
                     target.Delete(lowerP);
                 }
             }
@@ -261,7 +257,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Shift(JsObjectBase target, IJsInstance[] parameters) {
+        public IJsObject Shift(JsObjectBase target, IJsInstance[] parameters) {
             if (target.Length == 0) {
                 return JsUndefined.Instance;
             }
@@ -274,8 +270,7 @@ namespace Jint.Native {
                 string to = (k - 1).ToString();
                 if (target.TryGetProperty(from, out result)) {
                     target[to] = result;
-                }
-                else {
+                } else {
                     target.Delete(to);
                 }
             }
@@ -291,7 +286,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Slice(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Slice(IJsObject target, IJsInstance[] parameters) {
             int start = (int)parameters[0].ToNumber();
             int end = target.Length;
             if (parameters.Length > 1)
@@ -317,7 +312,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Sort(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Sort(IJsObject target, IJsInstance[] parameters) {
             if (target.Length <= 1) {
                 return target;
             }
@@ -339,16 +334,14 @@ namespace Jint.Native {
             if (compare != null) {
                 try {
                     values.Sort(new JsComparer(Global.Visitor, compare));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     if (e.InnerException is JsException) {
                         throw e.InnerException;
                     }
 
                     throw;
                 }
-            }
-            else {
+            } else {
                 values.Sort();
             }
 
@@ -365,7 +358,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance Splice(JsObject target, IJsInstance[] parameters) {
+        public IJsObject Splice(IJsObject target, IJsInstance[] parameters) {
             JsArray array = Global.ArrayClass.New();
             int relativeStart = Convert.ToInt32(parameters[0].ToNumber());
             int actualStart = relativeStart < 0 ? Math.Max(target.Length + relativeStart, 0) : Math.Min(relativeStart, target.Length);
@@ -393,8 +386,7 @@ namespace Jint.Native {
                     string to = (k + items.Count).ToString();
                     if (target.TryGetProperty(from, out result)) {
                         target[to] = result;
-                    }
-                    else {
+                    } else {
                         target.Delete(to);
                     }
                 }
@@ -404,16 +396,14 @@ namespace Jint.Native {
                 }
 
                 target.Length = len - actualDeleteCount + items.Count;
-            }
-            else {
+            } else {
                 for (int k = len - actualDeleteCount; k > actualStart; k--) {
                     IJsInstance result = null;
                     string from = (k + actualDeleteCount - 1).ToString();
                     string to = (k + items.Count - 1).ToString();
                     if (target.TryGetProperty(from, out result)) {
                         target[to] = result;
-                    }
-                    else {
+                    } else {
                         target.Delete(to);
                     }
                 }
@@ -432,15 +422,14 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance UnShift(JsObject target, IJsInstance[] parameters) {
+        public IJsObject UnShift(IJsObject target, IJsInstance[] parameters) {
             for (int k = target.Length; k > 0; k--) {
                 IJsInstance result = null;
                 string from = (k - 1).ToString();
                 string to = (k + parameters.Length - 1).ToString();
                 if (target.TryGetProperty(from, out result)) {
                     target[to] = result;
-                }
-                else {
+                } else {
                     target.Delete(to);
                 }
             }
@@ -459,7 +448,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance LastIndexOfImpl(JsObject target, IJsInstance[] parameters) {
+        public IJsObject LastIndexOfImpl(IJsObject target, IJsInstance[] parameters) {
             if (parameters.Length == 0) {
                 return Global.NumberClass.New(-1);
             }
@@ -494,7 +483,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public IJsInstance IndexOfImpl(JsObject target, IJsInstance[] parameters) {
+        public IJsObject IndexOfImpl(IJsObject target, IJsInstance[] parameters) {
             if (parameters.Length == 0) {
                 return Global.NumberClass.New(-1);
             }
@@ -534,8 +523,7 @@ namespace Jint.Native {
         IJsInstance SetLengthImpl(JsObject that, IJsInstance[] parameters) {
             if (that is JsArray) {
                 that.Length = (int)parameters[0].ToNumber();
-            }
-            else {
+            } else {
                 int oldLen = that.Length;
                 that.Length = (int)parameters[0].ToNumber();
 
@@ -545,5 +533,7 @@ namespace Jint.Native {
 
             return parameters[0];
         }
+
+        #endregion
     }
 }

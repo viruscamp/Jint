@@ -190,7 +190,7 @@ namespace Jint.Native {
             return value != null ? value.Get(this) : JsUndefined.Instance;
         }
 
-        public void Put(uint i, IJsObject value) {
+        public bool Put(uint i, IJsObject value,bool throwError) {
             if (value == null)
                 throw new ArgumentNullException("value");
 
@@ -202,19 +202,19 @@ namespace Jint.Native {
                     if (d.Writable)
                         d.Set(this, value);
                     else
-                        Reject(String.Format("A property {0} isn't writable", name), throwError);
+                        return Reject(String.Format("A property {0} isn't writable", name), throwError);
 
                 } else if (d.DescriptorType == DescriptorType.Accessor) {
                     if (d.Writable) {
                         d.Set(this, value);
-                        return;
+                        return true;
                     }
                 }
             }
 
             // the property is absent or inherited value property
-            if (!m_extensible)
-                return;
+            if (!Extensible)
+                return Reject("The object isn't extensible",throwError);
 
             if (d != null && m_hasChildren)
                 d.Owner.RepopulateProperty(d.Name);
@@ -224,6 +224,8 @@ namespace Jint.Native {
 
             if (i >= m_length)
                 m_length = i + 1;
+
+            return true;
         }
 
         public bool HasProperty(uint key) {

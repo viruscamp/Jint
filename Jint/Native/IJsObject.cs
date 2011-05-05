@@ -187,7 +187,7 @@ namespace Jint.Native {
         /// <param name="parameters">A parameters list, can be null.</param>
         /// <returns>A value returned by the method or <c>JsUndefined.Instance</c>.</returns>
         /// <exception cref="JsTypeException">Object doesn't have the specified method or it's not callable.</exception>
-        IJsObject CallMethod(string method, IJsObject[] parameters);
+        IJsObject CallMethod(string method, IJsInstance[] parameters);
         
         #endregion
 

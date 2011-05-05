@@ -14,11 +14,12 @@ namespace Jint.Native {
     /// but when it holds a clr value it's behaviour changes.
     /// </para>
     /// <para>
-    /// If a clr object have an indexers they will be accessible through
-    /// square braces instead of properties. If object is enumerable it can
+    /// If a clr object have indexers they will be accessible through
+    /// square braces instead of regular properties. If object is enumerable it can
     /// be iterated using for-in statement. <c>ToPrimitive</c> method will use
-    /// methods of the object and <c>Convert</c> class and it can't be overriden
-    /// from script.
+    /// methods of the object and <c>Convert</c> class and behaviour can't be overriden
+    /// from the script, i.e. if you redefine <c>valueOf</c> or <c>toString</c> methods
+    /// it will not take effect on <c>ToPrimitive</c> conversion.
     /// </para>
     /// <code>
     /// var col = new System.Collections.Generics.Dictionary{System.String,System.String}();
@@ -103,7 +104,7 @@ namespace Jint.Native {
                 IConvertible v = m_value as IConvertible;
                 if (hint == JsObjectType.String || v == null) {
                     // we can return only a string primitive
-                    return m_value.ToString();
+                    return global.NewPrimitive( m_value.ToString() );
                 } else {
                     IConvertible prim = ConversionTraits.ToPrimitive(v);
 

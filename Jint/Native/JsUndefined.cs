@@ -277,6 +277,10 @@ namespace Jint.Native {
             return Instance;
         }
 
+        public IJsObject CallMethod(string name, IJsInstance[] parameters) {
+            throw new JsTypeException(String.Format("Can't call {0} method of undefined",name));
+        }
+
         #endregion
     }
 }

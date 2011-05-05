@@ -78,7 +78,7 @@ namespace Jint.Native {
 
         #region Array.prototype functions
         
-        /// 15.4.4.2
+        // 15.4.4.2
         IJsObject ToStringImpl(IJsObject target, IJsInstance[] parameters) {
             Debug.Assert(target != null);
 
@@ -89,7 +89,7 @@ namespace Jint.Native {
                 return Global.ObjectClass.ToStringImpl(target, parameters);
         }
 
-        /// 15.4.4.3
+        // 15.4.4.3
         IJsObject ToLocaleStringImpl(IJsObject target, IJsInstance[] parameters) {
             Debug.Assert(target != null);
 
@@ -100,254 +100,248 @@ namespace Jint.Native {
 
             string[] result = new string[len];
 
-            for (uint i = 0; i < len; i++) {
-                IJsObject item = target[i];
+            // TODO: optimize
 
-                result[i] = (
+            for (uint i = 0; i < len; i++) {
+                IJsObject item = target[i.ToString()];
+
+                result[i] = 
                     item == JsNull.Instance || item == JsUndefined.Instance ?
                     String.Empty :
-                    item.CallMethod("toLocaleString",null).ToString()
-                );
+                    item.CallMethod("toLocaleString",null).ToString() ;
             }
 
             return Global.NewPrimitive( String.Join(CultureInfo.CurrentCulture.TextInfo.ListSeparator, result) );
         }
 
-        /// <summary>
-        /// 15.4.4.4
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Concat(IJsObject target, IJsInstance[] parameters) {
-            if (target is JsArray)
-                return ((JsArray)target).concat(Global, parameters);
-            JsArray array = Global.ArrayClass.New();
-            List<IJsInstance> items = new List<IJsInstance>();
-            items.Add(target);
-            items.AddRange(parameters);
-            int n = 0;
-            while (items.Count > 0) {
-                IJsInstance e = items[0];
-                items.RemoveAt(0);
-                if (Global.ArrayClass.HasInstance(e as JsObject)) {
-                    for (int k = 0; k < ((JsObject)e).Length; k++) {
-                        string p = k.ToString();
-                        IJsInstance result = null;
-                        if (((JsObject)e).TryGetProperty(p, out result))
-                            array.Put(n, result);
-                        n++;
-                    }
+        // 15.4.4.4
+        IJsObject Concat(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+            
+            IJsObject[] list = new IJsObject[ parameters == null ? 1 : parameters.Length + 1 ];
+            list[0] = target;
+
+            if (parameters != null) {
+                for (int i = 0; i < parameters.Length; i++)
+                    list[i + 1] = parameters[i].GetObject();
+            }
+
+            JsArray result = new JsArray(Global, PrototypeProperty);
+
+            // TODO: optimize
+
+            uint n = 0;
+            foreach (IJsObject item in list) {
+                if (item.Class == JsInstance.CLASS_ARRAY) {
+                    uint len = item["length"].ToUInt32();
+                    IJsObject value;
+                    for (uint i = 0; i < len; i++)
+                        if (item.TryGetValue(i.ToString(), out value))
+                            result.Put(n + i, value);
+                    n += len;
                 } else {
-                    array.Put(n, e);
+                    result.Put(n, item);
                     n++;
                 }
             }
-            return array;
         }
 
-        /// <summary>
-        /// 15.4.4.5
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Join(IJsObject target, IJsInstance[] parameters) {
-            if (target is JsArray)
-                return ((JsArray)target).join(Global, parameters.Length > 0 ? parameters[0] : JsUndefined.Instance);
-            string separator = (parameters.Length == 0 || parameters[0] == JsUndefined.Instance)
-                ? ","
-                : parameters[0].ToString();
+        // 15.4.4.5
+        IJsObject Join(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-            if (target.Length == 0) {
-                return Global.StringClass.New();
+            string sep;
+
+            if (parameters == null || parameters.Length == 0)
+                sep = ",";
+            else
+                sep = parameters[0].GetObject().ToString();
+
+
+            uint len = target["length"].ToUInt32();
+
+            if (len == 0)
+                return String.Empty;
+
+            string[] result = new string[len];
+
+            for (uint i = 0; i < len; i++) {
+                IJsObject item = target[i.ToString()];
+
+                if (item == JsUndefined.Instance || item == JsNull.Instance)
+                    result[i] = String.Empty;
+                else
+                    result[i] = item.ToString();
             }
 
-            IJsInstance element0 = target[0.ToString()];
-
-            StringBuilder r;
-            if (element0 == JsUndefined.Instance || element0 == JsNull.Instance) {
-                r = new StringBuilder(string.Empty);
-            } else {
-                r = new StringBuilder(element0.ToString());
-            }
-
-            var length = target["length"].ToNumber();
-
-            for (int k = 1; k < length; k++) {
-                r.Append(separator);
-                IJsInstance element = target[k.ToString()];
-                if (element != JsUndefined.Instance && element != JsNull.Instance)
-                    r.Append(element.ToString());
-            }
-            return Global.StringClass.New(r.ToString());
+            return Global.NewPrimitive(String.Join(sep, result));
         }
 
-        /// <summary>
-        /// 15.4.4.6
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Pop(IJsObject target, IJsInstance[] parameters) {
-            var length = Convert.ToUInt32(target.Length);
-            if (length == 0)
+        // 15.4.4.6
+        IJsObject Pop(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
+            uint len = target[LENGTH].ToUInt32();
+            if (len == 0) {
+                target.Put(LENGTH, Global.NewPrimitive(len), true);
                 return JsUndefined.Instance;
-            var key = (length - 1).ToString();
-            var result = target[key];
-            target.Delete(key);
-            target.Length--;
+            }
+            
+            uint last = len -1;
+
+            IJsObject result = target.Get(last.ToString());
+            target.Delete(last.ToString(), true);
+            target.Put(LENGTH, Global.NewPrimitive(last), true);
             return result;
         }
 
-        /// <summary>
-        /// 15.4.4.7
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Push(JsObjectBase target, IJsInstance[] parameters) {
-            int length = (int)target["length"].ToNumber();
-            foreach (var arg in parameters) {
-                target[Global.NumberClass.New(length)] = arg;
-                length++;
+        // 15.4.4.7
+        public IJsObject Push(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
+            uint length = target[LENGTH].ToUInt32();
+
+            if (parameters != null) {
+                foreach (var arg in parameters) {
+                    target.Put(length.ToString(),arg.GetObject(),true);
+                    length++;
+                }
             }
 
-            return Global.NumberClass.New(length);
+            IJsObject len = Global.NewPrimitive(length);
+
+            target.Put(LENGTH, len, true);
+            return len;
         }
 
-        /// <summary>
-        /// 15.4.4.8
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Reverse(IJsObject target, IJsInstance[] parameters) {
-            int len = target.Length;
-            int middle = len / 2;
+        // 15.4.4.8
+        IJsObject Reverse(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-            for (int lower = 0; lower != middle; lower++) {
-                int upper = len - lower - 1;
+            uint len = target[LENGTH].ToUInt32();
+            uint middle = len / 2;
+
+            for (uint lower = 0; lower != middle; lower++) {
+                uint upper = len - lower - 1;
+
                 string upperP = upper.ToString();
                 string lowerP = lower.ToString();
 
-                IJsInstance lowerValue = null;
-                IJsInstance upperValue = null;
-                bool lowerExists = target.TryGetProperty(lowerP, out lowerValue);
-                bool upperExists = target.TryGetProperty(upperP, out upperValue);
+                IJsObject lowerValue = null;
+                IJsObject upperValue = null;
+                bool lowerExists = target.TryGetValue(lowerP, out lowerValue);
+                bool upperExists = target.TryGetValue(upperP, out upperValue);
 
                 if (lowerExists) {
-                    target[upperP] = lowerValue;
+                    target.Put(upperP,lowerValue,true);
                 } else {
-                    target.Delete(upperP);
+                    target.Delete(upperP,true);
                 }
 
                 if (upperExists) {
-                    target[lowerP] = upperValue;
+                    target.Put(lowerP, upperValue, true);
                 } else {
-                    target.Delete(lowerP);
+                    target.Delete(lowerP,true);
                 }
             }
             return target;
         }
 
-        /// <summary>
-        /// 15.4.4.9
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Shift(JsObjectBase target, IJsInstance[] parameters) {
-            if (target.Length == 0) {
-                return JsUndefined.Instance;
+        // 15.4.4.9
+        IJsObject Shift(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
+
+            uint len = target[LENGTH].ToUInt32();
+
+            if (len == 0) {
+                target.Put(LENGTH, Global.NewPrimitive(0), true);
+                return Global.NewPrimitive(0);
             }
 
-            IJsInstance first = target[0.ToString()];
-            for (int k = 1; k < target.Length; k++) {
-                IJsInstance result = null;
+            IJsObject first = target[0.ToString()];
+
+            for (uint k = 1; k < len; k++) {
+                IJsObject result = null;
 
                 string from = k.ToString();
                 string to = (k - 1).ToString();
-                if (target.TryGetProperty(from, out result)) {
-                    target[to] = result;
-                } else {
-                    target.Delete(to);
-                }
+
+                if (target.TryGetValue(from, out result))
+                    target.Put(to,result,true);
+                else
+                    target.Delete(to,true);
             }
-            target.Delete((target.Length - 1).ToString());
-            target.Length--;
+
+            target.Delete((len - 1).ToString(),true);
+            target.Put(LENGTH,Global.NewPrimitive(len-1),true);
 
             return first;
         }
 
-        /// <summary>
-        /// 15.4.4.10
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Slice(IJsObject target, IJsInstance[] parameters) {
-            int start = (int)parameters[0].ToNumber();
-            int end = target.Length;
-            if (parameters.Length > 1)
-                end = (int)parameters[1].ToNumber();
+        // 15.4.4.10
+        IJsObject Slice(IJsObject target, IJsInstance[] _parameters) {
+            Debug.Assert(target != null);
+
+            IJsObject[] parameters = NormalizeParameters(_parameters, 2);
+
+            int len = target[LENGTH].ToUInt32();
+
+            int start = parameters[0].ToInteger();
+            int end;
+
+            if (parameters[1] == JsUndefined.Instance)
+                end = len;
+            else
+                end = parameters[1].ToInteger();
+
             if (start < 0)
-                start += target.Length;
+                start = Math.Max(len + start, 0);
+            else
+                start = Math.Min(len, start);
+
             if (end < 0)
-                end += target.Length;
-            if (start > target.Length)
-                start = target.Length;
-            if (end > target.Length)
-                end = target.Length;
-            JsArray result = Global.ArrayClass.New();
+                end = Math.Max(len + end, 0);
+            else
+                end = Math.Min(end, len);
+
+            JsArray result = new JsArray(Global,PrototypeProperty);
+            IJsObject value;
+
             for (int i = start; i < end; i++)
-                Push(result, new IJsInstance[] { target[Global.NumberClass.New(i)] });
+                if (target.TryGetValue(i.ToString(),out value))
+                    result.Put((uint)i,value,true);
 
             return result;
         }
 
-        /// <summary>
-        /// 15.4.4.11
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public IJsObject Sort(IJsObject target, IJsInstance[] parameters) {
-            if (target.Length <= 1) {
-                return target;
-            }
+        // 15.4.4.11
+        IJsObject Sort(IJsObject target, IJsInstance[] parameters) {
+            Debug.Assert(target != null);
 
-            JsFunction compare = null;
+            uint length = target["length"].ToUInt32();
+
+            if (length == 0)
+                return target;
+
+            IFunction compare = null;
 
             // Compare function defined
-            if (parameters.Length > 0) {
-                compare = parameters[0] as JsFunction;
-            }
+            if (parameters != null && parameters.Length > 0)
+                compare = parameters[0].GetObject() as IFunction;
 
-            var values = new List<IJsInstance>();
-            var length = (int)target["length"].ToNumber();
+            List<IJsObject> values = new List<IJsObject>();
+            IJsObject value;
 
-            for (int i = 0; i < length; i++) {
-                values.Add(target[i.ToString()]);
-            }
+            // if object is sparse (see 15.4) let's sort only
+            // present values
+            for (uint i = 0; i < length; i++)
+                if (target.TryGetValue(i.ToString(),out value))
+                    values.Add(value);
 
-            if (compare != null) {
-                try {
-                    values.Sort(new JsComparer(Global.Visitor, compare));
-                } catch (Exception e) {
-                    if (e.InnerException is JsException) {
-                        throw e.InnerException;
-                    }
+            values.Sort(new JsComparer(compare));
 
-                    throw;
-                }
-            } else {
-                values.Sort();
-            }
-
-            for (int i = 0; i < length; i++) {
-                target[i.ToString()] = values[i];
-            }
+            for (int i = 0; i < length; i++)
+                target.Put(i.ToString(),values[i],true);
 
             return target;
         }

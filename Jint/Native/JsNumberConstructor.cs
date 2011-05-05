@@ -11,7 +11,8 @@ namespace Jint.Native {
         public JsNumberConstructor(IGlobal global)
             : base(JsInstance.CLASS_NUMBER, global, global.FunctionClass.PrototypeProperty) {
 
-            JsObject prototypeProperty = CreatePrototypeObject();
+            IJsObject prototypeProperty = CreatePrototypeObject();
+            
             DefineOwnProperty(PROTOTYPE, prototypeProperty , ConstPropertyAttributes);
 
             DefineOwnProperty("MAX_VALUE", global.NewPrimitive(Double.MaxValue), ConstPropertyAttributes );
@@ -20,11 +21,13 @@ namespace Jint.Native {
             DefineOwnProperty("NEGATIVE_INFINITY", global.NewPrimitive(Double.PositiveInfinity), ConstPropertyAttributes);
             DefineOwnProperty("POSITIVE_INFINITY", global.NewPrimitive(Double.NegativeInfinity), ConstPropertyAttributes);
 
-            prototypeProperty.DefineOwnProperty("toString", global.FunctionClass.New<JsNumber>(ToStringImpl, 1), PropertyAttributes.DontEnum);
-            prototypeProperty.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
-            prototypeProperty.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
-            prototypeProperty.DefineOwnProperty("toExponential", global.FunctionClass.New<JsNumber>(ToExponentialImpl), PropertyAttributes.DontEnum);
-            prototypeProperty.DefineOwnProperty("toPrecision", global.FunctionClass.New<JsNumber>(ToPrecisionImpl), PropertyAttributes.DontEnum);
+            var fc = global.FunctionClass;
+
+            DefineProperty(prototypeProperty,"toString", fc.New(ToStringImpl, 1), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty,"toLocaleString", fc.New(ToLocaleStringImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty,"toFixed", fc.New(ToFixedImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty,"toExponential", fc.New(ToExponentialImpl), PropertyAttributes.DontEnum);
+            DefineProperty(prototypeProperty,"toPrecision", fc.New(ToPrecisionImpl), PropertyAttributes.DontEnum);
         }
 
         public JsNumber New(double value) {

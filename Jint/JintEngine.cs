@@ -322,7 +322,7 @@ namespace Jint {
         /// <param name="value">Available Double value</param>
         /// <returns>The current JintEngine instance</returns>
         public JintEngine SetParameter(string name, double value) {
-            visitor.GlobalScope[name] = visitor.Global.WrapClr(value);
+            visitor.GlobalScope[name] = visitor.Global.NumberClass.New(value);
             return this;
         }
 
@@ -333,7 +333,10 @@ namespace Jint {
         /// <param name="value">Available String instance</param>
         /// <returns>The current JintEngine instance</returns>
         public JintEngine SetParameter(string name, string value) {
-            visitor.GlobalScope[name] = visitor.Global.WrapClr(value);
+            if (value == null)
+                visitor.GlobalScope[name] = JsNull.Instance;
+            else
+                visitor.GlobalScope[name] = visitor.Global.StringClass.New(value);
             return this;
         }
 
@@ -355,7 +358,7 @@ namespace Jint {
         /// <param name="value">Available Boolean value</param>
         /// <returns>The current JintEngine instance</returns>
         public JintEngine SetParameter(string name, bool value) {
-            visitor.GlobalScope[name] = visitor.Global.WrapClr(value);
+            visitor.GlobalScope[name] = visitor.Global.BooleanClass.New(value);
             return this;
         }
 
@@ -366,7 +369,7 @@ namespace Jint {
         /// <param name="value">Available DateTime value</param>
         /// <returns>The current JintEngine instance</returns>
         public JintEngine SetParameter(string name, DateTime value) {
-            visitor.GlobalScope[name] = visitor.Global.WrapClr(value);
+            visitor.GlobalScope[name] = visitor.Global.DateClass.New(value);
             return this;
         }
         #endregion

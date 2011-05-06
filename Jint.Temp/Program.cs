@@ -46,8 +46,13 @@ namespace Jint.Temp {
             JsObject o = new JsObject();
             o["abc"] = new JsString("sure",engine.Global.StringClass.PrototypeProperty); 
             engine.SetParameter("o", o );
+            engine.SetParameter("ts1", new TimeSpan(1000));
+            engine.SetParameter("ts2", new TimeSpan(2000));
 
             engine.Run(@"
+if (ts1 <= ts2) {
+    System.Console.WriteLine('ts1 < ts2');
+}
 System.Console.WriteLine('{0}',o.abc);
 System.Console.WriteLine('{0}',Jint.Temp.InfoType.Name);
 ");

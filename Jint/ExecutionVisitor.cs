@@ -709,7 +709,8 @@ namespace Jint {
                 Result = function.Construct(parameters, null, this);
 
                 return;
-            }
+            } else
+                throw new JsException(Global.ErrorClass.New("Function expected."));
         }
 
         public void Visit(TernaryExpression expression) {
@@ -833,6 +834,33 @@ namespace Jint {
                 return Global.BooleanClass.False;
             }
         }
+
+        public bool CompareTo(JsInstance x, JsInstance y, out int result) {
+            result = 0;
+
+            if (x.IsClr && y.IsClr) {
+                IComparable xcmp = x.Value as IComparable;
+                
+                if (xcmp == null || y.Value == null || xcmp.GetType() != y.Value.GetType())
+                    return false;
+                result = xcmp.CompareTo(y.Value);
+            } else {
+
+                Double xnum = x.ToNumber();
+                Double ynum = y.ToNumber();
+
+                if (Double.IsNaN(xnum) || Double.IsNaN(ynum))
+                    return false;
+
+                if (xnum < ynum)
+                    result = -1;
+                else if (xnum == ynum)
+                    result = 0;
+                else
+                    result = 1;
+            }
+            return true;
+        }
         
 
         public void Visit(BinaryExpression expression) {
@@ -861,6 +889,7 @@ namespace Jint {
             EnsureIdentifierIsDefined(Result);
 
             JsInstance right = Result;
+            int cmpResult;
 
             switch (expression.Type) {
                 case BinaryExpressionType.And:
@@ -905,19 +934,19 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Greater:
-                    Result = Global.BooleanClass.New(left.ToNumber() > right.ToNumber());
+                    Result = CompareTo(left,right,out cmpResult) && cmpResult > 0 ? Global.BooleanClass.True : Global.BooleanClass.False ;
                     break;
 
                 case BinaryExpressionType.GreaterOrEqual:
-                    Result = Global.BooleanClass.New(left.ToNumber() >= right.ToNumber());
+                    Result = CompareTo(left, right, out cmpResult) && cmpResult >= 0 ? Global.BooleanClass.True : Global.BooleanClass.False;
                     break;
 
                 case BinaryExpressionType.Lesser:
-                    Result = Global.BooleanClass.New(left.ToNumber() < right.ToNumber());
+                    Result = CompareTo(left, right, out cmpResult) && cmpResult < 0 ? Global.BooleanClass.True : Global.BooleanClass.False;
                     break;
 
                 case BinaryExpressionType.LesserOrEqual:
-                    Result = Global.BooleanClass.New(left.ToNumber() <= right.ToNumber());
+                    Result = CompareTo(left, right, out cmpResult) && cmpResult <= 0 ? Global.BooleanClass.True : Global.BooleanClass.False;
                     break;
 
                 case BinaryExpressionType.Minus:

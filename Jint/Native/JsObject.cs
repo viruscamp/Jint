@@ -7,7 +7,7 @@ namespace Jint.Native {
     public class JsObject : JsDictionaryObject {
 
         public INativeIndexer Indexer { get; set; }
-        
+
         public JsObject() {
         }
 
@@ -20,10 +20,8 @@ namespace Jint.Native {
             : base(prototype) {
         }
 
-        public override bool IsClr
-        {
-            get
-            {
+        public override bool IsClr {
+            get {
                 // if this instance holds a native value
                 return Value != null;
             }
@@ -33,8 +31,7 @@ namespace Jint.Native {
             get { return CLASS_OBJECT; }
         }
 
-        public override string Type
-        {
+        public override string Type {
             get { return TYPE_OBJECT; }
         }
 
@@ -51,6 +48,9 @@ namespace Jint.Native {
 
         #region primitive operations
         public override JsInstance ToPrimitive(IGlobal global) {
+            if (Value != null && ! (Value is IComparable) )
+                return global.StringClass.New(Value.ToString());
+
             switch (Convert.GetTypeCode(Value)) {
                 case TypeCode.Boolean:
                     return global.BooleanClass.New((bool)Value);
@@ -72,19 +72,17 @@ namespace Jint.Native {
                 case TypeCode.Double:
                 case TypeCode.Single:
                     return global.NumberClass.New(Convert.ToDouble(Value));
-                case TypeCode.DBNull:
-                case TypeCode.Empty:
                 default:
-                    break;
+                    return JsUndefined.Instance;
             }
 
-            return JsUndefined.Instance;
         }
 
         public override bool ToBoolean() {
+            if (Value != null && !(Value is IConvertible))
+                return true;
 
-            switch (Convert.GetTypeCode(Value))
-            {
+            switch (Convert.GetTypeCode(Value)) {
                 case TypeCode.Boolean:
                     return (bool)Value;
                 case TypeCode.Char:
@@ -103,29 +101,22 @@ namespace Jint.Native {
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                 case TypeCode.Single:
-                    return JsNumber.NumberToBoolean((double)Value);
+                    return JsNumber.NumberToBoolean(Convert.ToDouble(Value));
                 case TypeCode.Object:
                     return Convert.ToBoolean(Value);
-                case TypeCode.DBNull:
-                case TypeCode.Empty:
                 default:
-                    if (value is IConvertible) {
-                        return Convert.ToBoolean(Value);
-                    }
-                    else {
-                        return true;
-                    }
+                    return true;
             }
         }
 
         public override double ToNumber() {
             if (Value == null)
-            {
                 return 0;
-            }
 
-            switch (Convert.GetTypeCode(Value))
-            {
+            if (!(Value is IConvertible))
+                return double.NaN;
+
+            switch (Convert.GetTypeCode(Value)) {
                 case TypeCode.Boolean:
                     return JsBoolean.BooleanToNumber((bool)Value);
                 case TypeCode.Char:
@@ -133,29 +124,8 @@ namespace Jint.Native {
                     return JsString.StringToNumber((string)Value);
                 case TypeCode.DateTime:
                     return JsDate.DateToDouble((DateTime)Value);
-                case TypeCode.Byte:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    return Convert.ToDouble(Value);
-                case TypeCode.Object:
-                    return Convert.ToDouble(Value);
-                case TypeCode.DBNull:
-                case TypeCode.Empty:
                 default:
-                    if (value is IConvertible) {
-                        return Convert.ToDouble(Value);
-                    }
-                    else {
-                        return double.NaN;
-                    }
+                    return Convert.ToDouble(Value);
             }
         }
 

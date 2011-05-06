@@ -87,3 +87,20 @@ assert(false, hashtable == null);
 assert(true, hashtable != null);
 assert(false, hashtable.Add == null);
 assert(true, hashtable.Add != null);
+
+// IComparable tests
+var ts1 = new System.TimeSpan(1000);
+var ts3 = new System.TimeSpan(1000);
+var ts2 = new System.TimeSpan(2000);
+
+assert(true, ts1 < ts2);
+assert(true, ts1 <= ts2);
+assert(false, ts1 > ts2);
+assert(false, ts1 >= ts2);
+assert(false, ts1 == ts2);
+
+assert(true, ts1 == ts3);
+assert(true, ts1 >= ts3);
+assert(true, ts1 <= ts3);
+assert(false, ts1 > ts3);
+assert(false, ts1 < ts3);

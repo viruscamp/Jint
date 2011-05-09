@@ -525,11 +525,15 @@ namespace Jint {
                 if (found) {
                     // jumping from one case to the next one
                     clause.Statements.Accept(this);
+                    if (exit)
+                        break;
                 } else {
                     new BinaryExpression(BinaryExpressionType.Equal, (Expression)statement.Expression, clause.Expression).Accept(this);
                     if(Result.ToBoolean()) {
                         clause.Statements.Accept(this);
                         found = true;
+                        if (exit)
+                            break;
                     }
                 }
 
@@ -1371,6 +1375,7 @@ namespace Jint {
                 }
 
                 Result = returnInstance;
+                returnInstance = JsUndefined.Instance;
                 return;
             }
             else {

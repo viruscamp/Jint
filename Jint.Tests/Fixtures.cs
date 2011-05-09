@@ -1462,6 +1462,11 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void FlowScriptShouldPassTests() {
+            ExecuteEmbededScript("Flow.js");
+        }
+
+        [TestMethod]
         public void RandomValuesShouldNotRepeat() {
             Test(@"
                 for(var i=0; i<100; i++){

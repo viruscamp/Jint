@@ -33,6 +33,7 @@ A.prototype.M2 = function() { return this.M1(arguments); };
 function B() { }
 B.prototype = new A();
 
+assert('passed', new A().M1());
 assert('passed', new B().M1());
 assert('passed', new B().M2());
 assert(A, new B().constructor);
@@ -41,7 +42,7 @@ function C(arg1) { this.shouldUseOriginal = arg1; }
 C.prototype = new B;
 C.prototype.M2 = function() {
     if (this.shouldUseOriginal)
-        A.prototype.M2.apply(this, arguments);
+        return A.prototype.M2.apply(this, arguments);
     else
         return 'passed2';
 }

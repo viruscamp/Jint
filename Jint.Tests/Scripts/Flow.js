@@ -52,6 +52,19 @@ function returnFromCatch() {
     return 'no';
 }
 
+switch(1) {
+    case 2:
+    break;
+}
+
+switch(2) {
+    default:
+    break;
+}
+
+switch(3) {
+}
+
 
 assert('success',returnFromSwitch('a'));
 assert('doom',returnFromSwitch('b'))

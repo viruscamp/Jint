@@ -519,31 +519,33 @@ namespace Jint {
             CurrentStatement = statement.Expression;
 
             bool found = false;
-            foreach (var clause in statement.CaseClauses) {
-                CurrentStatement = clause.Expression;
+            if (statement.CaseClauses != null) {
+                foreach (var clause in statement.CaseClauses) {
+                    CurrentStatement = clause.Expression;
 
-                if (found) {
-                    // jumping from one case to the next one
-                    clause.Statements.Accept(this);
-                    if (exit)
-                        break;
-                } else {
-                    new BinaryExpression(BinaryExpressionType.Equal, (Expression)statement.Expression, clause.Expression).Accept(this);
-                    if(Result.ToBoolean()) {
+                    if (found) {
+                        // jumping from one case to the next one
                         clause.Statements.Accept(this);
-                        found = true;
                         if (exit)
                             break;
+                    } else {
+                        new BinaryExpression(BinaryExpressionType.Equal, (Expression)statement.Expression, clause.Expression).Accept(this);
+                        if (Result.ToBoolean()) {
+                            clause.Statements.Accept(this);
+                            found = true;
+                            if (exit)
+                                break;
+                        }
                     }
-                }
 
-                if (breakStatement != null) {
-                    breakStatement = null;
-                    break;
+                    if (breakStatement != null) {
+                        breakStatement = null;
+                        break;
+                    }
                 }
             }
 
-            if (!found) {
+            if (!found && statement.DefaultStatements!= null) {
                 statement.DefaultStatements.Accept(this);
 
                 // handle break statements in default case by clearing it

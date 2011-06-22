@@ -43,7 +43,7 @@ grammar ES3 ;
 options
 {
 	output = AST ;
-	language = CSharp2 ;
+	language = CSharp3 ;
 }
 
 
@@ -260,7 +260,7 @@ tokens
     public override IToken NextToken()
     {
     	IToken result = base.NextToken();
-    	if (result.Channel == Token.DEFAULT_CHANNEL)
+    	if (result.Channel == DefaultTokenChannel)
     	{
     		last = result;
     	}
@@ -270,6 +270,7 @@ tokens
 }
 
 @header {
+using System;
 using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
@@ -279,258 +280,265 @@ using Jint.Debugger;
 
 @parser::members
 {
-    private const char BS = '\\';
-    private bool IsLeftHandSideAssign(Expression lhs, object[] cached)
-    {
-    	if (cached[0] != null)
-    	{
-    		return Convert.ToBoolean(cached[0]);
-    	}
-    	
-    	bool result;
-    	if(IsLeftHandSideExpression(lhs))
-    	{
-    		switch (input.LA(1))
+		private const char BS = '\\';
+		private bool IsLeftHandSideAssign(Expression lhs, object[] cached)
+		{
+    		if (cached[0] != null)
     		{
-    			case ASSIGN:
-    			case MULASS:
-    			case DIVASS:
-    			case MODASS:
-    			case ADDASS:
-    			case SUBASS:
-    			case SHLASS:
-    			case SHRASS:
-    			case SHUASS:
-    			case ANDASS:
-    			case XORASS:
-    			case ORASS:
-    				result = true;
-    				break;
-    			default:
-    				result = false;
-    				break;
+    			return System.Convert.ToBoolean(cached[0]);
     		}
-    	}
-    	else
-    	{
-    		result = false;
-    	}
-    	
-    	cached[0] = result;
-    	return result;
-    }
-
-    private static bool IsLeftHandSideExpression(Expression lhs)
-    {
-        if (lhs == null)
-        {
-            return true;
-        }
-
-        return lhs is Identifier || lhs is PropertyExpression || lhs is MemberExpression;
-    }
-    	
-    private bool IsLeftHandSideIn(Expression lhs, object[] cached)
-    {
-    	if (cached[0] != null)
-    	{
-    		return Convert.ToBoolean(cached[0]);
-    	}
-    	
-    	bool result = IsLeftHandSideExpression(lhs) && (input.LA(1) == IN);
-    	cached[0] = result;
-    	return result;
-    }
-
-    private void PromoteEOL(ParserRuleReturnScope rule)
-    {
-    	// Get current token and its type (the possibly offending token).
-    	IToken lt = input.LT(1);
-    	int la = lt.Type;
-    	
-    	// We only need to promote an EOL when the current token is offending (not a SEMIC, EOF, RBRACE, EOL or MultiLineComment).
-    	// EOL and MultiLineComment are not offending as they're already promoted in a previous call to this method.
-    	// Promoting an EOL means switching it from off channel to on channel.
-    	// A MultiLineComment gets promoted when it contains an EOL.
-    	if (!(la == SEMIC || la == EOF || la == RBRACE || la == EOL || la == MultiLineComment))
-    	{
-    		// Start on the possition before the current token and scan backwards off channel tokens until the previous on channel token.
-    		for (int ix = lt.TokenIndex - 1; ix > 0; ix--)
+	    	
+    		bool result;
+    		if(IsLeftHandSideExpression(lhs))
     		{
-    			lt = input.Get(ix);
-    			if (lt.Channel == Token.DEFAULT_CHANNEL)
+    			switch (input.LA(1))
     			{
-    				// On channel token found: stop scanning.
-    				break;
+    				case ASSIGN:
+    				case MULASS:
+    				case DIVASS:
+    				case MODASS:
+    				case ADDASS:
+    				case SUBASS:
+    				case SHLASS:
+    				case SHRASS:
+    				case SHUASS:
+    				case ANDASS:
+    				case XORASS:
+    				case ORASS:
+    					result = true;
+    					break;
+    				default:
+    					result = false;
+    					break;
     			}
-    			else if (lt.Type == EOL || (lt.Type == MultiLineComment && (lt.Text.EndsWith("\r") || lt.Text.EndsWith("\n"))))
+    		}
+    		else
+    		{
+    			result = false;
+    		}
+	    	
+    		cached[0] = result;
+    		return result;
+		}
+
+		private static bool IsLeftHandSideExpression(Expression lhs)
+		{
+			if (lhs == null)
+			{
+				return true;
+			}
+
+			return lhs is Identifier || lhs is PropertyExpression || lhs is MemberExpression;
+		}
+	    	
+		private bool IsLeftHandSideIn(Expression lhs, object[] cached)
+		{
+    		if (cached[0] != null)
+    		{
+    			return System.Convert.ToBoolean(cached[0]);
+    		}
+	    	
+    		bool result = IsLeftHandSideExpression(lhs) && (input.LA(1) == IN);
+    		cached[0] = result;
+    		return result;
+		}
+
+		private void PromoteEOL(ParserRuleReturnScope<IToken> rule)
+		{
+    		// Get current token and its type (the possibly offending token).
+    		IToken lt = input.LT(1);
+    		int la = lt.Type;
+	    	
+    		// We only need to promote an EOL when the current token is offending (not a SEMIC, EOF, RBRACE, EOL or MultiLineComment).
+    		// EOL and MultiLineComment are not offending as they're already promoted in a previous call to this method.
+    		// Promoting an EOL means switching it from off channel to on channel.
+    		// A MultiLineComment gets promoted when it contains an EOL.
+    		if (!(la == SEMIC || la == EOF || la == RBRACE || la == EOL || la == MultiLineComment))
+    		{
+    			// Start on the possition before the current token and scan backwards off channel tokens until the previous on channel token.
+    			for (int ix = lt.TokenIndex - 1; ix > 0; ix--)
     			{
-    				// We found our EOL: promote the token to on channel, position the input on it and reset the rule start.
-    				lt.Channel = Token.DEFAULT_CHANNEL;
-    				input.Seek(lt.TokenIndex);
-    				if (rule != null)
+    				lt = input.Get(ix);
+    				if (lt.Channel == DefaultTokenChannel)
     				{
-    					rule.Start = lt;
+    					// On channel token found: stop scanning.
+    					break;
     				}
-    				break;
+    				else if (lt.Type == EOL || (lt.Type == MultiLineComment && (lt.Text.EndsWith("\r") || lt.Text.EndsWith("\n"))))
+    				{
+    					// We found our EOL: promote the token to on channel, position the input on it and reset the rule start.
+    					lt.Channel = DefaultTokenChannel;
+    					input.Seek(lt.TokenIndex);
+    					if (rule != null)
+    					{
+    						rule.Start = lt;
+    					}
+    					break;
+    				}
     			}
     		}
-    	}
-    }	
+		}	
+	    
+		private static NumberFormatInfo numberFormatInfo = new NumberFormatInfo();
+
+		private string extractRegExpPattern(string text) {
+			return text.Substring(1, text.LastIndexOf('/')-1);
+		}
+
+		private string extractRegExpOption(string text) {
+			if(text[text.Length-1] != '/')
+			{
+			return text.Substring(text.LastIndexOf('/')+1);
+			}
+			return String.Empty;
+		}
     
-    private static NumberFormatInfo numberFormatInfo = new NumberFormatInfo();
-
-    private string extractRegExpPattern(string text) {
-        return text.Substring(1, text.LastIndexOf('/')-1);
-    }
-
-    private string extractRegExpOption(string text) {
-        if(text[text.Length-1] != '/')
-        {
-		return text.Substring(text.LastIndexOf('/')+1);
-        }
-        return String.Empty;
-    }
+		private static Encoding Latin1 = Encoding.GetEncoding("iso-8859-1");
     
-    private static Encoding Latin1 = Encoding.GetEncoding("iso-8859-1");
-    
-    private string extractString(string text) {
-    
-    // https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Literals#String Literals    
-        StringBuilder sb = new StringBuilder(text);
-        int startIndex = 1; // Skip initial quote
-        int slashIndex = -1;
+	    private string extractString(string text) {
+	    
+	    // https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Literals#String Literals    
+	        StringBuilder sb = new StringBuilder(text.Length);
+	        int startIndex = 1; // Skip initial quote
+	        int slashIndex = -1;
 
-        while ((slashIndex = sb.ToString().IndexOf(BS, startIndex)) != -1)
-        {
-            char escapeType = sb[slashIndex + 1];
-            switch (escapeType)
-            {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-		  string octalCode = String.Concat(sb[slashIndex+1], sb[slashIndex+2], sb[slashIndex+3]);   
-		  char octalChar = Latin1.GetChars(new byte[] { System.Convert.ToByte(octalCode, 8) } )[0]; 
-		  sb.Remove(slashIndex, 4).Insert(slashIndex, octalChar);         
-		  break;                 
-                case 'x':
-		  string asciiCode = String.Concat(sb[slashIndex+2], sb[slashIndex+3]);   
-		  char asciiChar = Latin1.GetChars(new byte[] { System.Convert.ToByte(asciiCode, 16) } )[0]; 
-		  sb.Remove(slashIndex, 4).Insert(slashIndex, asciiChar);         
-		  break;   	
-                case 'u':
-                  char unicodeChar = Convert.ToChar(Int32.Parse(sb[slashIndex + 2].ToString() + sb[slashIndex + 3] + sb[slashIndex+4] + sb[slashIndex+5], System.Globalization.NumberStyles.AllowHexSpecifier));
-                  sb.Remove(slashIndex, 6).Insert(slashIndex, unicodeChar); 
-                  break;
-                case 'b': sb.Remove(slashIndex, 2).Insert(slashIndex, '\b'); break;
-                case 'f': sb.Remove(slashIndex, 2).Insert(slashIndex, '\f'); break;
-                case 'n': sb.Remove(slashIndex, 2).Insert(slashIndex, '\n'); break;
-                case 'r': sb.Remove(slashIndex, 2).Insert(slashIndex, '\r'); break;
-                case 't': sb.Remove(slashIndex, 2).Insert(slashIndex, '\t'); break;
-                case 'v': sb.Remove(slashIndex, 2).Insert(slashIndex, '\v'); break;
-                case '\'': sb.Remove(slashIndex, 2).Insert(slashIndex, '\''); break;
-                case '"': sb.Remove(slashIndex, 2).Insert(slashIndex, '"'); break;
-                case '\\': sb.Remove(slashIndex, 2).Insert(slashIndex, '\\'); break;
-                case '\r': if (sb[slashIndex+2] == '\n') sb.Remove(slashIndex, 3); else sb.Remove(slashIndex, 2); break;
-                default:  sb.Remove(slashIndex, 2).Insert(slashIndex, escapeType); break;
-            }
+	        while ((slashIndex = text.IndexOf(BS, startIndex)) != -1)
+	        {
+                sb.Append(text.Substring(startIndex, slashIndex - startIndex));
+	            char escapeType = text[slashIndex + 1];
+	            switch (escapeType)
+	            {
+	                case '0':
+	                case '1':
+	                case '2':
+	                case '3':
+	                case '4':
+	                case '5':
+	                case '6':
+	                case '7':
+	                case '8':
+	                case '9':
+                        string octalCode = text.Substring(slashIndex + 1, 3);   
+                        char octalChar = Latin1.GetChars(new byte[] { System.Convert.ToByte(octalCode, 8) } )[0]; 
+                        // insert decoded char
+                        sb.Append(octalChar);
+                        // skip encoded char
+                        slashIndex += 4;
+			          break;                 
+	                case 'x':
+                        string asciiCode = text.Substring(slashIndex + 2, 2); ;
+                        char asciiChar = Latin1.GetChars(new byte[] { System.Convert.ToByte(asciiCode, 16) } )[0];
+                        sb.Append(asciiChar);
+                        slashIndex += 4;
+                        break;   	
+	                case 'u':
+                        char unicodeChar = System.Convert.ToChar(Int32.Parse(text.Substring(slashIndex + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier));
+                        sb.Append(unicodeChar);
+                        slashIndex += 6;
+                        break;
+                    case 'b': sb.Append('\b'); slashIndex += 2; break;
+                    case 'f': sb.Append('\f'); slashIndex += 2; break;
+                    case 'n': sb.Append('\n'); slashIndex += 2; break;
+                    case 'r': sb.Append('\r'); slashIndex += 2; break;
+                    case 't': sb.Append('\t'); slashIndex += 2; break;
+                    case 'v': sb.Append('\v'); slashIndex += 2; break;
+                    case '\'': sb.Append('\''); slashIndex += 2; break;
+                    case '"': sb.Append('"'); slashIndex += 2; break;
+                    case '\\': sb.Append('\\'); slashIndex += 2; break;
+                    case '\r': if (text[slashIndex + 2] == '\n') slashIndex += 3; break;
+                    case '\n': slashIndex += 2; break;
+                    default: sb.Append(escapeType); slashIndex += 2; break;
+	            }
 
-            startIndex = slashIndex + 1;
+                startIndex = slashIndex;
+	        }
 
-        }
+            if (sb.Length == 0)
+                return text.Substring(1, text.Length - 2);
 
-        sb.Remove(0, 1);
-        sb.Remove(sb.Length - 1, 1);
+            sb.Append(text.Substring(startIndex, text.Length - startIndex - 1));
+	        return sb.ToString();
+	    }
+	    
+		public List<string> Errors { get; private set; }
 
-        return sb.ToString();
-    }
+		public override void DisplayRecognitionError(String[] tokenNames, RecognitionException e) {
+	        
+			base.DisplayRecognitionError(tokenNames, e);
+	        
+			if(Errors == null)
+			{
+        		Errors = new List<string>();
+			}
+	        
+			String hdr = GetErrorHeader(e);
+			String msg = GetErrorMessage(e, tokenNames);
+			Errors.Add(msg + " at " + hdr);
+		}    
 
-    public List<string> Errors { get; private set; }
+		private string[] script = new string[0];
+	    
+    		public bool DebugMode { get; set; }
+	    	
+			private SourceCodeDescriptor ExtractSourceCode(CommonToken start, CommonToken stop)
+			{
+				if(!DebugMode)
+				{
+            		return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.");
+				}
+	            
+				try
+				{
+					StringBuilder source = new StringBuilder();
 
-    public override void DisplayRecognitionError(String[] tokenNames, RecognitionException e) {
-        
-        base.DisplayRecognitionError(tokenNames, e);
-        
-        if(Errors == null)
-        {
-        	Errors = new List<string>();
-        }
-        
-        String hdr = GetErrorHeader(e);
-        String msg = GetErrorMessage(e, tokenNames);
-        Errors.Add(msg + " at " + hdr);
-    }    
+					for (int i = start.Line - 1; i <= stop.Line - 1; i++)
+					{
+						int charStart = 0;
+						int charStop = script[i].Length;
 
-    private string[] script = new string[0];
-    
-    	public bool DebugMode { get; set; }
-    	
-        private SourceCodeDescriptor ExtractSourceCode(CommonToken start, CommonToken stop)
-        {
-            if(!DebugMode)
-            {
-            	return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.");
-            }
-            
-            try
-            {
-                StringBuilder source = new StringBuilder();
+						if (i == start.Line - 1)
+						{
+							charStart = start.CharPositionInLine;
+						}
 
-                for (int i = start.Line - 1; i <= stop.Line - 1; i++)
-                {
-                    int charStart = 0;
-                    int charStop = script[i].Length;
+						if (i == stop.Line - 1)
+						{
+							charStop = stop.CharPositionInLine;
+						}
 
-                    if (i == start.Line - 1)
-                    {
-                        charStart = start.CharPositionInLine;
-                    }
+						int length = charStop - charStart;
 
-                    if (i == stop.Line - 1)
-                    {
-                        charStop = stop.CharPositionInLine;
-                    }
+						source.Append(script[i].Substring(charStart, length)).Append(Environment.NewLine);
+					}
 
-                    int length = charStop - charStart;
+					return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, source.ToString());
+				}
+				catch
+				{
+					return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.");
+				}
 
-                    source.Append(script[i].Substring(charStart, length)).Append(Environment.NewLine);
-                }
+			}
 
-                return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, source.ToString());
-            }
-            catch
-            {
-                return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.");
-            }
-
-        }
-
-    public AssignmentOperator ResolveAssignmentOperator(string op)
-    {
-    	switch(op)
-    	{
-    	    case "=" : return AssignmentOperator.Assign;
-    	    case "+=" : return AssignmentOperator.Add;
-    	    case "-=" : return AssignmentOperator.Substract;
-    	    case "*=" : return AssignmentOperator.Multiply;
-    	    case "\%=" : return AssignmentOperator.Modulo;
-    	    case "<<=" : return AssignmentOperator.ShiftLeft;
-    	    case ">>=" : return AssignmentOperator.ShiftRight;
-    	    case ">>>=" : return AssignmentOperator.UnsignedRightShift;
-    	    case "&=" : return AssignmentOperator.And;
-    	    case "|=" : return AssignmentOperator.Or;
-    	    case "^=" : return AssignmentOperator.XOr;
-    	    case "/=" : return AssignmentOperator.Divide;
-    	    default : throw new NotSupportedException("Invalid assignment operator: " + op);
-    	}
-    }
+		public AssignmentOperator ResolveAssignmentOperator(string op)
+		{
+    		switch(op)
+    		{
+    			case "=" : return AssignmentOperator.Assign;
+    			case "+=" : return AssignmentOperator.Add;
+    			case "-=" : return AssignmentOperator.Substract;
+    			case "*=" : return AssignmentOperator.Multiply;
+    			case "\%=" : return AssignmentOperator.Modulo;
+    			case "<<=" : return AssignmentOperator.ShiftLeft;
+    			case ">>=" : return AssignmentOperator.ShiftRight;
+    			case ">>>=" : return AssignmentOperator.UnsignedRightShift;
+    			case "&=" : return AssignmentOperator.And;
+    			case "|=" : return AssignmentOperator.Or;
+    			case "^=" : return AssignmentOperator.XOr;
+    			case "/=" : return AssignmentOperator.Divide;
+    			default : throw new NotSupportedException("Invalid assignment operator: " + op);
+    		}
+		}
 }
 
 @init {
@@ -597,7 +605,7 @@ fragment USP // Unicode Space Separator (rest of Unicode category Zs)
 	;
 
 WhiteSpace
-	: ( TAB | VT | FF | SP | NBSP | USP )+ { $channel = HIDDEN; }
+	: ( TAB | VT | FF | SP | NBSP | USP )+ { $channel = Hidden; }
 	;
 
 // $>
@@ -625,18 +633,18 @@ fragment LineTerminator
 	;
 		
 EOL
-	: ( ( CR LF? ) | LF | LS | PS ) { $channel = HIDDEN; }
+	: ( ( CR LF ) | LF | LS | PS ) { $channel = Hidden; }
 	;
 // $>
 
 // $<	Comments (7.4)
 
 MultiLineComment
-	: '/*' ( options { greedy = false; } : . )* '*/' { $channel = HIDDEN; }
+	: '/*' ( options { greedy = false; } : . )* '*/' { $channel = Hidden; }
 	;
 
 SingleLineComment
-	: '//' ( ~( LineTerminator ) )* { $channel = HIDDEN; }
+	: '//' ( ~( LineTerminator ) )* { $channel = Hidden; }
 	;
 
 // $>
@@ -886,8 +894,8 @@ HexIntegerLiteral
 
 numericLiteral returns [double value]
 	: ex1=DecimalLiteral { $value = double.Parse(ex1.Text, NumberStyles.Float, numberFormatInfo); }
-	| ex2=OctalIntegerLiteral { $value = Convert.ToInt64(ex2.Text, 8); }
-	| ex3=HexIntegerLiteral { $value = Convert.ToInt64(ex3.Text, 16); }
+	| ex2=OctalIntegerLiteral { $value = System.Convert.ToInt64(ex2.Text, 8); }
+	| ex3=HexIntegerLiteral { $value = System.Convert.ToInt64(ex3.Text, 16); }
 	;
 
 // $>
@@ -930,7 +938,7 @@ fragment EscapeSequence
 		| OctalEscapeSequence
 		| HexEscapeSequence
 		| UnicodeEscapeSequence
-		| CR LF?
+		| CR? LF // allow string continuations over a new line
 	)
 	;
 

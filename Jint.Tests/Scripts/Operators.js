@@ -57,7 +57,7 @@ assert(1, x >>= 1); assert(1, x);
 assert(3, x |= 2); assert(3, x);
 assert(0, x ^= 3); assert(0, x);
 assert(0, x &= 0); assert(0, x);
-
+assert(-9, ~8);
 
 assert(true, true && true);       // t && t returns true
 assert(false, true && false);      // t && f returns false
@@ -79,3 +79,16 @@ assert(false, !true);              // !t returns false
 assert(true, !false);             // !f returns true
 assert(false, !"Cat");             // !t returns false
 
+assert(undefined | 1, 1);
+assert(undefined & 1, 0);
+assert(undefined ^ 1, 1);
+assert(undefined << 1, 0);
+assert(undefined >> 1, 0);
+assert(undefined >>> 1, 0);
+
+assert(1 | undefined, 1);
+assert(1 & undefined, 0);
+assert(1 ^ undefined, 1);
+assert(1 << undefined, 1);
+assert(1 >> undefined, 1);
+assert(1 >>> undefined, 1);

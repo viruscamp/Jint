@@ -100,12 +100,11 @@ namespace Jint.Native {
         }
 
         public override void DefineOwnProperty(Descriptor d) {
-            try {
-                put(Convert.ToInt32(d.Name), d.Get(this));
-            }
-            catch (FormatException) {
+            int index;
+            if(int.TryParse(d.Name, out index))
+                put(index, d.Get(this));
+            else
                 base.DefineOwnProperty(d);
-            }
         }
 
         public JsInstance get(int i) {
@@ -133,14 +132,15 @@ namespace Jint.Native {
             length = newLength;
         }
 
-        public override bool TryGetProperty(string index, out JsInstance result) {
+        public override bool TryGetProperty(string key, out JsInstance result) {
             result = JsUndefined.Instance;
-            try {
+
+            int index;
+            if(int.TryParse(key, out index))
                 return m_data.TryGetValue(Convert.ToInt32(index), out result);
-            }
-            catch (FormatException) {
-                return base.TryGetProperty(index, out result);
-            }
+            else
+                return base.TryGetProperty(key, out result);
+            
         }
 
         private int FindKeyOrNext(int key) {
@@ -193,13 +193,12 @@ namespace Jint.Native {
                 base.Delete(key.ToString());
         }
 
-        public override void Delete(string index) {
-            try {
-                m_data.Remove(Convert.ToInt32(index));
-            }
-            catch (FormatException) {
-                base.Delete(index);
-            }
+        public override void Delete(string key) {
+            int index;
+            if(int.TryParse(key, out index))
+                m_data.Remove(index);
+            else
+                base.Delete(key);
         }
 
         #region array specific methods
@@ -290,14 +289,11 @@ namespace Jint.Native {
         }
 
         public override bool HasOwnProperty(string key) {
-            try {
-                int index = Convert.ToInt32(key);
+            int index;
+            if(int.TryParse(key, out index))
                 return index >= 0 && index < length ? m_data.ContainsKey(index) : false;
-            }
-            catch (FormatException) {
+            else
                 return base.HasOwnProperty(key);
-            }
-
         }
 
         public override double ToNumber() {

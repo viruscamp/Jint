@@ -996,15 +996,28 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.BitwiseAnd:
-                    Result = Global.NumberClass.New(Convert.ToUInt64(left.ToNumber()) & Convert.ToUInt64(right.ToNumber()));
+                    if (left == JsUndefined.Instance || right == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(0);
+                    else
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()) & Convert.ToInt64(right.ToNumber()));
                     break;
 
                 case BinaryExpressionType.BitwiseOr:
-                    Result = Global.NumberClass.New(Convert.ToUInt64(left.ToNumber()) | Convert.ToUInt64(right.ToNumber()));
+                    if (left == JsUndefined.Instance )
+                        Result = Global.NumberClass.New(Convert.ToInt64(right.ToNumber()));
+                    else if (right == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
+                    else
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()) | Convert.ToInt64(right.ToNumber()));
                     break;
 
                 case BinaryExpressionType.BitwiseXOr:
-                    Result = Global.NumberClass.New(Convert.ToUInt64(left.ToNumber()) ^ Convert.ToUInt64(right.ToNumber()));
+                    if (left == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(Convert.ToInt64(right.ToNumber()));
+                    else if (right == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
+                    else
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()) ^ Convert.ToInt64(right.ToNumber()));
                     break;
 
                 case BinaryExpressionType.Same:
@@ -1053,15 +1066,30 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.LeftShift:
-                    Result = Global.NumberClass.New(Convert.ToUInt64(left.ToNumber()) << Convert.ToUInt16(right.ToNumber()));
+                    if (left == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(0);
+                    else if (right == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
+                    else
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()) << Convert.ToUInt16(right.ToNumber()));
                     break;
 
                 case BinaryExpressionType.RightShift:
-                    Result = Global.NumberClass.New(Convert.ToUInt64(left.ToNumber()) >> Convert.ToUInt16(right.ToNumber()));
+                    if (left == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(0);
+                    else if (right == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
+                    else
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()) >> Convert.ToUInt16(right.ToNumber()));
                     break;
 
                 case BinaryExpressionType.UnsignedRightShift:
-                    Result = Global.NumberClass.New(Convert.ToUInt64(left.ToNumber()) >> Convert.ToUInt16(right.ToNumber()));
+                    if (left == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(0);
+                    else if (right == JsUndefined.Instance)
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
+                    else
+                        Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()) >> Convert.ToUInt16(right.ToNumber()));
                     break;
 
                 case BinaryExpressionType.InstanceOf: {
@@ -1214,8 +1242,7 @@ namespace Jint {
 
                     expression.Expression.Accept(this);
                     EnsureIdentifierIsDefined(Result);
-                    Result = Global.NumberClass.New(~Convert.ToUInt64(Result.ToNumber()));
-
+                    Result = Global.NumberClass.New(0 - Result.ToNumber() - 1);
                     break;
 
             }

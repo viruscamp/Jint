@@ -12,6 +12,8 @@ namespace Jint.Native {
             : base(global) {
             DefineOwnProperty(PROTOTYPE, global.ObjectClass.New(this), PropertyAttributes.ReadOnly | PropertyAttributes.DontDelete | PropertyAttributes.DontEnum);
             Name = "String";
+
+            this["fromCharCode"] = global.FunctionClass.New<JsDictionaryObject>(FromCharCodeImpl);
         }
 
         public override void InitPrototype(IGlobal global) {
@@ -30,7 +32,6 @@ namespace Jint.Native {
             Prototype.DefineOwnProperty("concat", global.FunctionClass.New<JsDictionaryObject>(ConcatImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("charAt", global.FunctionClass.New<JsDictionaryObject>(CharAtImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("charCodeAt", global.FunctionClass.New<JsDictionaryObject>(CharCodeAtImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("fromCharCode", global.FunctionClass.New<JsDictionaryObject>(FromCharCodeImpl), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("lastIndexOf", global.FunctionClass.New<JsDictionaryObject>(LastIndexOfImpl, 1), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("indexOf", global.FunctionClass.New<JsDictionaryObject>(IndexOfImpl, 1), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLowerCase", global.FunctionClass.New<JsDictionaryObject>(ToLowerCaseImpl), PropertyAttributes.DontEnum);

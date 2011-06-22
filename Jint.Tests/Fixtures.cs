@@ -372,8 +372,9 @@ namespace Jint.Tests {
         public void ShouldParseMultilineStrings() {
             const string script = @"
                 assert('foobar', 'foo\
-bar');
-            ";
+\
+bar');            
+";
 
             Test(script);
         }

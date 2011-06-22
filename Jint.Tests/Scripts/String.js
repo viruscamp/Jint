@@ -92,3 +92,4 @@ assert(5, name.search("there"));
 assert(0, name.search("over"));
 assert(-1, name.search("should return -1"));
 
+assert('HELLO', String.fromCharCode(72,69,76,76,79));

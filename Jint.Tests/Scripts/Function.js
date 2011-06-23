@@ -118,3 +118,19 @@ function bar() {
 bar();
 assert(foo,'foo');
 assert(false,bar==null);
+
+// not specified parameters should be 'undefined'
+var dummy = function (x, y) {
+    return y;
+}
+assert(2, dummy(1, 2));
+assert(undefined, dummy(1));
+
+// prototype functions with undefined parameters should return 'undefined'
+Date.prototype.formatDate = function (input, time) {
+    return time;
+}
+var date = new Date("1/1/2007 1:11:11");
+
+assert(2, date.formatDate("Y-m-d", 2));
+assert(undefined, date.formatDate("Y-m-d"));

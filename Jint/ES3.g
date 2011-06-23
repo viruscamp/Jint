@@ -280,6 +280,10 @@ using Jint.Debugger;
 
 @parser::members
 {
+		// References the upper level block currently parsed. 
+		// This is used to add variable declarations at the top of the body while parsing.
+		private LinkedList<Statement> _currentBody = null;
+		
 		private const char BS = '\\';
 		private bool IsLeftHandSideAssign(Expression lhs, object[] cached)
 		{
@@ -1468,7 +1472,16 @@ variableStatement returns [Statement value]
 @init{
 	var cs = new CommaOperatorStatement();
 }
-	: VAR first=variableDeclaration { first.value.Global = false; $value = first.value; } ( COMMA { if( cs.Statements.Count == 0) { cs.Statements.Add($value); $value = cs; } } follow=variableDeclaration  { cs.Statements.Add(follow.value); follow.value.Global = false; } )* semic
+@after{
+	// hoisting
+	foreach(var vd in cs.Statements) {
+		var nvd = new VariableDeclarationStatement();
+		nvd.Global = false;
+		nvd.Identifier = ((VariableDeclarationStatement)vd).Identifier;
+		_currentBody.AddFirst(nvd);
+	}
+}
+	: VAR first=variableDeclaration { first.value.Global = false; $value = first.value; cs.Statements.Add($value); } ( COMMA { if( cs.Statements.Count == 0) { cs.Statements.Add($value); $value = cs; } } follow=variableDeclaration  { cs.Statements.Add(follow.value); follow.value.Global = false; } )* semic
 	
 	;
 
@@ -1600,6 +1613,21 @@ forControlVar returns [IForStatement value]
 	var forStatement = new ForStatement();
 	var foreachStatement = new ForEachInStatement();
 	var cs = new CommaOperatorStatement();
+}
+@after {
+	// hoisting
+	// variable declarationgs in 'for' are also hoisted
+	var nvd = new VariableDeclarationStatement();
+	nvd.Global = false;
+	nvd.Identifier = first.Value.Identifier;
+	_currentBody.AddFirst(nvd);
+	
+	foreach(var vd in cs.Statements) {
+		nvd = new VariableDeclarationStatement();
+		nvd.Global = false;
+		nvd.Identifier = ((VariableDeclarationStatement)vd).Identifier;
+		_currentBody.AddFirst(nvd);
+	}
 }
 
 	: VAR first=variableDeclarationNoIn { foreachStatement.InitialisationStatement = forStatement.InitialisationStatement = first.value; first.value.Global = false;  }
@@ -1804,7 +1832,8 @@ finallyClause returns [FinallyClause value]
 functionDeclaration returns [Statement value]
 @init {
 FunctionDeclarationStatement statement = new FunctionDeclarationStatement();
-$value = statement;
+$value = new EmptyStatement();
+_currentBody.AddFirst(statement);
 }
 	: FUNCTION 	name=Identifier { statement.Name = name.Text; } 
 			parameters=formalParameterList { statement.Parameters.AddRange(parameters.value); }
@@ -1831,10 +1860,15 @@ $value = identifiers;
 	
 	;
 
-functionBody returns [Statement value]
+functionBody returns [BlockStatement value]
 @init{
 BlockStatement block = new BlockStatement();
+var tempBody = _currentBody;
+_currentBody = block.Statements;
 $value = block;
+}
+@after{
+_currentBody = tempBody;
 }
 	: lb=LBRACE (sourceElement { block.Statements.AddLast($sourceElement.value); }) * RBRACE
 	
@@ -1848,6 +1882,7 @@ program returns [Program value]
 @init{
 script = input.ToString().Split('\n');
 Program program = new Program();
+_currentBody = program.Statements;
 }
 	: (follow=sourceElement { program.Statements.AddLast(follow.value); })* { $value = program; }
 	;

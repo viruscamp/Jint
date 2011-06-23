@@ -136,7 +136,7 @@ namespace Jint {
             exit = false;
             lastIdentifier = String.Empty;
 
-            foreach (var statement in program.ReorderStatements()) {
+            foreach (var statement in program.Statements) {
                 CurrentStatement = statement;
 
                 if (DebugMode) {
@@ -273,7 +273,7 @@ namespace Jint {
 
         public void Visit(BlockStatement statement) {
             Statement oldStatement = CurrentStatement;
-            foreach (var s in statement.ReorderStatements()) {
+            foreach (var s in statement.Statements) {
                 CurrentStatement = s;
 
                 if (DebugMode) {
@@ -472,7 +472,7 @@ namespace Jint {
 
         public void Visit(FunctionDeclarationStatement statement) {
             JsFunction f = CreateFunction(statement);
-            CurrentScope[statement.Name] = f;
+            CurrentScope.DefineOwnProperty(statement.Name, f);
         }
 
         public void Visit(IfStatement statement) {

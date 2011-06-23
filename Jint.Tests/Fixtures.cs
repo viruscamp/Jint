@@ -1363,8 +1363,14 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void GlobalScriptShouldPassTests() {
+        public void GlobalScriptShouldPassTests()
+        {
             ExecuteEmbededScript("Global.js");
+        }
+
+        [TestMethod]
+        public void HoistingScriptShouldPassTests() {
+            ExecuteEmbededScript("Hoisting.js");
         }
 
         [TestMethod]
@@ -1632,6 +1638,24 @@ var fakeButton = new Test.FakeButton();");
                 fail('should have caught an Error');
             ");
         }
+
+        [TestMethod]
+        public void FunctionsShouldBeDeclaredInTheirScope()
+        {
+            Test(@"
+                function foo() {
+                    function bar() {
+                    }
+                    
+                    bar();
+                }
+                
+                var bar = 1;
+                foo();
+                assert(1, bar);                
+            ");
+        }
+
     }
 
     public struct Size {

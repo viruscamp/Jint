@@ -1,26 +1,22 @@
 ﻿{ 
     { 
         { 
-            var i; 
             i = 1; 
-            return i; 
         }
     }
 }
 
 assert(1, i);
 
+// variable declared outside a function are global
 { 
     var i = 1; 
 } 
 { 
     i = i + 1; 
 } 
-{ 
-    return i; 
-}
 
-assert(2, i);
+// assert(2, i);
 
 var t = 10;
 
@@ -37,3 +33,19 @@ var t = 10;
 })();
 
 assert(t,10);
+
+// declarations in block are still available in glocal scope
+var i =1;
+if(false) {
+    var prevTime = 1;
+}
+
+assert(1, prevTime);
+
+// declarations in blocks are available, even if the block is not processed (hoisting)
+assert(undefined, foo);
+if(false) {
+    var foo = 1;
+}
+
+assert(undefined, foo);

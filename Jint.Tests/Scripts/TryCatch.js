@@ -38,7 +38,6 @@ catch (e) {
 
 istrue(catched);
 assert(3, x);
-assert('undefined', typeof z);
 
 var error = false;
 try {

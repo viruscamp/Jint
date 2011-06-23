@@ -130,7 +130,6 @@ namespace Jint {
             Scopes.Pop();
         }
 
-
         public void Visit(Program program) {
             // initialize local variables, in case the visitor is used multiple times by the same engine
             typeFullname = new StringBuilder();
@@ -302,32 +301,24 @@ namespace Jint {
         }
 
         public void Visit(DoWhileStatement statement) {
-            /*JsObject scope = new JsObject();
-            EnterScope(scope);
-            try {*/
-                do {
-                    statement.Statement.Accept(this);
+            do {
+                statement.Statement.Accept(this);
 
-                    ResetContinueIfPresent(statement.Label);
+                ResetContinueIfPresent(statement.Label);
 
-                    if (StopStatementFlow()) {
-                        if (breakStatement != null && statement.Label == breakStatement.Label) {
-                            breakStatement = null;
-                        }
-
-                        //ExitScope();
-                        return;
+                if (StopStatementFlow()) {
+                    if (breakStatement != null && statement.Label == breakStatement.Label) {
+                        breakStatement = null;
                     }
 
-                    statement.Condition.Accept(this);
+                    return;
+                }
 
-                    EnsureIdentifierIsDefined(Result);
+                statement.Condition.Accept(this);
 
-                } while (Result.ToBoolean());
-            /*}
-            finally {
-                ExitScope();
-            }*/
+                EnsureIdentifierIsDefined(Result);
+
+            } while (Result.ToBoolean());
         }
 
         public void Visit(EmptyStatement statement) {
@@ -566,18 +557,12 @@ namespace Jint {
         }
 
         public void Visit(TryStatement statement) {
-            EnterScope(new JsObject()); // ExitScope is called in Finally
-
             try {
                 statement.Statement.Accept(this);
             }
             catch (Exception e) {
                 // there might be no catch statement defined
                 if (statement.Catch != null) {
-                    // there is another exitscope called in Finally
-                    ExitScope();
-                    EnterScope(new JsObject());
-
                     JsException jsException = e as JsException;
 
                     if (jsException == null)
@@ -596,18 +581,10 @@ namespace Jint {
                 }
             }
             finally {
-                ExitScope();
 
                 if (statement.Finally != null) {
                     JsObject catchScope = new JsObject();
-                    EnterScope(catchScope);
-
-                    try {
-                        statement.Finally.Statement.Accept(this);
-                    }
-                    finally {
-                        ExitScope();
-                    }
+                    statement.Finally.Statement.Accept(this);
                 }
             }
 
@@ -641,32 +618,25 @@ namespace Jint {
         }
 
         public void Visit(WhileStatement statement) {
-            /*JsObject scope = new JsObject();
-            EnterScope(scope);
-            try {*/
-                statement.Condition.Accept(this);
+            statement.Condition.Accept(this);
 
-                EnsureIdentifierIsDefined(Result);
+            EnsureIdentifierIsDefined(Result);
 
-                while (Result.ToBoolean()) {
-                    statement.Statement.Accept(this);
+            while (Result.ToBoolean()) {
+                statement.Statement.Accept(this);
 
-                    ResetContinueIfPresent(statement.Label);
+                ResetContinueIfPresent(statement.Label);
 
-                    if (StopStatementFlow()) {
-                        if (breakStatement != null && statement.Label == breakStatement.Label) {
-                            breakStatement = null;
-                        }
-
-                        return;
+                if (StopStatementFlow()) {
+                    if (breakStatement != null && statement.Label == breakStatement.Label) {
+                        breakStatement = null;
                     }
 
-                    statement.Condition.Accept(this);
+                    return;
                 }
-            /*}
-            finally {
-                ExitScope();
-            }*/
+
+                statement.Condition.Accept(this);
+            }
         }
 
         public void Visit(NewExpression expression) {

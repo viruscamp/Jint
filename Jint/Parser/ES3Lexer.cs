@@ -1,4 +1,4 @@
-// $ANTLR 3.3.0.7239 C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g 2011-06-21 20:21:48
+// $ANTLR 3.3.0.7239 C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g 2011-06-23 13:14:45
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -4134,11 +4134,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("BSLASH", 108);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:548:2: ( '\\\\' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:559:2: ( '\\\\' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:548:4: '\\\\'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:559:4: '\\\\'
 			{
-			DebugLocation(548, 4);
+			DebugLocation(559, 4);
 			Match('\\'); 
 
 			}
@@ -4165,11 +4165,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("DQUOTE", 109);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:552:2: ( '\"' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:563:2: ( '\"' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:552:4: '\"'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:563:4: '\"'
 			{
-			DebugLocation(552, 4);
+			DebugLocation(563, 4);
 			Match('\"'); 
 
 			}
@@ -4196,11 +4196,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("SQUOTE", 110);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:556:2: ( '\\'' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:567:2: ( '\\'' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:556:4: '\\''
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:567:4: '\\''
 			{
-			DebugLocation(556, 4);
+			DebugLocation(567, 4);
 			Match('\''); 
 
 			}
@@ -4227,11 +4227,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("TAB", 111);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:562:2: ( '\\u0009' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:573:2: ( '\\u0009' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:562:4: '\\u0009'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:573:4: '\\u0009'
 			{
-			DebugLocation(562, 4);
+			DebugLocation(573, 4);
 			Match('\t'); 
 
 			}
@@ -4258,11 +4258,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("VT", 112);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:566:2: ( '\\u000b' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:577:2: ( '\\u000b' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:566:4: '\\u000b'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:577:4: '\\u000b'
 			{
-			DebugLocation(566, 4);
+			DebugLocation(577, 4);
 			Match('\u000B'); 
 
 			}
@@ -4289,11 +4289,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("FF", 113);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:570:2: ( '\\u000c' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:581:2: ( '\\u000c' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:570:4: '\\u000c'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:581:4: '\\u000c'
 			{
-			DebugLocation(570, 4);
+			DebugLocation(581, 4);
 			Match('\f'); 
 
 			}
@@ -4320,11 +4320,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("SP", 114);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:574:2: ( '\\u0020' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:585:2: ( '\\u0020' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:574:4: '\\u0020'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:585:4: '\\u0020'
 			{
-			DebugLocation(574, 4);
+			DebugLocation(585, 4);
 			Match(' '); 
 
 			}
@@ -4351,11 +4351,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("NBSP", 115);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:578:2: ( '\\u00a0' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:589:2: ( '\\u00a0' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:578:4: '\\u00a0'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:589:4: '\\u00a0'
 			{
-			DebugLocation(578, 4);
+			DebugLocation(589, 4);
 			Match('\u00A0'); 
 
 			}
@@ -4382,11 +4382,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("USP", 116);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:582:2: ( '\\u1680' | '\\u180E' | '\\u2000' | '\\u2001' | '\\u2002' | '\\u2003' | '\\u2004' | '\\u2005' | '\\u2006' | '\\u2007' | '\\u2008' | '\\u2009' | '\\u200A' | '\\u202F' | '\\u205F' | '\\u3000' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:593:2: ( '\\u1680' | '\\u180E' | '\\u2000' | '\\u2001' | '\\u2002' | '\\u2003' | '\\u2004' | '\\u2005' | '\\u2006' | '\\u2007' | '\\u2008' | '\\u2009' | '\\u200A' | '\\u202F' | '\\u205F' | '\\u3000' )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(582, 2);
+			DebugLocation(593, 2);
 			if (input.LA(1)=='\u1680'||input.LA(1)=='\u180E'||(input.LA(1)>='\u2000' && input.LA(1)<='\u200A')||input.LA(1)=='\u202F'||input.LA(1)=='\u205F'||input.LA(1)=='\u3000')
 			{
 				input.Consume();
@@ -4426,12 +4426,12 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = WhiteSpace;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:601:2: ( ( TAB | VT | FF | SP | NBSP | USP )+ )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:612:2: ( ( TAB | VT | FF | SP | NBSP | USP )+ )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:601:4: ( TAB | VT | FF | SP | NBSP | USP )+
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:612:4: ( TAB | VT | FF | SP | NBSP | USP )+
 			{
-			DebugLocation(601, 4);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:601:4: ( TAB | VT | FF | SP | NBSP | USP )+
+			DebugLocation(612, 4);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:612:4: ( TAB | VT | FF | SP | NBSP | USP )+
 			int cnt1=0;
 			try { DebugEnterSubRule(1);
 			while (true)
@@ -4453,7 +4453,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 					{
-					DebugLocation(601, 4);
+					DebugLocation(612, 4);
 					input.Consume();
 
 
@@ -4475,7 +4475,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(1); }
 
-			DebugLocation(601, 41);
+			DebugLocation(612, 41);
 			 _channel = Hidden; 
 
 			}
@@ -4504,11 +4504,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("LF", 118);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:609:2: ( '\\n' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:620:2: ( '\\n' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:609:4: '\\n'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:620:4: '\\n'
 			{
-			DebugLocation(609, 4);
+			DebugLocation(620, 4);
 			Match('\n'); 
 
 			}
@@ -4535,11 +4535,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("CR", 119);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:613:2: ( '\\r' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:624:2: ( '\\r' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:613:4: '\\r'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:624:4: '\\r'
 			{
-			DebugLocation(613, 4);
+			DebugLocation(624, 4);
 			Match('\r'); 
 
 			}
@@ -4566,11 +4566,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("LS", 120);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:617:2: ( '\\u2028' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:628:2: ( '\\u2028' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:617:4: '\\u2028'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:628:4: '\\u2028'
 			{
-			DebugLocation(617, 4);
+			DebugLocation(628, 4);
 			Match('\u2028'); 
 
 			}
@@ -4597,11 +4597,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("PS", 121);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:621:2: ( '\\u2029' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:632:2: ( '\\u2029' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:621:4: '\\u2029'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:632:4: '\\u2029'
 			{
-			DebugLocation(621, 4);
+			DebugLocation(632, 4);
 			Match('\u2029'); 
 
 			}
@@ -4628,11 +4628,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("LineTerminator", 122);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:625:2: ( CR | LF | LS | PS )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:636:2: ( CR | LF | LS | PS )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(625, 2);
+			DebugLocation(636, 2);
 			if (input.LA(1)=='\n'||input.LA(1)=='\r'||(input.LA(1)>='\u2028' && input.LA(1)<='\u2029'))
 			{
 				input.Consume();
@@ -4672,12 +4672,12 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = EOL;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:2: ( ( ( CR LF ) | LF | LS | PS ) )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:2: ( ( ( CR LF ) | LF | LS | PS ) )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:4: ( ( CR LF ) | LF | LS | PS )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:4: ( ( CR LF ) | LF | LS | PS )
 			{
-			DebugLocation(629, 4);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:4: ( ( CR LF ) | LF | LS | PS )
+			DebugLocation(640, 4);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:4: ( ( CR LF ) | LF | LS | PS )
 			int alt2=4;
 			try { DebugEnterSubRule(2);
 			try { DebugEnterDecision(2, decisionCanBacktrack[2]);
@@ -4717,16 +4717,16 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:6: ( CR LF )
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:6: ( CR LF )
 				{
-				DebugLocation(629, 6);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:6: ( CR LF )
+				DebugLocation(640, 6);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:6: ( CR LF )
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:8: CR LF
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:8: CR LF
 				{
-				DebugLocation(629, 8);
+				DebugLocation(640, 8);
 				mCR(); 
-				DebugLocation(629, 11);
+				DebugLocation(640, 11);
 				mLF(); 
 
 				}
@@ -4736,27 +4736,27 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:18: LF
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:18: LF
 				{
-				DebugLocation(629, 18);
+				DebugLocation(640, 18);
 				mLF(); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:23: LS
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:23: LS
 				{
-				DebugLocation(629, 23);
+				DebugLocation(640, 23);
 				mLS(); 
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:629:28: PS
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:28: PS
 				{
-				DebugLocation(629, 28);
+				DebugLocation(640, 28);
 				mPS(); 
 
 				}
@@ -4765,7 +4765,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(2); }
 
-			DebugLocation(629, 33);
+			DebugLocation(640, 33);
 			 _channel = Hidden; 
 
 			}
@@ -4796,15 +4796,15 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = MultiLineComment;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:636:2: ( '/*' ( options {greedy=false; } : . )* '*/' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:647:2: ( '/*' ( options {greedy=false; } : . )* '*/' )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:636:4: '/*' ( options {greedy=false; } : . )* '*/'
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:647:4: '/*' ( options {greedy=false; } : . )* '*/'
 			{
-			DebugLocation(636, 4);
+			DebugLocation(647, 4);
 			Match("/*"); 
 
-			DebugLocation(636, 9);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:636:9: ( options {greedy=false; } : . )*
+			DebugLocation(647, 9);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:647:9: ( options {greedy=false; } : . )*
 			try { DebugEnterSubRule(3);
 			while (true)
 			{
@@ -4838,9 +4838,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:636:41: .
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:647:41: .
 					{
-					DebugLocation(636, 41);
+					DebugLocation(647, 41);
 					MatchAny(); 
 
 					}
@@ -4856,10 +4856,10 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(3); }
 
-			DebugLocation(636, 46);
+			DebugLocation(647, 46);
 			Match("*/"); 
 
-			DebugLocation(636, 51);
+			DebugLocation(647, 51);
 			 _channel = Hidden; 
 
 			}
@@ -4890,15 +4890,15 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = SingleLineComment;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:2: ( '//' (~ ( LineTerminator ) )* )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:651:2: ( '//' (~ ( LineTerminator ) )* )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:4: '//' (~ ( LineTerminator ) )*
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:651:4: '//' (~ ( LineTerminator ) )*
 			{
-			DebugLocation(640, 4);
+			DebugLocation(651, 4);
 			Match("//"); 
 
-			DebugLocation(640, 9);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:640:9: (~ ( LineTerminator ) )*
+			DebugLocation(651, 9);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:651:9: (~ ( LineTerminator ) )*
 			try { DebugEnterSubRule(4);
 			while (true)
 			{
@@ -4919,7 +4919,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 					{
-					DebugLocation(640, 9);
+					DebugLocation(651, 9);
 					input.Consume();
 
 
@@ -4936,7 +4936,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(4); }
 
-			DebugLocation(640, 34);
+			DebugLocation(651, 34);
 			 _channel = Hidden; 
 
 			}
@@ -4965,7 +4965,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("IdentifierStartASCII", 126);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:741:2: ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | BSLASH 'u' HexDigit HexDigit HexDigit HexDigit )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:752:2: ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | BSLASH 'u' HexDigit HexDigit HexDigit HexDigit )
 			int alt5=5;
 			try { DebugEnterDecision(5, decisionCanBacktrack[5]);
 			switch (input.LA(1))
@@ -5059,55 +5059,55 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:741:4: 'a' .. 'z'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:752:4: 'a' .. 'z'
 				{
-				DebugLocation(741, 4);
+				DebugLocation(752, 4);
 				MatchRange('a','z'); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:741:15: 'A' .. 'Z'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:752:15: 'A' .. 'Z'
 				{
-				DebugLocation(741, 15);
+				DebugLocation(752, 15);
 				MatchRange('A','Z'); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:742:4: '$'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:753:4: '$'
 				{
-				DebugLocation(742, 4);
+				DebugLocation(753, 4);
 				Match('$'); 
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:743:4: '_'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:754:4: '_'
 				{
-				DebugLocation(743, 4);
+				DebugLocation(754, 4);
 				Match('_'); 
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:744:4: BSLASH 'u' HexDigit HexDigit HexDigit HexDigit
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:755:4: BSLASH 'u' HexDigit HexDigit HexDigit HexDigit
 				{
-				DebugLocation(744, 4);
+				DebugLocation(755, 4);
 				mBSLASH(); 
-				DebugLocation(744, 11);
+				DebugLocation(755, 11);
 				Match('u'); 
-				DebugLocation(744, 15);
+				DebugLocation(755, 15);
 				mHexDigit(); 
-				DebugLocation(744, 24);
+				DebugLocation(755, 24);
 				mHexDigit(); 
-				DebugLocation(744, 33);
+				DebugLocation(755, 33);
 				mHexDigit(); 
-				DebugLocation(744, 42);
+				DebugLocation(755, 42);
 				mHexDigit(); 
 
 				}
@@ -5136,7 +5136,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("IdentifierPart", 127);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:752:2: ( DecimalDigit | IdentifierStartASCII |{...}?)
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:763:2: ( DecimalDigit | IdentifierStartASCII |{...}?)
 			int alt6=3;
 			try { DebugEnterDecision(6, decisionCanBacktrack[6]);
 			switch (input.LA(1))
@@ -5224,32 +5224,32 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:752:4: DecimalDigit
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:763:4: DecimalDigit
 				{
-				DebugLocation(752, 4);
+				DebugLocation(763, 4);
 				mDecimalDigit(); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:753:4: IdentifierStartASCII
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:764:4: IdentifierStartASCII
 				{
-				DebugLocation(753, 4);
+				DebugLocation(764, 4);
 				mIdentifierStartASCII(); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:754:4: {...}?
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:765:4: {...}?
 				{
-				DebugLocation(754, 4);
+				DebugLocation(765, 4);
 				if (!(( IsIdentifierPartUnicode(input.LA(1)) )))
 				{
 					throw new FailedPredicateException(input, "IdentifierPart", " IsIdentifierPartUnicode(input.LA(1)) ");
 				}
-				DebugLocation(754, 46);
+				DebugLocation(765, 46);
 				 MatchAny(); 
 
 				}
@@ -5278,14 +5278,14 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("IdentifierNameASCIIStart", 128);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:758:2: ( IdentifierStartASCII ( IdentifierPart )* )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:769:2: ( IdentifierStartASCII ( IdentifierPart )* )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:758:4: IdentifierStartASCII ( IdentifierPart )*
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:769:4: IdentifierStartASCII ( IdentifierPart )*
 			{
-			DebugLocation(758, 4);
+			DebugLocation(769, 4);
 			mIdentifierStartASCII(); 
-			DebugLocation(758, 25);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:758:25: ( IdentifierPart )*
+			DebugLocation(769, 25);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:769:25: ( IdentifierPart )*
 			try { DebugEnterSubRule(7);
 			while (true)
 			{
@@ -5308,9 +5308,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:758:25: IdentifierPart
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:769:25: IdentifierPart
 					{
-					DebugLocation(758, 25);
+					DebugLocation(769, 25);
 					mIdentifierPart(); 
 
 					}
@@ -5353,7 +5353,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = Identifier;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:770:2: ( IdentifierNameASCIIStart |)
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:781:2: ( IdentifierNameASCIIStart |)
 			int alt8=2;
 			try { DebugEnterDecision(8, decisionCanBacktrack[8]);
 			int LA8_0 = input.LA(1);
@@ -5370,18 +5370,18 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:770:4: IdentifierNameASCIIStart
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:781:4: IdentifierNameASCIIStart
 				{
-				DebugLocation(770, 4);
+				DebugLocation(781, 4);
 				mIdentifierNameASCIIStart(); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:771:4: 
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:782:4: 
 				{
-				DebugLocation(771, 4);
+				DebugLocation(782, 4);
 				 ConsumeIdentifierUnicodeStart(); 
 
 				}
@@ -5412,11 +5412,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("DecimalDigit", 130);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:854:2: ( '0' .. '9' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:865:2: ( '0' .. '9' )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(854, 2);
+			DebugLocation(865, 2);
 			if ((input.LA(1)>='0' && input.LA(1)<='9'))
 			{
 				input.Consume();
@@ -5454,11 +5454,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("HexDigit", 131);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:858:2: ( DecimalDigit | 'a' .. 'f' | 'A' .. 'F' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:869:2: ( DecimalDigit | 'a' .. 'f' | 'A' .. 'F' )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(858, 2);
+			DebugLocation(869, 2);
 			if ((input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f'))
 			{
 				input.Consume();
@@ -5496,11 +5496,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("OctalDigit", 132);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:862:2: ( '0' .. '7' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:873:2: ( '0' .. '7' )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(862, 2);
+			DebugLocation(873, 2);
 			if ((input.LA(1)>='0' && input.LA(1)<='7'))
 			{
 				input.Consume();
@@ -5538,11 +5538,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("ExponentPart", 133);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:866:2: ( ( 'e' | 'E' ) ( '+' | '-' )? ( DecimalDigit )+ )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:2: ( ( 'e' | 'E' ) ( '+' | '-' )? ( DecimalDigit )+ )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:866:4: ( 'e' | 'E' ) ( '+' | '-' )? ( DecimalDigit )+
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:4: ( 'e' | 'E' ) ( '+' | '-' )? ( DecimalDigit )+
 			{
-			DebugLocation(866, 4);
+			DebugLocation(877, 4);
 			if (input.LA(1)=='E'||input.LA(1)=='e')
 			{
 				input.Consume();
@@ -5555,8 +5555,8 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				Recover(mse);
 				throw mse;}
 
-			DebugLocation(866, 18);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:866:18: ( '+' | '-' )?
+			DebugLocation(877, 18);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:18: ( '+' | '-' )?
 			int alt9=2;
 			try { DebugEnterSubRule(9);
 			try { DebugEnterDecision(9, decisionCanBacktrack[9]);
@@ -5573,7 +5573,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				DebugEnterAlt(1);
 				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 				{
-				DebugLocation(866, 18);
+				DebugLocation(877, 18);
 				input.Consume();
 
 
@@ -5583,8 +5583,8 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(9); }
 
-			DebugLocation(866, 33);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:866:33: ( DecimalDigit )+
+			DebugLocation(877, 33);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:33: ( DecimalDigit )+
 			int cnt10=0;
 			try { DebugEnterSubRule(10);
 			while (true)
@@ -5606,7 +5606,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 					{
-					DebugLocation(866, 33);
+					DebugLocation(877, 33);
 					input.Consume();
 
 
@@ -5653,7 +5653,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("DecimalIntegerLiteral", 134);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:870:2: ( '0' | '1' .. '9' ( DecimalDigit )* )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:881:2: ( '0' | '1' .. '9' ( DecimalDigit )* )
 			int alt12=2;
 			try { DebugEnterDecision(12, decisionCanBacktrack[12]);
 			int LA12_0 = input.LA(1);
@@ -5678,21 +5678,21 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:870:4: '0'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:881:4: '0'
 				{
-				DebugLocation(870, 4);
+				DebugLocation(881, 4);
 				Match('0'); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:871:4: '1' .. '9' ( DecimalDigit )*
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:882:4: '1' .. '9' ( DecimalDigit )*
 				{
-				DebugLocation(871, 4);
+				DebugLocation(882, 4);
 				MatchRange('1','9'); 
-				DebugLocation(871, 13);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:871:13: ( DecimalDigit )*
+				DebugLocation(882, 13);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:882:13: ( DecimalDigit )*
 				try { DebugEnterSubRule(11);
 				while (true)
 				{
@@ -5713,7 +5713,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 						{
-						DebugLocation(871, 13);
+						DebugLocation(882, 13);
 						input.Consume();
 
 
@@ -5759,7 +5759,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = DecimalLiteral;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:875:2: ( DecimalIntegerLiteral '.' ( DecimalDigit )* ( ExponentPart )? | '.' ( DecimalDigit )+ ( ExponentPart )? | DecimalIntegerLiteral ( ExponentPart )? )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:886:2: ( DecimalIntegerLiteral '.' ( DecimalDigit )* ( ExponentPart )? | '.' ( DecimalDigit )+ ( ExponentPart )? | DecimalIntegerLiteral ( ExponentPart )? )
 			int alt18=3;
 			try { DebugEnterDecision(18, decisionCanBacktrack[18]);
 			try
@@ -5776,14 +5776,14 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:875:4: DecimalIntegerLiteral '.' ( DecimalDigit )* ( ExponentPart )?
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:886:4: DecimalIntegerLiteral '.' ( DecimalDigit )* ( ExponentPart )?
 				{
-				DebugLocation(875, 4);
+				DebugLocation(886, 4);
 				mDecimalIntegerLiteral(); 
-				DebugLocation(875, 26);
+				DebugLocation(886, 26);
 				Match('.'); 
-				DebugLocation(875, 30);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:875:30: ( DecimalDigit )*
+				DebugLocation(886, 30);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:886:30: ( DecimalDigit )*
 				try { DebugEnterSubRule(13);
 				while (true)
 				{
@@ -5804,7 +5804,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 						{
-						DebugLocation(875, 30);
+						DebugLocation(886, 30);
 						input.Consume();
 
 
@@ -5821,8 +5821,8 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(13); }
 
-				DebugLocation(875, 44);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:875:44: ( ExponentPart )?
+				DebugLocation(886, 44);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:886:44: ( ExponentPart )?
 				int alt14=2;
 				try { DebugEnterSubRule(14);
 				try { DebugEnterDecision(14, decisionCanBacktrack[14]);
@@ -5837,9 +5837,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:875:44: ExponentPart
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:886:44: ExponentPart
 					{
-					DebugLocation(875, 44);
+					DebugLocation(886, 44);
 					mExponentPart(); 
 
 					}
@@ -5853,12 +5853,12 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:876:4: '.' ( DecimalDigit )+ ( ExponentPart )?
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:887:4: '.' ( DecimalDigit )+ ( ExponentPart )?
 				{
-				DebugLocation(876, 4);
+				DebugLocation(887, 4);
 				Match('.'); 
-				DebugLocation(876, 8);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:876:8: ( DecimalDigit )+
+				DebugLocation(887, 8);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:887:8: ( DecimalDigit )+
 				int cnt15=0;
 				try { DebugEnterSubRule(15);
 				while (true)
@@ -5880,7 +5880,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 						DebugEnterAlt(1);
 						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 						{
-						DebugLocation(876, 8);
+						DebugLocation(887, 8);
 						input.Consume();
 
 
@@ -5902,8 +5902,8 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(15); }
 
-				DebugLocation(876, 22);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:876:22: ( ExponentPart )?
+				DebugLocation(887, 22);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:887:22: ( ExponentPart )?
 				int alt16=2;
 				try { DebugEnterSubRule(16);
 				try { DebugEnterDecision(16, decisionCanBacktrack[16]);
@@ -5918,9 +5918,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:876:22: ExponentPart
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:887:22: ExponentPart
 					{
-					DebugLocation(876, 22);
+					DebugLocation(887, 22);
 					mExponentPart(); 
 
 					}
@@ -5934,12 +5934,12 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:4: DecimalIntegerLiteral ( ExponentPart )?
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:888:4: DecimalIntegerLiteral ( ExponentPart )?
 				{
-				DebugLocation(877, 4);
+				DebugLocation(888, 4);
 				mDecimalIntegerLiteral(); 
-				DebugLocation(877, 26);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:26: ( ExponentPart )?
+				DebugLocation(888, 26);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:888:26: ( ExponentPart )?
 				int alt17=2;
 				try { DebugEnterSubRule(17);
 				try { DebugEnterDecision(17, decisionCanBacktrack[17]);
@@ -5954,9 +5954,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:877:26: ExponentPart
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:888:26: ExponentPart
 					{
-					DebugLocation(877, 26);
+					DebugLocation(888, 26);
 					mExponentPart(); 
 
 					}
@@ -5996,14 +5996,14 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = OctalIntegerLiteral;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:881:2: ( '0' ( OctalDigit )+ )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:892:2: ( '0' ( OctalDigit )+ )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:881:4: '0' ( OctalDigit )+
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:892:4: '0' ( OctalDigit )+
 			{
-			DebugLocation(881, 4);
+			DebugLocation(892, 4);
 			Match('0'); 
-			DebugLocation(881, 8);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:881:8: ( OctalDigit )+
+			DebugLocation(892, 8);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:892:8: ( OctalDigit )+
 			int cnt19=0;
 			try { DebugEnterSubRule(19);
 			while (true)
@@ -6025,7 +6025,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 					{
-					DebugLocation(881, 8);
+					DebugLocation(892, 8);
 					input.Consume();
 
 
@@ -6076,12 +6076,12 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = HexIntegerLiteral;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:885:2: ( ( '0x' | '0X' ) ( HexDigit )+ )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:896:2: ( ( '0x' | '0X' ) ( HexDigit )+ )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:885:4: ( '0x' | '0X' ) ( HexDigit )+
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:896:4: ( '0x' | '0X' ) ( HexDigit )+
 			{
-			DebugLocation(885, 4);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:885:4: ( '0x' | '0X' )
+			DebugLocation(896, 4);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:896:4: ( '0x' | '0X' )
 			int alt20=2;
 			try { DebugEnterSubRule(20);
 			try { DebugEnterDecision(20, decisionCanBacktrack[20]);
@@ -6119,9 +6119,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:885:6: '0x'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:896:6: '0x'
 				{
-				DebugLocation(885, 6);
+				DebugLocation(896, 6);
 				Match("0x"); 
 
 
@@ -6129,9 +6129,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:885:13: '0X'
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:896:13: '0X'
 				{
-				DebugLocation(885, 13);
+				DebugLocation(896, 13);
 				Match("0X"); 
 
 
@@ -6141,8 +6141,8 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(20); }
 
-			DebugLocation(885, 20);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:885:20: ( HexDigit )+
+			DebugLocation(896, 20);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:896:20: ( HexDigit )+
 			int cnt21=0;
 			try { DebugEnterSubRule(21);
 			while (true)
@@ -6164,7 +6164,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 					{
-					DebugLocation(885, 20);
+					DebugLocation(896, 20);
 					input.Consume();
 
 
@@ -6213,11 +6213,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("CharacterEscapeSequence", 138);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:904:2: (~ ( DecimalDigit | 'x' | 'u' | LineTerminator ) )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:915:2: (~ ( DecimalDigit | 'x' | 'u' | LineTerminator ) )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(904, 2);
+			DebugLocation(915, 2);
 			if ((input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='/')||(input.LA(1)>=':' && input.LA(1)<='t')||(input.LA(1)>='v' && input.LA(1)<='w')||(input.LA(1)>='y' && input.LA(1)<='\u2027')||(input.LA(1)>='\u202A' && input.LA(1)<='\uFFFF'))
 			{
 				input.Consume();
@@ -6255,11 +6255,11 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("ZeroToThree", 139);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:908:2: ( '0' .. '3' )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:919:2: ( '0' .. '3' )
 			DebugEnterAlt(1);
 			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 			{
-			DebugLocation(908, 2);
+			DebugLocation(919, 2);
 			if ((input.LA(1)>='0' && input.LA(1)<='3'))
 			{
 				input.Consume();
@@ -6297,7 +6297,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("OctalEscapeSequence", 140);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:912:2: ( OctalDigit | ZeroToThree OctalDigit | '4' .. '7' OctalDigit | ZeroToThree OctalDigit OctalDigit )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:923:2: ( OctalDigit | ZeroToThree OctalDigit | '4' .. '7' OctalDigit | ZeroToThree OctalDigit OctalDigit )
 			int alt22=4;
 			try { DebugEnterDecision(22, decisionCanBacktrack[22]);
 			int LA22_0 = input.LA(1);
@@ -6346,44 +6346,44 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:912:4: OctalDigit
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:923:4: OctalDigit
 				{
-				DebugLocation(912, 4);
+				DebugLocation(923, 4);
 				mOctalDigit(); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:913:4: ZeroToThree OctalDigit
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:924:4: ZeroToThree OctalDigit
 				{
-				DebugLocation(913, 4);
+				DebugLocation(924, 4);
 				mZeroToThree(); 
-				DebugLocation(913, 16);
+				DebugLocation(924, 16);
 				mOctalDigit(); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:914:4: '4' .. '7' OctalDigit
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:925:4: '4' .. '7' OctalDigit
 				{
-				DebugLocation(914, 4);
+				DebugLocation(925, 4);
 				MatchRange('4','7'); 
-				DebugLocation(914, 13);
+				DebugLocation(925, 13);
 				mOctalDigit(); 
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:915:4: ZeroToThree OctalDigit OctalDigit
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:926:4: ZeroToThree OctalDigit OctalDigit
 				{
-				DebugLocation(915, 4);
+				DebugLocation(926, 4);
 				mZeroToThree(); 
-				DebugLocation(915, 16);
+				DebugLocation(926, 16);
 				mOctalDigit(); 
-				DebugLocation(915, 27);
+				DebugLocation(926, 27);
 				mOctalDigit(); 
 
 				}
@@ -6412,15 +6412,15 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("HexEscapeSequence", 141);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:919:2: ( 'x' HexDigit HexDigit )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:930:2: ( 'x' HexDigit HexDigit )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:919:4: 'x' HexDigit HexDigit
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:930:4: 'x' HexDigit HexDigit
 			{
-			DebugLocation(919, 4);
+			DebugLocation(930, 4);
 			Match('x'); 
-			DebugLocation(919, 8);
+			DebugLocation(930, 8);
 			mHexDigit(); 
-			DebugLocation(919, 17);
+			DebugLocation(930, 17);
 			mHexDigit(); 
 
 			}
@@ -6447,19 +6447,19 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("UnicodeEscapeSequence", 142);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:923:2: ( 'u' HexDigit HexDigit HexDigit HexDigit )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:934:2: ( 'u' HexDigit HexDigit HexDigit HexDigit )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:923:4: 'u' HexDigit HexDigit HexDigit HexDigit
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:934:4: 'u' HexDigit HexDigit HexDigit HexDigit
 			{
-			DebugLocation(923, 4);
+			DebugLocation(934, 4);
 			Match('u'); 
-			DebugLocation(923, 8);
+			DebugLocation(934, 8);
 			mHexDigit(); 
-			DebugLocation(923, 17);
+			DebugLocation(934, 17);
 			mHexDigit(); 
-			DebugLocation(923, 26);
+			DebugLocation(934, 26);
 			mHexDigit(); 
-			DebugLocation(923, 35);
+			DebugLocation(934, 35);
 			mHexDigit(); 
 
 			}
@@ -6486,14 +6486,14 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("EscapeSequence", 143);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:927:2: ( BSLASH ( CharacterEscapeSequence | OctalEscapeSequence | HexEscapeSequence | UnicodeEscapeSequence | ( CR )? LF ) )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:938:2: ( BSLASH ( CharacterEscapeSequence | OctalEscapeSequence | HexEscapeSequence | UnicodeEscapeSequence | ( CR )? LF ) )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:928:2: BSLASH ( CharacterEscapeSequence | OctalEscapeSequence | HexEscapeSequence | UnicodeEscapeSequence | ( CR )? LF )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:939:2: BSLASH ( CharacterEscapeSequence | OctalEscapeSequence | HexEscapeSequence | UnicodeEscapeSequence | ( CR )? LF )
 			{
-			DebugLocation(928, 2);
+			DebugLocation(939, 2);
 			mBSLASH(); 
-			DebugLocation(929, 2);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:929:2: ( CharacterEscapeSequence | OctalEscapeSequence | HexEscapeSequence | UnicodeEscapeSequence | ( CR )? LF )
+			DebugLocation(940, 2);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:940:2: ( CharacterEscapeSequence | OctalEscapeSequence | HexEscapeSequence | UnicodeEscapeSequence | ( CR )? LF )
 			int alt24=5;
 			try { DebugEnterSubRule(24);
 			try { DebugEnterDecision(24, decisionCanBacktrack[24]);
@@ -6531,46 +6531,46 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:930:3: CharacterEscapeSequence
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:941:3: CharacterEscapeSequence
 				{
-				DebugLocation(930, 3);
+				DebugLocation(941, 3);
 				mCharacterEscapeSequence(); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:931:5: OctalEscapeSequence
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:942:5: OctalEscapeSequence
 				{
-				DebugLocation(931, 5);
+				DebugLocation(942, 5);
 				mOctalEscapeSequence(); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:932:5: HexEscapeSequence
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:943:5: HexEscapeSequence
 				{
-				DebugLocation(932, 5);
+				DebugLocation(943, 5);
 				mHexEscapeSequence(); 
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:933:5: UnicodeEscapeSequence
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:944:5: UnicodeEscapeSequence
 				{
-				DebugLocation(933, 5);
+				DebugLocation(944, 5);
 				mUnicodeEscapeSequence(); 
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:934:5: ( CR )? LF
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:945:5: ( CR )? LF
 				{
-				DebugLocation(934, 5);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:934:5: ( CR )?
+				DebugLocation(945, 5);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:945:5: ( CR )?
 				int alt23=2;
 				try { DebugEnterSubRule(23);
 				try { DebugEnterDecision(23, decisionCanBacktrack[23]);
@@ -6587,7 +6587,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:
 					{
-					DebugLocation(934, 5);
+					DebugLocation(945, 5);
 					input.Consume();
 
 
@@ -6597,7 +6597,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				}
 				} finally { DebugExitSubRule(23); }
 
-				DebugLocation(934, 9);
+				DebugLocation(945, 9);
 				mLF(); 
 
 				}
@@ -6633,7 +6633,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = StringLiteral;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:939:2: ( SQUOTE (~ ( SQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* SQUOTE | DQUOTE (~ ( DQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* DQUOTE )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:950:2: ( SQUOTE (~ ( SQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* SQUOTE | DQUOTE (~ ( DQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* DQUOTE )
 			int alt27=2;
 			try { DebugEnterDecision(27, decisionCanBacktrack[27]);
 			int LA27_0 = input.LA(1);
@@ -6658,12 +6658,12 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:939:4: SQUOTE (~ ( SQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* SQUOTE
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:950:4: SQUOTE (~ ( SQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* SQUOTE
 				{
-				DebugLocation(939, 4);
+				DebugLocation(950, 4);
 				mSQUOTE(); 
-				DebugLocation(939, 11);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:939:11: (~ ( SQUOTE | BSLASH | LineTerminator ) | EscapeSequence )*
+				DebugLocation(950, 11);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:950:11: (~ ( SQUOTE | BSLASH | LineTerminator ) | EscapeSequence )*
 				try { DebugEnterSubRule(25);
 				while (true)
 				{
@@ -6686,9 +6686,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:939:13: ~ ( SQUOTE | BSLASH | LineTerminator )
+						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:950:13: ~ ( SQUOTE | BSLASH | LineTerminator )
 						{
-						DebugLocation(939, 13);
+						DebugLocation(950, 13);
 						input.Consume();
 
 
@@ -6696,9 +6696,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:939:53: EscapeSequence
+						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:950:53: EscapeSequence
 						{
-						DebugLocation(939, 53);
+						DebugLocation(950, 53);
 						mEscapeSequence(); 
 
 						}
@@ -6714,19 +6714,19 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(25); }
 
-				DebugLocation(939, 71);
+				DebugLocation(950, 71);
 				mSQUOTE(); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:940:4: DQUOTE (~ ( DQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* DQUOTE
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:951:4: DQUOTE (~ ( DQUOTE | BSLASH | LineTerminator ) | EscapeSequence )* DQUOTE
 				{
-				DebugLocation(940, 4);
+				DebugLocation(951, 4);
 				mDQUOTE(); 
-				DebugLocation(940, 11);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:940:11: (~ ( DQUOTE | BSLASH | LineTerminator ) | EscapeSequence )*
+				DebugLocation(951, 11);
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:951:11: (~ ( DQUOTE | BSLASH | LineTerminator ) | EscapeSequence )*
 				try { DebugEnterSubRule(26);
 				while (true)
 				{
@@ -6749,9 +6749,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:940:13: ~ ( DQUOTE | BSLASH | LineTerminator )
+						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:951:13: ~ ( DQUOTE | BSLASH | LineTerminator )
 						{
-						DebugLocation(940, 13);
+						DebugLocation(951, 13);
 						input.Consume();
 
 
@@ -6759,9 +6759,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 						break;
 					case 2:
 						DebugEnterAlt(2);
-						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:940:53: EscapeSequence
+						// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:951:53: EscapeSequence
 						{
-						DebugLocation(940, 53);
+						DebugLocation(951, 53);
 						mEscapeSequence(); 
 
 						}
@@ -6777,7 +6777,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 				} finally { DebugExitSubRule(26); }
 
-				DebugLocation(940, 71);
+				DebugLocation(951, 71);
 				mDQUOTE(); 
 
 				}
@@ -6808,13 +6808,13 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("BackslashSequence", 145);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:948:2: ( BSLASH ~ ( LineTerminator ) )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:959:2: ( BSLASH ~ ( LineTerminator ) )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:948:4: BSLASH ~ ( LineTerminator )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:959:4: BSLASH ~ ( LineTerminator )
 			{
-			DebugLocation(948, 4);
+			DebugLocation(959, 4);
 			mBSLASH(); 
-			DebugLocation(948, 11);
+			DebugLocation(959, 11);
 			if ((input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\u2027')||(input.LA(1)>='\u202A' && input.LA(1)<='\uFFFF'))
 			{
 				input.Consume();
@@ -6852,7 +6852,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("RegularExpressionFirstChar", 146);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:952:2: (~ ( LineTerminator | MUL | BSLASH | DIV ) | BackslashSequence )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:963:2: (~ ( LineTerminator | MUL | BSLASH | DIV ) | BackslashSequence )
 			int alt28=2;
 			try { DebugEnterDecision(28, decisionCanBacktrack[28]);
 			int LA28_0 = input.LA(1);
@@ -6877,9 +6877,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:952:4: ~ ( LineTerminator | MUL | BSLASH | DIV )
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:963:4: ~ ( LineTerminator | MUL | BSLASH | DIV )
 				{
-				DebugLocation(952, 4);
+				DebugLocation(963, 4);
 				input.Consume();
 
 
@@ -6887,9 +6887,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:953:4: BackslashSequence
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:964:4: BackslashSequence
 				{
-				DebugLocation(953, 4);
+				DebugLocation(964, 4);
 				mBackslashSequence(); 
 
 				}
@@ -6918,7 +6918,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		TraceIn("RegularExpressionChar", 147);
 		try
 		{
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:957:2: (~ ( LineTerminator | BSLASH | DIV ) | BackslashSequence )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:968:2: (~ ( LineTerminator | BSLASH | DIV ) | BackslashSequence )
 			int alt29=2;
 			try { DebugEnterDecision(29, decisionCanBacktrack[29]);
 			int LA29_0 = input.LA(1);
@@ -6943,9 +6943,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:957:4: ~ ( LineTerminator | BSLASH | DIV )
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:968:4: ~ ( LineTerminator | BSLASH | DIV )
 				{
-				DebugLocation(957, 4);
+				DebugLocation(968, 4);
 				input.Consume();
 
 
@@ -6953,9 +6953,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:958:4: BackslashSequence
+				// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:969:4: BackslashSequence
 				{
-				DebugLocation(958, 4);
+				DebugLocation(969, 4);
 				mBackslashSequence(); 
 
 				}
@@ -6986,21 +6986,21 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 		{
 			int _type = RegularExpressionLiteral;
 			int _channel = DefaultTokenChannel;
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:962:2: ({...}? => DIV RegularExpressionFirstChar ( RegularExpressionChar )* DIV ( IdentifierPart )* )
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:973:2: ({...}? => DIV RegularExpressionFirstChar ( RegularExpressionChar )* DIV ( IdentifierPart )* )
 			DebugEnterAlt(1);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:962:4: {...}? => DIV RegularExpressionFirstChar ( RegularExpressionChar )* DIV ( IdentifierPart )*
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:973:4: {...}? => DIV RegularExpressionFirstChar ( RegularExpressionChar )* DIV ( IdentifierPart )*
 			{
-			DebugLocation(962, 4);
+			DebugLocation(973, 4);
 			if (!(( AreRegularExpressionsEnabled() )))
 			{
 				throw new FailedPredicateException(input, "RegularExpressionLiteral", " AreRegularExpressionsEnabled() ");
 			}
-			DebugLocation(962, 42);
+			DebugLocation(973, 42);
 			mDIV(); 
-			DebugLocation(962, 46);
+			DebugLocation(973, 46);
 			mRegularExpressionFirstChar(); 
-			DebugLocation(962, 73);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:962:73: ( RegularExpressionChar )*
+			DebugLocation(973, 73);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:973:73: ( RegularExpressionChar )*
 			try { DebugEnterSubRule(30);
 			while (true)
 			{
@@ -7019,9 +7019,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:962:73: RegularExpressionChar
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:973:73: RegularExpressionChar
 					{
-					DebugLocation(962, 73);
+					DebugLocation(973, 73);
 					mRegularExpressionChar(); 
 
 					}
@@ -7037,10 +7037,10 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(30); }
 
-			DebugLocation(962, 96);
+			DebugLocation(973, 96);
 			mDIV(); 
-			DebugLocation(962, 100);
-			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:962:100: ( IdentifierPart )*
+			DebugLocation(973, 100);
+			// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:973:100: ( IdentifierPart )*
 			try { DebugEnterSubRule(31);
 			while (true)
 			{
@@ -7063,9 +7063,9 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:962:100: IdentifierPart
+					// C:\\Users\\sebros\\My Projects\\Jint\\Jint\\ES3.g:973:100: IdentifierPart
 					{
-					DebugLocation(962, 100);
+					DebugLocation(973, 100);
 					mIdentifierPart(); 
 
 					}
@@ -8239,7 +8239,7 @@ public partial class ES3Lexer : Antlr.Runtime.Lexer
 			this.transition = DFA18_transition;
 		}
 
-		public override string Description { get { return "874:1: DecimalLiteral : ( DecimalIntegerLiteral '.' ( DecimalDigit )* ( ExponentPart )? | '.' ( DecimalDigit )+ ( ExponentPart )? | DecimalIntegerLiteral ( ExponentPart )? );"; } }
+		public override string Description { get { return "885:1: DecimalLiteral : ( DecimalIntegerLiteral '.' ( DecimalDigit )* ( ExponentPart )? | '.' ( DecimalDigit )+ ( ExponentPart )? | DecimalIntegerLiteral ( ExponentPart )? );"; } }
 
 		public override void Error(NoViableAltException nvae)
 		{

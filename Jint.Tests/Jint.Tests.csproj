@@ -374,6 +374,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="include.js" />
+    <EmbeddedResource Include="Scripts\Hoisting.js" />
     <EmbeddedResource Include="Scripts\Flow.js" />
     <EmbeddedResource Include="Scripts\instanceOf.js" />
     <EmbeddedResource Include="Scripts\InOperator.js" />

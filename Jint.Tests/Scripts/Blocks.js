@@ -40,12 +40,4 @@ if(false) {
     var prevTime = 1;
 }
 
-assert(1, prevTime);
-
-// declarations in blocks are available, even if the block is not processed (hoisting)
-assert(undefined, foo);
-if(false) {
-    var foo = 1;
-}
-
-assert(undefined, foo);
+assert(undefined, prevTime);

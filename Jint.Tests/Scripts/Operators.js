@@ -92,3 +92,10 @@ assert(1 ^ undefined, 1);
 assert(1 << undefined, 1);
 assert(1 >> undefined, 1);
 assert(1 >>> undefined, 1);
+
+assert(undefined | undefined, 1);
+assert(undefined & undefined, 0);
+assert(undefined ^ undefined, 1);
+assert(undefined << undefined, 0);
+assert(undefined >> undefined, 0);
+assert(undefined >>> undefined, 0);

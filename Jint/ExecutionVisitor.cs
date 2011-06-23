@@ -1003,8 +1003,12 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.BitwiseOr:
-                    if (left == JsUndefined.Instance )
-                        Result = Global.NumberClass.New(Convert.ToInt64(right.ToNumber()));
+                    if (left == JsUndefined.Instance) {
+                        if(right == JsUndefined.Instance)
+                            Result = Global.NumberClass.New(1);
+                        else
+                            Result = Global.NumberClass.New(Convert.ToInt64(right.ToNumber()));
+                    }
                     else if (right == JsUndefined.Instance)
                         Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
                     else
@@ -1012,8 +1016,12 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.BitwiseXOr:
-                    if (left == JsUndefined.Instance)
-                        Result = Global.NumberClass.New(Convert.ToInt64(right.ToNumber()));
+                    if (left == JsUndefined.Instance) {
+                        if(right == JsUndefined.Instance)
+                            Result = Global.NumberClass.New(1);
+                        else
+                            Result = Global.NumberClass.New(Convert.ToInt64(right.ToNumber()));
+                    }
                     else if (right == JsUndefined.Instance)
                         Result = Global.NumberClass.New(Convert.ToInt64(left.ToNumber()));
                     else

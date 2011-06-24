@@ -307,10 +307,10 @@ namespace Jint.Native {
             string encoded = Uri.EscapeDataString(arguments[0].ToString());
 
             foreach (char c in reservedEncodedComponent) {
-                encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString());
+                encoded = encoded.Replace(Uri.EscapeDataString(c.ToString()), c.ToString().ToUpper());
             }
 
-            return this.StringClass.New(encoded.ToUpper());
+            return this.StringClass.New(encoded);
         }
 
         #endregion

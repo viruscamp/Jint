@@ -8,6 +8,7 @@ assert(10, parseInt("10"));
 assert(16, parseInt("0x10"));
 assert(2, parseInt("10", 2));
 assert(8, parseInt("10", 8));
+assert(12, parseInt("12.42"));
 
 assert(NaN, parseFloat("x"));
 assert(1, parseFloat("1"));

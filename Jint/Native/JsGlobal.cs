@@ -193,7 +193,20 @@ namespace Jint.Native {
             }
 
             try {
-                return NumberClass.New(sign * Convert.ToInt32(number, radix));
+                if (radix == 10) {
+                    // most common case
+                    double result;
+                    if(double.TryParse(number, out result)) {
+                        // parseInt(12.42) == 42
+                        return NumberClass.New(sign * Math.Floor(result));
+                    }
+                    else {
+                        return this["NaN"];
+                    }
+                }
+                else {
+                    return NumberClass.New(sign * Convert.ToInt32(number, radix));
+                }
             }
             catch {
                 return this["NaN"];

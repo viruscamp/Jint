@@ -1474,14 +1474,22 @@ variableStatement returns [Statement value]
 }
 @after{
 	// hoisting
-	foreach(var vd in cs.Statements) {
+	if(cs.Statements.Count > 0) {
+		foreach(var vd in cs.Statements) {
+			var nvd = new VariableDeclarationStatement();
+			nvd.Global = false;
+			nvd.Identifier = ((VariableDeclarationStatement)vd).Identifier;
+			_currentBody.AddFirst(nvd);
+		}
+	}
+	else {
 		var nvd = new VariableDeclarationStatement();
 		nvd.Global = false;
-		nvd.Identifier = ((VariableDeclarationStatement)vd).Identifier;
+		nvd.Identifier = first.value.Identifier;
 		_currentBody.AddFirst(nvd);
 	}
 }
-	: VAR first=variableDeclaration { first.value.Global = false; $value = first.value; cs.Statements.Add($value); } ( COMMA { if( cs.Statements.Count == 0) { cs.Statements.Add($value); $value = cs; } } follow=variableDeclaration  { cs.Statements.Add(follow.value); follow.value.Global = false; } )* semic
+	: VAR first=variableDeclaration { first.value.Global = false; $value = first.value; } ( COMMA { if( cs.Statements.Count == 0) { cs.Statements.Add($value); $value = cs; } } follow=variableDeclaration  { cs.Statements.Add(follow.value); follow.value.Global = false; } )* semic
 	
 	;
 
@@ -1616,16 +1624,18 @@ forControlVar returns [IForStatement value]
 }
 @after {
 	// hoisting
-	// variable declarationgs in 'for' are also hoisted
-	var nvd = new VariableDeclarationStatement();
-	nvd.Global = false;
-	nvd.Identifier = first.Value.Identifier;
-	_currentBody.AddFirst(nvd);
-	
-	foreach(var vd in cs.Statements) {
-		nvd = new VariableDeclarationStatement();
+	if(cs.Statements.Count > 0) {
+		foreach(var vd in cs.Statements) {
+			var nvd = new VariableDeclarationStatement();
+			nvd.Global = false;
+			nvd.Identifier = ((VariableDeclarationStatement)vd).Identifier;
+			_currentBody.AddFirst(nvd);
+		}
+	}
+	else {
+		var nvd = new VariableDeclarationStatement();
 		nvd.Global = false;
-		nvd.Identifier = ((VariableDeclarationStatement)vd).Identifier;
+		nvd.Identifier = first.value.Identifier;
 		_currentBody.AddFirst(nvd);
 	}
 }

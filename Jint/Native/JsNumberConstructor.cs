@@ -67,6 +67,12 @@ namespace Jint.Native {
             return ToStringImpl(target, new JsInstance[0]);
         }
 
+        private static char[] rDigits = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
+        'U', 'V', 'W', 'X', 'Y', 'Z' };
+
         public JsInstance ToStringImpl(JsInstance target, JsInstance[] parameters) {
             if (target == this["NaN"]) {
                 return Global.StringClass.New("NaN");
@@ -80,20 +86,42 @@ namespace Jint.Native {
                 return Global.StringClass.New("Infinity");
             }
 
-            double radix = 10;
+            int radix = 10;
 
             // is radix defined ?
             if (parameters.Length > 0) {
                 if (parameters[0] != JsUndefined.Instance) {
-                    radix = parameters[0].ToNumber();
+                    radix = (int)parameters[0].ToNumber();
                 }
             }
+
+            var longToBeFormatted = (long)target.ToNumber();
 
             if (radix == 10) {
                 return Global.StringClass.New(target.ToNumber().ToString(CultureInfo.InvariantCulture).ToLower());
             }
             else {
-                return Global.StringClass.New(Convert.ToString(Convert.ToUInt32(target.ToNumber(), CultureInfo.InvariantCulture), Convert.ToInt32(radix)).ToLower());
+                // Extract the magnitude for conversion.
+                long longPositive = Math.Abs(longToBeFormatted);
+                int digitIndex = 0;
+
+                char[] outDigits = new char[63];
+                // Convert the magnitude to a digit string.
+                for (digitIndex = 0; digitIndex <= 64; digitIndex++)
+                {
+                    if (longPositive == 0) break;
+
+                    outDigits[outDigits.Length - digitIndex - 1] =
+                        rDigits[longPositive % radix];
+                    longPositive /= radix;
+                }
+
+                // Add a minus sign if the argument is negative.
+                if (longToBeFormatted < 0)
+                    outDigits[outDigits.Length - digitIndex++ - 1] = '-';
+
+                return Global.StringClass.New(new string(outDigits,
+                    outDigits.Length - digitIndex, digitIndex).ToLower());
             }
         }
 

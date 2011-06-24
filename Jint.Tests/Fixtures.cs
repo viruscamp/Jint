@@ -1656,6 +1656,46 @@ var fakeButton = new Test.FakeButton();");
             ");
         }
 
+        [TestMethod]
+        public void ScopesShouldNotExpand() {
+            Test(@"
+                function foo() {
+                    var i;
+                    for(i=2;i<3;i++);
+                }
+                
+                function bar() {
+                    var i=1;
+                    foo();
+
+                    assert(1, i);
+                }
+                
+                bar();
+            ");
+        }
+
+        [TestMethod]
+        public void ShouldHandleCommaSeparatedDeclarations()
+        {
+            Test(@"
+                var i, j=1, k=3*2;
+
+                function foo() {
+                    var l, m=1, n=3*2;
+
+                    assert(undefined, l);
+                    assert(1, m);
+                    assert(6, n);
+                }
+
+                assert(undefined, i);
+                assert(1, j);
+                assert(6, k);
+
+                foo();
+            ");
+        }
     }
 
     public struct Size {

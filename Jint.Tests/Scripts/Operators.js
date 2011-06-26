@@ -99,3 +99,8 @@ assert(undefined ^ undefined, 1);
 assert(undefined << undefined, 0);
 assert(undefined >> undefined, 0);
 assert(undefined >>> undefined, 0);
+
+assert(undefined, void 0);
+assert(undefined, void(42));
+assert(undefined, void(myNum=3));
+assert(3, myNum);

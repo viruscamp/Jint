@@ -12,7 +12,7 @@ namespace Jint.Tests {
     /// <summary>
     /// Summary description for SunSpider
     /// </summary>
-    [TestClass]
+    [TestClass, Ignore]
     public class SunSpider {
         public SunSpider() {
             //

@@ -5,44 +5,40 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using Jint.Native;
+using Jint.Debugger;
 
-namespace Jint.Play {
-    class Program {
-        static void Main(string[] args) {
-            //string[] tests = { "date-format-tofte" };
-            string[] tests = { "3d-cube", "3d-morph", "3d-raytrace", "access-binary-trees", "access-fannkuch", "access-nbody", "access-nsieve", "bitops-3bit-bits-in-byte", "bitops-bits-in-byte", "bitops-bitwise-and", "bitops-nsieve-bits", "controlflow-recursive", "crypto-aes", "crypto-md5", "crypto-sha1", "date-format-tofte", "date-format-xparb", "math-cordic", "math-partial-sums", "math-spectral-norm", "regexp-dna", "string-base64", "string-fasta", "string-tagcloud", "string-unpack-code", "string-validate-input" };
+namespace Jint.Play
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
 
             var assembly = Assembly.Load("Jint.Tests");
             Stopwatch sw = new Stopwatch();
 
-            foreach (var test in tests) {
-                string script;
+            string script = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.Parse.coffeescript-format.js")).ReadToEnd();
+            JintEngine jint = new JintEngine()
+                // .SetDebugMode(true)
+                .DisableSecurity()
+                .SetFunction("print", new Action<string>(Console.WriteLine))
+                .SetFunction("stop", new Action( delegate() { Console.WriteLine(); }));
+            sw.Reset();
+            sw.Start();
 
-                try {
-                    script = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.SunSpider." + test + ".js")).ReadToEnd();
-                    if (String.IsNullOrEmpty(script)) {
-                        continue;
-                    }
-                JintEngine jint = new JintEngine()
-                    // .SetDebugMode(true)
-                    .DisableSecurity()
-                    .SetFunction("print", new Action<string>(Console.WriteLine));
-
-                sw.Reset();
-                sw.Start();
-
-                jint.Run(script);
-
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0}: failed", test); 
-                    // Console.WriteLine(e);
-                    continue;
-                }
-
-                Console.WriteLine("{0}: {1}ms", test, sw.ElapsedMilliseconds);
+            jint.Run(script);
+            try
+            {
+                var result = jint.Run("CoffeeScript.compile('number = 42', {bare: true})");
             }
+            catch (JintException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            Console.WriteLine("{0}ms", sw.ElapsedMilliseconds);
         }
     }
 }
+

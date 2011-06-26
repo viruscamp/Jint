@@ -1409,7 +1409,14 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void PrivateMembersScriptShouldPassTests() {
+        public void PrecedenceScriptShouldPassTests()
+        {
+            ExecuteEmbededScript("Precedence.js");
+        }
+
+        [TestMethod]
+        public void PrivateMembersScriptShouldPassTests()
+        {
             ExecuteEmbededScript("PrivateMembers.js");
         }
 

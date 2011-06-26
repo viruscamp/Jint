@@ -284,6 +284,10 @@ using Jint.Debugger;
 		// This is used to add variable declarations at the top of the body while parsing.
 		private LinkedList<Statement> _currentBody = null;
 		
+		// Set to true when a New is in parenthesis, to prevent the MemberExpression
+		// from appending new members to it
+		private bool _newExpressionIsUnary = false;
+		
 		private const char BS = '\\';
 		private bool IsLeftHandSideAssign(Expression lhs, object[] cached)
 		{
@@ -991,7 +995,7 @@ primaryExpression returns [Expression value]
 	| ex3=literal { $value = ex3.value; }
 	| ex4=arrayLiteral { $value = ex4.value; }
 	| ex5=objectLiteral { $value = ex5.value; }
-	| lpar=LPAREN ex6=expression  RPAREN  { $value = ex6.value; } 
+	| lpar=LPAREN ex6=expression  RPAREN  { $value = ex6.value; _newExpressionIsUnary = ex6.value is NewExpression; } 
 	;
 
 arrayLiteral returns [ArrayDeclaration value]
@@ -1081,11 +1085,11 @@ leftHandSideExpression returns [Expression value]
 		mem=memberExpression { $value = mem.value; } 
 	)
 	(
-		(gen=generics { gens = gen.value; } )? arg=arguments { if($value is NewExpression) { ((NewExpression)$value).Generics = gens; ((NewExpression)$value).Arguments = arg.value; $value = new MemberExpression($value, null); } else { $value = new MemberExpression(new MethodCall(arg.value) { Generics = gens }, $value); } } 
+		(gen=generics { gens = gen.value; } )? arg=arguments { if($value is NewExpression && !_newExpressionIsUnary) { ((NewExpression)$value).Generics = gens; ((NewExpression)$value).Arguments = arg.value; $value = new MemberExpression($value, null); } else { $value = new MemberExpression(new MethodCall(arg.value) { Generics = gens }, $value); } } 
 	
 		| LBRACK exp=expression RBRACK { $value = new MemberExpression(new Indexer(exp.value), $value); } 
 			
-		| DOT id=Identifier {  if($value is NewExpression) { ((NewExpression)$value).Expression = new MemberExpression(new PropertyExpression(id.Text), ((NewExpression)$value).Expression); } else { $value = new MemberExpression(new PropertyExpression(id.Text), $value); } }
+		| DOT id=Identifier {  if($value is NewExpression && !_newExpressionIsUnary) { ((NewExpression)$value).Expression = new MemberExpression(new PropertyExpression(id.Text), ((NewExpression)$value).Expression); } else { $value = new MemberExpression(new PropertyExpression(id.Text), $value); } }
 	)* 
 	  
 	;

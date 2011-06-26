@@ -8,7 +8,7 @@ namespace Jint.Expressions {
         // public List<Identifier> Identifiers { get; set; }
         public List<Expression> Arguments { get; set; }
         public Expression Expression { get; set; }
-
+        
         public NewExpression(Expression expression) {
             Expression = expression;
 

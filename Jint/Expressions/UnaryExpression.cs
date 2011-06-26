@@ -28,6 +28,7 @@ namespace Jint.Expressions {
 
     public enum UnaryExpressionType {
         TypeOf,
+        New,
         Not,
         Negate,
         Positive,

@@ -15,3 +15,4 @@ glob:*.itrace.csdef
 glob:*.csproj.user
 syntax: glob
 Jint/Parser/ES3.tokens
+*.vsmdi

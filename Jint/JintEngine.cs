@@ -270,7 +270,7 @@ namespace Jint {
                             + Environment.NewLine + visitor.CurrentStatement.Source.Code;
                 }
 
-                throw new JintException(e.Message + source + stackTrace, e.InnerException);
+                throw new JintException(e.Message + source + stackTrace, e);
             }
             finally {
                 visitor.Step -= OnStep;

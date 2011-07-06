@@ -23,28 +23,36 @@ namespace Jint.Tests {
         ///</summary>
         public TestContext TestContext { get; set; }
 
-        protected object Test(Options options, params string[] scripts) {
-            JintEngine jint = new JintEngine()
-                //.SetDebugMode(true)
+        protected object Test(Options options, string script) {
+            return Test(options, script, jint => { });
+        }
+
+        protected object Test(string script) {
+            return Test(Options.Ecmascript3 | Options.Strict, script);
+        }
+
+        protected object Test(string script, Action<JintEngine> action) {
+            return Test(Options.Ecmascript3 | Options.Strict, script, action);
+        }
+
+        protected object Test(Options options, string script, Action<JintEngine> action)
+        {
+            var jint = new JintEngine()
                 .SetFunction("assert", new Action<object, object>(Assert.AreEqual))
                 .SetFunction("fail", new Action<string>(Assert.Fail))
                 .SetFunction("istrue", new Action<bool>(Assert.IsTrue))
                 .SetFunction("isfalse", new Action<bool>(Assert.IsFalse))
-                // .SetFunction("alert", new Func<string, System.Windows.Forms.DialogResult>(System.Windows.Forms.MessageBox.Show))
                 .SetFunction("print", new Action<string>(Console.WriteLine))
                 .SetFunction("alert", new Action<string>(Console.WriteLine))
                 .SetFunction("loadAssembly", new Action<string>(assemblyName => Assembly.Load(assemblyName)))
                 .DisableSecurity();
-            //jint.BreakPoints.Add(new BreakPoint(3741, 9));
-            //jint.Break += new EventHandler<DebugInformation>(jint_Break);
 
-            object result = null;
+            action(jint);
 
             var sw = new Stopwatch();
             sw.Start();
 
-            foreach (string script in scripts)
-                result = jint.Run(script);
+            var result = jint.Run(script);
 
             Console.WriteLine(sw.Elapsed);
 
@@ -58,10 +66,6 @@ namespace Jint.Tests {
             var assembly = Assembly.GetExecutingAssembly();
             var program = new StreamReader(assembly.GetManifestResourceStream(script)).ReadToEnd();
             Test(program);
-        }
-
-        protected object Test(params string[] scripts) {
-            return Test(Options.Ecmascript3 | Options.Strict, scripts);
         }
 
         [TestMethod]
@@ -341,8 +345,6 @@ namespace Jint.Tests {
             Assert.AreEqual("hi, mom3True", engine.Run(script));
         }
 
-        // temporary disable
-        //[TestMethod]
         [ExpectedException(typeof(System.Security.SecurityException))]
         public void SecurityExceptionsShouldNotBeCaught() {
             const string script = @"
@@ -1683,8 +1685,7 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void ShouldHandleCommaSeparatedDeclarations()
-        {
+        public void ShouldHandleCommaSeparatedDeclarations() {
             Test(@"
                 var i, j=1, k=3*2;
 
@@ -1702,6 +1703,21 @@ var fakeButton = new Test.FakeButton();");
 
                 foo();
             ");
+        }
+
+        [TestMethod]
+        public void ClrExceptionsShouldNotBeLost() {
+            try {
+                Test(@"foo();",
+                     jint => jint.SetFunction("foo", new Action(delegate { throw new ArgumentNullException("bar"); })));
+                Assert.Fail();
+            }
+            catch(JintException e) {
+                var ane = e.InnerException as ArgumentNullException;
+                Assert.IsNotNull(e);
+                Assert.AreEqual("bar", ane.ParamName);
+                return;
+            }
         }
     }
 

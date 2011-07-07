@@ -385,7 +385,11 @@ namespace Jint {
         }
 
         public object CallFunction(string name, params object[] args) {
-            return CallFunction((JsFunction)visitor.CurrentScope[name], args);
+            JsInstance oldResult = visitor.Result;
+            visitor.Visit(new Identifier(name));
+            var returnValue = CallFunction((JsFunction)visitor.Result, args);
+            visitor.Result = oldResult;
+            return returnValue;
         }
 
         public object CallFunction(JsFunction function, params object[] args) {

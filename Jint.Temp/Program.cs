@@ -5,6 +5,7 @@ using System.Text;
 using Jint;
 using Jint.Native;
 using System.Reflection;
+using System.IO;
 
 namespace Jint.Temp {
     public class MyClass
@@ -18,8 +19,29 @@ namespace Jint.Temp {
             this.Status = status;
         }
     }
+    public class Base {
+        public int square(int a, int b) {
+            return a * b;
+        }
+    }
 
     class Program {
+        
+    
+        
+        static void Main(string[] args)
+        {
+            var jint = new JintEngine().DisableSecurity();
+            var script = new StreamReader(@"scripts\test.js").ReadToEnd();
+
+            jint.SetFunction("print", new Action<object>(Console.WriteLine));
+
+            jint.Run(script);
+
+            Console.ReadKey();
+        }
+    
+        
         static void Main2(string[] args)
         {
             
@@ -33,7 +55,8 @@ namespace Jint.Temp {
             Console.WriteLine("Result: {0}", jintEngine.Run("return myClasses[0].Description"));
             System.Console.ReadKey();
         }
-        static void Main(string[] args) {
+
+        static void Main3(string[] args) {
             JintEngine engine = new JintEngine();
             engine.DisableSecurity();
             engine.Run("1;");

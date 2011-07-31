@@ -1729,6 +1729,18 @@ var fakeButton = new Test.FakeButton();");
                 ",
                  jint => jint.SetFunction("callme", new Func<double, object>(x => jint.CallFunction("square", x))));
         }
+        [TestMethod]
+        public void NumberMethodsShouldWorkOnMarshalledNumbers() {
+            new JintEngine()
+                .DisableSecurity()
+                .SetFunction("getDouble", new Func<double>(() => { return 11.34543; }))
+                .SetFunction("getInt", new Func<int>(() => { return 13; }))
+                .SetFunction("print", new Action<string>(s => Console.WriteLine(s)))
+                .Run(@"
+                    print( getDouble().toFixed(2) );
+                    print( getInt().toFixed(2) );
+                ");
+        }
     }
 
     public struct Size {

@@ -24,10 +24,10 @@ namespace Jint.Native {
             var Prototype = PrototypeProperty;
 
             Prototype.DefineOwnProperty("toString", global.FunctionClass.New<JsInstance>(ToStringImpl,1), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsNumber>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toFixed", global.FunctionClass.New<JsNumber>(ToFixedImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toExponential", global.FunctionClass.New<JsNumber>(ToExponentialImpl), PropertyAttributes.DontEnum);
-            Prototype.DefineOwnProperty("toPrecision", global.FunctionClass.New<JsNumber>(ToPrecisionImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toLocaleString", global.FunctionClass.New<JsInstance>(ToLocaleStringImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toFixed", global.FunctionClass.New<JsInstance>(ToFixedImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toExponential", global.FunctionClass.New<JsInstance>(ToExponentialImpl), PropertyAttributes.DontEnum);
+            Prototype.DefineOwnProperty("toPrecision", global.FunctionClass.New<JsInstance>(ToPrecisionImpl), PropertyAttributes.DontEnum);
         }
 
         public JsNumber New(double value) {
@@ -62,7 +62,7 @@ namespace Jint.Native {
             }
         }
 
-        public JsInstance ToLocaleStringImpl(JsNumber target, JsInstance[] parameters) {
+        public JsInstance ToLocaleStringImpl(JsInstance target, JsInstance[] parameters) {
             // Remove parameters
             return ToStringImpl(target, new JsInstance[0]);
         }
@@ -131,7 +131,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToFixedImpl(JsNumber target, JsInstance[] parameters) {
+        public JsInstance ToFixedImpl(JsInstance target, JsInstance[] parameters) {
             int fractions = 0;
             if (parameters.Length > 0) {
                 fractions = Convert.ToInt32(parameters[0].ToNumber());
@@ -154,7 +154,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToExponentialImpl(JsNumber target, JsInstance[] parameters) {
+        public JsInstance ToExponentialImpl(JsInstance target, JsInstance[] parameters) {
             if (double.IsInfinity(target.ToNumber()) || double.IsNaN(target.ToNumber())) {
                 return ToStringImpl(target, new JsInstance[0]);
             }
@@ -178,7 +178,7 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance ToPrecisionImpl(JsNumber target, JsInstance[] parameters) {
+        public JsInstance ToPrecisionImpl(JsInstance target, JsInstance[] parameters) {
             if (double.IsInfinity(target.ToNumber()) || double.IsNaN(target.ToNumber())) {
                 return ToStringImpl(target, new JsInstance[0]);
             }

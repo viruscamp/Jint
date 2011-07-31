@@ -196,7 +196,7 @@ namespace Jint.Native {
                 if (radix == 10) {
                     // most common case
                     double result;
-                    if(double.TryParse(number, out result)) {
+                    if(double.TryParse(number,NumberStyles.Any, CultureInfo.InvariantCulture, out result)) {
                         // parseInt(12.42) == 42
                         return NumberClass.New(sign * Math.Floor(result));
                     }

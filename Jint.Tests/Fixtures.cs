@@ -1729,6 +1729,7 @@ var fakeButton = new Test.FakeButton();");
                 ",
                  jint => jint.SetFunction("callme", new Func<double, object>(x => jint.CallFunction("square", x))));
         }
+
         [TestMethod]
         public void NumberMethodsShouldWorkOnMarshalledNumbers() {
             new JintEngine()

@@ -1249,15 +1249,23 @@ namespace Jint {
             if (target.IsClr)
                 EnsureClrAllowed();
 
-            if (target.Class == JsInstance.CLASS_STRING) {
-                SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
+            if (target.Class == JsInstance.CLASS_STRING)
+            {
+                try
+                {
+                    SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
+                    return;
+                }
+                catch
+                {
+                    // if an error occured, try to access the index as a member
+                }
             }
-            else {
-                if (target.Indexer != null)
-                    SetResult(target.Indexer.get(target, Result), target);
-                else
-                    SetResult(target[Result], target);
-            }
+
+            if (target.Indexer != null)
+                SetResult(target.Indexer.get(target, Result), target);
+            else
+                SetResult(target[Result], target);
         }
 
         public void Visit(MethodCall methodCall) {

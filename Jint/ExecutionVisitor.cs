@@ -999,42 +999,7 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Same:
-                    // 11.9.6 The Strict Equality Comparison Algorithm
-                    if (left.Type != right.Type)
-                    {
-                        Result = Global.BooleanClass.False;
-                    }
-                    else if (left is JsUndefined) {
-                        Result = Global.BooleanClass.True;
-                    }
-                    else if (left is JsNull) {
-                        Result = Global.BooleanClass.True;
-                    }
-                    else if (left.Type == JsInstance.TYPE_NUMBER)
-                    {
-                        if (left == Global.NumberClass["NaN"] || right == Global.NumberClass["NaN"]) {
-                            Result = Global.BooleanClass.False;
-                        }
-                        else if (left.ToNumber() == right.ToNumber()) {
-                            Result = Global.BooleanClass.True;
-                        }
-                        else
-                            Result = Global.BooleanClass.False;
-                    }
-                    else if (left.Type == JsInstance.TYPE_STRING)
-                    {
-                        Result = Global.BooleanClass.New(left.ToString() == right.ToString());
-                    }
-                    else if (left.Type == JsInstance.TYPE_BOOLEAN)
-                    {
-                        Result = Global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
-                    }
-                    else if (left == right) {
-                        Result = Global.BooleanClass.True;
-                    }
-                    else {
-                        Result = Global.BooleanClass.False;
-                    }
+                    Result = JsInstance.StrictlyEquals(Global, left, right);
 
                     break;
 

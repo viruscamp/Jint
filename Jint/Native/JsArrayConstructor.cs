@@ -517,7 +517,7 @@ namespace Jint.Native {
             while (k < len) {
                 JsInstance result = null;
                 if (target.TryGetProperty(k.ToString(), out result)) {
-                    if (result == searchParameter) {
+                    if (JsInstance.StrictlyEquals(Global, result, searchParameter) == Global.BooleanClass.True) {
                         return Global.NumberClass.New(k);
                     }
                 }

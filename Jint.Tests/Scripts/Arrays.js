@@ -77,3 +77,11 @@ assert(2, array.length);
 myArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 myArray.splice(0, 0, -2, -1);
 assert(12, myArray.length);
+
+// indexOf
+var array = [2, 5, 9, 2];
+assert(0, array.indexOf(2));
+assert(-1, array.indexOf(7));
+assert(3, array.indexOf(2, 1));
+assert(3, array.indexOf(2, -1));
+

@@ -190,7 +190,10 @@ namespace Jint
         {
             // create independent visitor
             ExecutionVisitor visitor = new ExecutionVisitor(m_global, new JsScope((JsObject)m_global));
-            visitor.PermissionSet = ((ExecutionVisitor)m_global.Visitor).PermissionSet;
+            var v = ((ExecutionVisitor)m_global.Visitor);
+            visitor.AllowClr = v.AllowClr;
+            visitor.PermissionSet = v.PermissionSet;
+
             JsFunctionDelegate wrapper = new JsFunctionDelegate(visitor, func, JsNull.Instance , delegateType);
             return wrapper.GetDelegate();
         }

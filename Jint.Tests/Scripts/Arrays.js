@@ -85,3 +85,6 @@ assert(-1, array.indexOf(7));
 assert(3, array.indexOf(2, 1));
 assert(3, array.indexOf(2, -1));
 
+// sort
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+assert(["Apple", "Banana", "Mango", "Orange"].toString(), fruits.sort().toString());

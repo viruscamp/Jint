@@ -1318,7 +1318,6 @@ var fakeButton = new Test.FakeButton();");
             ExecuteEmbededScript("Arrays.js");
         }
 
-
         [TestMethod]
         public void BlocksScriptShouldPassTests() {
             ExecuteEmbededScript("Blocks.js");

@@ -8,7 +8,7 @@ namespace Jint.Native {
     /// A base class for values in javascript.
     /// </summary>
     [Serializable]
-    public abstract class JsInstance {
+    public abstract class JsInstance : IComparable<JsInstance> {
         public static JsInstance[] EMPTY = new JsInstance[0];
 
         public abstract bool IsClr { get; }
@@ -154,5 +154,15 @@ namespace Jint.Native {
                 return global.BooleanClass.False;
             }            
         }
+
+
+        #region IComparable<JsInstance> Members
+
+        public int CompareTo(JsInstance other)
+        {
+            return ToString().CompareTo(other.ToString());
+        }
+
+        #endregion
     }
 }

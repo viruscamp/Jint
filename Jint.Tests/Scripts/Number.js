@@ -2,6 +2,7 @@
 assert(true, isNaN("string"));
 assert(false, isNaN("12"));
 assert(false, isNaN(12));
+assert(true, isNaN(undefined)); // checked on IE9 and Chrome
 
 assert(169, 0251);
 assert(169, 0xA9);

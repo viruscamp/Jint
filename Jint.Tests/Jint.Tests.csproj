@@ -375,8 +375,8 @@
   <ItemGroup>
     <Content Include="include.js" />
     <EmbeddedResource Include="Scripts\Precedence.js" />
-    <EmbeddedResource Include="Parse\coffeescript-format.js" />
-    <EmbeddedResource Include="Parse\coffeescript.js" />
+    <EmbeddedResource Include="Scripts\coffeescript-format.js" />
+    <EmbeddedResource Include="Scripts\coffeescript.js" />
     <EmbeddedResource Include="Scripts\Hoisting.js" />
     <EmbeddedResource Include="Scripts\Flow.js" />
     <EmbeddedResource Include="Scripts\instanceOf.js" />

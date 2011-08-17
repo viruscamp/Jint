@@ -12137,4 +12137,7 @@ this.CoffeeScript = function () {
         }).call(this)
     };
     return require["./coffee-script"]
-}()
+}();
+
+
+assert("var number;\nnumber = 42;", CoffeeScript.compile('number = 42', {bare:true}));

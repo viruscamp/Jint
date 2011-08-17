@@ -240,6 +240,7 @@ namespace Jint.Tests {
                 assert(4, doSwitch('d'));
             ");
         }
+
         [TestMethod]
         public void ShouldHandleVariableDeclaration() {
             Assert.AreEqual(null, new JintEngine().Run("var i; return i;"));
@@ -1359,6 +1360,13 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void CoffeeScriptShouldPassTests()
+        {
+            ExecuteEmbededScript("coffeescript.js");
+            ExecuteEmbededScript("coffeescript-format.js");
+        }
+
+        [TestMethod]
         public void CommentsScriptShouldPassTests() {
             ExecuteEmbededScript("Comments.js");
         }
@@ -1584,6 +1592,15 @@ var fakeButton = new Test.FakeButton();");
                 var type = String || Number;
                 var x = new type('123');
                 assert('123', x);
+            ");
+        }
+
+        [TestMethod]
+        public void ShouldReturnUndefined()
+        {
+            Test(@"
+                function a() {  };
+                assert(undefined, a());
             ");
         }
 

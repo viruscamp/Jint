@@ -457,7 +457,14 @@ namespace Jint {
 
         public JsFunction CreateFunction(IFunctionDeclaration functionDeclaration) {
             JsFunction f = Global.FunctionClass.New();
-            f.Statement = functionDeclaration.Statement;
+
+            var statementsWithDefaultReturn = new BlockStatement();
+            
+            // injects a default return statement at the end of each function
+            statementsWithDefaultReturn.Statements.AddLast(functionDeclaration.Statement);
+            statementsWithDefaultReturn.Statements.AddLast(new ReturnStatement(new Identifier("undefined")));
+            f.Statement = statementsWithDefaultReturn;
+
             f.Name = functionDeclaration.Name;
             f.Scope = CurrentScope; // copy current scope hierarchy
 
@@ -493,8 +500,6 @@ namespace Jint {
         }
 
         public void Visit(ReturnStatement statement) {
-            returnInstance = null;
-
             if (statement.Expression != null) {
                 statement.Expression.Accept(this);
                 Return(Result);

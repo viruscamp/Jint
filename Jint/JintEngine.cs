@@ -205,6 +205,7 @@ namespace Jint {
             Visitor.MaxRecursions = this.MaxRecursions;
             Visitor.PermissionSet = permissionSet;
             Visitor.AllowClr = allowClr;
+            Visitor.Result = null;
 
             if (DebugMode) {
                 Visitor.Step += OnStep;

@@ -100,3 +100,12 @@ actualmatch = string.match(pattern);
 expectedmatch = Array('-0.1344972E+01', '-0.4862373E+01', '-0.1942746E+01');
 //assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
+
+assert(null, "".match(/\w+\s/));
+
+// checking lastIndex property is upadted
+var myRe = /ab*/g;
+var str = "abbcdefabh";
+assert(true, myRe.exec(str) != null);
+assert(true, myRe.exec(str) != null);
+assert(false, myRe.exec(str) != null);

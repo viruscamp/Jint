@@ -40,7 +40,7 @@ namespace Jint.Native {
         }
 
         public override bool ToBoolean() {
-            return Length > 0;
+            return true;
         }
 
         public override int Length {

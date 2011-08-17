@@ -41,33 +41,41 @@ namespace Jint.Native {
             return ret;
         }
 
-        public JsInstance ExecImpl(JsRegExp regexp, JsInstance[] parameters) {
+        public JsInstance ExecImpl(JsRegExp regexp, JsInstance[] parameters)
+        {
             JsArray A = Global.ArrayClass.New();
             string input = parameters[0].ToString();
             A["input"] = Global.StringClass.New(input);
 
             int i = 0;
-            MatchCollection matches = Regex.Matches(input, regexp.Pattern, regexp.Options);
+            var lastIndex = regexp.IsGlobal ? regexp["lastIndex"].ToNumber() : 0;
+            MatchCollection matches = Regex.Matches(input.Substring((int)lastIndex), regexp.Pattern, regexp.Options);
             if (matches.Count > 0) {
-                if (regexp.IsGlobal) {
-                    foreach (Match m in matches) {
-                        A[Global.NumberClass.New(i++)] = Global.StringClass.New(m.Value);
-                    }
-                }
-                else {
-                    foreach (Group g in matches[0].Groups) {
-                        A[Global.NumberClass.New(i++)] = Global.StringClass.New(g.Value);
-                    }
-                }
-
+                // A[Global.NumberClass.New(i++)] = Global.StringClass.New(matches[0].Value);
                 A["index"] = Global.NumberClass.New(matches[0].Index);
-            }
 
-            return A;
+                if(regexp.IsGlobal)
+                {
+                    regexp["lastIndex"] = Global.NumberClass.New(lastIndex + matches[0].Index + matches[0].Value.Length);
+                }
+
+                foreach (Group g in matches[0].Groups) {
+                    A[Global.NumberClass.New(i++)] = Global.StringClass.New(g.Value);
+                }
+                
+                return A;
+            }
+            else
+            {
+                return JsNull.Instance;
+            }
+            
         }
 
-        public JsInstance TestImpl(JsRegExp regex, JsInstance[] parameters) {
-            return Global.BooleanClass.New(ExecImpl(regex, parameters) != JsNull.Instance);
+        public JsInstance TestImpl(JsRegExp regex, JsInstance[] parameters)
+        {
+            var array = ExecImpl(regex, parameters) as JsArray;
+            return Global.BooleanClass.New(array != null && array.Length > 0);
         }
 
         public override JsInstance Execute(IJintVisitor visitor, JsDictionaryObject that, JsInstance[] parameters) {

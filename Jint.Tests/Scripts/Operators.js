@@ -59,6 +59,7 @@ assert(0, x ^= 3); assert(0, x);
 assert(0, x &= 0); assert(0, x);
 assert(-9, ~8);
 
+// Returns expr1 if it can be converted to false; otherwise, returns expr2. Thus, when used with Boolean values, && returns true if both operands are true; otherwise, returns false.
 assert(true, true && true);       // t && t returns true
 assert(false, true && false);      // t && f returns false
 assert(false, false && true);      // f && t returns false
@@ -66,7 +67,9 @@ assert(false, false && (3 == 4));  // f && f returns false
 assert("Dog", "Cat" && "Dog");     // t && t returns Dog
 assert(false, false && "Cat");     // f && t returns false
 assert(false, "Cat" && false);     // t && f returns false
+assert(1, true && 1); 
 
+// Returns expr1 if it can be converted to true; otherwise, returns expr2. Thus, when used with Boolean values, || returns true if either operand is true; if both are false, returns false.
 assert(true, true || true);       // t || t returns true
 assert(true, false || true);      // f || t returns true
 assert(true, true || false);      // t || f returns true
@@ -74,6 +77,9 @@ assert(false, false || (3 == 4));  // f || f returns false
 assert("Cat", "Cat" || "Dog");     // t || t returns Cat
 assert("Cat", false || "Cat");     // f || t returns Cat
 assert("Cat", "Cat" || false);     // t || f returns Cat
+assert(1, false || 1);     
+assert(1, null || 1);     
+assert(1, undefined || 1);     
 
 assert(false, !true);              // !t returns false
 assert(true, !false);             // !f returns true

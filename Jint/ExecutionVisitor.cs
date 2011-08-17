@@ -40,7 +40,7 @@ namespace Jint {
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
         
-        private StringBuilder typeFullname = new StringBuilder();
+        private StringBuilder typeFullname;
         private string lastIdentifier = String.Empty;
 
         ResultInfo lastResult;
@@ -132,7 +132,7 @@ namespace Jint {
 
         public void Visit(Program program) {
             // initialize local variables, in case the visitor is used multiple times by the same engine
-            typeFullname = new StringBuilder();
+            typeFullname = null;
             exit = false;
             lastIdentifier = String.Empty;
 
@@ -281,6 +281,8 @@ namespace Jint {
                 }
 
                 Result = null;
+                typeFullname = null;
+
                 s.Accept(this);
 
                 if (StopStatementFlow()) {
@@ -645,7 +647,7 @@ namespace Jint {
 
             expression.Expression.Accept(this);
 
-            if (Result == JsUndefined.Instance && typeFullname.Length > 0 && expression.Generics.Count > 0)
+            if (AllowClr && Result == JsUndefined.Instance && typeFullname != null && typeFullname.Length > 0 && expression.Generics.Count > 0)
             {
                 string typeName = typeFullname.ToString();
                 typeFullname = new StringBuilder();
@@ -1221,7 +1223,7 @@ namespace Jint {
             expression.Member.Accept(this);
 
             // Try to evaluate a CLR type
-            if (Result == JsUndefined.Instance && typeFullname.Length > 0) {
+            if (AllowClr && Result == JsUndefined.Instance && typeFullname != null && typeFullname.Length > 0) {
                 EnsureClrAllowed();
 
                 Type type = typeResolver.ResolveType(typeFullname.ToString());
@@ -1273,24 +1275,21 @@ namespace Jint {
             var target = Result;
 
             if (target == JsUndefined.Instance || Result == null) {
-                if (!String.IsNullOrEmpty(lastIdentifier)) {
- 
-                }
-                else {
+                if (String.IsNullOrEmpty(lastIdentifier)) {
                     throw new JsException(Global.TypeErrorClass.New("Method isn't defined"));
                 }
             }
 
             Type[] genericParameters = null;
 
-            if (methodCall.Generics.Count > 0)
+            if (AllowClr && methodCall.Generics.Count > 0)
             {
                 genericParameters = new Type[methodCall.Generics.Count];
 
                 try
                 {
-                    int i = 0;
-                    foreach (Expression generic in methodCall.Generics)
+                    var i = 0;
+                    foreach (var generic in methodCall.Generics)
                     {
                         generic.Accept(this);
                         genericParameters[i] = Global.Marshaller.MarshalJsValue<Type>(Result);
@@ -1304,7 +1303,7 @@ namespace Jint {
             }
 
             #region Evaluates parameters
-            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
+            var parameters = new JsInstance[methodCall.Arguments.Count];
 
             if (methodCall.Arguments.Count > 0) {
 
@@ -1316,12 +1315,13 @@ namespace Jint {
             }
             #endregion
 
-            if (target is JsFunction) {
-                JsFunction function = (JsFunction)target;
-
+            var function = target as JsFunction;
+            if (function != null)
+            {
+                #region DebugMode
                 if (DebugMode) {
-                    string stack = function.Name + "(";
-                    string[] paramStrings = new string[parameters.Length];
+                    var stack = function.Name + "(";
+                    var paramStrings = new string[parameters.Length];
 
                     for (int i = 0; i < parameters.Length; i++) {
                         if (parameters[i] != null)
@@ -1334,25 +1334,32 @@ namespace Jint {
                     stack += ")";
                     CallStack.Push(stack);
                 }
+                #endregion
 
                 returnInstance = JsUndefined.Instance;
 
-                JsInstance[] original = new JsInstance[parameters.Length];
+                var original = new JsInstance[parameters.Length];
                 parameters.CopyTo(original, 0);
 
                 ExecuteFunction(function, that, parameters, genericParameters);
 
-                for (int i = 0; i < original.Length; i++)
+                for (var i = 0; i < original.Length; i++)
                     if (original[i] != parameters[i]) {
                         if (methodCall.Arguments[i] is MemberExpression && ((MemberExpression)methodCall.Arguments[i]).Member is IAssignable)
-                            Assign((MemberExpression)methodCall.Arguments[i], parameters[i]);
+                        {
+                            Assign((MemberExpression) methodCall.Arguments[i], parameters[i]);
+                        }
                         else if (methodCall.Arguments[i] is Identifier)
+                        {
                             Assign(new MemberExpression(methodCall.Arguments[i], null), parameters[i]);
+                        }
                     }
 
+                #region DebugMode
                 if (DebugMode) {
                     CallStack.Pop();
                 }
+                #endregion
 
                 Result = returnInstance;
                 returnInstance = JsUndefined.Instance;
@@ -1420,17 +1427,25 @@ namespace Jint {
 
             // enter activation object
             EnterScope(functionScope);
-
+            
             try {
-                PermissionSet.PermitOnly();
+                if (AllowClr)
+                {
+                    PermissionSet.PermitOnly();
+                }
 
-                if (genericParameters != null && genericParameters.Length > 0)
+                if (AllowClr && genericParameters != null && genericParameters.Length > 0)
+                {
                     Result = function.Execute(this, that, parameters, genericParameters);
+                }
                 else
+                {
                     Result = function.Execute(this, that, parameters);
+                }
 
                 // Resets the return flag
-                if (exit) {
+                if (exit)
+                {
                     exit = false;
                 }
             }
@@ -1438,7 +1453,10 @@ namespace Jint {
                 // return to previous execution state
                 ExitScope();
 
-                CodeAccessPermission.RevertPermitOnly();
+                if (AllowClr)
+                {
+                    CodeAccessPermission.RevertPermitOnly();
+                }
                 recursionLevel--;
             }
         }
@@ -1469,7 +1487,7 @@ namespace Jint {
                 return;
             }
 
-            if (Result == null && typeFullname.Length > 0) {
+            if (Result == null && typeFullname != null && typeFullname.Length > 0) {
                 typeFullname.Append('.').Append(propertyName);
             }
 
@@ -1531,6 +1549,11 @@ namespace Jint {
 
             // Try to record full path in case it's a type
             if (Result == null) {
+                if(typeFullname == null)
+                {
+                    typeFullname = new StringBuilder();
+                }
+
                 typeFullname.Append(propertyName);
             }
         }

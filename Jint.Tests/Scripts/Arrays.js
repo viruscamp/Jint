@@ -88,3 +88,12 @@ assert(3, array.indexOf(2, -1));
 // sort
 var fruits = ["Banana", "Orange", "Apple", "Mango"];
 assert(["Apple", "Banana", "Mango", "Orange"].toString(), fruits.sort().toString());
+
+// random statements used in json2
+assert(true, [].length === 0);
+assert(true, Object.prototype.toString.apply([]) === '[object Array]');
+assert(true, Boolean([]));
+
+// // random statements used in coffeescript
+assert(true, [] == false);
+assert(false, ![]);

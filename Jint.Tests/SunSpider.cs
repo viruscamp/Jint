@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
-using Jint.Delegates;
 using System.IO;
 using System.Reflection;
 
@@ -12,83 +8,184 @@ namespace Jint.Tests {
     /// <summary>
     /// Summary description for SunSpider
     /// </summary>
-    [TestClass, Ignore]
+    [TestClass]
     public class SunSpider {
-        public SunSpider() {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
 
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext {
-            get {
-                return testContextInstance;
-            }
-            set {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
-        [TestMethod]
-        public void TestPerformance() {
-            string[] tests = { "3d-cube", "3d-morph", "3d-raytrace", "access-binary-trees", "access-fannkuch", "access-nbody", "access-nsieve", "bitops-3bit-bits-in-byte", "bitops-bits-in-byte", "bitops-bitwise-and", "bitops-nsieve-bits", "controlflow-recursive", "crypto-aes", "crypto-md5", "crypto-sha1", "date-format-tofte", "date-format-xparb", "math-cordic", "math-partial-sums", "math-spectral-norm", "regexp-dna", "string-base64", "string-fasta", "string-tagcloud", "string-unpack-code", "string-validate-input" };
+        private static void ExecuteSunSpiderScript(string scriptName)
+        {
+            const string prefix = "Jint.Tests.SunSpider.";
+            var script = prefix + scriptName;
 
             var assembly = Assembly.GetExecutingAssembly();
-            Stopwatch sw = new Stopwatch();
+            var program = new StreamReader(assembly.GetManifestResourceStream(script)).ReadToEnd();
 
-            foreach (var test in tests) {
-                string script;
+            var jint = new JintEngine();
+            var sw = new Stopwatch();
+            sw.Start();
 
-                try {
-                    script = new StreamReader(assembly.GetManifestResourceStream("Jint.Tests.SunSpider." + test + ".js")).ReadToEnd();
-                    if (String.IsNullOrEmpty(script)) {
-                        continue;
-                    }
-                }
-                catch {
-                    Console.WriteLine("{0}: ignored", test);
-                    continue;
-                }
+            jint.Run(program);
 
-                JintEngine jint = new JintEngine()
-                    //.SetDebugMode(true)
-                    .DisableSecurity();
-
-                sw.Reset();
-                sw.Start();
-
-                jint.Run(script);
-
-                Console.WriteLine("{0}: {1}ms", test, sw.ElapsedMilliseconds);
-            }
+            Console.WriteLine(sw.Elapsed);
         }
+
+                
+
+        [TestMethod]
+        public void ShouldRun3DCube()
+        {
+            ExecuteSunSpiderScript("3d-cube.js");
+        }
+
+        [TestMethod]
+        public void ShouldRun3DMorph()
+        {
+            ExecuteSunSpiderScript("3d-morph.js");
+        }
+
+        [TestMethod]
+        public void ShouldRun3DRaytrace()
+        {
+            ExecuteSunSpiderScript("3d-raytrace.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunAccessBinaryTrees()
+        {
+            ExecuteSunSpiderScript("access-binary-trees.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunAccessFannkuch()
+        {
+            ExecuteSunSpiderScript("access-fannkuch.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunAccessNbody()
+        {
+            ExecuteSunSpiderScript("access-nbody.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunAccessNsieve()
+        {
+            ExecuteSunSpiderScript("access-nsieve.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunBitops3BitsInByte()
+        {
+            ExecuteSunSpiderScript("bitops-3bit-bits-in-byte.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunBitopsBitsInByte()
+        {
+            ExecuteSunSpiderScript("bitops-bits-in-byte.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunBitopsBitwiseAnd()
+        {
+            ExecuteSunSpiderScript("bitops-bitwise-and.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunBitopsNsieveBits()
+        {
+            ExecuteSunSpiderScript("bitops-nsieve-bits.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunControlflowRecurise()
+        {
+            ExecuteSunSpiderScript("controlflow-recursive.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunCryptoAes()
+        {
+            ExecuteSunSpiderScript("crypto-aes.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunCrypotMd5()
+        {
+            ExecuteSunSpiderScript("crypto-md5.js");
+        }
+        
+        [TestMethod]
+        public void ShouldRunCruptoSha1()
+        {
+            ExecuteSunSpiderScript("crypto-sha1.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunDateFormatTofte()
+        {
+            ExecuteSunSpiderScript("date-format-tofte.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunDateFormatXparb()
+        {
+            ExecuteSunSpiderScript("date-format-xparb.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunMathCrodic()
+        {
+            ExecuteSunSpiderScript("math-cordic.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunMathPartialSums()
+        {
+            ExecuteSunSpiderScript("math-partial-sums.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunMathSpecialNorm()
+        {
+            ExecuteSunSpiderScript("math-spectral-norm.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunRegexpDna()
+        {
+            ExecuteSunSpiderScript("regexp-dna.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunStringBase64()
+        {
+            ExecuteSunSpiderScript("string-base64.js");
+        }
+        
+
+        [TestMethod]
+        public void ShouldRunStinFasta()
+        {
+            ExecuteSunSpiderScript("string-fasta.js");
+        }
+
+                [TestMethod]
+        public void ShouldRunStringTagcloud()
+        {
+            ExecuteSunSpiderScript("string-tagcloud.js");
+        }
+
+                [TestMethod]
+        public void ShouldRunStringUnpackCode()
+        {
+            ExecuteSunSpiderScript("string-unpack-code.js");
+        }
+
+        [TestMethod]
+        public void ShouldRunStringValidateInput()
+        {
+            ExecuteSunSpiderScript("string-validate-input.js");
+        }
+
     }
 }

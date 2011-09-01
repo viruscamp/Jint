@@ -60,13 +60,20 @@ namespace Jint.Tests {
             return result;
         }
 
-        private void ExecuteEmbededScript(string scriptName) {
+        private void ExecuteEmbededScript(params string[] scripts) {
             const string prefix = "Jint.Tests.Scripts.";
-            var script = prefix + scriptName;
 
             var assembly = Assembly.GetExecutingAssembly();
-            var program = new StreamReader(assembly.GetManifestResourceStream(script)).ReadToEnd();
-            Test(program);
+            var sb = new StringBuilder();
+            foreach(var script in scripts) {
+                var scriptPath = prefix + script;
+                using (var sr = new StreamReader(assembly.GetManifestResourceStream(scriptPath)))
+                {
+                    sb.AppendLine(sr.ReadToEnd());        
+                }
+            }
+            
+            Test(sb.ToString());
         }
 
         [TestMethod]
@@ -1362,8 +1369,8 @@ var fakeButton = new Test.FakeButton();");
         [TestMethod]
         public void CoffeeScriptShouldPassTests()
         {
-            ExecuteEmbededScript("coffeescript.js");
-            ExecuteEmbededScript("coffeescript-format.js");
+            ExecuteEmbededScript("coffeescript.js", "coffeescript-suite.js");
+            ExecuteEmbededScript("coffeescript-min.js", "coffeescript-suite.js");
         }
 
         [TestMethod]
@@ -1497,6 +1504,13 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
+        public void UnderscoreScriptShouldPassTests()
+        {
+            ExecuteEmbededScript("underscore.js", "underscore-suite.js");
+            ExecuteEmbededScript("underscore-min.js", "underscore-suite.js");
+        }
+
+        [TestMethod]
         public void WithScriptShouldPassTests() {
             ExecuteEmbededScript("With.js");
         }
@@ -1619,9 +1633,20 @@ var fakeButton = new Test.FakeButton();");
         }
 
         [TestMethod]
-        public void CheckingErrorsShouldNotThrow() {
+        public void ShouldDetectErrors()
+        {
             string errors;
             Assert.IsTrue(JintEngine.HasErrors("var s = @string?;", out errors));
+            Assert.IsTrue(JintEngine.HasErrors(")(----", out errors));
+        }
+
+        [TestMethod, Ignore] public void ShouldNotDetectErrors()
+        {
+            // todo: fix
+            string errors;
+            Assert.IsFalse(JintEngine.HasErrors("var s = 'bar'", out errors));
+            Assert.IsFalse(JintEngine.HasErrors("", out errors));
+            Assert.IsFalse(JintEngine.HasErrors("// comment", out errors));
         }
 
         [TestMethod]

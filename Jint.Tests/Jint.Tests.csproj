@@ -374,9 +374,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="include.js" />
+    <EmbeddedResource Include="Scripts\coffeescript-suite.js" />
+    <EmbeddedResource Include="Scripts\underscore-suite.js" />
+    <EmbeddedResource Include="Scripts\underscore-min.js" />
+    <EmbeddedResource Include="Scripts\underscore.js" />
     <EmbeddedResource Include="Scripts\Precedence.js" />
-    <EmbeddedResource Include="Scripts\coffeescript-format.js" />
     <EmbeddedResource Include="Scripts\coffeescript.js" />
+    <EmbeddedResource Include="Scripts\coffeescript-min.js" />
     <EmbeddedResource Include="Scripts\Hoisting.js" />
     <EmbeddedResource Include="Scripts\Flow.js" />
     <EmbeddedResource Include="Scripts\instanceOf.js" />

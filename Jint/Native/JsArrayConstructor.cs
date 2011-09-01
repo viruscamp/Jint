@@ -292,10 +292,9 @@ namespace Jint.Native {
         /// <param name="parameters"></param>
         /// <returns></returns>
         public JsInstance Slice(JsObject target, JsInstance[] parameters) {
-            int start = (int)parameters[0].ToNumber();
-            int end = target.Length;
-            if (parameters.Length > 1)
-                end = (int)parameters[1].ToNumber();
+            var start = parameters.Length > 0 ? (int)parameters[0].ToNumber() : 0;
+            var end = parameters.Length > 1 ? (int)parameters[1].ToNumber() : target.Length;
+
             if (start < 0)
                 start += target.Length;
             if (end < 0)

@@ -728,7 +728,9 @@ namespace Jint {
                 return Global.BooleanClass.New(x.Value.Equals(y.Value));
             }
 
-            if (x.IsClr)
+            // if one of the arguments is a native js object, we should
+            // apply an ecma compare rules
+            /* if (x.IsClr)
             {
                 return Compare(x.ToPrimitive(Global), y);
             }
@@ -736,7 +738,7 @@ namespace Jint {
             if (y.IsClr)
             {
                 return Compare(x, y.ToPrimitive(Global));
-            }
+            } */
 
             if (x.Type == y.Type)
             { // if both are Objects but then only one is Clrs
@@ -955,15 +957,17 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Plus:
-                    if (left.Class == JsInstance.CLASS_STRING || right.Class == JsInstance.CLASS_STRING)
                     {
-                        Result = Global.StringClass.New(String.Concat(left.ToString(), right.ToString()));
-                    }
-                    else {
-                        Result = Global.NumberClass.New(left.ToNumber() + right.ToNumber());
+                        JsInstance lprim = left.ToPrimitive(Global);
+                        JsInstance rprim = right.ToPrimitive(Global);
+
+                        if (lprim.Class == JsInstance.CLASS_STRING || rprim.Class == JsInstance.CLASS_STRING)
+                            Result = Global.StringClass.New(String.Concat(lprim.ToString(), rprim.ToString()));
+                        else
+                            Result = Global.NumberClass.New(lprim.ToNumber() + rprim.ToNumber());
                     }
                     break;
-
+                
                 case BinaryExpressionType.Times:
                     Result = Global.NumberClass.New(left.ToNumber() * right.ToNumber());
                     break;

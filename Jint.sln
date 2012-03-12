@@ -10,9 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Jint1.vsmdi = Jint1.vsmdi
 		Jint2.vsmdi = Jint2.vsmdi
 		Jint3.vsmdi = Jint3.vsmdi
-		Jint4.vsmdi = Jint4.vsmdi
-		Jint5.vsmdi = Jint5.vsmdi
-		Jint6.vsmdi = Jint6.vsmdi
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 	EndProjectSection
 EndProject
@@ -22,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jint.Play", "Jint.Play\Jint
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = Jint6.vsmdi
+		CategoryFile = Jint3.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

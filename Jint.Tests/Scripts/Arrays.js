@@ -97,3 +97,13 @@ assert(true, Boolean([]));
 // // random statements used in coffeescript
 assert(true, [] == false);
 assert(false, ![]);
+
+// NaN + Array
+
+assert("NaN1,2,3",NaN + [1, 2, 3]);
+
+// undefined + Array
+assert("undefined1,2,3", undefined + [1, 2, 3]);
+
+// true + Array
+assert("true1,2,3", true + [1, 2, 3]);

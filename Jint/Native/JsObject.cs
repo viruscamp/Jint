@@ -59,7 +59,7 @@ namespace Jint.Native {
                 case TypeCode.Object:
                     return global.StringClass.New(Value.ToString());
                 case TypeCode.DateTime:
-                    return global.DateClass.New((DateTime)Value);
+                    return global.StringClass.New(JsDate.DateToString((DateTime)Value));
                 case TypeCode.Byte:
                 case TypeCode.Int16:
                 case TypeCode.Int32:

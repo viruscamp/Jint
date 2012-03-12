@@ -261,6 +261,12 @@ namespace Jint.Native {
             return String.Join(",", values);
         }
 
+        public override JsInstance ToPrimitive(IGlobal global) {
+            if (global == null)
+                throw new ArgumentNullException();
+            return global.StringClass.New(ToString());
+        }
+
         IEnumerable<string> baseGetKeys()
         {
             return base.GetKeys();

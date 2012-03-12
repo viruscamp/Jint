@@ -49,7 +49,7 @@ namespace Jint.Native {
         }
 
         public override string ToString() {
-            return value.ToString(CultureInfo.InvariantCulture).ToLower();
+            return value.ToString(CultureInfo.InvariantCulture);
         }
 
         public override object ToObject() {

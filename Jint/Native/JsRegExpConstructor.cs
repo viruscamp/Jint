@@ -84,7 +84,18 @@ namespace Jint.Native {
                 //throw new ArgumentNullException("pattern");
             }
 
-            return visitor.Return(New(parameters[0].ToString(), false, false, false));
+            bool g = false, m = false, ic = false;
+
+            if (parameters.Length == 2) {
+                string strParam = parameters[1].ToString();
+                if (strParam != null) {
+                    m = strParam.Contains("m");
+                    ic = strParam.Contains("i");
+                    g = strParam.Contains("g");
+                }
+            }
+
+            return visitor.Return(New(parameters[0].ToString(), g, ic, m));
         }
 
         public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {

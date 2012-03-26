@@ -107,3 +107,13 @@ assert("undefined1,2,3", undefined + [1, 2, 3]);
 
 // true + Array
 assert("true1,2,3", true + [1, 2, 3]);
+
+// any arrays should be treated as true
+if ([]) {
+} else {
+    assert(true, false);
+}
+
+if (![1, 2, 3]) {
+    assert(true, false);
+}

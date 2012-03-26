@@ -9,3 +9,9 @@ assert(-Infinity, Math.max());
 assert(11, Math.min(11, 42));
 assert(11, Math.min(73, 11, 42));
 assert(Infinity, Math.min());
+
+if (NaN) {
+    assert(false, true);
+}
+
+assert(false, Boolean(NaN));

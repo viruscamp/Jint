@@ -216,8 +216,7 @@ namespace Jint.Marshal {
                 code.Emit(OpCodes.Call, typeof(Marshaller).GetMethod("MarshalClrValue").MakeGenericMethod(info.ReturnType));
             } else {
                 // push JsUndefined.Instance
-                code.Emit(OpCodes.Ldnull);
-                code.Emit(OpCodes.Ldfld, typeof(JsUndefined).GetField("Instance"));
+                code.Emit(OpCodes.Ldsfld, typeof(JsUndefined).GetField("Instance"));
             }
 
             code.Emit(OpCodes.Ret);

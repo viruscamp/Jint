@@ -37,7 +37,7 @@ namespace Jint.Native {
         }
 
         public static bool NumberToBoolean(double value) {
-            return value != 0;
+            return value != 0 && !Double.IsNaN(value);
         }
 
         public override bool ToBoolean() {

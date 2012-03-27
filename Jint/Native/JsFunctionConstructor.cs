@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Jint.Expressions;
 using Jint.Delegates;
+using Jint.Marshal;
 
 namespace Jint.Native {
     [Serializable]
@@ -85,8 +86,16 @@ namespace Jint.Native {
         }
 
         public JsFunction New(Delegate d) {
-            JsFunction function = new ClrFunction(d, PrototypeProperty);
+            if (d == null)
+                throw new ArgumentNullException();
+            //JsFunction function = new ClrFunction(d, PrototypeProperty);
+            
+            JsMethodImpl impl = Global.Marshaller.WrapMethod(d.GetType().GetMethod("Invoke"), false);
+            JsObject wrapper = new JsObject(d, JsNull.Instance);
+
+            JsFunction function = New<JsInstance>((that, args) => impl(Global, wrapper, args));
             function.PrototypeProperty = Global.ObjectClass.New(function);
+
             //function.Scope = new JsScope(PrototypeProperty);
             return function;
         }

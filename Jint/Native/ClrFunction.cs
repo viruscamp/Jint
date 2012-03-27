@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Jint.Native {
+    // TODO: remove, since this is no longer used
     /// <summary>
     /// Wraps native function, i.e. 'this' parameter from the js calling context will be ommited
     /// </summary>
@@ -28,11 +29,9 @@ namespace Jint.Native {
                 // First see if either the JsInstance or it's value can be directly accepted without converstion
                 if (typeof(JsInstance).IsAssignableFrom(Parameters[i].ParameterType) && Parameters[i].ParameterType.IsInstanceOfType(parameters[i])) {
                     clrParameters[i] = parameters[i];
-                }
-                else if (Parameters[i].ParameterType.IsInstanceOfType(parameters[i].Value)) {
+                } else if (Parameters[i].ParameterType.IsInstanceOfType(parameters[i].Value)) {
                     clrParameters[i] = parameters[i].Value;
-                }
-                else {
+                } else {
                     clrParameters[i] = visitor.Global.Marshaller.MarshalJsValue<object>(parameters[i]);
                 }
             }

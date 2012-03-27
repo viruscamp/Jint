@@ -1,5 +1,3 @@
-var d = new Date();
-
  /*
     http://www.JSON2.org/json2.js
     2009-09-29
@@ -307,6 +305,7 @@ var d = new Date();
                                 mind + ']' :
                           '[' + partial.join(',') + ']';
                     gap = mind;
+                    
                     return v;
                 }
 
@@ -477,3 +476,10 @@ replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
         };
     }
 } ());
+
+assert('1', JSON.stringify(1));
+assert('{"foo":"bar"}', JSON.stringify({foo:"bar"}));
+assert('["e",{"pluribus":"unum"}]', JSON.stringify(['e', {pluribus: 'unum'}]));
+assert('[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]', JSON.stringify(['e', {pluribus: 'unum'}], null, '\t'));
+assert('[]', JSON.stringify([]));
+

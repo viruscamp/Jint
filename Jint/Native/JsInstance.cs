@@ -8,7 +8,7 @@ namespace Jint.Native {
     /// A base class for values in javascript.
     /// </summary>
     [Serializable]
-    public abstract class JsInstance {
+    public abstract class JsInstance : IComparable<JsInstance> {
         public static JsInstance[] EMPTY = new JsInstance[0];
 
         public abstract bool IsClr { get; }
@@ -108,5 +108,61 @@ namespace Jint.Native {
                 return visitor.Global.StringClass.New(ToString());
             return JsUndefined.Instance;
         }
+
+        // 11.9.6 The Strict Equality Comparison Algorithm
+        public static JsInstance StrictlyEquals(IGlobal global, JsInstance left, JsInstance right)
+        {
+            if (left.Type != right.Type)
+            {
+                return global.BooleanClass.False;
+            }
+            else if (left is JsUndefined)
+            {
+                return global.BooleanClass.True;
+            }
+            else if (left is JsNull)
+            {
+                return global.BooleanClass.True;
+            }
+            else if (left.Type == JsInstance.TYPE_NUMBER)
+            {
+                if (left == global.NumberClass["NaN"] || right == global.NumberClass["NaN"])
+                {
+                    return global.BooleanClass.False;
+                }
+                else if (left.ToNumber() == right.ToNumber())
+                {
+                    return global.BooleanClass.True;
+                }
+                else
+                    return global.BooleanClass.False;
+            }
+            else if (left.Type == JsInstance.TYPE_STRING)
+            {
+                return global.BooleanClass.New(left.ToString() == right.ToString());
+            }
+            else if (left.Type == JsInstance.TYPE_BOOLEAN)
+            {
+                return global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
+            }
+            else if (left == right)
+            {
+                return global.BooleanClass.True;
+            }
+            else
+            {
+                return global.BooleanClass.False;
+            }            
+        }
+
+
+        #region IComparable<JsInstance> Members
+
+        public int CompareTo(JsInstance other)
+        {
+            return ToString().CompareTo(other.ToString());
+        }
+
+        #endregion
     }
 }

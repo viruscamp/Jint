@@ -1,7 +1,6 @@
 ﻿// 15.2.2
 
 var a = new Object();
-alert(a.toString());
 
 assert(true, Object.hasOwnProperty.call({ foo: 3 }, 'foo'));
 assert(false, Object.hasOwnProperty.call({ foo: 3 }, 'dummy'));
@@ -50,3 +49,18 @@ instA.fld = "x";
 assert("b",A.prototype.fld);
 assert("x",instA.fld);
 assert("c",inst.fld);
+
+var a = {};
+assert(undefined, a.foo);
+assert(undefined, a['foo']);
+
+baz= function() {
+function bar(b, c, d) {
+    this.base = b, this.properties = c || [], d && (this[d] = true);
+    return this;
+}
+assert(true, bar({"value":"number"}, null, null).properties != null);
+}
+
+baz();
+

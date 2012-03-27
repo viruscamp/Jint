@@ -40,7 +40,7 @@ namespace Jint {
         public bool AllowClr { get; set; }
         public PermissionSet PermissionSet { get; set; }
         
-        private StringBuilder typeFullname = new StringBuilder();
+        private StringBuilder typeFullname;
         private string lastIdentifier = String.Empty;
 
         ResultInfo lastResult;
@@ -132,7 +132,7 @@ namespace Jint {
 
         public void Visit(Program program) {
             // initialize local variables, in case the visitor is used multiple times by the same engine
-            typeFullname = new StringBuilder();
+            typeFullname = null;
             exit = false;
             lastIdentifier = String.Empty;
 
@@ -281,6 +281,8 @@ namespace Jint {
                 }
 
                 Result = null;
+                typeFullname = null;
+
                 s.Accept(this);
 
                 if (StopStatementFlow()) {
@@ -455,7 +457,14 @@ namespace Jint {
 
         public JsFunction CreateFunction(IFunctionDeclaration functionDeclaration) {
             JsFunction f = Global.FunctionClass.New();
-            f.Statement = functionDeclaration.Statement;
+
+            var statementsWithDefaultReturn = new BlockStatement();
+            
+            // injects a default return statement at the end of each function
+            statementsWithDefaultReturn.Statements.AddLast(functionDeclaration.Statement);
+            statementsWithDefaultReturn.Statements.AddLast(new ReturnStatement(new Identifier("undefined")));
+            f.Statement = statementsWithDefaultReturn;
+
             f.Name = functionDeclaration.Name;
             f.Scope = CurrentScope; // copy current scope hierarchy
 
@@ -491,8 +500,6 @@ namespace Jint {
         }
 
         public void Visit(ReturnStatement statement) {
-            returnInstance = null;
-
             if (statement.Expression != null) {
                 statement.Expression.Accept(this);
                 Return(Result);
@@ -645,7 +652,7 @@ namespace Jint {
 
             expression.Expression.Accept(this);
 
-            if (Result == JsUndefined.Instance && typeFullname.Length > 0 && expression.Generics.Count > 0)
+            if (AllowClr && Result == JsUndefined.Instance && typeFullname != null && typeFullname.Length > 0 && expression.Generics.Count > 0)
             {
                 string typeName = typeFullname.ToString();
                 typeFullname = new StringBuilder();
@@ -721,7 +728,9 @@ namespace Jint {
                 return Global.BooleanClass.New(x.Value.Equals(y.Value));
             }
 
-            if (x.IsClr)
+            // if one of the arguments is a native js object, we should
+            // apply an ecma compare rules
+            /* if (x.IsClr)
             {
                 return Compare(x.ToPrimitive(Global), y);
             }
@@ -729,7 +738,7 @@ namespace Jint {
             if (y.IsClr)
             {
                 return Compare(x, y.ToPrimitive(Global));
-            }
+            } */
 
             if (x.Type == y.Type)
             { // if both are Objects but then only one is Clrs
@@ -948,15 +957,17 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Plus:
-                    if (left.Class == JsInstance.CLASS_STRING || right.Class == JsInstance.CLASS_STRING)
                     {
-                        Result = Global.StringClass.New(String.Concat(left.ToString(), right.ToString()));
-                    }
-                    else {
-                        Result = Global.NumberClass.New(left.ToNumber() + right.ToNumber());
+                        JsInstance lprim = left.ToPrimitive(Global);
+                        JsInstance rprim = right.ToPrimitive(Global);
+
+                        if (lprim.Class == JsInstance.CLASS_STRING || rprim.Class == JsInstance.CLASS_STRING)
+                            Result = Global.StringClass.New(String.Concat(lprim.ToString(), rprim.ToString()));
+                        else
+                            Result = Global.NumberClass.New(lprim.ToNumber() + rprim.ToNumber());
                     }
                     break;
-
+                
                 case BinaryExpressionType.Times:
                     Result = Global.NumberClass.New(left.ToNumber() * right.ToNumber());
                     break;
@@ -999,42 +1010,7 @@ namespace Jint {
                     break;
 
                 case BinaryExpressionType.Same:
-                    // 11.9.6 The Strict Equality Comparison Algorithm
-                    if (left.Type != right.Type)
-                    {
-                        Result = Global.BooleanClass.False;
-                    }
-                    else if (left is JsUndefined) {
-                        Result = Global.BooleanClass.True;
-                    }
-                    else if (left is JsNull) {
-                        Result = Global.BooleanClass.True;
-                    }
-                    else if (left.Type == JsInstance.TYPE_NUMBER)
-                    {
-                        if (left == Global.NumberClass["NaN"] || right == Global.NumberClass["NaN"]) {
-                            Result = Global.BooleanClass.False;
-                        }
-                        else if (left.ToNumber() == right.ToNumber()) {
-                            Result = Global.BooleanClass.True;
-                        }
-                        else
-                            Result = Global.BooleanClass.False;
-                    }
-                    else if (left.Type == JsInstance.TYPE_STRING)
-                    {
-                        Result = Global.BooleanClass.New(left.ToString() == right.ToString());
-                    }
-                    else if (left.Type == JsInstance.TYPE_BOOLEAN)
-                    {
-                        Result = Global.BooleanClass.New(left.ToBoolean() == right.ToBoolean());
-                    }
-                    else if (left == right) {
-                        Result = Global.BooleanClass.True;
-                    }
-                    else {
-                        Result = Global.BooleanClass.False;
-                    }
+                    Result = JsInstance.StrictlyEquals(Global, left, right);
 
                     break;
 
@@ -1256,7 +1232,7 @@ namespace Jint {
             expression.Member.Accept(this);
 
             // Try to evaluate a CLR type
-            if (Result == JsUndefined.Instance && typeFullname.Length > 0) {
+            if (AllowClr && Result == JsUndefined.Instance && typeFullname != null && typeFullname.Length > 0) {
                 EnsureClrAllowed();
 
                 Type type = typeResolver.ResolveType(typeFullname.ToString());
@@ -1284,15 +1260,23 @@ namespace Jint {
             if (target.IsClr)
                 EnsureClrAllowed();
 
-            if (target.Class == JsInstance.CLASS_STRING) {
-                SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
+            if (target.Class == JsInstance.CLASS_STRING)
+            {
+                try
+                {
+                    SetResult(Global.StringClass.New(target.ToString()[Convert.ToInt32(Result.ToNumber())].ToString()), target);
+                    return;
+                }
+                catch
+                {
+                    // if an error occured, try to access the index as a member
+                }
             }
-            else {
-                if (target.Indexer != null)
-                    SetResult(target.Indexer.get(target, Result), target);
-                else
-                    SetResult(target[Result], target);
-            }
+
+            if (target.Indexer != null)
+                SetResult(target.Indexer.get(target, Result), target);
+            else
+                SetResult(target[Result], target);
         }
 
         public void Visit(MethodCall methodCall) {
@@ -1300,24 +1284,21 @@ namespace Jint {
             var target = Result;
 
             if (target == JsUndefined.Instance || Result == null) {
-                if (!String.IsNullOrEmpty(lastIdentifier)) {
- 
-                }
-                else {
+                if (String.IsNullOrEmpty(lastIdentifier)) {
                     throw new JsException(Global.TypeErrorClass.New("Method isn't defined"));
                 }
             }
 
             Type[] genericParameters = null;
 
-            if (methodCall.Generics.Count > 0)
+            if (AllowClr && methodCall.Generics.Count > 0)
             {
                 genericParameters = new Type[methodCall.Generics.Count];
 
                 try
                 {
-                    int i = 0;
-                    foreach (Expression generic in methodCall.Generics)
+                    var i = 0;
+                    foreach (var generic in methodCall.Generics)
                     {
                         generic.Accept(this);
                         genericParameters[i] = Global.Marshaller.MarshalJsValue<Type>(Result);
@@ -1331,7 +1312,7 @@ namespace Jint {
             }
 
             #region Evaluates parameters
-            JsInstance[] parameters = new JsInstance[methodCall.Arguments.Count];
+            var parameters = new JsInstance[methodCall.Arguments.Count];
 
             if (methodCall.Arguments.Count > 0) {
 
@@ -1343,12 +1324,13 @@ namespace Jint {
             }
             #endregion
 
-            if (target is JsFunction) {
-                JsFunction function = (JsFunction)target;
-
+            var function = target as JsFunction;
+            if (function != null)
+            {
+                #region DebugMode
                 if (DebugMode) {
-                    string stack = function.Name + "(";
-                    string[] paramStrings = new string[parameters.Length];
+                    var stack = function.Name + "(";
+                    var paramStrings = new string[parameters.Length];
 
                     for (int i = 0; i < parameters.Length; i++) {
                         if (parameters[i] != null)
@@ -1361,25 +1343,32 @@ namespace Jint {
                     stack += ")";
                     CallStack.Push(stack);
                 }
+                #endregion
 
                 returnInstance = JsUndefined.Instance;
 
-                JsInstance[] original = new JsInstance[parameters.Length];
+                var original = new JsInstance[parameters.Length];
                 parameters.CopyTo(original, 0);
 
                 ExecuteFunction(function, that, parameters, genericParameters);
 
-                for (int i = 0; i < original.Length; i++)
+                for (var i = 0; i < original.Length; i++)
                     if (original[i] != parameters[i]) {
                         if (methodCall.Arguments[i] is MemberExpression && ((MemberExpression)methodCall.Arguments[i]).Member is IAssignable)
-                            Assign((MemberExpression)methodCall.Arguments[i], parameters[i]);
+                        {
+                            Assign((MemberExpression) methodCall.Arguments[i], parameters[i]);
+                        }
                         else if (methodCall.Arguments[i] is Identifier)
+                        {
                             Assign(new MemberExpression(methodCall.Arguments[i], null), parameters[i]);
+                        }
                     }
 
+                #region DebugMode
                 if (DebugMode) {
                     CallStack.Pop();
                 }
+                #endregion
 
                 Result = returnInstance;
                 returnInstance = JsUndefined.Instance;
@@ -1447,17 +1436,25 @@ namespace Jint {
 
             // enter activation object
             EnterScope(functionScope);
-
+            
             try {
-                PermissionSet.PermitOnly();
+                if (AllowClr)
+                {
+                    PermissionSet.PermitOnly();
+                }
 
-                if (genericParameters != null && genericParameters.Length > 0)
+                if (AllowClr && genericParameters != null && genericParameters.Length > 0)
+                {
                     Result = function.Execute(this, that, parameters, genericParameters);
+                }
                 else
+                {
                     Result = function.Execute(this, that, parameters);
+                }
 
                 // Resets the return flag
-                if (exit) {
+                if (exit)
+                {
                     exit = false;
                 }
             }
@@ -1465,7 +1462,10 @@ namespace Jint {
                 // return to previous execution state
                 ExitScope();
 
-                CodeAccessPermission.RevertPermitOnly();
+                if (AllowClr)
+                {
+                    CodeAccessPermission.RevertPermitOnly();
+                }
                 recursionLevel--;
             }
         }
@@ -1496,7 +1496,7 @@ namespace Jint {
                 return;
             }
 
-            if (Result == null && typeFullname.Length > 0) {
+            if (Result == null && typeFullname != null && typeFullname.Length > 0) {
                 typeFullname.Append('.').Append(propertyName);
             }
 
@@ -1558,6 +1558,11 @@ namespace Jint {
 
             // Try to record full path in case it's a type
             if (Result == null) {
+                if(typeFullname == null)
+                {
+                    typeFullname = new StringBuilder();
+                }
+
                 typeFullname.Append(propertyName);
             }
         }

@@ -669,7 +669,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters,1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetMillisecondsImpl(target, innerParams);
             }
             return target;
@@ -690,7 +690,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetMillisecondsImpl(target, innerParams);
             }
             return target;
@@ -711,7 +711,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetSecondsImpl(target, innerParams);
             }
             return target;
@@ -732,7 +732,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetSecondsImpl(target, innerParams);
             }
             return target;
@@ -753,7 +753,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetMinutesImpl(target, innerParams);
             }
             return target;
@@ -774,7 +774,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetMinutesImpl(target, innerParams);
             }
             return target;
@@ -828,7 +828,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetDateImpl(target, innerParams);
             }
             return target;
@@ -849,7 +849,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetDateImpl(target, innerParams);
             }
             return target;
@@ -870,7 +870,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetMonthImpl(target, innerParams);
             }
             return target;
@@ -892,7 +892,7 @@ namespace Jint.Native {
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
-                parameters.CopyTo(innerParams, 1);
+                Array.Copy(parameters, 1, innerParams, 0, innerParams.Length);
                 target = (JsDate)SetMonthImpl(target, innerParams);
             }
             return target;

@@ -77,3 +77,43 @@ assert(2, array.length);
 myArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 myArray.splice(0, 0, -2, -1);
 assert(12, myArray.length);
+
+// indexOf
+var array = [2, 5, 9, 2];
+assert(0, array.indexOf(2));
+assert(-1, array.indexOf(7));
+assert(3, array.indexOf(2, 1));
+assert(3, array.indexOf(2, -1));
+
+// sort
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+assert(["Apple", "Banana", "Mango", "Orange"].toString(), fruits.sort().toString());
+
+// random statements used in json2
+assert(true, [].length === 0);
+assert(true, Object.prototype.toString.apply([]) === '[object Array]');
+assert(true, Boolean([]));
+
+// // random statements used in coffeescript
+assert(true, [] == false);
+assert(false, ![]);
+
+// NaN + Array
+
+assert("NaN1,2,3",NaN + [1, 2, 3]);
+
+// undefined + Array
+assert("undefined1,2,3", undefined + [1, 2, 3]);
+
+// true + Array
+assert("true1,2,3", true + [1, 2, 3]);
+
+// any arrays should be treated as true
+if ([]) {
+} else {
+    assert(true, false);
+}
+
+if (![1, 2, 3]) {
+    assert(true, false);
+}

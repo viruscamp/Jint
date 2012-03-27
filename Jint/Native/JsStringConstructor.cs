@@ -248,12 +248,35 @@ namespace Jint.Native {
         /// <param name="target"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public JsInstance MatchFunc(JsDictionaryObject target, JsInstance[] parameters) {
+        public JsInstance MatchFunc(JsDictionaryObject target, JsInstance[] parameters)
+        {
             JsRegExp regexp = parameters[0].Class == JsInstance.CLASS_STRING
                 ? Global.RegExpClass.New(parameters[0].ToString(), false, false, false)
                 : (JsRegExp)parameters[0];
 
-            return Global.RegExpClass.ExecImpl(regexp, new JsInstance[] { target });
+            if (!regexp.IsGlobal)
+            {
+                return Global.RegExpClass.ExecImpl(regexp, new JsInstance[] {target});
+            }
+            else
+            {
+                var result = Global.ArrayClass.New();
+                var matches = Regex.Matches(target.ToString(), regexp.Pattern, regexp.Options);
+                if (matches.Count > 0)
+                {
+                    var i = 0;
+                    foreach (Match match in matches)
+                    {
+                        result[Global.NumberClass.New(i++)] = Global.StringClass.New(match.Value);
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    return JsNull.Instance;
+                }
+            }
         }
 
         /// <summary>

@@ -58,8 +58,12 @@ namespace Jint.Native {
             return (date.ToUniversalTime().Ticks - OFFSET_1970) / TICKSFACTOR;
         }
 
+        public static string DateToString(DateTime date) {
+            return date.ToLocalTime().ToString(FORMAT, CultureInfo.InvariantCulture);
+        }
+
         public override string ToString() {
-            return value.ToLocalTime().ToString(FORMAT, CultureInfo.InvariantCulture);
+            return DateToString(value);
         }
 
         public override object ToObject() {

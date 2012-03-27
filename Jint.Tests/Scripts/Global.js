@@ -1,4 +1,10 @@
-﻿// 15.1.2.1
+﻿someNumberString = "123.456789012";
+someNumber = parseFloat(someNumberString);
+assert("1.234568e+2", someNumber.toExponential(6));
+return;
+
+
+// 15.1.2.1
 assert(1, eval(1));
 var i = 1;
 assert(2, eval("i = i + 1")); 

@@ -32,6 +32,8 @@ namespace Jint.Native {
                 objectProrotype
             );
 
+            Marshaller = new Marshaller(this);
+
             #region Global Classes
             this["Function"] = FunctionClass = new JsFunctionConstructor(this, functionPrototype);
             this["Object"] = ObjectClass = new JsObjectConstructor(this, functionPrototype, objectProrotype);
@@ -86,7 +88,6 @@ namespace Jint.Native {
             this["encodeURIComponent"] = new JsFunctionWrapper(EncodeURIComponent, FunctionClass.PrototypeProperty);
             #endregion
 
-            Marshaller = new Marshaller(this);
             Marshaller.InitTypes();
 
         }
@@ -240,7 +241,7 @@ namespace Jint.Native {
         /// 15.1.2.4
         /// </summary>
         public JsInstance IsNaN(JsInstance[] arguments) {
-            if (arguments.Length < 1 || arguments[0] == JsUndefined.Instance) {
+            if (arguments.Length < 1) {
                 return BooleanClass.New(false);
             }
 

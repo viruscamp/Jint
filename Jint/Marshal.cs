@@ -274,7 +274,6 @@ namespace Jint
                 return null;
         }
 
-
         /// <summary>
         /// Gets a type of a native object represented by the current JsInstance.
         /// If JsInstance is a pure JsObject than returns a type of js object itself.

@@ -1790,7 +1790,18 @@ var fakeButton = new Test.FakeButton();");
                     square = function(x) { return x*x;}
                     assert(9, callme(3));
                 ",
-                 jint => jint.SetFunction("callme", new Func<double, object>(x => jint.CallFunction("square", x))));
+                 jint => jint.SetFunction("callme", new Func<double, object>(x => jint.CallFunction("square", x)))
+            );
+            Test(
+                @"
+                    assert(true,callme(function() { return true; } ));
+                ",
+                jint => jint.SetFunction("callme", new Func<Func<bool>, object>(
+                    callback => {
+                        return callback();
+                    }
+                ))
+            );
         }
 
         [TestMethod]

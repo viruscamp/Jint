@@ -37,7 +37,7 @@ namespace Jint.Native {
         }
 
         public static bool NumberToBoolean(double value) {
-            return value != 0;
+            return value != 0 && !Double.IsNaN(value);
         }
 
         public override bool ToBoolean() {
@@ -49,7 +49,7 @@ namespace Jint.Native {
         }
 
         public override string ToString() {
-            return value.ToString(CultureInfo.InvariantCulture).ToLower();
+            return value.ToString(CultureInfo.InvariantCulture);
         }
 
         public override object ToObject() {

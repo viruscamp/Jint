@@ -40,7 +40,7 @@ namespace Jint.Native {
         }
 
         public override bool ToBoolean() {
-            return Length > 0;
+            return true;
         }
 
         public override int Length {
@@ -251,7 +251,7 @@ namespace Jint.Native {
 
 
         public override string ToString() {
-            var list = new List<JsInstance>(GetValues());
+            var list = m_data.Values;
             string[] values = new string[list.Count];
             for (int i = 0; i < list.Count; i++) {
                 if (list[i] != null)
@@ -259,6 +259,12 @@ namespace Jint.Native {
             }
 
             return String.Join(",", values);
+        }
+
+        public override JsInstance ToPrimitive(IGlobal global) {
+            if (global == null)
+                throw new ArgumentNullException();
+            return global.StringClass.New(ToString());
         }
 
         IEnumerable<string> baseGetKeys()

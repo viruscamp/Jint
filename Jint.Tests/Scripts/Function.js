@@ -134,3 +134,19 @@ var date = new Date("1/1/2007 1:11:11");
 
 assert(2, date.formatDate("Y-m-d", 2));
 assert(undefined, date.formatDate("Y-m-d"));
+
+// a function without a return statement should return undefined
+
+var foo = {
+    f1 : function() { assert(true, true); },
+    f2 : function() { assert(true, true); return 2; }
+}
+
+assert(true, foo.f2.call({}) === 2);
+assert(true, foo.f2() === 2);
+assert(true, foo.f2.apply({}, []) === 2);
+
+assert(true, foo.f1.call({}) === undefined);
+assert(true, foo.f1() === undefined);
+assert(true, foo.f1.apply({}, []) === undefined);
+

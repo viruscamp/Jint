@@ -22,8 +22,8 @@ namespace Jint.Native {
             this["exp"] = global.FunctionClass.New(new Func<double, JsNumber>(d => Global.NumberClass.New(Math.Exp(d))));
             this["floor"] = global.FunctionClass.New(new Func<double, JsNumber>(d => Global.NumberClass.New(Math.Floor(d))));
             this["log"] = global.FunctionClass.New(new Func<double, JsNumber>(d => Global.NumberClass.New(Math.Log(d))));
-            this["max"] = global.FunctionClass.New(new Func<double, double, JsNumber>((a, b) => Global.NumberClass.New(Math.Max(a, b))));
-            this["min"] = global.FunctionClass.New(new Func<double, double, JsNumber>((a, b) => Global.NumberClass.New(Math.Min(a, b))));
+            this["max"] = global.FunctionClass.New<JsObject>(MaxImpl);
+            this["min"] = global.FunctionClass.New<JsObject>(MinImpl);
             this["pow"] = global.FunctionClass.New(new Func<double, double, JsNumber>((a, b) => Global.NumberClass.New(Math.Pow(a, b))));
             this["random"] = global.FunctionClass.New(new Func<double>(random.NextDouble));
             this["round"] = global.FunctionClass.New(new Func<double, JsNumber>(d => Global.NumberClass.New(Math.Round(d))));
@@ -45,6 +45,40 @@ namespace Jint.Native {
 
         public override string Class {
             get { return MathType; }
+        }
+
+        public JsInstance MaxImpl(JsObject target, JsInstance[] parameters)
+        {
+            if (parameters.Length == 0) {
+                return Global.NumberClass["NEGATIVE_INFINITY"];
+            }
+
+            var result = parameters[0].ToNumber();
+
+            foreach (var p in parameters)
+            {
+                result = Math.Max(p.ToNumber(), result);
+            }
+
+            return Global.NumberClass.New(result);
+        }
+
+
+        public JsInstance MinImpl(JsObject target, JsInstance[] parameters)
+        {
+            if (parameters.Length == 0)
+            {
+                return Global.NumberClass["POSITIVE_INFINITY"];
+            }
+
+            var result = parameters[0].ToNumber();
+
+            foreach (var p in parameters)
+            {
+                result = Math.Min(p.ToNumber(), result);
+            }
+
+            return Global.NumberClass.New(result);
         }
     }
 }

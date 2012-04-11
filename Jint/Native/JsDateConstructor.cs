@@ -824,7 +824,7 @@ namespace Jint.Native {
                 throw new ArgumentException("There was no month specified");
             DateTime valueOf = CreateDateTime(target.ToNumber()).ToLocalTime();
             valueOf = valueOf.AddMonths(-valueOf.Month);
-            valueOf = valueOf.AddMonths((int)parameters[0].ToNumber());
+            valueOf = valueOf.AddMonths((int)parameters[0].ToNumber() + 1);
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];
@@ -845,7 +845,7 @@ namespace Jint.Native {
                 throw new ArgumentException("There was no month specified");
             DateTime valueOf = CreateDateTime(target.ToNumber());
             valueOf = valueOf.AddMonths(-valueOf.Month);
-            valueOf = valueOf.AddMonths((int)parameters[0].ToNumber());
+            valueOf = valueOf.AddMonths((int)parameters[0].ToNumber() + 1);
             target.Value = valueOf;
             if (parameters.Length > 1) {
                 JsInstance[] innerParams = new JsInstance[parameters.Length - 1];

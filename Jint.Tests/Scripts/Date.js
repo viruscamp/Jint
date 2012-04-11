@@ -5,6 +5,9 @@ d.setFullYear(2010);
 assert(2010, d.getFullYear());
 assert(1, d.getMonth()); // February
 assert(2, d.getDate());
+d.setMonth(5);
+assert(5, d.getMonth());
+assert(d.getMonth(), d.getMonth(d.setMonth(d.getMonth())));
 
 d = new Date(0);
 assert(1970, d.getUTCFullYear());

@@ -1816,6 +1816,21 @@ var fakeButton = new Test.FakeButton();");
                     print( getInt().toFixed(2) );
                 ");
         }
+
+        [TestMethod]
+        public void ShouldNotReturnDateInUniversalTime() {
+            var date = (DateTime)new JintEngine()
+                .Run(@"
+                    return new Date(2012, 0, 1);
+                ");
+
+            Assert.AreEqual(2012, date.Year);
+            Assert.AreEqual(1, date.Month);
+            Assert.AreEqual(1, date.Day);
+            Assert.AreEqual(0, date.Hour);
+            Assert.AreEqual(0, date.Minute);
+            Assert.AreEqual(0, date.Second);
+        }
     }
 
     public struct Size {

@@ -103,9 +103,9 @@ function fact(n) {
 
 fact(3);
 
-Type = Function;
+var Type = Function;
 Type.prototype.test = function() { print('hello'); };
-MyType = function() { };
+var MyType = function() { };
 MyType.prototype = {};
 MyType.test();
 
@@ -150,3 +150,31 @@ assert(true, foo.f1.call({}) === undefined);
 assert(true, foo.f1() === undefined);
 assert(true, foo.f1.apply({}, []) === undefined);
 
+// bind
+var module1 = {  
+    owner: "module1",
+    getOwner: function() { return this.owner; }  
+};  
+var module2 = {
+	owner: "module2"
+};
+  
+assert("module1", module1.getOwner());
+  
+module2.getOwner = module1.getOwner;  
+assert("module2", module2.getOwner());
+
+var boundGetOwner = module1.getOwner.bind(module2);  
+assert("module2", boundGetOwner());
+
+// bind with argument
+var module3 = {  
+    owner: "module3",
+    getOwner: function(arg1, arg2) { return this.owner + ": " + arg1 + ", " + arg2; }  
+};  
+var module4 = {
+	owner: "module4"
+};
+
+var boundGetOwner = module3.getOwner.bind(module4, "argument1");  
+assert("module4: argument1, argument2", boundGetOwner("argument2"));

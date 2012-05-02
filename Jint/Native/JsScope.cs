@@ -136,6 +136,33 @@ namespace Jint.Native {
             return own;
         }
 
+        public override void DefineOwnProperty(string key, JsInstance value) {
+            if (bag != null) {
+                DefineOwnProperty(new ValueDescriptor(bag, key, value));
+            } 
+            else {
+                DefineOwnProperty(new ValueDescriptor(this, key, value));
+            }
+        }
+
+        public override void DefineOwnProperty(Descriptor currentDescriptor) {
+            if (bag != null) {
+                bag.DefineOwnProperty(currentDescriptor);
+            }
+            else {
+                base.DefineOwnProperty(currentDescriptor);
+            }
+        }
+
+        public override bool HasOwnProperty(string key) {
+            if (bag != null) {
+                return bag.HasOwnProperty(key);
+            }
+            else {
+                return base.HasOwnProperty(key);
+            }
+        }
+
         public override IEnumerable<string> GetKeys() {
             if (bag != null) {
                 foreach (var key in bag.GetKeys())

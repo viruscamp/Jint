@@ -1,7 +1,7 @@
-﻿pattern = /(.*?)a(?!(a+)b\2c)\2(.*)/;
-string = 'baaabaac';
-actualmatch = string.match(pattern);
-expectedmatch = Array('baaabaac', 'ba', undefined, 'abaac');
+﻿var pattern = /(.*?)a(?!(a+)b\2c)\2(.*)/;
+var string = 'baaabaac';
+var actualmatch = string.match(pattern);
+var expectedmatch = Array('baaabaac', 'ba', undefined, 'abaac');
 assert(expectedmatch.length, actualmatch.length);
 assert(expectedmatch.toString(), actualmatch.toString());
 

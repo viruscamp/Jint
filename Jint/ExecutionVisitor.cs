@@ -220,6 +220,10 @@ namespace Jint {
                 propertyName = ((Identifier)left.Member).Text;
 
                 CurrentScope.TryGetDescriptor(propertyName, out d);
+
+                if (d == null && HasOption(Options.Strict)) {
+                    throw new JsException(Global.ReferenceErrorClass.New(propertyName + " is not defined"));
+                }
             }
 
             // now baseObject contains an object or a scope against which to resolve left.Member
@@ -578,6 +582,7 @@ namespace Jint {
                     // handle thrown exception assignment to a local variable: catch(e)
                     if (statement.Catch.Identifier != null) {
                         // if catch is called, Result contains the thrown value
+                        CurrentScope.DefineOwnProperty(statement.Catch.Identifier, JsUndefined.Instance);
                         Assign(new MemberExpression(new PropertyExpression(statement.Catch.Identifier), null), jsException.Value);
                     }
 
@@ -1429,7 +1434,7 @@ namespace Jint {
                 args.DefineOwnProperty(JsScope.ARGUMENTS, args);
 
             // set this variable
-            if (that != null)
+            if (that != null) 
                 functionScope.DefineOwnProperty(JsScope.THIS, that);
             else
                 functionScope.DefineOwnProperty(JsScope.THIS, that = Global as JsObject);

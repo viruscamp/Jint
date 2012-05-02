@@ -2,7 +2,7 @@
     var len = arr.length;
     var filtered = []; // shorter version of new Array();
     // iterate through every element in the array...
-    for (i = 0; i < len; i = i + 1) {
+    for (var i = 0; i < len; i = i + 1) {
         var val = arr[i];
         // if the element satisfies the predicate let it through
         if (pred(val)) {
@@ -25,8 +25,8 @@ function makeGreaterThanPredicate(lowerBound) {
 var greaterThan10 = makeGreaterThanPredicate(10);
 var greaterThan100 = makeGreaterThanPredicate(100);
 
-a = filter(greaterThan10, someRandomNumbers);
-b = filter(greaterThan100, someRandomNumbers);
+var a = filter(greaterThan10, someRandomNumbers);
+var b = filter(greaterThan100, someRandomNumbers);
 
 assert(5, a.length);
 assert(3, b.length);

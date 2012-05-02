@@ -70,7 +70,7 @@ var CSS2Properties = function() {
     this.styleIndex = {};
     this.applyStyle = function() {
         for (var style in { 'a': null, 'b': null }) {
-            that = this;
+            var that = this;
             (function(name) {
                 // we can't use this inside this function becouse it's called without base!!!
                 CSS2Properties.prototype.__defineGetter__(that, name, function() {

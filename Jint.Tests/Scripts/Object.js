@@ -54,10 +54,11 @@ var a = {};
 assert(undefined, a.foo);
 assert(undefined, a['foo']);
 
-baz= function() {
+var baz= function() {
 function bar(b, c, d) {
-    this.base = b, this.properties = c || [], d && (this[d] = true);
-    return this;
+    var that = {};
+    that.base = b, that.properties = c || [], d && (that[d] = true);
+    return that;
 }
 assert(true, bar({"value":"number"}, null, null).properties != null);
 }

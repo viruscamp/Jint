@@ -1,6 +1,6 @@
 ﻿
 var j = 0; 
-for(i = 1; i < 10; i = i + 1) { 
+for(var i = 1; i < 10; i = i + 1) { 
     continue; j = j + 1; 
 }
 
@@ -8,7 +8,7 @@ assert(10, i);
 assert(0, j);
 
 var j = 0; 
-for(i = 1; i < 10; i = i + 1) { 
+for(var i = 1; i < 10; i = i + 1) { 
     j = j + 1; 
     continue; 
 } 
@@ -147,7 +147,7 @@ function f() {
 assert(2, f());
 
 // no local scope in loops, even foreach
-
+var y;
 for (k in { a: 1, b: 2, c: 3 }) {
     var x = 2;
     y = 3;

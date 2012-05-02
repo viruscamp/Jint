@@ -19,7 +19,7 @@ namespace Jint.Tests {
             var assembly = Assembly.GetExecutingAssembly();
             var program = new StreamReader(assembly.GetManifestResourceStream(script)).ReadToEnd();
 
-            var jint = new JintEngine();
+            var jint = new JintEngine(Options.Ecmascript5); // The SunSpider scripts doesn't work with strict mode
             var sw = new Stopwatch();
             sw.Start();
 

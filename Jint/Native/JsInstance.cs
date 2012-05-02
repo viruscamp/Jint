@@ -81,6 +81,9 @@ namespace Jint.Native {
         public const string CLASS_DESCRIPTOR = "Descriptor";
         public const string CLASS_SCOPE = "Scope";
 
+        public const string CLASS_UNDEFINED = "Undefined";
+        public const string CLASS_NULL = "Null";
+
         /// <summary>
         /// Class of an object, don't confuse with type of an object.
         /// </summary>

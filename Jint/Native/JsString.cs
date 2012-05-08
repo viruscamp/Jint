@@ -6,7 +6,7 @@ using Jint.Delegates;
 
 namespace Jint.Native {
     [Serializable]
-    public sealed class JsString : JsObject, ILiteral {
+    public sealed class JsString : JsLiteral {
         private string value;
 
         public override object Value {

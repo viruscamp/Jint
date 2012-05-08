@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Jint.Native {
     [Serializable]
-    public sealed class JsBoolean : JsObject, ILiteral {
+    public sealed class JsBoolean : JsLiteral {
         private bool value;
 
 

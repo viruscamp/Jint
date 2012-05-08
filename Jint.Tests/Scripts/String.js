@@ -96,3 +96,8 @@ assert('HELLO', String.fromCharCode(72,69,76,76,79));
 
 assert('bc', 'abcd'['substring'](1, 3));
 assert('NaN', NaN + '');
+
+// properties on literals should not be remembered
+var aname = "a name";
+aname.surname = "a surname";
+assert(undefined, aname.surname);

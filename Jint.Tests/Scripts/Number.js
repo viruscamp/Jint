@@ -11,3 +11,8 @@ assert('2n9c', Number(123456).toString(36));
 
 assert(1, new Number(1));
 assert('1', (new Number(1)).toString());
+
+// properties on literals should not be remembered
+var num = 1;
+num.number = 2;
+assert(undefined, num.number);

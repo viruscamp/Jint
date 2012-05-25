@@ -91,7 +91,7 @@ namespace Jint.Native {
         }
 
         public JsDate New(DateTime value) {
-            return new JsDate(value.ToUniversalTime(), this.PrototypeProperty);
+            return new JsDate(value, this.PrototypeProperty);
         }
 
         public JsDate New(DateTime value, JsObject prototype)

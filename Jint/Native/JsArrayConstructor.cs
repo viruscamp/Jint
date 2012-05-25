@@ -33,6 +33,10 @@ namespace Jint.Native {
 
             Prototype.DefineOwnProperty("indexOf", global.FunctionClass.New<JsObject>(IndexOfImpl, 1), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("lastIndexOf", global.FunctionClass.New<JsObject>(LastIndexOfImpl, 1), PropertyAttributes.DontEnum);
+
+            if (global.HasOption(Options.Ecmascript5)) {
+                Prototype.DefineOwnProperty("forEach", global.FunctionClass.New<JsObject>(ForEach, 2), PropertyAttributes.DontEnum);
+            }
         }
 
 
@@ -523,6 +527,41 @@ namespace Jint.Native {
                 k++;
             }
             return Global.NumberClass.New(-1);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="p"></param>
+        /// <param name="currentDescriptor"></param>
+        public JsInstance ForEach(JsObject target, JsInstance[] parameters) {
+            if (parameters.Length == 0) {
+                throw new JsException(Global.ErrorClass.New("Missing argument 0 when calling " + target + ".forEach"));
+            }
+            if (parameters[0].Class != JsInstance.CLASS_FUNCTION) {
+                throw new JsException(Global.ErrorClass.New(target + " is not a function"));
+            }
+            var callback = (JsFunction)parameters[0];
+
+            // Default to the global scope if no thisArg is given, or if we're not
+            // in strict mode and the passed thisArg is null or undefined
+            var thisArg = Global as JsDictionaryObject;
+            if (parameters.Length > 1) {
+                if (parameters[1] is JsDictionaryObject) {
+                    thisArg = parameters[1] as JsDictionaryObject;
+                }
+                // Strict mode, and thisArg is null or undefined
+                else if (Global.HasOption(Options.Strict) && (parameters[1] is JsUndefined || parameters[1] is JsNull)) {
+                    thisArg = parameters[1] as JsDictionaryObject;
+                }
+            }
+            var array = (JsArray)target;
+            for (var i = 0; i < array.Length; i++) {
+                var jsi = Global.NumberClass.New(i);
+                Global.Visitor.ExecuteFunction(callback, thisArg, new JsInstance[] { array[jsi], jsi, array });
+            }
+            return JsUndefined.Instance;
         }
 
         JsInstance GetLengthImpl(JsObject that) {

@@ -28,9 +28,40 @@ namespace Jint.Native {
             Prototype.DefineOwnProperty("toString", New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty("toLocaleString", New<JsDictionaryObject>(ToString2), PropertyAttributes.DontEnum);
             Prototype.DefineOwnProperty(new PropertyDescriptor<JsObject>(global, Prototype, "length", GetLengthImpl, SetLengthImpl));
+
+            if (global.HasOption(Options.Ecmascript5)) {
+                Prototype.DefineOwnProperty("bind", global.FunctionClass.New<JsObject>(Bind, 1), PropertyAttributes.DontEnum);
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="parameters"></param>
+        public JsInstance Bind(JsObject target, JsInstance[] parameters) {
+            if (target.Class != JsObject.CLASS_FUNCTION) {
+                throw new JsException(Global.ErrorClass.New("Function.prototype.bind - what is trying to be bound is not callable"));
+            }
+            var thisArg = Global as JsDictionaryObject;
+            var parameterList = new List<JsInstance>();
+            if (parameters.Length != 0) {
+                thisArg = parameters[0] as JsDictionaryObject;
 
+                parameterList = new List<JsInstance>(parameters);
+                parameterList.RemoveAt(0);
+            }
+
+            var bound = new JsFunctionWrapper(
+                delegate(JsInstance[] arguments) {
+                    parameterList.AddRange(arguments);
+                    Global.Visitor.ExecuteFunction((JsFunction)target, thisArg, parameterList.ToArray());
+                    return Global.Visitor.Returned;
+                },
+                JsUndefined.Instance
+            );
+            return bound;
+        }
 
         public JsInstance GetLengthImpl(JsDictionaryObject target) {
             return Global.NumberClass.New(target.Length);

@@ -23,7 +23,7 @@ finally {
 assert(2, x);
 
 // loops should not eat exceptions
-catched = false;
+var catched = false;
 try {
     for (x = 0; x < 10; x++) {
         var z = 1;

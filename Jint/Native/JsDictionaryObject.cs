@@ -182,7 +182,7 @@ namespace Jint.Native {
             DefineOwnProperty(new ValueDescriptor(this, key, value) { Writable = (propertyAttributes & PropertyAttributes.ReadOnly) == 0, Enumerable = (propertyAttributes & PropertyAttributes.DontEnum) == 0 });
         }
 
-        public void DefineOwnProperty(string key, JsInstance value) {
+        public virtual void DefineOwnProperty(string key, JsInstance value) {
             DefineOwnProperty(new ValueDescriptor(this, key, value));
         }
 

@@ -50,7 +50,7 @@ assert(1, 3^2);
 assert(1, 3&1);
 assert(0, 3&4);
 assert(3, 1|2);
-x=1;
+var x=1;
 assert(8, x <<= 3); assert(8, x);
 assert(2, x >>= 2); assert(2, x);
 assert(1, x >>= 1); assert(1, x);
@@ -108,5 +108,6 @@ assert(undefined >>> undefined, 0);
 
 assert(undefined, void 0);
 assert(undefined, void(42));
+var myNum;
 assert(undefined, void(myNum=3));
 assert(3, myNum);

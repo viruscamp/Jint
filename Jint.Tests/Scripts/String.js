@@ -66,10 +66,10 @@ assert(-1, 'a'.localeCompare('b'));
 assert(1, 'b'.localeCompare('a'));
 assert(0, 'a'.localeCompare('a'));
 
-s1 = "Oh "
-s2 = "what a beautiful "
-s3 = "mornin'."
-s4 = s1.concat(s2, s3);
+var s1 = "Oh "
+var s2 = "what a beautiful "
+var s3 = "mornin'."
+var s4 = s1.concat(s2, s3);
 assert("Oh what a beautiful mornin'.", s4);
 
 assert(0, "Blue Whale".indexOf("Blue"));
@@ -96,3 +96,8 @@ assert('HELLO', String.fromCharCode(72,69,76,76,79));
 
 assert('bc', 'abcd'['substring'](1, 3));
 assert('NaN', NaN + '');
+
+// properties on literals should not be remembered
+var aname = "a name";
+aname.surname = "a surname";
+assert(undefined, aname.surname);

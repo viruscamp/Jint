@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Jint.Native {
     [Serializable]
-    public sealed class JsNumber : JsObject, ILiteral {
+    public sealed class JsNumber : JsLiteral {
         private double value;
 
         public override object Value {

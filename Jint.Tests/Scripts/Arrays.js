@@ -117,3 +117,21 @@ if ([]) {
 if (![1, 2, 3]) {
     assert(true, false);
 }
+
+// forEach
+assert(true, "forEach" in Array.prototype);
+
+var runs = 0;
+var total = 0;
+[1, 2, 3].forEach(function(current, i) {
+    runs++;
+    total += current;
+    assert(i, current - 1);
+});
+assert(3, runs);
+assert(6, total);
+
+var that = {banana: "orange"};
+[1, 2, 3].forEach(function() {
+    assert("orange", this.banana);
+}, that);

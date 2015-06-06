@@ -6,6 +6,25 @@ using Jint.Marshal;
 
 namespace Jint.Native
 {
+
+    public class ClrTypePrototype : JsObject
+    {
+        public Type WrapType { get { return NativeConstructor.ReflectedType; } }
+        public NativeConstructor NativeConstructor { get; private set; }
+
+        internal ClrTypePrototype(NativeConstructor constructor, JsObject prototype)
+            : base(prototype)
+        {
+            NativeConstructor = constructor;
+            DefineOwnProperty(new ValueDescriptor(this, JsFunction.CONSTRUCTOR, constructor) { Enumerable = false });
+        }
+
+        public override string ToString()
+        {
+            return this.GetType().Name + " : " + WrapType.ToString();
+        }
+    }
+
     /// <summary>
     /// A constructor function that reflects a native clr type to the js runtime.
     /// </summary>
@@ -16,6 +35,10 @@ namespace Jint.Native
     public class NativeConstructor: JsConstructor
     {
         Type reflectedType;
+
+        public Type ReflectedType { get { return reflectedType; } }
+
+        public Type WrapType { get { return reflectedType.GetType(); } }
 
         LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
         INativeIndexer m_indexer;
@@ -49,7 +72,7 @@ namespace Jint.Native
             reflectedType = type;
             Name = type.FullName;
 
-            if (!type.IsAbstract)
+            if (!type.IsAbstract && !type.IsInterface)
             {
                 m_constructors = type.GetConstructors();
             }
@@ -68,14 +91,17 @@ namespace Jint.Native
             // 更改前原型链
             // jsclrobject(value=i1) --> jsobject(hold C1 methods)
             // --> jsobject(hold js object methods) --> jsnull --> null
-            if (prototypePrototype == null && type != typeof(object))
+            if (type.IsInterface)
             {
                 var objctor = Global.Marshaller.MarshalType(typeof(object));
                 prototypePrototype = objctor.PrototypeProperty;
             }
-            
-            DefineOwnProperty(PROTOTYPE, 
-                prototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this, prototypePrototype), 
+            if (prototypePrototype == null)
+            {
+                prototypePrototype = Global.ObjectClass.PrototypeProperty;
+            }
+            var clrTypePrototype = new ClrTypePrototype(this, prototypePrototype);
+            DefineOwnProperty(PROTOTYPE, clrTypePrototype, 
                 PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
 
             m_overloads = new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>(
@@ -260,10 +286,87 @@ namespace Jint.Native
             // overwrite toString of jsobject(hold js object methods)
             // 包装 CLR 接口方法 1 续
             // 覆盖 js object 的 toString 方法
-            if (reflectedType == typeof(object))
+            if (!reflectedType.IsInterface)
             {
                 proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+                proto["castTo"] = new NativeMethod(new JsMethodImpl(CastTo), Global.FunctionClass.PrototypeProperty);
+                proto["getWrapType"] = new NativeMethod(new JsMethodImpl(GetWrapType), Global.FunctionClass.PrototypeProperty);
             }
+        }
+
+        public static JsInstance CastTo(IGlobal global, JsInstance that, JsInstance[] args)
+        {
+            if (that == null)
+            {
+                return null;
+            }
+            if (!that.IsClr)
+            {
+                throw new JintException("cannot perform castTo on non Clr object");
+            }
+            var obj = that.Value;
+            Type castToType = null;
+            if (args == null || args.Length == 0)
+            {
+                castToType = obj.GetType();
+            }
+            else
+            {
+                var typearg = args[0];
+                if (typearg.Value is Type)
+                {
+                    castToType = typearg.Value as Type;
+                }
+                else if (typearg.Value is string)
+                {
+                    var typestr = typearg.Value as string;
+                    // search System assembles
+                    castToType = System.Type.GetType(typestr);
+                    if (castToType == null)
+                    {
+                        // search actual type assembles
+                        castToType = obj.GetType().Module.GetType(typestr);
+                    }
+                    // TODO search other assembles
+                }
+            }
+            if (castToType == null)
+            {
+                throw new JintException("first argument must be a System.Type or a valid type string");
+            }
+            var typector = global.Marshaller.MarshalType(castToType);
+            return typector.Wrap(obj);
+        }
+
+        public static JsInstance GetWrapType(IGlobal global, JsInstance that, JsInstance[] args)
+        {
+            if (that == null)
+            {
+                throw new ArgumentNullException("that");
+            }
+            if (that.IsClr)
+            {
+                if (that is NativeConstructor)
+                {
+                    // BUG cannot castTo("System.Type") from System.RuntimeType
+                    var ctor = that as NativeConstructor;
+                    var type = ctor.reflectedType.GetType();
+                    return global.Marshaller.MarshalType(type);
+                }
+                /*
+                if (that is ClrImplDefinition<>)
+                {
+                    // TODO howto check and howto cast for clr delegate
+                }
+                */
+                if (that is JsObject)
+                {
+                    var jsobj = that as JsObject;
+                    var clrTypePrototype = jsobj.Prototype as ClrTypePrototype;
+                    return clrTypePrototype.NativeConstructor;
+                }
+            }
+            throw new JintException("cannot perform getWrapType on non Clr object");
         }
 
         /// <summary>

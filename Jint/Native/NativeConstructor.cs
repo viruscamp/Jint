@@ -35,7 +35,7 @@ namespace Jint.Native
         {
         }
 
-        public NativeConstructor(Type type, IGlobal global, JsObject PrototypePrototype, JsObject prototype) :
+        public NativeConstructor(Type type, IGlobal global, JsObject prototypePrototype, JsObject prototype) :
             base(global,prototype)
         {
             if (type == null)
@@ -53,8 +53,30 @@ namespace Jint.Native
             {
                 m_constructors = type.GetConstructors();
             }
+            
+            // wrap CLR interface method 1: links of prototypes
+            // assume that i1 is I1, the actual type is C1, C1.IsVisible = false
+            // 包装 CLR 接口方法1: 原型链
+            // 假设 i1 实现 I1 接口，实际类型为 C1, C1对外不可见, C1.IsVisible = false
 
-            DefineOwnProperty(PROTOTYPE, PrototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this,PrototypePrototype), PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
+            // the links of prototypes after the patch
+            // 更改后原型链如下
+            // jsclrobject(value=i1) --> jsobject(hold I1 methods) --> jsobject(hold clr object methods)
+            // --> jsobject(hold js object methods) --> jsnull --> null
+
+            // the links of prototypes before the patch
+            // 更改前原型链
+            // jsclrobject(value=i1) --> jsobject(hold C1 methods)
+            // --> jsobject(hold js object methods) --> jsnull --> null
+            if (prototypePrototype == null && type != typeof(object))
+            {
+                var objctor = Global.Marshaller.MarshalType(typeof(object));
+                prototypePrototype = objctor.PrototypeProperty;
+            }
+            
+            DefineOwnProperty(PROTOTYPE, 
+                prototypePrototype == null ? Global.ObjectClass.New(this) : Global.ObjectClass.New(this, prototypePrototype), 
+                PropertyAttributes.DontEnum | PropertyAttributes.DontDelete | PropertyAttributes.ReadOnly);
 
             m_overloads = new NativeOverloadImpl<ConstructorInfo, ConstructorImpl>(
                 m_marshaller,
@@ -215,7 +237,33 @@ namespace Jint.Native
             foreach (var pair in members)
                 proto[pair.Key] = ReflectOverload(pair.Value);
 
-            proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString",new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+            /*
+            // wrap CLR interface method 2: add methods of CLR Object to Interface Prototype
+            // 包装 CLR 接口方法2: 人工把 CLR Object 的方法加到接口原型
+            if (reflectedType.IsInterface)
+            {
+                Type objtype = typeof(object);
+                var toString = new NativeMethod(objtype.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+                proto["toString"] = toString;
+                proto["ToString"] = toString;
+                proto["Equals"] = new NativeMethod(objtype.GetMethod("Equals", new Type[]{objtype}), Global.FunctionClass.PrototypeProperty, Global);
+                proto["GetHashCode"] = new NativeMethod(objtype.GetMethod("GetHashCode", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+                proto["GetType"] = new NativeMethod(objtype.GetMethod("GetType", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+            }
+            else
+            {
+                proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+            }
+            */
+
+            // wrap CLR interface method 1, continued
+            // overwrite toString of jsobject(hold js object methods)
+            // 包装 CLR 接口方法 1 续
+            // 覆盖 js object 的 toString 方法
+            if (reflectedType == typeof(object))
+            {
+                proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
+            }
         }
 
         /// <summary>

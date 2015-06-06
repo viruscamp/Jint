@@ -34,16 +34,9 @@ namespace Jint.Native
 
         public override JsInstance Wrap<T>(T value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value");
-
             if (value is Type)
             {
-                NativeConstructor res;
-                res = new NativeConstructor(value as Type, Global,null,PrototypeProperty);
-                res.InitPrototype(Global);
-                SetupNativeProperties(res);
-                return res;
+                return WrapSpecialType(value as Type, null);
             }
             else
                 throw new JintException("Attempt to wrap '" + value.GetType().FullName + "' with '" + typeof(Type).FullName + "'");

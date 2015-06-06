@@ -127,7 +127,17 @@ namespace Jint
             }
             else
             {
-                return MarshalType(value.GetType()).Wrap(value);
+                // wrap CLR interface method
+                // assume that i1 is I1, the actual type is C1, C1.IsVisible = false
+                // 包装 CLR 接口方法
+                // 假设 i1 实现 I1 接口，实际类型为 C1, C1对外不可见, C1.IsVisible = false
+                // value==i1, T==I1, value.GetType()==C1
+                var t = value.GetType();
+                if (!t.IsVisible)
+                {
+                    t = typeof(T);
+                }
+                return MarshalType(t).Wrap(value);
             }
         }
 

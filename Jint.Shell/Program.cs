@@ -9,14 +9,24 @@ using Jint.Native;
 
 namespace Jint.Shell {
     class Program {
-        static void Main(string[] args) {
-
-            string line;
+        static JintEngine NewJint()
+        {
             var jint = new JintEngine();
 
             jint.SetFunction("print", new Action<object>(s => { Console.ForegroundColor = ConsoleColor.Blue; Console.Write(s); Console.ResetColor(); }));
             jint.SetFunction("import", new Action<string>(s => { Assembly.LoadWithPartialName(s); }));
             jint.DisableSecurity();
+
+            jint.SetParameter("i1", new CI1());
+
+            return jint;
+        }
+
+        static void Main(string[] args) {
+
+            string line;
+
+            var jint = NewJint();
 
             while (true) {
                 Console.Write("jint > ");
@@ -29,7 +39,7 @@ namespace Jint.Shell {
                     }
 
                     if (line.Trim() == "reset") {
-                        jint = new JintEngine();
+                        jint = NewJint();
                         break;
                     }
 
@@ -50,7 +60,13 @@ namespace Jint.Shell {
                 Console.SetError(new StringWriter(new StringBuilder()));
 
                 try {
-                    jint.Run(script.ToString());
+                    var ret = jint.Run(script.ToString());
+                    if (ret != null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine(ret.ToString());
+                        Console.ResetColor();
+                    }
                 }
                 catch (Exception e) {
                     Console.ForegroundColor = ConsoleColor.Red;

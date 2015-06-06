@@ -47,7 +47,6 @@ namespace Jint.Native
             if (value == null)
                 throw new ArgumentNullException("value");
 
-            
             NativeConstructor res;
             res = new NativeConstructor(value as Type, Global, prototypePropertyPrototype, PrototypeProperty);
             res.InitPrototype(Global);

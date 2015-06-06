@@ -57,9 +57,8 @@ namespace Jint.Shell
         int I { get; }
     }
 
-    class CI3 : I3
+    class CI3 : I3, I2
     {
-        // unaccessable
         public int Count { get; set; }
 
         private int i = 3333;
@@ -69,16 +68,30 @@ namespace Jint.Shell
             {
                 return i;
             }
-            // unaccessable
             set
             {
                 i = value;
             }
         }
 
+        void I3.Run()
+        {
+            Console.WriteLine("CI3.I3.Run");
+        }
+
         public void Run()
         {
-            Console.WriteLine("CI3");
+            Console.WriteLine("CI3.Run");
+        }
+
+        public void Run2()
+        {
+            Console.WriteLine("CI3.Run2");
+        }
+
+        public I3 I3
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 

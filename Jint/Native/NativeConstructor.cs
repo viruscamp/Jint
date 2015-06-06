@@ -305,10 +305,11 @@ namespace Jint.Native
                 throw new JintException("cannot perform castTo on non Clr object");
             }
             var obj = that.Value;
+            var t = obj.GetType();
             Type castToType = null;
             if (args == null || args.Length == 0)
             {
-                castToType = obj.GetType();
+                castToType = t;
             }
             else
             {
@@ -320,22 +321,38 @@ namespace Jint.Native
                 else if (typearg.Value is string)
                 {
                     var typestr = typearg.Value as string;
-                    // search System assembles
-                    castToType = System.Type.GetType(typestr);
+                    castToType = GetParentType(t, typestr);
                     if (castToType == null)
                     {
-                        // search actual type assembles
-                        castToType = obj.GetType().Module.GetType(typestr);
+                        throw new JintException(string.Format("Cannot cast '{0}' to '{1}'", t.FullName, typestr));
                     }
-                    // TODO search other assembles
                 }
             }
             if (castToType == null)
             {
-                throw new JintException("first argument must be a System.Type or a valid type string");
+                throw new JintException("First argument must be a System.Type or a valid type string");
             }
             var typector = global.Marshaller.MarshalType(castToType);
             return typector.Wrap(obj);
+        }
+
+        public static Type GetParentType(Type t, string typestr)
+        {
+            var ti = t.GetInterface(typestr);
+            if (ti != null)
+            {
+                return ti;
+            }
+            var tb = t.BaseType;
+            while (tb != null)
+            {
+                if (tb.FullName == typestr)
+                {
+                    return tb;
+                }
+                tb = tb.BaseType;
+            }
+            return null;
         }
 
         public static JsInstance GetWrapType(IGlobal global, JsInstance that, JsInstance[] args)
@@ -366,7 +383,7 @@ namespace Jint.Native
                     return clrTypePrototype.NativeConstructor;
                 }
             }
-            throw new JintException("cannot perform getWrapType on non Clr object");
+            throw new JintException("Cannot perform getWrapType on non Clr object");
         }
 
         /// <summary>
@@ -448,8 +465,9 @@ namespace Jint.Native
 
         public override JsInstance Wrap<T>(T value)
         {
-            if (!reflectedType.IsAssignableFrom(value.GetType()))
-                throw new JintException("Attempt to wrap '" + typeof(T).FullName + "' with '" + reflectedType.FullName+ "'");
+            var t = value.GetType();
+            if (!reflectedType.IsAssignableFrom(t))
+                throw new JintException("Attempt to wrap '" + t.FullName + "' with '" + reflectedType.FullName+ "'");
             JsObject inst = Global.ObjectClass.New(PrototypeProperty);
             inst.Value = value;
             inst.Indexer = m_indexer;

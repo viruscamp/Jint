@@ -153,8 +153,14 @@ namespace Jint.Native {
             }
             set {
                 Descriptor d = GetDescriptor(index);
-                if (d == null || ( d.Owner != this && d.DescriptorType == DescriptorType.Value ) )
+                if (d == null || (d.Owner != this && d.DescriptorType == DescriptorType.Value))
+                {
+                    if (IsClr)
+                    {
+                        return;
+                    }
                     DefineOwnProperty(new ValueDescriptor(this, index, value));
+                }
                 else
                     d.Set(this, value);
             }

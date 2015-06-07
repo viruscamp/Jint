@@ -134,9 +134,16 @@ namespace Jint
                 // value==i1, T==I1, value.GetType()==C1
                 Type t = value.GetType();
                 Type wrapType = typeof(T);
-                if (!t.IsVisible || wrapType.IsInterface)
+                Type objType = typeof(object);
+                //if (!t.IsVisible || wrapType.IsInterface)
+                if (wrapType != objType)
                 {
                     t = wrapType;
+                }
+                else if (!t.IsVisible)
+                {
+                    // search a type or use object
+                    t = objType;
                 }
                 return MarshalType(t).Wrap(value);
             }

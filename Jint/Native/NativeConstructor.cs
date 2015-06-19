@@ -465,11 +465,34 @@ namespace Jint.Native
 
         public override JsInstance Wrap<T>(T value)
         {
-            var t = value.GetType();
-            if (!reflectedType.IsAssignableFrom(t))
-                throw new JintException("Attempt to wrap '" + t.FullName + "' with '" + reflectedType.FullName+ "'");
+            Type ttype = typeof(T);
+            Type vtype = value.GetType();
+            object newcomobj = null;
+
+            if (!reflectedType.IsAssignableFrom(ttype) && !reflectedType.IsAssignableFrom(vtype))
+            {
+                if (System.Runtime.InteropServices.Marshal.IsComObject(value))
+                {
+                    newcomobj = WrapComObject(value, reflectedType);
+                    if (newcomobj == null)
+                    {
+                        throw new JintException("Attempt to wrap 'ComObject' with '" + reflectedType.FullName + "'");
+                    }
+                }
+                else
+                {
+                    throw new JintException("Attempt to wrap '" + vtype.FullName + "' with '" + reflectedType.FullName + "'");
+                }
+            }
             JsObject inst = Global.ObjectClass.New(PrototypeProperty);
-            inst.Value = value;
+            if (newcomobj == null)
+            {
+                inst.Value = value;
+            }
+            else
+            {
+                inst.Value = newcomobj;
+            }
             inst.Indexer = m_indexer;
             SetupNativeProperties(inst);
 

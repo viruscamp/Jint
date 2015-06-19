@@ -142,6 +142,7 @@ namespace Jint
                 }
                 else if (!t.IsVisible)
                 {
+                    // TODO ComObject
                     // search a type or use object
                     t = objType;
                 }

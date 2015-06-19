@@ -66,6 +66,21 @@ namespace Jint.Tests
 		}
 
 		[TestMethod]
+		public void CastToThenCastBack()
+		{
+		}
+
+		[TestMethod]
+		public void ComObjectCastToInterface()
+		{
+		}
+
+		[TestMethod]
+		public void ComObjectCastToThenCastBack()
+		{
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(JintException))]
 		public void GetWrapTypeOnNonClr_ShouldException()
 		{

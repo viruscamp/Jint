@@ -91,6 +91,8 @@ namespace Jint.Native
             // 更改前原型链
             // jsclrobject(value=i1) --> jsobject(hold C1 methods)
             // --> jsobject(hold js object methods) --> jsnull --> null
+            
+            //if (prototypePrototype == null && type == typeof(object))
             if (type.IsInterface)
             {
                 var objctor = Global.Marshaller.MarshalType(typeof(object));
@@ -286,6 +288,7 @@ namespace Jint.Native
             // overwrite toString of jsobject(hold js object methods)
             // 包装 CLR 接口方法 1 续
             // 覆盖 js object 的 toString 方法
+            //if (reflectedType == typeof(object)
             if (!reflectedType.IsInterface)
             {
                 proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
@@ -497,6 +500,18 @@ namespace Jint.Native
             SetupNativeProperties(inst);
 
             return inst;
+        }
+        private object WrapComObject(object value, Type t)
+        {
+            object comobj = null;
+            try
+            {
+                comobj = System.Runtime.InteropServices.Marshal.CreateWrapperOfType(value, t);
+            }
+            catch (Exception ex)
+            {
+            }
+            return comobj;
         }
 
         protected ConstructorImpl WrapMember(ConstructorInfo info)

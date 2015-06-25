@@ -6,7 +6,6 @@ using Jint.Marshal;
 
 namespace Jint.Native
 {
-
     public class ClrTypePrototype : JsObject
     {
         public Type WrapType { get { return NativeConstructor.ReflectedType; } }
@@ -91,7 +90,7 @@ namespace Jint.Native
             // 更改前原型链
             // jsclrobject(value=i1) --> jsobject(hold C1 methods)
             // --> jsobject(hold js object methods) --> jsnull --> null
-            
+
             if (type.IsInterface)
             {
                 var objctor = Global.Marshaller.MarshalType(typeof(object));
@@ -141,7 +140,7 @@ namespace Jint.Native
 
             // add the members to the object
             foreach (var pair in members)
-                DefineOwnProperty( pair.Key, ReflectOverload(pair.Value) );
+                DefineOwnProperty(pair.Key, ReflectOverload(pair.Value));
 
             // find and add all static properties and fields
             foreach (var info in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
@@ -168,17 +167,19 @@ namespace Jint.Native
             // find all instance properties and fields
             LinkedList<MethodInfo> getMethods = new LinkedList<MethodInfo>();
             LinkedList<MethodInfo> setMethods = new LinkedList<MethodInfo>();
+
             foreach (var info in type.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
             {
-                ParameterInfo[] indexerParams = info.GetIndexParameters();
-                if (indexerParams == null || indexerParams.Length == 0)
-                    m_properties.AddLast(global.Marshaller.MarshalPropertyInfo(info, this));
-                else if (info.Name == "Item" && indexerParams.Length == 1)
+                AddPropertyInfo(info, global, m_properties, getMethods, setMethods);
+            }
+            if (type.IsInterface)
+            {
+                foreach (var interf in type.GetInterfaces())
                 {
-                    if (info.CanRead)
-                        getMethods.AddLast(info.GetGetMethod());
-                    if (info.CanWrite)
-                        setMethods.AddLast(info.GetSetMethod());
+                    foreach (var info in interf.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
+                    {
+                        AddPropertyInfo(info, global, m_properties, getMethods, setMethods);
+                    }
                 }
             }
 
@@ -203,6 +204,21 @@ namespace Jint.Native
             foreach (var info in type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) )
                 m_properties.AddLast(global.Marshaller.MarshalFieldInfo(info,this));
 
+        }
+
+        private void AddPropertyInfo(PropertyInfo info, IGlobal global, LinkedList<NativeDescriptor> m_properties,
+            LinkedList<MethodInfo> getMethods, LinkedList<MethodInfo> setMethods)
+        {
+            ParameterInfo[] indexerParams = info.GetIndexParameters();
+            if (indexerParams == null || indexerParams.Length == 0)
+                m_properties.AddLast(global.Marshaller.MarshalPropertyInfo(info, this));
+            else if (info.Name == "Item" && indexerParams.Length == 1)
+            {
+                if (info.CanRead)
+                    getMethods.AddLast(info.GetGetMethod());
+                if (info.CanWrite)
+                    setMethods.AddLast(info.GetSetMethod());
+            }
         }
 
         JsFunction ReflectOverload(ICollection<MethodInfo> methods)
@@ -252,13 +268,17 @@ namespace Jint.Native
 
             foreach (var info in reflectedType.GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
             {
-                if (info.ReturnType.IsByRef)
-                    continue;
-
-                if (! members.ContainsKey(info.Name))
-                    members[info.Name] = new LinkedList<MethodInfo>();
-                
-                members[info.Name].AddLast(info);
+                AddMethodInfo(info, members);
+            }
+            if (reflectedType.IsInterface)
+            {
+                foreach (var interf in reflectedType.GetInterfaces())
+                {
+                    foreach (var info in interf.GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
+                    {
+                        AddMethodInfo(info, members);
+                    }
+                }
             }
 
             foreach (var pair in members)
@@ -274,6 +294,17 @@ namespace Jint.Native
                 proto["castTo"] = new NativeMethod(new JsMethodImpl(CastTo), Global.FunctionClass.PrototypeProperty);
                 proto["getWrapType"] = new NativeMethod(new JsMethodImpl(GetWrapType), Global.FunctionClass.PrototypeProperty);
             }
+        }
+
+        private void AddMethodInfo(MethodInfo info, Dictionary<string, LinkedList<MethodInfo>> members)
+        {
+            if (info.ReturnType.IsByRef)
+                return;
+
+            if (!members.ContainsKey(info.Name))
+                members[info.Name] = new LinkedList<MethodInfo>();
+
+            members[info.Name].AddLast(info);
         }
 
         public static JsInstance CastTo(IGlobal global, JsInstance that, JsInstance[] args)

@@ -9,10 +9,21 @@ namespace Jint.Shell
     {
     }
 
-    public interface I1
+    public interface IDummy { }
+
+    public interface I1 : IDummy
     {
         int Count { get; }
         I2 I2 { get; }
+        void Move();
+        void Execute();
+    }
+
+    public interface I12 : I1
+    {
+        int Count2 { get; }
+        void Execute2();
+        void Execute();
     }
 
     public class CI1 : I1
@@ -23,6 +34,50 @@ namespace Jint.Shell
         public I2 I2 { get { return c2; } }
         public CI2 CI2 { get { return c2; } }
 
+        public void Execute()
+        {
+            Console.WriteLine("CI1.Execute");
+        }
+
+        public void Move()
+        {
+            Console.WriteLine("CI1.Move");
+        }
+    }
+
+    public class CI12 : I12
+    {
+        int count = 12345;
+        public int Count { get { return count; } }
+
+        I2 i2 = null;
+        public I2 I2 { get { return i2; } }
+
+        public void Execute()
+        {
+            Console.WriteLine("CI12.Execute");
+        }
+
+        void I1.Execute()
+        {
+            Console.WriteLine("CI12.I1.Execute");
+        }
+
+        public void Move()
+        {
+            Console.WriteLine("CI12.Move");
+        }
+
+        void I12.Execute()
+        {
+            Console.WriteLine("CI12.I12.Execute");
+        }
+
+        public int Count2 { get; set; }
+        public void Execute2()
+        {
+            Console.WriteLine("CI12.Execute2");
+        }
     }
 
     public interface I2
@@ -59,6 +114,7 @@ namespace Jint.Shell
 
     class CI3 : I3, I2
     {
+        // unaccessable
         public int Count { get; set; }
 
         private int i = 3333;
@@ -68,6 +124,7 @@ namespace Jint.Shell
             {
                 return i;
             }
+            // unaccessable
             set
             {
                 i = value;

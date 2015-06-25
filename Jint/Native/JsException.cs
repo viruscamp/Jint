@@ -15,5 +15,20 @@ namespace Jint.Native {
             //if (value is JsDictionaryObject)
             //    ((JsDictionaryObject)value)["jintException"] = new JsClr(this);
         }
+
+        public override string Message
+        {
+            get
+            {
+                if (Value == null)
+                {
+                    return "JsException";
+                }
+                else
+                {
+                    return "JsException " + Value.ToString();
+                }
+            }
+        }
     }
 }

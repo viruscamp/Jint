@@ -182,7 +182,7 @@ namespace Jint {
                 program = Compile(script, DebugMode);
             }
             catch (Exception e) {
-                throw new JintException("An unexpected error occured while parsing the script", e);
+                throw new JintException("Parsing error : " + e.Message, e);
             }
 
             if (program == null)

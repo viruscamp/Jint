@@ -92,7 +92,6 @@ namespace Jint.Native
             // jsclrobject(value=i1) --> jsobject(hold C1 methods)
             // --> jsobject(hold js object methods) --> jsnull --> null
             
-            //if (prototypePrototype == null && type == typeof(object))
             if (type.IsInterface)
             {
                 var objctor = Global.Marshaller.MarshalType(typeof(object));
@@ -265,30 +264,10 @@ namespace Jint.Native
             foreach (var pair in members)
                 proto[pair.Key] = ReflectOverload(pair.Value);
 
-            /*
-            // wrap CLR interface method 2: add methods of CLR Object to Interface Prototype
-            // 包装 CLR 接口方法2: 人工把 CLR Object 的方法加到接口原型
-            if (reflectedType.IsInterface)
-            {
-                Type objtype = typeof(object);
-                var toString = new NativeMethod(objtype.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
-                proto["toString"] = toString;
-                proto["ToString"] = toString;
-                proto["Equals"] = new NativeMethod(objtype.GetMethod("Equals", new Type[]{objtype}), Global.FunctionClass.PrototypeProperty, Global);
-                proto["GetHashCode"] = new NativeMethod(objtype.GetMethod("GetHashCode", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
-                proto["GetType"] = new NativeMethod(objtype.GetMethod("GetType", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
-            }
-            else
-            {
-                proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
-            }
-            */
-
             // wrap CLR interface method 1, continued
             // overwrite toString of jsobject(hold js object methods)
             // 包装 CLR 接口方法 1 续
             // 覆盖 js object 的 toString 方法
-            //if (reflectedType == typeof(object)
             if (!reflectedType.IsInterface)
             {
                 proto["toString"] = new NativeMethod(reflectedType.GetMethod("ToString", new Type[0]), Global.FunctionClass.PrototypeProperty, Global);
@@ -323,17 +302,18 @@ namespace Jint.Native
                 }
                 else if (typearg.Value is string)
                 {
+                    // TODO if obj is ComObject
                     var typestr = typearg.Value as string;
                     castToType = GetParentType(t, typestr);
                     if (castToType == null)
                     {
-                        throw new JintException(string.Format("Cannot cast '{0}' to '{1}'", t.FullName, typestr));
+                        throw new InvalidCastException(string.Format("Cannot cast '{0}' to '{1}'", t.FullName, typestr));
                     }
                 }
             }
             if (castToType == null)
             {
-                throw new JintException("First argument must be a System.Type or a valid type string");
+                throw new ArgumentException("First argument must be a System.Type or a valid type string");
             }
             var typector = global.Marshaller.MarshalType(castToType);
             return typector.Wrap(obj);
@@ -487,6 +467,7 @@ namespace Jint.Native
                     throw new JintException("Attempt to wrap '" + vtype.FullName + "' with '" + reflectedType.FullName + "'");
                 }
             }
+
             JsObject inst = Global.ObjectClass.New(PrototypeProperty);
             if (newcomobj == null)
             {
@@ -501,17 +482,20 @@ namespace Jint.Native
 
             return inst;
         }
-        private object WrapComObject(object value, Type t)
+
+        public static object WrapComObject(object obj, Type t)
         {
-            object comobj = null;
-            try
+            if (System.Runtime.InteropServices.Marshal.IsComObject(obj))
             {
-                comobj = System.Runtime.InteropServices.Marshal.CreateWrapperOfType(value, t);
+                try
+                {
+                    return System.Runtime.InteropServices.Marshal.CreateWrapperOfType(obj, t);
+                }
+                catch (Exception ex)
+                {
+                }
             }
-            catch (Exception ex)
-            {
-            }
-            return comobj;
+            return null;
         }
 
         protected ConstructorImpl WrapMember(ConstructorInfo info)

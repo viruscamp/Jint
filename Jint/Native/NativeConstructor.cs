@@ -185,6 +185,38 @@ namespace Jint.Native
                 }
             }
 
+            // 给 IList 和 Array 加上 length 属性
+            string lengthPropName = "length";
+            PropertyInfo lengthInfo = null;
+            if (type.IsArray)
+            {
+                // Array 数组不可能被继承
+                lengthInfo = type.GetProperty("Length");
+            }
+            else
+            {
+                ImplicitIListType = ExplicitInterfaceHelper.GetImplicitIListType(type);
+                ImplicitIDictionaryType = ExplicitInterfaceHelper.GetImplicitIDictionaryType(type);
+
+                if (ImplicitIListType != null && // 是隐式实现的 IList
+                    properties.Get(lengthPropName) == null && // 方法与静态方法 没有 length
+                    type.GetProperty(lengthPropName) == null && // 实例属性 没有 length
+                    type.GetField(lengthPropName) == null) // 实例域 没有 length
+                {
+                    try
+                    {
+                        lengthInfo = type.GetProperty("Count");
+                    }
+                    catch (AmbiguousMatchException ex)
+                    {
+                    }
+                }
+            }
+            if (lengthInfo != null)
+            {
+                m_properties.AddLast(global.Marshaller.MarshalPropertyInfo(lengthPropName, lengthInfo, this));
+            }
+
             if (getMethods.Count > 0 || setMethods.Count > 0)
             {
                 MethodInfo[] getters = new MethodInfo[getMethods.Count];
@@ -205,8 +237,10 @@ namespace Jint.Native
 
             foreach (var info in type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public) )
                 m_properties.AddLast(global.Marshaller.MarshalFieldInfo(info,this));
-
         }
+
+        public Type ImplicitIListType { get; private set; }
+        public Type ImplicitIDictionaryType { get; private set; }
 
         private void AddPropertyInfo(PropertyInfo info, IGlobal global, LinkedList<NativeDescriptor> m_properties,
             LinkedList<MethodInfo> getMethods, LinkedList<MethodInfo> setMethods)

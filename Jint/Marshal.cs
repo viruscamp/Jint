@@ -365,12 +365,14 @@ namespace Jint
         }
 
         /// <summary>
-        /// Marshals a native property to a descriptor
+        /// Marshals a native property to a descriptor with a different name.
+        /// Used for emulate Array.Length and ICollection.Count as js array.length.
         /// </summary>
+        /// <param name="name">Field name called from javascript</param>
         /// <param name="prop">Property to marshal</param>
         /// <param name="owner">Owner of the returned descriptor</param>
         /// <returns>A descriptor</returns>
-        public NativeDescriptor MarshalPropertyInfo(PropertyInfo prop, JsDictionaryObject owner)
+        public NativeDescriptor MarshalPropertyInfo(string name, PropertyInfo prop, JsDictionaryObject owner)
         {
             JsGetter getter;
             JsSetter setter = null;
@@ -392,16 +394,28 @@ namespace Jint
                 setter = (JsSetter)WrapSetProperty(prop);
             }
 
-            return setter == null ? new NativeDescriptor(owner, prop.Name, getter) { Enumerable = true } : new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
+            return setter == null ? new NativeDescriptor(owner, name, getter) { Enumerable = true } : new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
         }
 
         /// <summary>
-        /// Marshals a native field to a JS Descriptor
+        /// Marshals a native property to a descriptor
         /// </summary>
+        /// <param name="prop">Property to marshal</param>
+        /// <param name="owner">Owner of the returned descriptor</param>
+        /// <returns>A descriptor</returns>
+        public NativeDescriptor MarshalPropertyInfo(PropertyInfo prop, JsDictionaryObject owner)
+        {
+            return MarshalPropertyInfo(prop.Name, prop, owner);
+        }
+
+        /// <summary>
+        /// Marshals a native field to a JS Descriptor with a different name
+        /// </summary>
+        /// <param name="name">Field name called from javascript</param>
         /// <param name="prop">Field info to marshal</param>
         /// <param name="owner">Owner for the descriptor</param>
         /// <returns>Descriptor</returns>
-        public NativeDescriptor MarshalFieldInfo(FieldInfo prop, JsDictionaryObject owner)
+        public NativeDescriptor MarshalFieldInfo(string name, FieldInfo prop, JsDictionaryObject owner)
         {
             JsGetter getter;
             JsSetter setter;
@@ -409,7 +423,8 @@ namespace Jint
             if (prop.IsLiteral)
             {
                 JsInstance value = null; // this demand initization should prevent a stack overflow while reflecting types
-                getter = delegate(JsDictionaryObject that) {
+                getter = delegate(JsDictionaryObject that)
+                {
                     if (value == null)
                         value = (JsInstance)typeof(Marshaller)
                             .GetMethod("MarshalClrValue")
@@ -425,7 +440,18 @@ namespace Jint
                 setter = (JsSetter)WrapSetField(prop);
             }
 
-            return new NativeDescriptor(owner, prop.Name, getter, setter) { Enumerable = true };
+            return new NativeDescriptor(owner, name, getter, setter) { Enumerable = true };
+        }
+
+        /// <summary>
+        /// Marshals a native field to a JS Descriptor
+        /// </summary>
+        /// <param name="prop">Field info to marshal</param>
+        /// <param name="owner">Owner for the descriptor</param>
+        /// <returns>Descriptor</returns>
+        public NativeDescriptor MarshalFieldInfo(FieldInfo prop, JsDictionaryObject owner)
+        {
+            return MarshalFieldInfo(prop.Name, prop, owner);
         }
 
         #endregion

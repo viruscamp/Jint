@@ -9,6 +9,7 @@ using Jint.Debugger;
 using System.Security;
 using System.Runtime.Serialization;
 using Jint.Delegates;
+using Jint.Marshal;
 
 namespace Jint {
 
@@ -358,8 +359,30 @@ namespace Jint {
             var dictionary = Result as JsDictionaryObject;
 
             if (Result.Value is IEnumerable) {
-                foreach (object value in (IEnumerable)Result.Value) {
-                    CurrentScope[identifier] = Global.WrapClr(value);
+                // for..in with array(Array IList IList<>) should iterate index , not value
+                // TODO make it clearer and more efficient
+                int length = 0;
+                if (Result.Value is Array)
+                {
+                    length = ((Array)Result.Value).Length;
+                }
+                else if (Result is JsObject && Result.IsClr)
+                {
+                    var clrobj = Result as JsObject;
+                    var clrtype = clrobj.Prototype as ClrTypePrototype;
+                    var listType = clrtype.NativeConstructor.ImplicitIListType;
+                    if (listType == typeof(IList))
+                    {
+                        length = ((IList)Result.Value).Count;
+                    }
+                    else if (listType != null && listType.IsGenericType)
+                    {
+                        // TODO try to use no reflection
+                        length = (int)clrtype.WrapType.GetProperty("Count").GetGetMethod().Invoke(Result.Value, new object[0]);
+                    }
+                }
+                for (int idx = 0; idx < length; idx++) {
+                    CurrentScope[identifier] = Global.WrapClr(idx);
 
                     statement.Statement.Accept(this);
 

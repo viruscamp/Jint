@@ -12,7 +12,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Jint.Delegates {
-#if NEED_ACTION_FUNC
+#if !NETFX_35
     public delegate void Action();
     public delegate void Action<T1, T2>(T1 t1, T2 t2);
     public delegate void Action<T1, T2, T3>(T1 t1, T2 t2, T3 t3);

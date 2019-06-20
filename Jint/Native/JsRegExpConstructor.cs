@@ -101,5 +101,10 @@ namespace Jint.Native {
         public JsInstance ToStringImpl(JsDictionaryObject target, JsInstance[] parameters) {
             return Global.StringClass.New(target.ToString());
         }
+
+        public override JsInstance Wrap<T>(T value)
+        {
+            return New(Convert.ToString(value), false, false, false);
+        }
     }
 }

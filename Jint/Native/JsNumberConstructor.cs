@@ -210,5 +210,15 @@ namespace Jint.Native {
 
             return Global.StringClass.New(target.ToNumber().ToString("f" + precision, CultureInfo.InvariantCulture));
         }
+
+        public virtual JsInstance Wrap(short value)
+        {
+            return New(value);
+        }
+
+        public override JsInstance Wrap<T>(T value)
+        {
+            return New(Convert.ToDouble(value));
+        }
     }
 }

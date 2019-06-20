@@ -39,6 +39,8 @@ namespace Jint.Native
 
         public Type WrapType { get { return reflectedType.GetType(); } }
 
+        internal JsConstructor JsConstructor { get; set; }
+
         LinkedList<NativeDescriptor> m_properties = new LinkedList<NativeDescriptor>();
         INativeIndexer m_indexer;
 
@@ -479,18 +481,26 @@ namespace Jint.Native
 
         public override JsInstance Wrap<T>(T value)
         {
+            if (JsConstructor != null)
+            {
+                return JsConstructor.Wrap<T>(value);
+            }
+
             Type ttype = typeof(T);
             Type vtype = value.GetType();
-            object newcomobj = null;
+            object comobj = null;
 
             if (!reflectedType.IsAssignableFrom(ttype) && !reflectedType.IsAssignableFrom(vtype))
             {
                 if (System.Runtime.InteropServices.Marshal.IsComObject(value))
                 {
-                    newcomobj = WrapComObject(value, reflectedType);
-                    if (newcomobj == null)
+                    try
                     {
-                        throw new JintException("Attempt to wrap 'ComObject' with '" + reflectedType.FullName + "'");
+                        comobj = System.Runtime.InteropServices.Marshal.CreateWrapperOfType(value, reflectedType);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new JintException("Attempt to wrap 'ComObject' with '" + reflectedType.FullName + "'", ex);
                     }
                 }
                 else
@@ -500,33 +510,11 @@ namespace Jint.Native
             }
 
             JsObject inst = Global.ObjectClass.New(PrototypeProperty);
-            if (newcomobj == null)
-            {
-                inst.Value = value;
-            }
-            else
-            {
-                inst.Value = newcomobj;
-            }
+            inst.Value = (comobj != null) ? comobj : value;
             inst.Indexer = m_indexer;
             SetupNativeProperties(inst);
 
             return inst;
-        }
-
-        public static object WrapComObject(object obj, Type t)
-        {
-            if (System.Runtime.InteropServices.Marshal.IsComObject(obj))
-            {
-                try
-                {
-                    return System.Runtime.InteropServices.Marshal.CreateWrapperOfType(obj, t);
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-            return null;
         }
 
         protected ConstructorImpl WrapMember(ConstructorInfo info)

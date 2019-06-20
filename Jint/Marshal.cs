@@ -72,7 +72,7 @@ namespace Jint
 
             m_typeCache[typeof(Type)] = m_typeType;
 
-            //TODO: replace a native contructors with apropriate js constructors
+            //DONE: replace a native contructors with apropriate js constructors
             foreach (var t in new Type[] {
                 typeof(Int16),
                 typeof(Int32),
@@ -85,13 +85,13 @@ namespace Jint
                 typeof(Byte),
                 typeof(SByte)
             })
-                m_typeCache[t] = CreateConstructor(t, m_global.NumberClass.PrototypeProperty);
+                m_typeCache[t] = CreateNativeToJsConstructor(t, m_global.NumberClass);
 
-            m_typeCache[typeof(String)] = CreateConstructor(typeof(String), m_global.StringClass.PrototypeProperty);
-            m_typeCache[typeof(Char)] = CreateConstructor(typeof(Char), m_global.StringClass.PrototypeProperty);
-            m_typeCache[typeof(Boolean)] = CreateConstructor(typeof(Boolean), m_global.BooleanClass.PrototypeProperty);
-            m_typeCache[typeof(DateTime)] = CreateConstructor(typeof(DateTime), m_global.DateClass.PrototypeProperty);
-            m_typeCache[typeof(Regex)] = CreateConstructor(typeof(Regex), m_global.RegExpClass.PrototypeProperty);
+            m_typeCache[typeof(String)] = CreateNativeToJsConstructor(typeof(String), m_global.StringClass);
+            m_typeCache[typeof(Char)] = CreateNativeToJsConstructor(typeof(Char), m_global.StringClass);
+            m_typeCache[typeof(Boolean)] = CreateNativeToJsConstructor(typeof(Boolean), m_global.BooleanClass);
+            m_typeCache[typeof(DateTime)] = CreateNativeToJsConstructor(typeof(DateTime), m_global.DateClass);
+            m_typeCache[typeof(Regex)] = CreateNativeToJsConstructor(typeof(Regex), m_global.RegExpClass);
 
         }
 
@@ -177,24 +177,18 @@ namespace Jint
         }
 
         /// <summary>
-        /// Creates a constructor for a native type and sets its 'prototype' property to
-        /// the object derived from a <paramref name="prototypePropertyPrototype"/>.
+        /// Creates a constructor for a native type and this native type should be converted to <paramref name="jsConstructor"/>.
         /// </summary>
         /// <remarks>
         /// For example native strings should be derived from <c>'String'</c> class i.e. they should
-        /// contain a <c>String.prototype</c> object in theirs prototype chain.
+        /// be converted to js type string.
         /// </remarks>
         /// <param name="t"></param>
-        /// <param name="prototypePropertyPrototype"></param>
+        /// <param name="jsConstructor"></param>
         /// <returns></returns>
-        NativeConstructor CreateConstructor(Type t, JsObject prototypePropertyPrototype)
+        NativeConstructor CreateNativeToJsConstructor(Type t, JsConstructor jsConstructor)
         {
-            /* NativeConstructor res;
-            res = new NativeConstructor(t, m_global,prototypeProperty);
-            res.InitPrototype(m_global);
-            m_typeType.SetupNativeProperties(res);
-            return res; */
-            return (NativeConstructor)m_typeType.WrapSpecialType(t, prototypePropertyPrototype);
+            return (NativeConstructor)m_typeType.WrapNativeToJsType(t, jsConstructor);
         }
 
         TElem[] MarshalJsArrayHelper<TElem>(JsObject value)

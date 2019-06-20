@@ -557,5 +557,9 @@ namespace Jint.Native {
             return Global.NumberClass.New(str.Length);
         }
 
+        public override JsInstance Wrap<T>(T value)
+        {
+            return New(Convert.ToString(value));
+        }
     }
 }

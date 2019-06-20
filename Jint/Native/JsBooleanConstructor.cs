@@ -55,9 +55,13 @@ namespace Jint.Native {
             return that;
         }
 
-
         public JsInstance ToString2(JsDictionaryObject target, JsInstance[] parameters) {
             return Global.StringClass.New(target.ToString());
+        }
+
+        public override JsInstance Wrap<T>(T value)
+        {
+            return New(Convert.ToBoolean(value));
         }
     }
 }

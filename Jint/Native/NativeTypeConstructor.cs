@@ -53,5 +53,18 @@ namespace Jint.Native
             SetupNativeProperties(res);
             return res;
         }
+
+        public JsInstance WrapNativeToJsType(Type value, JsConstructor jsConstructor)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+
+            NativeConstructor res;
+            res = new NativeConstructor(value as Type, Global, jsConstructor.PrototypeProperty, PrototypeProperty);
+            res.InitPrototype(Global);
+            SetupNativeProperties(res);
+            res.JsConstructor = jsConstructor;
+            return res;
+        }
     }
 }

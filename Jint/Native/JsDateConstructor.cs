@@ -914,5 +914,9 @@ namespace Jint.Native {
             return Global.NumberClass.New(offset);
         }
 
+        public override JsInstance Wrap<T>(T value)
+        {
+            return New(Convert.ToDateTime(value));
+        }
     }
 }

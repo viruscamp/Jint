@@ -538,7 +538,7 @@ namespace Jint.Marshal {
 
 
 
-                dm = new DynamicMethod("dynamicIndexerSetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) }, this.GetType());
+                dm = new DynamicMethod("dynamicIndexerGetter", typeof(JsInstance), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance) }, this.GetType());
 
                 ILGenerator code = dm.GetILGenerator();
 
@@ -591,7 +591,7 @@ namespace Jint.Marshal {
 
         public JsIndexerSetter WrapIndexerSetter(MethodInfo setMethod, Marshaller marshaller) {
             if (setMethod == null)
-                throw new ArgumentNullException("getMethod");
+                throw new ArgumentNullException("setMethod");
 
             DynamicMethod dm;
 
@@ -602,7 +602,7 @@ namespace Jint.Marshal {
             if (dm == null) {
 
                 if (!(setMethod.GetParameters().Length == 2 && setMethod.ReturnType.Equals(typeof(void))))
-                    throw new ArgumentException("Invalid getter", "getMethod");
+                    throw new ArgumentException("Invalid setter", "setMethod");
 
                 dm = new DynamicMethod("dynamicIndexerSetter", typeof(void), new Type[] { typeof(Marshaller), typeof(JsInstance), typeof(JsInstance), typeof(JsInstance) },this.GetType());
 

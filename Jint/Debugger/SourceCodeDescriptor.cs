@@ -41,12 +41,18 @@ namespace Jint.Debugger {
 
         public string Code { get; private set; }
 
-        public SourceCodeDescriptor(int startLine, int startChar, int stopLine, int stopChar, string code) {
+        public string SourceName { get; private set; }
+
+        public SourceCodeDescriptor(int startLine, int startChar, int stopLine, int stopChar, string code)
+            : this(startLine, startChar, stopLine, stopChar, code, null) {
+        }
+
+        public SourceCodeDescriptor(int startLine, int startChar, int stopLine, int stopChar, string code, string sourceName) {
             Code = code;
+            SourceName = sourceName;
 
             Start = new Location(startLine, startChar);
             Stop = new Location(stopLine, stopChar);
-
         }
 
         public override string ToString() {

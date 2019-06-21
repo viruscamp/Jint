@@ -492,7 +492,7 @@ using Jint.Debugger;
 			{
 				if(!DebugMode)
 				{
-            		return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.");
+            		return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.", SourceName);
 				}
 	            
 				try
@@ -519,11 +519,11 @@ using Jint.Debugger;
 						source.Append(script[i].Substring(charStart, length)).Append(Environment.NewLine);
 					}
 
-					return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, source.ToString());
+					return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, source.ToString(), SourceName);
 				}
 				catch
 				{
-					return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.");
+					return new SourceCodeDescriptor(start.Line, start.CharPositionInLine, stop.Line, stop.CharPositionInLine, "No source code available.", SourceName);
 				}
 
 			}

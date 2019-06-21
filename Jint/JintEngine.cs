@@ -76,9 +76,13 @@ namespace Jint {
         private PermissionSet permissionSet;
 
         public static Program Compile(string source, bool debugInformation) {
+            return Compile(source, debugInformation, null);
+        }
+
+        public static Program Compile(string source, bool debugInformation, string sourceName) {
             Program program = null;
             if (!string.IsNullOrEmpty(source)) {
-                var lexer = new ES3Lexer(new ANTLRStringStream(source));
+                var lexer = new ES3Lexer(new ANTLRStringStream(source, sourceName));
                 var parser = new ES3Parser(new CommonTokenStream(lexer)) { DebugMode = debugInformation };
 
                 program = parser.program().value;
@@ -119,7 +123,21 @@ namespace Jint {
         /// <exception cref="System.Security.SecurityException" />
         /// <exception cref="Jint.JintException" />
         public object Run(string script) {
-            return Run(script, true);
+            return Run(script, true, null);
+        }
+
+        /// <summary>
+        /// Runs a set of JavaScript statements and optionally returns a value if return is called
+        /// </summary>
+        /// <param name="script">The script to execute</param>
+        /// <param name="sourceName">sourceName</param>
+        /// <returns>Optionaly, returns a value from the scripts</returns>
+        /// <exception cref="System.ArgumentException" />
+        /// <exception cref="System.Security.SecurityException" />
+        /// <exception cref="Jint.JintException" />
+        public object Run(string script, string sourceName)
+        {
+            return Run(script, true, sourceName);
         }
 
         /// <summary>
@@ -150,13 +168,41 @@ namespace Jint {
         /// Runs a set of JavaScript statements and optionally returns a value if return is called
         /// </summary>
         /// <param name="reader">The TextReader to read script from</param>
+        /// <param name="sourceName">sourceName</param>
+        /// <returns>Optionaly, returns a value from the scripts</returns>
+        /// <exception cref="System.ArgumentException" />
+        /// <exception cref="System.Security.SecurityException" />
+        /// <exception cref="Jint.JintException" />
+        public object Run(TextReader reader, string sourceName)
+        {
+            return Run(reader.ReadToEnd(), sourceName);
+        }
+
+        /// <summary>
+        /// Runs a set of JavaScript statements and optionally returns a value if return is called
+        /// </summary>
+        /// <param name="reader">The TextReader to read script from</param>
         /// <param name="unwrap">Whether to unwrap the returned value to a CLR instance. <value>True</value> by default.</param>
         /// <returns>Optionaly, returns a value from the scripts</returns>
         /// <exception cref="System.ArgumentException" />
         /// <exception cref="System.Security.SecurityException" />
         /// <exception cref="Jint.JintException" />
         public object Run(TextReader reader, bool unwrap) {
-            return Run(reader.ReadToEnd(), unwrap);
+            return Run(reader.ReadToEnd(), unwrap, null);
+        }
+
+        /// <summary>
+        /// Runs a set of JavaScript statements and optionally returns a value if return is called
+        /// </summary>
+        /// <param name="reader">The TextReader to read script from</param>
+        /// <param name="unwrap">Whether to unwrap the returned value to a CLR instance. <value>True</value> by default.</param>
+        /// <param name="sourceName">sourceName</param>
+        /// <returns>Optionaly, returns a value from the scripts</returns>
+        /// <exception cref="System.ArgumentException" />
+        /// <exception cref="System.Security.SecurityException" />
+        /// <exception cref="Jint.JintException" />
+        public object Run(TextReader reader, bool unwrap, string sourceName) {
+            return Run(reader.ReadToEnd(), unwrap, sourceName);
         }
 
         /// <summary>
@@ -169,6 +215,20 @@ namespace Jint {
         /// <exception cref="System.Security.SecurityException" />
         /// <exception cref="Jint.JintException" />
         public object Run(string script, bool unwrap) {
+            return Run(script, unwrap, null);
+        }
+
+        /// <summary>
+        /// Runs a set of JavaScript statements and optionally returns a value if return is called
+        /// </summary>
+        /// <param name="script">The script to execute</param>
+        /// <param name="unwrap">Whether to unwrap the returned value to a CLR instance. <value>True</value> by default.</param>
+        /// <param name="sourceName">sourceName</param>
+        /// <returns>Optionaly, returns a value from the scripts</returns>
+        /// <exception cref="System.ArgumentException" />
+        /// <exception cref="System.Security.SecurityException" />
+        /// <exception cref="Jint.JintException" />
+        public object Run(string script, bool unwrap, string sourceName) {
 
             if (script == null)
                 throw new
@@ -179,7 +239,7 @@ namespace Jint {
 
 
             try {
-                program = Compile(script, DebugMode);
+                program = Compile(script, DebugMode, sourceName);
             }
             catch (Exception e) {
                 throw new JintException("Parsing error : " + e.Message, e);
@@ -239,7 +299,9 @@ namespace Jint {
                 }
 
                 if (Visitor.CurrentStatement.Source != null) {
+                    var sourceName = Visitor.CurrentStatement.Source.SourceName;
                     source = Environment.NewLine + Visitor.CurrentStatement.Source.ToString()
+                            + (string.IsNullOrEmpty(sourceName) ? "" : Environment.NewLine + "@" + Visitor.CurrentStatement.Source.SourceName)
                             + Environment.NewLine + Visitor.CurrentStatement.Source.Code;
                 }
 
@@ -260,7 +322,9 @@ namespace Jint {
                 }
 
                 if (Visitor.CurrentStatement != null && Visitor.CurrentStatement.Source != null) {
+                    var sourceName = Visitor.CurrentStatement.Source.SourceName;
                     source = Environment.NewLine + Visitor.CurrentStatement.Source.ToString()
+                            + (string.IsNullOrEmpty(sourceName) ? "" : Environment.NewLine + "@" + Visitor.CurrentStatement.Source.SourceName)
                             + Environment.NewLine + Visitor.CurrentStatement.Source.Code;
                 }
 

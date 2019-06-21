@@ -41,6 +41,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClrWrapTestClasses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Fixtures.cs" />
     <Compile Include="SunSpider.cs" />

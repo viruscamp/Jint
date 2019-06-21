@@ -6,6 +6,7 @@ using System.Reflection;
 using Jint.Expressions;
 using System.Text;
 using Jint.Native;
+using Jint.Delegates;
 
 namespace Jint.Shell {
     class Program {
@@ -15,9 +16,13 @@ namespace Jint.Shell {
 
             jint.SetFunction("print", new Action<object>(s => { Console.ForegroundColor = ConsoleColor.Blue; Console.Write(s); Console.ResetColor(); }));
             jint.SetFunction("import", new Action<string>(s => { Assembly.LoadWithPartialName(s); }));
+            jint.SetFunction("runfile", new Func<string, object>(s => {
+                using (var reader = File.OpenText(s))
+                {
+                    return jint.Run(reader, s);
+                }
+            }));
             jint.DisableSecurity();
-
-            jint.SetParameter("i1", new CI1());
 
             return jint;
         }

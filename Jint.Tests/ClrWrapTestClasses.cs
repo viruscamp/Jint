@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jint.Shell
+namespace Jint.Tests.ClrWrap
 {
-
     internal class A
     {
     }

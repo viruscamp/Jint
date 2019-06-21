@@ -56,7 +56,9 @@ namespace Jint.Debugger {
         }
 
         public override string ToString() {
-            return "Line: " + Start.Line + " Char: " + Start.Char;
+            return "Line: " + Start.Line + " Char: " + Start.Char
+                + (string.IsNullOrEmpty(SourceName) ? "" : (" @" + SourceName))
+                + Environment.NewLine + Code;
         }
     }
 }

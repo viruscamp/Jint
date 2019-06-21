@@ -299,10 +299,7 @@ namespace Jint {
                 }
 
                 if (Visitor.CurrentStatement.Source != null) {
-                    var sourceName = Visitor.CurrentStatement.Source.SourceName;
-                    source = Environment.NewLine + Visitor.CurrentStatement.Source.ToString()
-                            + (string.IsNullOrEmpty(sourceName) ? "" : Environment.NewLine + "@" + Visitor.CurrentStatement.Source.SourceName)
-                            + Environment.NewLine + Visitor.CurrentStatement.Source.Code;
+                    source = Environment.NewLine + Visitor.CurrentStatement.Source.ToString();
                 }
 
                 throw new JintException(message + source + stackTrace, e);
@@ -322,10 +319,7 @@ namespace Jint {
                 }
 
                 if (Visitor.CurrentStatement != null && Visitor.CurrentStatement.Source != null) {
-                    var sourceName = Visitor.CurrentStatement.Source.SourceName;
-                    source = Environment.NewLine + Visitor.CurrentStatement.Source.ToString()
-                            + (string.IsNullOrEmpty(sourceName) ? "" : Environment.NewLine + "@" + Visitor.CurrentStatement.Source.SourceName)
-                            + Environment.NewLine + Visitor.CurrentStatement.Source.Code;
+                    source = Environment.NewLine + Visitor.CurrentStatement.Source.ToString();
                 }
 
                 throw new JintException(e.Message + source + stackTrace, e);

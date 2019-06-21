@@ -77,7 +77,7 @@ namespace Jint.Native
             {
                 m_constructors = type.GetConstructors();
             }
-            
+
             // wrap CLR interface method 1: links of prototypes
             // assume that i1 is I1, the actual type is C1, C1.IsVisible = false
             // 包装 CLR 接口方法1: 原型链

@@ -27,7 +27,7 @@ namespace Jint.Marshal
         public static Type GetImplicitIListType(Type type)
         {
             var typeIList = typeof(System.Collections.IList);
-            if (type.IsAssignableFrom(typeIList) &&
+            if (typeIList.IsAssignableFrom(type) &&
                 !IsExplicitInterface(type, typeIList))
             {
                 // 隐式实现 IList
@@ -51,7 +51,7 @@ namespace Jint.Marshal
         public static Type GetImplicitIDictionaryType(Type type)
         {
             var typeIDictionary = typeof(System.Collections.IDictionary);
-            if (type.IsAssignableFrom(typeIDictionary) &&
+            if (typeIDictionary.IsAssignableFrom(type) &&
                 !IsExplicitInterface(type, typeIDictionary))
             {
                 // 隐式实现 IDictionary

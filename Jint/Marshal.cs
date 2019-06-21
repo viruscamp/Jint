@@ -132,26 +132,11 @@ namespace Jint
                 // 包装 CLR 接口方法
                 // 假设 i1 实现 I1 接口，实际类型为 C1, C1对外不可见, C1.IsVisible = false
                 // value==i1, T==I1, value.GetType()==C1
-                Type t = value.GetType();
-                Type wrapType = typeof(T);
-                Type objType = typeof(object);
-                /*
-                if (!t.IsVisible)
-                {
-                    t = wrapType;
-                }
-                */
-                if (wrapType != objType)
-                {
-                    t = wrapType;
-                }
-                else if (!t.IsVisible)
-                {
-                    // TODO ComObject
-                    // search a type or use object
-                    t = objType;
-                }
-                return MarshalType(t).Wrap(value);
+                Type valueType = value.GetType(); // 值实际类型
+                Type wrapType = typeof(T); // 获得的包装类型
+                Type objType = typeof(object); // object 类型
+
+                return MarshalType(wrapType).Wrap(value);
             }
         }
 

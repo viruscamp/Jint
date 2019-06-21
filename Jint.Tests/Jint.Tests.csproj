@@ -46,6 +46,7 @@
     <Compile Include="Fixtures.cs" />
     <Compile Include="SunSpider.cs" />
     <Compile Include="ClrWrapTest.cs" />
+    <Compile Include="TestsBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jint\Jint.csproj">

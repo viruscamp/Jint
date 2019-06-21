@@ -57,7 +57,7 @@ namespace Jint.Native {
         /// <summary>
         /// ecma262 [[prototype]] property
         /// </summary>
-        internal JsDictionaryObject Prototype { get; set; }
+        public JsDictionaryObject Prototype { get; private set; }
 
         /// <summary>
         /// Checks whether an object or it's [[prototype]] has the specified property.

@@ -35,11 +35,12 @@ namespace Jint.Tests.ClrWrap
 
     public class C1 : CBase1, IChild1
     {
-        public static C1 Instance { get; } = new C1();
-        public static CBase1 CBase1 { get; } = Instance;
-        public static IChild1 IChild1 { get; } = Instance;
-        public static IParent1 IParent1 { get; } = Instance;
-        public static object Object { get; } = Instance;
+        private static readonly C1 instance = new C1();
+        public static C1 Instance { get { return instance; } }
+        public static CBase1 CBase1 { get { return instance; } }
+        public static IChild1 IChild1 { get { return instance; } }
+        public static IParent1 IParent1 { get { return instance; } }
+        public static object Object { get { return instance; } }
 
         public string MC1()
         {
